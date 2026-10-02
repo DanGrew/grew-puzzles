@@ -71,9 +71,9 @@ function load(manifest) {
   show(1);
 }
 
-fetch('../collections/wordsearch.json')
+fetch('../content/collections/wordsearch.json')
   .then(r => r.json())
-  .then(index => fetch(`../puzzles/wordsearch/${shownCollections(index)[0]}/manifest.json`))
+  .then(index => fetch(`../content/puzzles/wordsearch/${shownCollections(index)[0]}/manifest.json`))
   .then(r => r.json())
   .then(load);
 </script>

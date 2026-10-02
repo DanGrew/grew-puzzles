@@ -4,8 +4,8 @@
 // the page imports it through ui/, and the unit tests import it directly.
 
 // The play page plays wordsearches: their collection list and their puzzles' folder.
-export var PLAY_INDEX_URL = '../collections/wordsearch.json';
-var PLAY_PUZZLES = '../puzzles/wordsearch/';
+export var PLAY_INDEX_URL = '../content/collections/wordsearch.json';
+var PLAY_PUZZLES = '../content/puzzles/wordsearch/';
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
 // ---- Finding the puzzle ----

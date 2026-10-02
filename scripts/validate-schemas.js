@@ -35,7 +35,7 @@ function findFiles(dir, predicate) {
 }
 
 // One entry per content type: { label, schema, searchDir, match }. Empty: a puzzle's
-// shape and rules live in the private grew-puzzles-tooling repo, run against puzzles/ by
+// shape and rules live in the private grew-puzzles-tooling repo, run against content/ by
 // scripts/check-puzzles.sh. The gate stays for any future site-only JSON and passes on none.
 const MAPPINGS = [];
 
