@@ -22,4 +22,4 @@ trap 'rm -rf "$export_dir"' EXIT
 git -C "$tooling" archive origin/main | tar -x -C "$export_dir"
 
 echo "grew-puzzles-tooling origin/main @ $(git -C "$tooling" rev-parse --short origin/main)" | tee "$report"
-(cd "$export_dir" && python3 -m generator.site "$site") | tee -a "$report"
+"$export_dir/tools/grew-puzzles-checks" "$site" | tee -a "$report"

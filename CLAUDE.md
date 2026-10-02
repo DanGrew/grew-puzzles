@@ -10,7 +10,7 @@ not here.
 | repo | visibility | holds |
 |---|---|---|
 | `grew-puzzles` (this one) | **public** | the pages, and every puzzle file — each one already generated and validated |
-| `grew-puzzles-tooling` | **private** | the generator, the word groups, and every placement and construction rule |
+| `grew-puzzles-tooling` | **private** | the generator, the word groups, every placement and construction rule, and the puzzle format and its checks |
 
 - ⛔ This repo holds **puzzles and pages, nothing else**. No generation, word-group or placement logic ever ships here, not even as page code — a page only plays a puzzle that already exists.
 - No puzzle format, schema or check lives here either: they're all in tooling. This repo's local checks run tooling's `origin/main` checks over `puzzles/` (`scripts/check-puzzles.sh`); the format is tooling's `docs/PUZZLE-FORMAT.md`.
