@@ -11,9 +11,9 @@ function manifest(count, name = 'Vanilla', collection = 'vanilla') {
 
 async function serve(page, vanilla) {
   const fileRequests = [];
-  await page.route('**/puzzles/collections.json', r => r.fulfill({ json: { collections: ['vanilla', 'other'] } }));
-  await page.route('**/puzzles/vanilla/manifest.json', r => r.fulfill({ json: vanilla }));
-  await page.route('**/puzzles/other/manifest.json', r => r.fulfill({ json: manifest(3, 'Other', 'other') }));
+  await page.route('**/collections/wordsearch.json', r => r.fulfill({ json: { collections: ['vanilla', 'other'] } }));
+  await page.route('**/puzzles/wordsearch/vanilla/manifest.json', r => r.fulfill({ json: vanilla }));
+  await page.route('**/puzzles/wordsearch/other/manifest.json', r => r.fulfill({ json: manifest(3, 'Other', 'other') }));
   await page.route(/\/puzzles\/.*\d{4}\.json$/, r => { fileRequests.push(r.request().url()); return r.abort(); });
   return fileRequests;
 }

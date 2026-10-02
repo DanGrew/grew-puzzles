@@ -8,8 +8,8 @@ const FOUND_INK = 'rgb(15, 42, 36)';
 const WRONG_RED = 'rgb(224, 71, 59)';
 
 async function open(page, query) {
-  await page.route('**/puzzles/vanilla/manifest.json', route => route.fulfill({ json: MANIFEST }));
-  await page.route('**/puzzles/vanilla/0007.json', route => route.fulfill({ json: PUZZLE }));
+  await page.route('**/puzzles/wordsearch/vanilla/manifest.json', route => route.fulfill({ json: MANIFEST }));
+  await page.route('**/puzzles/wordsearch/vanilla/0007.json', route => route.fulfill({ json: PUZZLE }));
   await page.goto('/app/play.html' + (query || '?collection=vanilla&id=7'));
 }
 
@@ -211,7 +211,7 @@ test('a collection the site does not have says so', async ({ page }) => {
 });
 
 test('a missing puzzle file says so', async ({ page }) => {
-  await page.route('**/puzzles/vanilla/manifest.json', route => route.fulfill({ json: { ...MANIFEST, puzzles: [{ publicId: 7, title: 'Gone', file: '0099.json' }] } }));
+  await page.route('**/puzzles/wordsearch/vanilla/manifest.json', route => route.fulfill({ json: { ...MANIFEST, puzzles: [{ publicId: 7, title: 'Gone', file: '0099.json' }] } }));
   await page.goto('/app/play.html?collection=vanilla&id=7');
   await expect(page.locator('#title')).toHaveText('Puzzle not found');
 });
