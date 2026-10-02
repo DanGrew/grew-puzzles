@@ -73,6 +73,21 @@ test('more than 24 puzzles page 24 at a time, ordered by public ID', async ({ pa
   await expect(ids.first()).toHaveText('Vanilla 1');
 });
 
+test('every tile is the same height, whether its title takes one line or wraps', async ({ page }) => {
+  const vanilla = manifest(30);
+  vanilla.puzzles.find(p => p.publicId === 3).title = 'Musical Instruments';
+  await serve(page, vanilla);
+  await page.goto('/app/');
+  const heights = () => page.locator('.tiles .tile').evaluateAll(tiles => tiles.map(t => t.getBoundingClientRect().height));
+  await expect(page.locator('.tiles .tile')).toHaveCount(24);
+  const wrapped = await heights();
+  expect(new Set(wrapped).size).toBe(1);
+
+  await page.locator('#pager').getByRole('button', { name: 'Page 2' }).click();
+  await expect(page.locator('.tiles .tile')).toHaveCount(6);
+  expect(await heights()).toEqual(Array(6).fill(wrapped[0]));
+});
+
 test('clicking a tile opens that puzzle\'s play page', async ({ page }) => {
   await serve(page, manifest(30));
   await page.goto('/app/');
