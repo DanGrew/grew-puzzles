@@ -1,6 +1,10 @@
 // The play page's DOM: loads the puzzle a play URL names, draws it from play-core's view,
 // and wires the taps, the flip and the completion pop. Every rule lives in
 // core/wordsearch/play-core.js; nothing here decides anything.
+import {
+  PLAY_INDEX_URL, playQuery, playJson, requireCollection, manifestUrl, findPuzzleEntry, puzzleUrl,
+  playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles
+} from '../../core/wordsearch/play-core.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
@@ -13,7 +17,7 @@ function playEl(id) {
   return document.getElementById(id);
 }
 
-function openPlayPage(search) {
+export function openPlayPage(search) {
   var query = playQuery(search);
   fetch(PLAY_INDEX_URL)
     .then(playJson)

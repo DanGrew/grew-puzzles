@@ -1,18 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const {
+import {
   PLAY_INDEX_URL, playQuery, playJson, requireCollection, manifestUrl, findPuzzleEntry, puzzleUrl,
   wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, wordList, countLabel, sparkles
-} = require('../../../core/wordsearch/play-core.js');
+} from '../../../core/wordsearch/play-core.js';
+const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/vanilla-0007.json');
 
 const MANIFEST = { collection: 'vanilla', name: 'Vanilla', puzzles: [
   { publicId: 6, title: 'Six', file: '0006.json' },
   { publicId: 7, title: 'Farm Kitchen', file: '0007.json' }
 ] };
-const BOARD = playBoard(PUZZLE, MANIFEST);
-const WORDS = BOARD.words;
+// Built per test, never at load: the mutation runner doesn't reload this file between mutants.
+let BOARD, WORDS;
+beforeEach(() => {
+  BOARD = playBoard(PUZZLE, MANIFEST);
+  WORDS = BOARD.words;
+});
 const at = text => WORDS.findIndex(w => w.text === text);
 
 function taps(cells, play) {
@@ -163,6 +167,11 @@ describe('tapping', () => {
 
   it('clears the selection when the last letter is tapped again', () => {
     expect(taps([[0, 0], [0, 3], [0, 3]])).toEqual(newPlay());
+  });
+
+  it('does not find a word from a selection sharing only one of its ends', () => {
+    expect(taps([[2, 2], [2, 4]])).toEqual({ picked: [[2, 2], [2, 4]], found: [], events: [] });
+    expect(taps([[4, 2], [4, 4]])).toEqual({ picked: [[4, 2], [4, 4]], found: [], events: [] });
   });
 
   it('does not cross off PIG for P then G inside PIGLET', () => {

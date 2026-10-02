@@ -1,52 +1,52 @@
 // The play page's rules: which puzzle a play URL names, where each word sits, what a tap
 // does, and what the board shows. Pure — the DOM work is ui/wordsearch/play-ui.js. The
-// puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md.
+// puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
+// the page imports it through ui/, and the unit tests import it directly.
 
-var PLAY_INDEX_URL = '../puzzles/collections.json';
-var PLAY_DIRECTIONS = { N: [-1, 0], NE: [-1, 1], E: [0, 1], SE: [1, 1], S: [1, 0], SW: [1, -1], W: [0, -1], NW: [-1, -1] };
+export var PLAY_INDEX_URL = '../puzzles/collections.json';
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
 // ---- Finding the puzzle ----
 
-function playQuery(search) {
+export function playQuery(search) {
   var params = new URLSearchParams(search);
   return { collection: params.get('collection'), id: params.get('id') };
 }
 
-function playJson(response) {
+export function playJson(response) {
   if (!response.ok) throw new Error('No such puzzle');
   return response.json();
 }
 
-function requireCollection(index, collection) {
+export function requireCollection(index, collection) {
   if (!index.collections.includes(collection)) throw new Error('No such puzzle');
   return collection;
 }
 
-function manifestUrl(collection) {
+export function manifestUrl(collection) {
   return '../puzzles/' + collection + '/manifest.json';
 }
 
-function findPuzzleEntry(manifest, id) {
+export function findPuzzleEntry(manifest, id) {
   var entry = manifest.puzzles.find(function (p) { return String(p.publicId) === id; });
   if (!entry) throw new Error('No such puzzle');
   return entry;
 }
 
-function puzzleUrl(collection, file) {
+export function puzzleUrl(collection, file) {
   return '../puzzles/' + collection + '/' + file;
 }
 
 // ---- The board ----
 
-function wordCells(word) {
-  var step = PLAY_DIRECTIONS[word.direction];
+export function wordCells(word) {
+  var step = { N: [-1, 0], NE: [-1, 1], E: [0, 1], SE: [1, 1], S: [1, 0], SW: [1, -1], W: [0, -1], NW: [-1, -1] }[word.direction];
   return Array.from({ length: word.length }, function (_, i) {
     return [word.start.row + step[0] * i, word.start.col + step[1] * i];
   });
 }
 
-function playBoard(puzzle, manifest) {
+export function playBoard(puzzle, manifest) {
   var label = manifest.name + ' ' + puzzle.publicId;
   return {
     title: puzzle.title,
@@ -63,11 +63,11 @@ function playBoard(puzzle, manifest) {
 // A play is { picked, found, events }: picked holds the selection's start, then its end
 // (0–2 cells); found the indices of the words crossed off; events what this tap set off.
 
-function newPlay() {
+export function newPlay() {
   return { picked: [], found: [], events: [] };
 }
 
-function solvedPlay(words) {
+export function solvedPlay(words) {
   return { picked: [], found: words.map(function (_, i) { return i; }), events: [] };
 }
 
@@ -126,13 +126,13 @@ function tapFurther(play, cell, words) {
 
 var PLAY_TAPS = [tapFirst, tapSecond, tapFurther];
 
-function tap(play, cell, words) {
+export function tap(play, cell, words) {
   return PLAY_TAPS[play.picked.length](play, cell, words);
 }
 
 // ---- What the board shows ----
 
-function sharedCells(words) {
+export function sharedCells(words) {
   var counts = {};
   words.forEach(function (w) {
     w.cells.forEach(function (c) {
@@ -145,7 +145,7 @@ function sharedCells(words) {
 
 // found: a line through each found word; shared: a ring on each letter two found words
 // share; wrong: the red line of an open selection; rings: a ring on its start letter.
-function playMarks(play, words) {
+export function playMarks(play, words) {
   var done = play.found.map(function (i) { return words[i]; });
   var start = play.picked.slice(0, 1);
   return {
@@ -156,16 +156,16 @@ function playMarks(play, words) {
   };
 }
 
-function wordList(play, words) {
+export function wordList(play, words) {
   return words.map(function (w, i) { return { text: w.text, done: play.found.includes(i) }; });
 }
 
-function countLabel(play, words) {
+export function countLabel(play, words) {
   return play.found.length + '/' + words.length;
 }
 
 // Where each completion sparkle starts and drifts to, over a board width × height.
-function sparkles(count, width, height, random) {
+export function sparkles(count, width, height, random) {
   return Array.from({ length: count }, function () {
     var angle = random() * Math.PI * 2, distance = 30 + random() * 60;
     return {
@@ -177,8 +177,3 @@ function sparkles(count, width, height, random) {
     };
   });
 }
-
-if (typeof module !== 'undefined') module.exports = {
-  PLAY_INDEX_URL, playQuery, playJson, requireCollection, manifestUrl, findPuzzleEntry, puzzleUrl,
-  wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, wordList, countLabel, sparkles
-};

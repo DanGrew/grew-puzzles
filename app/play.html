@@ -62,9 +62,8 @@
   </main>
 </div>
 <script src="../components/site-bar.js"></script>
-<script src="../core/wordsearch/play-core.js"></script>
-<script src="../ui/wordsearch/play-ui.js"></script>
-<script>
+<script type="module">
+import { openPlayPage } from '../ui/wordsearch/play-ui.js';
 openPlayPage(location.search);
 </script>
 </body>
