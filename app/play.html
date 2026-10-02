@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/play.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="wordsearches"></header>
+
+  <header class="play-head">
+    <a class="back" href="index.html">All puzzles</a>
+    <h1 id="title"></h1>
+    <button class="help-button" id="help-button" type="button" popovertarget="help" aria-label="How to play" title="How to play">?</button>
+  </header>
+  <div class="help" id="help" popover>Tap a letter, then another in line with it. A red line means no match yet: keep tapping further along to extend it. Tap the last letter again to deselect.</div>
+
+  <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
+
+  <main class="play" id="play" hidden>
+    <div>
+      <div class="stage">
+        <div class="card" id="card">
+          <div class="face front-face" id="front">
+            <div class="band" id="label"></div>
+            <div class="board" id="board">
+              <div class="grid" id="grid"></div>
+              <svg class="overlay" id="overlay" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <div class="face back-face" id="back" aria-hidden="true" inert>
+            <div class="band" id="solution-label"></div>
+            <div class="board">
+              <div class="grid" id="solution-grid"></div>
+              <svg class="overlay" id="solution-overlay" aria-hidden="true"></svg>
+            </div>
+          </div>
+        </div>
+        <button class="flip" id="flip" type="button" aria-pressed="false" aria-label="Show solution" title="Show solution">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
+        </button>
+      </div>
+      <div class="complete" id="complete" hidden>Puzzle complete</div>
+    </div>
+
+    <aside>
+      <div class="words-box">
+        <div class="list-head">
+          <h2>Words</h2>
+          <span class="count" id="count"></span>
+        </div>
+        <ul class="words" id="words"></ul>
+      </div>
+    </aside>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script type="module">
+import { openPlayPage } from '../ui/wordsearch/play-ui.js';
+openPlayPage(location.search);
+</script>
+</body>
+</html>

@@ -31,7 +31,11 @@ later. `checks-local --post` puts the local verdict on the PR.
 ## Mutation — local, on demand
 
 `npm run test:mutation` runs StrykerJS over `core/**/*-core.js` (`stryker.config.mjs`). The bar is
-100%: a survivor is resolved by a test, a deletion or a restructure, never called equivalent. The
+100%: a survivor is resolved by a test, a deletion or a restructure, never called equivalent.
+The runner never reloads a module between mutants, so a mutant in code that runs at load can't
+be killed by any test — keep `core/` free of load-time work: ES module exports (no
+`typeof module` export guard), lookup tables inside the function that reads them, and unit
+tests that build their fixtures per test, never at the top of the file. The
 owner runs it when they choose, usually through `claude-workflow/tools/mutation-all`. Do not add a
 mutation workflow.
 
