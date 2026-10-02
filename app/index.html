@@ -16,7 +16,7 @@
   <header class="site" data-site-bar data-home="index.html" data-current="wordsearches"></header>
   <main aria-labelledby="browse-title">
     <div class="browse-head">
-      <h1 id="browse-title"></h1>
+      <h1 id="browse-title">Wordsearches</h1>
       <span id="total"></span>
     </div>
     <ul class="tiles" id="tiles"></ul>
@@ -25,11 +25,11 @@
 </div>
 <script src="../components/site-bar.js"></script>
 <script type="module">
-import { shownCollections, pageOf, pageCount, tileLabel, playHref, totalLabel, pagerButtons } from '../core/browse-core.js';
+import { pageOf, pageCount, tileDetail, playHref, totalLabel, pagerButtons } from '../core/browse-core.js';
 
 const tiles = document.getElementById('tiles');
 const pager = document.getElementById('pager');
-let shown = { collection: '', name: '', puzzles: [] };
+let puzzles = [];
 
 function part(className, text) {
   const span = document.createElement('span');
@@ -41,8 +41,10 @@ function part(className, text) {
 function tile(puzzle) {
   const a = document.createElement('a');
   a.className = 'tile';
-  a.href = playHref(shown.collection, puzzle.publicId);
-  a.append(part('id', tileLabel(shown.name, puzzle.publicId)), part('name', puzzle.title));
+  a.href = playHref(puzzle.hiddenId);
+  const detail = part('detail', '');
+  detail.append(...tileDetail(puzzle).map(text => part('line', text)));
+  a.append(part('name', puzzle.title), detail);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -60,20 +62,17 @@ function pagerButton(spec) {
 }
 
 function show(page) {
-  tiles.replaceChildren(...pageOf(shown.puzzles, page).map(tile));
-  pager.replaceChildren(...pagerButtons(page, pageCount(shown.puzzles.length)).map(pagerButton));
+  tiles.replaceChildren(...pageOf(puzzles, page).map(tile));
+  pager.replaceChildren(...pagerButtons(page, pageCount(puzzles.length)).map(pagerButton));
 }
 
-function load(manifest) {
-  shown = manifest;
-  document.getElementById('browse-title').textContent = manifest.name;
-  document.getElementById('total').textContent = totalLabel(manifest.puzzles.length);
+function load(index) {
+  puzzles = index.puzzles;
+  document.getElementById('total').textContent = totalLabel(puzzles.length);
   show(1);
 }
 
-fetch('../content/collections/wordsearch.json')
-  .then(r => r.json())
-  .then(index => fetch(`../content/puzzles/wordsearch/${shownCollections(index)[0]}/manifest.json`))
+fetch('../content/puzzles/wordsearch/index.json')
   .then(r => r.json())
   .then(load);
 </script>

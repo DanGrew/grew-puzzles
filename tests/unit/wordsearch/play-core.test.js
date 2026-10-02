@@ -1,20 +1,16 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
-  PLAY_INDEX_URL, playQuery, playJson, requireCollection, manifestUrl, findPuzzleEntry, puzzleUrl,
+  puzzleUrl, playJson,
   wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, wordList, countLabel, sparkles
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
-const PUZZLE = require('../../fixtures/vanilla-0007.json');
+const PUZZLE = require('../../fixtures/WSCH-0007.json');
 
-const MANIFEST = { collection: 'vanilla', name: 'Vanilla', puzzles: [
-  { publicId: 6, title: 'Six', file: '0006.json' },
-  { publicId: 7, title: 'Farm Kitchen', file: '0007.json' }
-] };
 // Built per test, never at load: the mutation runner doesn't reload this file between mutants.
 let BOARD, WORDS;
 beforeEach(() => {
-  BOARD = playBoard(PUZZLE, MANIFEST);
+  BOARD = playBoard(PUZZLE);
   WORDS = BOARD.words;
 });
 const at = text => WORDS.findIndex(w => w.text === text);
@@ -24,16 +20,16 @@ function taps(cells, play) {
 }
 
 describe('finding the puzzle a play URL names', () => {
-  it('reads the collection and public ID from the query', () => {
-    expect(playQuery('?collection=vanilla&id=7')).toEqual({ collection: 'vanilla', id: '7' });
+  it("opens the file named by the query's hidden ID", () => {
+    expect(puzzleUrl('?id=WSCH-0007')).toBe('../content/puzzles/wordsearch/WSCH-0007.json');
+    expect(puzzleUrl('?id=WSCH-12345')).toBe('../content/puzzles/wordsearch/WSCH-12345.json');
   });
 
-  it('reads a missing collection or ID as null', () => {
-    expect(playQuery('')).toEqual({ collection: null, id: null });
-  });
-
-  it('opens the collections index first', () => {
-    expect(PLAY_INDEX_URL).toBe('../content/collections/wordsearch.json');
+  it('finds no puzzle for a missing ID, or anything that is not a wordsearch hidden ID', () => {
+    ['', '?id=', '?id=7', '?id=WSCH-007', '?id=ABCD-0007', '?id=wsch-0007', '?id=xWSCH-0007',
+      '?id=WSCH-0007x', '?id=../WSCH-0007', '?id=WSCH-0007/../x'].forEach(search => {
+      expect(() => puzzleUrl(search)).toThrow('No such puzzle');
+    });
   });
 
   it('reads a fetched file as JSON', async () => {
@@ -42,32 +38,6 @@ describe('finding the puzzle a play URL names', () => {
 
   it('treats a missing file as no such puzzle', () => {
     expect(() => playJson({ ok: false, json: () => Promise.resolve({}) })).toThrow('No such puzzle');
-  });
-
-  it('accepts a collection the index names', () => {
-    expect(requireCollection({ collections: ['vanilla'] }, 'vanilla')).toBe('vanilla');
-  });
-
-  it('refuses a collection the index does not name', () => {
-    expect(() => requireCollection({ collections: ['vanilla'] }, '../secret')).toThrow('No such puzzle');
-    expect(() => requireCollection({ collections: ['vanilla'] }, null)).toThrow('No such puzzle');
-  });
-
-  it("opens the collection's manifest", () => {
-    expect(manifestUrl('vanilla')).toBe('../content/puzzles/wordsearch/vanilla/manifest.json');
-  });
-
-  it('finds the manifest entry with that public ID', () => {
-    expect(findPuzzleEntry(MANIFEST, '7')).toEqual(MANIFEST.puzzles[1]);
-  });
-
-  it('finds no entry for an ID the manifest lacks, or a missing ID', () => {
-    expect(() => findPuzzleEntry(MANIFEST, '8')).toThrow('No such puzzle');
-    expect(() => findPuzzleEntry(MANIFEST, null)).toThrow('No such puzzle');
-  });
-
-  it("opens the entry's file in its collection", () => {
-    expect(puzzleUrl('vanilla', '0007.json')).toBe('../content/puzzles/wordsearch/vanilla/0007.json');
   });
 });
 
@@ -88,15 +58,22 @@ describe('the board', () => {
     expect(wordCells(PUZZLE.words[0])).toEqual([[4, 2], [3, 2], [2, 2]]);
   });
 
-  it('labels the board with the collection name and public ID, never the hidden ID', () => {
+  it('heads the board with its title and created date, and labels it with the type alone', () => {
     expect(BOARD.title).toBe('Farm Kitchen');
-    expect(BOARD.label).toBe('Vanilla 7');
-    expect(BOARD.solutionLabel).toBe('Vanilla 7 · Solution');
+    expect(BOARD.created).toBe('2 Oct 2026');
+    expect(BOARD.label).toBe('Vanilla');
+    expect(BOARD.solutionLabel).toBe('Vanilla · Solution');
     expect(JSON.stringify(BOARD)).not.toContain('WSCH');
   });
 
+  it('shows a type name exactly as written', () => {
+    const odd = playBoard(Object.assign({}, PUZZLE, { type: 'Mirra?e' }));
+    expect(odd.label).toBe('Mirra?e');
+    expect(odd.solutionLabel).toBe('Mirra?e · Solution');
+  });
+
   it('splits the grid into letters, rows by columns', () => {
-    const wide = playBoard(Object.assign({}, PUZZLE, { grid: ['ABC', 'DEF'] }), MANIFEST);
+    const wide = playBoard(Object.assign({}, PUZZLE, { grid: ['ABC', 'DEF'] }));
     expect(wide.letters).toEqual([['A', 'B', 'C'], ['D', 'E', 'F']]);
     expect(wide.rows).toBe(2);
     expect(wide.cols).toBe(3);

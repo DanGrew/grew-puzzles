@@ -1,17 +1,16 @@
-// The browse grid's rules: which collections show, the order and paging of their puzzles, and
-// what each tile and pager button says. Reads only manifest entries — never a puzzle file.
+// The browse grid's rules: the order and paging of the puzzles, and what each tile and pager
+// button says. Reads only the index's entries — never a puzzle file.
+import { dayLabel } from './day-core.js';
 
 export const PER_PAGE = 24;
 
-// Collections that exist in the format but aren't on the site yet stay wired and hidden.
-const SHOWN = ['vanilla'];
-
-export function shownCollections(index) {
-  return index.collections.filter(slug => SHOWN.includes(slug));
+function idNumber(hiddenId) {
+  return Number(hiddenId.split('-')[1]);
 }
 
-export function orderByPublicId(puzzles) {
-  return [...puzzles].sort((a, b) => a.publicId - b.publicId);
+// Newest first: by created date, then — saved the same day — by the later hidden ID.
+export function newestFirst(puzzles) {
+  return [...puzzles].sort((a, b) => b.created.localeCompare(a.created) || idNumber(b.hiddenId) - idNumber(a.hiddenId));
 }
 
 export function pageCount(total) {
@@ -19,15 +18,17 @@ export function pageCount(total) {
 }
 
 export function pageOf(puzzles, page) {
-  return orderByPublicId(puzzles).slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  return newestFirst(puzzles).slice((page - 1) * PER_PAGE, page * PER_PAGE);
 }
 
-export function tileLabel(name, publicId) {
-  return `${name} ${publicId}`;
+// The small lines beneath a tile's title: its type as written, then its created date — a line
+// each, so a long date never wraps one tile taller than the rest.
+export function tileDetail(puzzle) {
+  return [puzzle.type, dayLabel(puzzle.created)];
 }
 
-export function playHref(collection, publicId) {
-  return `play.html?collection=${encodeURIComponent(collection)}&id=${publicId}`;
+export function playHref(hiddenId) {
+  return `play.html?id=${encodeURIComponent(hiddenId)}`;
 }
 
 export function totalLabel(total) {

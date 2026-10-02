@@ -8,7 +8,7 @@ The set mirrors `homeschooling-app`'s, minus its content-specific gates.
 
 | job | what it checks |
 |---|---|
-| `puzzles` | every file in `content/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside this repo. A failing puzzle names its file and check; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
+| `puzzles` | every file in `content/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside the primary checkout — any worktree finds it from there. A failing puzzle names its file and check; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
 | `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |

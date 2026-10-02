@@ -39,11 +39,11 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | path | what it is |
 |---|---|
 | `index.html` | root redirect to `app/` |
-| `app/index.html` | the landing page — the browse grid, read from `content/collections/wordsearch.json` and each manifest, never a puzzle file |
-| `app/play.html` | the play page — `play.html?collection=<slug>&id=<public ID>`, the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
-| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules, `core/wordsearch/play-core.js` the play page's |
+| `app/index.html` | the landing page — the browse grid, newest first, read from `content/puzzles/wordsearch/index.json` alone, never a puzzle file |
+| `app/play.html` | the play page — `play.html?id=<hidden ID>`, which opens `content/puzzles/wordsearch/<hidden ID>.json`; the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
+| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules, `core/wordsearch/play-core.js` the play page's, `core/day-core.js` how both show a created date |
 | `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page |
-| `content/` | the site's data, apart from its code — the only place JSON lives (`no-json-in-repo`). The puzzles, by type: `content/collections/<type>.json` lists a type's collections, `content/puzzles/<type>/<collection>/` holds its manifest and puzzle files; the layout is tooling's `docs/PUZZLE-FORMAT.md` |
+| `content/` | the site's data, apart from its code — the only place JSON lives (`no-json-in-repo`). The puzzles, by kind: `content/puzzles/<kind>/` holds `index.json` (every puzzle's hidden ID, type, created date and title) and one `<hidden ID>.json` per puzzle; the layout is tooling's `docs/PUZZLE-FORMAT.md` |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
 | `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` · `styles/play.css` | the Banded tokens (light only), the site bar's look, the browse grid's, and the play page's |
 | `tests/fixtures/` | a test puzzle the e2e suite serves in place of a real one — never on the site |

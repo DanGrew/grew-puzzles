@@ -2,8 +2,7 @@
 // and wires the taps, the flip and the completion pop. Every rule lives in
 // core/wordsearch/play-core.js; nothing here decides anything.
 import {
-  PLAY_INDEX_URL, playQuery, playJson, requireCollection, manifestUrl, findPuzzleEntry, puzzleUrl,
-  playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles
+  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles
 } from '../../core/wordsearch/play-core.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -18,17 +17,11 @@ function playEl(id) {
 }
 
 export function openPlayPage(search) {
-  var query = playQuery(search);
-  fetch(PLAY_INDEX_URL)
+  Promise.resolve(search)
+    .then(puzzleUrl)
+    .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(function (index) { return fetch(manifestUrl(requireCollection(index, query.collection))); })
-    .then(playJson)
-    .then(function (manifest) {
-      var entry = findPuzzleEntry(manifest, query.id);
-      return fetch(puzzleUrl(query.collection, entry.file)).then(playJson).then(function (puzzle) {
-        return playBoard(puzzle, manifest);
-      });
-    })
+    .then(playBoard)
     .then(showPuzzle, showMissing);
 }
 
@@ -43,6 +36,7 @@ function showPuzzle(board) {
   var play = newPlay();
   document.title = board.title + ' · Grew Puzzles';
   playEl('title').textContent = board.title;
+  playEl('created').textContent = board.created;
   playEl('label').textContent = board.label;
   playEl('solution-label').textContent = board.solutionLabel;
   playEl('play').style.setProperty('--cols', board.cols);
