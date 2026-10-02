@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/grew-puzzles/:path*", "destination": "/:path*" }
+  ]
+}

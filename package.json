@@ -2,16 +2,22 @@
   "name": "grew-puzzles",
   "private": true,
   "scripts": {
-    "test": "playwright test",
+    "prepare": "git config core.hooksPath .githooks",
+    "test": "playwright test --pass-with-no-tests",
+    "test:ui": "playwright test --ui",
     "test:unit": "vitest run tests/unit",
     "test:coverage": "vitest run tests/unit --coverage",
-    "test:mutation": "stryker run"
+    "test:mutation": "stryker run",
+    "check:untested": "node scripts/check-untested.js",
+    "validate:json": "node scripts/validate-schemas.js reports/validate-json.txt"
   },
   "devDependencies": {
+    "ajv": "^8.17.1",
     "@playwright/test": "^1.49.0",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/vitest-runner": "^9.6.1",
     "@vitest/coverage-v8": "^4.1.5",
+    "eslint": "^8.57.1",
     "jsdom": "^29.1.1",
     "serve": "^14.2.0",
     "vitest": "^4.1.5"
