@@ -5,13 +5,16 @@ name: Tests
 # no-json-in-repo — puzzles are JSON. Mutation is never here: it is the owner's
 # on-demand sweep (claude-workflow/tools/mutation-all).
 #
-# GitHub Actions is OFF for this repo (owner, 2026-10-02): the gates are local checks.
-# This file is the job list claude-workflow/tools/checks-local.py replays before a push;
-# GitHub runs it only if started by hand. The `puzzles` job needs the private tooling
-# clone beside this repo, so it could never run on GitHub anyway.
+# This workflow is OFF on GitHub (owner, 2026-10-02) — disabled in the repo's Actions
+# tab (`gh workflow disable Tests`), not here: the gates are local checks. Actions itself
+# stays on, because GitHub Pages deploys through it. This file is the job list
+# claude-workflow/tools/checks-local.py replays before a push, and that tool reads the
+# pull_request trigger below. The `puzzles` job needs the private tooling clone beside
+# this repo, so it could never run on GitHub anyway.
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 concurrency:
   group: tests-${{ github.ref }}

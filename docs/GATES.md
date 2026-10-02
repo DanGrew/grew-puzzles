@@ -1,7 +1,9 @@
 # Gates
 
-The gates are **local checks**: GitHub Actions is off for this repo. `.github/workflows/test.yml`
-is the job list `checks-local` replays before a push; GitHub runs it only if started by hand.
+The gates are **local checks**: the `Tests` workflow is disabled on GitHub (Actions itself stays
+on — Pages deploys through it).
+`.github/workflows/test.yml` is the job list `checks-local` replays before a push — keep its
+`pull_request` trigger, which is how that tool finds it.
 The set mirrors `homeschooling-app`'s, minus its content-specific gates and minus
 `no-json-in-repo` — puzzles are JSON.
 
