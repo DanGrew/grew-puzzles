@@ -1,0 +1,20 @@
+/* The browse grid — a banded heading, puzzle tiles, and the pager (docs/MOCKUP-LANDING-BROWSE.html). */
+.browse-head { display: flex; justify-content: center; align-items: baseline; gap: 10px; width: fit-content; margin: 0 auto 24px;
+  background: var(--band); color: var(--band-fg); border: var(--ow) solid var(--line); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 10px 20px; }
+.browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
+.browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
+.tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); grid-auto-rows: 1fr; gap: 18px; }
+.tile { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s; }
+.tile:hover { transform: translate(-2px, -2px); }
+.tile .id { font: 600 13px var(--font-display); letter-spacing: .04em; font-variant-numeric: tabular-nums; text-align: center;
+  background: var(--band); color: var(--band-fg); padding: 9px 16px; border-bottom: var(--ow) solid var(--line); }
+.tile .name { font: 600 17px/1.25 var(--font-display); padding: 16px 16px 18px; text-wrap: balance; text-align: center;
+  flex: 1; display: grid; place-items: center; min-height: 2.5em; }
+.pager { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }
+.pager button { font: 600 14px var(--font-body); min-width: 40px; height: 40px; padding: 0 12px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); cursor: pointer; font-variant-numeric: tabular-nums; }
+.pager button[aria-current="page"] { background: var(--band); color: var(--band-fg); }
+.pager button:disabled { opacity: .35; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } }

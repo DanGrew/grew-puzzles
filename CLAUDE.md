@@ -39,10 +39,10 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | path | what it is |
 |---|---|
 | `index.html` | root redirect to `app/` |
-| `app/index.html` | the landing page |
+| `app/index.html` | the landing page — the browse grid, read from `puzzles/collections.json` and each manifest, never a puzzle file |
 | `app/play.html` | the play page — `play.html?collection=<slug>&id=<public ID>`, the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
-| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/wordsearch/play-core.js` is the play page's rules |
+| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules, `core/wordsearch/play-core.js` the play page's |
 | `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
-| `styles/theme.css` · `styles/site-bar.css` · `styles/play.css` | the Banded tokens (light only), the site bar's look, and the play page's |
+| `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` · `styles/play.css` | the Banded tokens (light only), the site bar's look, the browse grid's, and the play page's |
 | `tests/fixtures/` | a test puzzle the e2e suite serves in place of a real one — never on the site |
