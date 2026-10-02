@@ -7,6 +7,10 @@
 # primary checkout or any sibling worktree). Usage: scripts/check-puzzles.sh <report file>
 set -euo pipefail
 
+# Run from the pre-push hook, git exports GIT_DIR (and friends) for THIS repo, and those win
+# over `git -C <tooling>` — the fetch and export below would quietly read the site's own main.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_PREFIX
+
 report="${1:?usage: scripts/check-puzzles.sh <report file>}"
 site="$(cd "$(dirname "$0")/.." && pwd)"
 tooling="$(cd "$site/.." && pwd)/grew-puzzles-tooling"
