@@ -37,7 +37,7 @@ node scripts/check-untested.js || fail "check-untested"
 echo "[pre-push] unit tests..."
 npm run test:unit || fail "unit tests"
 
-# e2e tests run in CI, not locally
-echo "[pre-push] e2e skipped (runs in CI)"
+# e2e runs in claude-workflow/tools/checks-local.py, not this hook
+echo "[pre-push] e2e skipped (runs in checks-local)"
 
 echo "[pre-push] all checks passed"
