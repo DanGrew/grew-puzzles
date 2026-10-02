@@ -25,6 +25,9 @@ node scripts/arch-check.js no-logic-in-inline-callbacks "$TMPDIR_HOOK/no-inline-
 echo "[pre-push] validate-json..."
 node scripts/validate-schemas.js "$TMPDIR_HOOK/validate-json.txt" || fail "validate-json"
 
+echo "[pre-push] puzzles (grew-puzzles-tooling origin/main)..."
+bash scripts/check-puzzles.sh "$TMPDIR_HOOK/puzzles.txt" || fail "puzzles"
+
 echo "[pre-push] ui-cyclomatic..."
 node scripts/check-ui-cyclomatic.js "$TMPDIR_HOOK/ui-cyclomatic.txt" || fail "ui-cyclomatic"
 
@@ -34,7 +37,7 @@ node scripts/check-untested.js || fail "check-untested"
 echo "[pre-push] unit tests..."
 npm run test:unit || fail "unit tests"
 
-# e2e tests run in CI, not locally
-echo "[pre-push] e2e skipped (runs in CI)"
+# e2e runs in claude-workflow/tools/checks-local.py, not this hook
+echo "[pre-push] e2e skipped (runs in checks-local)"
 
 echo "[pre-push] all checks passed"

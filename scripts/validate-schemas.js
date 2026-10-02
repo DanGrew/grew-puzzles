@@ -34,9 +34,9 @@ function findFiles(dir, predicate) {
   return results;
 }
 
-// One entry per content type: { label, schema, searchDir, match }. Empty until the
-// puzzle format lands (TASK-4-PUZZLE-FORMAT adds the puzzle and manifest schemas) —
-// the gate runs from the first commit and passes on zero files.
+// One entry per content type: { label, schema, searchDir, match }. Empty: a puzzle's
+// shape and rules live in the private grew-puzzles-tooling repo, run against puzzles/ by
+// scripts/check-puzzles.sh. The gate stays for any future site-only JSON and passes on none.
 const MAPPINGS = [];
 
 let totalErrors = 0;

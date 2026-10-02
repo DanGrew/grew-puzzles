@@ -1,11 +1,15 @@
 # Gates
 
-Every pull request runs `.github/workflows/test.yml`; nothing runs on `main`. The set mirrors
-`homeschooling-app`'s, minus its content-specific gates and minus `no-json-in-repo` — puzzles
-are JSON.
+The gates are **local checks**: the `Tests` workflow is disabled on GitHub (Actions itself stays
+on — Pages deploys through it).
+`.github/workflows/test.yml` is the job list `checks-local` replays before a push — keep its
+`pull_request` trigger, which is how that tool finds it.
+The set mirrors `homeschooling-app`'s, minus its content-specific gates and minus
+`no-json-in-repo` — puzzles are JSON.
 
 | job | what it checks |
 |---|---|
+| `puzzles` | every file in `puzzles/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside this repo. A failing puzzle names its file and check; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
 | `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |
@@ -13,17 +17,18 @@ are JSON.
 | `validate-json` | every JSON content file against its schema — mappings in `scripts/validate-schemas.js` |
 | arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
 
-`pr-report` gathers every result into one PR comment. Each gate passes on an empty layer, so it
-runs from the first commit rather than switching on later.
+Each gate passes on an empty layer, so it runs from the first commit rather than switching on
+later. `checks-local --post` puts the local verdict on the PR.
 
 ## Locally
 
 - `npm install` once — it also points git at `.githooks/`, whose `pre-push` runs the arch checks,
-  `validate-json`, `ui-cyclomatic`, `check-untested` and the unit suite. e2e is CI's job.
+  `validate-json`, `puzzles`, `ui-cyclomatic`, `check-untested` and the unit suite. e2e runs in
+  `checks-local`, not the hook.
 - `claude-workflow/tools/checks-local.py <worktree>` runs the whole workflow before a push — it
   reads `test.yml`, so a new job is picked up without touching the tool.
 
-## Mutation — local, on demand, never in CI
+## Mutation — local, on demand
 
 `npm run test:mutation` runs StrykerJS over `core/**/*-core.js` (`stryker.config.mjs`). The bar is
 100%: a survivor is resolved by a test, a deletion or a restructure, never called equivalent. The

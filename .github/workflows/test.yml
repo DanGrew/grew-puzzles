@@ -4,6 +4,13 @@ name: Tests
 # catalogue refs, page/speakable contracts, learnings-reachable) and minus
 # no-json-in-repo — puzzles are JSON. Mutation is never here: it is the owner's
 # on-demand sweep (claude-workflow/tools/mutation-all).
+#
+# This workflow is OFF on GitHub (owner, 2026-10-02) — disabled in the repo's Actions
+# tab (`gh workflow disable Tests`), not here: the gates are local checks. Actions itself
+# stays on, because GitHub Pages deploys through it. This file is the job list
+# claude-workflow/tools/checks-local.py replays before a push, and that tool reads the
+# pull_request trigger below. The `puzzles` job needs the private tooling clone beside
+# this repo, so it could never run on GitHub anyway.
 
 on:
   pull_request:
@@ -254,6 +261,20 @@ jobs:
           name: report-validate-json
           path: reports/validate-json.txt
 
+  puzzles:
+    # Every puzzle under puzzles/ against grew-puzzles-tooling's origin/main checks —
+    # local only (scripts/check-puzzles.sh).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: bash scripts/check-puzzles.sh reports/puzzles.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-puzzles
+          path: reports/puzzles.txt
+
   pr-report:
     runs-on: ubuntu-latest
     permissions:
@@ -275,6 +296,7 @@ jobs:
       - no-pure-fn-outside-core
       - no-logic-in-inline-callbacks
       - validate-json
+      - puzzles
     if: always() && github.event_name == 'pull_request'
     steps:
       - name: Download reports
@@ -311,6 +333,7 @@ jobs:
             row "no-logic-in-inline-callbacks" "$(smry reports/no-logic-in-inline-callbacks.txt)"
             row "validate-json" "$(smry reports/validate-json.txt)"
             row "ui-cyclomatic" "$(smry reports/ui-cyclomatic.txt)"
+            row "puzzles" "$(smry reports/puzzles.txt)"
           } > combined.md
 
       - name: Find existing CI report comment
