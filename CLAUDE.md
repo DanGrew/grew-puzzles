@@ -32,3 +32,14 @@ Root holds only this file and `README.md`; everything else is `docs/`, flat, are
 | `README.md` | what the site is, for a human arriving cold | you're new here, or explaining it to someone |
 | `docs/PUZZLE-FORMAT.md` | the puzzle file, the collection manifest, the play URL, and the ten checks CI runs over `puzzles/` | you're writing, reading or checking a puzzle |
 | `docs/GATES.md` | every enforced PR gate, the pre-push hook, the local command and the on-demand mutation sweep | before pushing, or a gate went red |
+
+## The shape of the site
+
+GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
+
+| path | what it is |
+|---|---|
+| `index.html` | root redirect to `app/` |
+| `app/index.html` | the landing page |
+| `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
+| `styles/theme.css` · `styles/site-bar.css` | the Banded tokens (light only), and the site bar's look |
