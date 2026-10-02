@@ -39,6 +39,7 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | path | what it is |
 |---|---|
 | `index.html` | root redirect to `app/` |
-| `app/index.html` | the landing page |
+| `app/index.html` | the landing page — the browse grid, read from `puzzles/collections.json` and each manifest, never a puzzle file |
+| `core/browse-core.js` | the browse grid's rules — which collections show, order by public ID, 24 a page, tile text, play link, pager |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
-| `styles/theme.css` · `styles/site-bar.css` | the Banded tokens (light only), and the site bar's look |
+| `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` | the Banded tokens (light only), the site bar's look, and the browse grid's |
