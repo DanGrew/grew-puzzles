@@ -8,7 +8,7 @@ are JSON.
 |---|---|
 | `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
-| `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`); `--pass-with-no-tests` until the first page lands |
+| `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |
 | `ui-cyclomatic` | inline page scripts and `ui/` stay at complexity 1 — only files this PR touches block |
 | `validate-json` | every JSON content file against its schema — mappings in `scripts/validate-schemas.js` |
 | arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
