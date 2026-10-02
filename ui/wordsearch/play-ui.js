@@ -41,7 +41,7 @@ function showPuzzle(board) {
   playEl('title').textContent = board.title;
   playEl('label').textContent = board.label;
   playEl('solution-label').textContent = board.solutionLabel;
-  playEl('card').style.setProperty('--cols', board.cols);
+  playEl('play').style.setProperty('--cols', board.cols);
   fillGrid(playEl('grid'), board, function (r, c) {
     var cell = document.createElement('button');
     cell.type = 'button';

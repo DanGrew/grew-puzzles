@@ -159,24 +159,43 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-test('a narrow window puts the word list under the grid, in centred columns', async ({ page }) => {
-  await page.setViewportSize({ width: 600, height: 900 });
-  await open(page);
-  const stage = await page.locator('.stage').boundingBox();
-  const aside = await page.locator('aside').boundingBox();
-  expect(aside.y).toBeGreaterThan(stage.y + stage.height);
+for (const width of [600, 1200]) {
+  test(`the word list sits under the grid, as wide as it, in centred columns (${width}px window)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await open(page);
+    const stage = await page.locator('.stage').boundingBox();
+    const aside = await page.locator('aside').boundingBox();
+    expect(aside.y).toBeGreaterThan(stage.y + stage.height);
+    expect(Math.abs(aside.width - stage.width)).toBeLessThan(2);
+    expect(Math.abs(aside.x - stage.x)).toBeLessThan(2);
 
-  const tops = await page.locator('#words li').evaluateAll(lis => lis.map(li => li.getBoundingClientRect().top));
-  expect(new Set(tops).size).toBeLessThan(tops.length);
-  await expect(page.locator('#words li').first()).toHaveCSS('justify-self', 'center');
+    const tops = await page.locator('#words li').evaluateAll(lis => lis.map(li => li.getBoundingClientRect().top));
+    expect(new Set(tops).size).toBeLessThan(tops.length);
+    await expect(page.locator('#words li').first()).toHaveCSS('justify-self', 'center');
+  });
+}
+
+test('the ? beside the title opens the instructions, and Escape closes them', async ({ page }) => {
+  await open(page);
+  const help = page.locator('#help');
+  await expect(help).toBeHidden();
+
+  await page.locator('#help-button').click();
+  await expect(help).toBeVisible();
+  await expect(help).toContainText('Tap a letter, then another in line with it.');
+  const button = await page.locator('#help-button').boundingBox();
+  const card = await help.boundingBox();
+  expect(card.y).toBeGreaterThan(button.y + button.height);
+
+  await page.keyboard.press('Escape');
+  await expect(help).toBeHidden();
 });
 
-test('a wide window puts the word list beside the grid', async ({ page }) => {
-  await page.setViewportSize({ width: 1200, height: 900 });
+test('clicking away closes the instructions', async ({ page }) => {
   await open(page);
-  const stage = await page.locator('.stage').boundingBox();
-  const aside = await page.locator('aside').boundingBox();
-  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  await page.locator('#help-button').click();
+  await page.mouse.click(10, 800);
+  await expect(page.locator('#help')).toBeHidden();
 });
 
 test('an ID with no puzzle says so', async ({ page }) => {

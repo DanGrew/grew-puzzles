@@ -14,13 +14,21 @@
 .missing { text-align: center; }
 .missing a { color: var(--fg); }
 
-.play { display: grid; grid-template-columns: auto minmax(180px, 240px); gap: 40px; align-items: start; justify-content: center; }
+/* The word list sits under the grid, as wide as the grid card, its words in centred columns. */
+.play { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 28px; }
 .play[hidden] { display: none; }
-@media (max-width: 760px) {
-  .play { grid-template-columns: 1fr; justify-items: center; gap: 24px; }
-  aside { width: 100%; max-width: calc(var(--cell) * 12 + 30px); }
-  ul.words { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); column-gap: 16px; }
-}
+aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
+
+/* How to play: a ? in the title row opens the instructions as a small card under it. */
+.play-head .help-button { justify-self: end; align-self: center; }
+@media (max-width: 560px) { .play-head .help-button { justify-self: center; } }
+.help-button { anchor-name: --help; width: 32px; height: 32px; padding: 0; display: grid; place-items: center; cursor: pointer;
+  font: 700 16px var(--font-display); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 50%; box-shadow: 3px 3px 0 var(--line); }
+.help-button:hover { background: color-mix(in srgb, var(--fg) 6%, var(--surface)); }
+.help { position-anchor: --help; inset: auto; top: anchor(bottom); right: anchor(right); margin: 10px 0 0;
+  max-width: 260px; padding: 12px 14px; font: 13px/1.5 var(--font-body); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: calc(var(--r) * .66); box-shadow: var(--shadow); }
 
 /* The flip card */
 .stage { perspective: 1400px; position: relative; }
@@ -61,10 +69,9 @@ aside { min-width: 0; }
   background: var(--band); border-bottom: var(--ow) solid var(--line); }
 .list-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 17px; margin: 0; color: var(--band-fg); }
 .count { font-size: 13px; color: var(--band-fg); font-variant-numeric: tabular-nums; }
-ul.words { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+ul.words { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px 16px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 ul.words li { font-size: 16px; position: relative; width: fit-content; justify-self: center; text-align: center; transition: color .3s; }
 ul.words li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
-.help { margin-top: 22px; font-size: 13px; color: var(--muted); line-height: 1.5; }
 
 /* Completion: a short pop and sparkle */
 .board.pop { animation: pop .6s cubic-bezier(.2,1.6,.4,1); }

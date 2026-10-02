@@ -18,8 +18,9 @@
   <header class="play-head">
     <a class="back" href="index.html">All puzzles</a>
     <h1 id="title"></h1>
-    <span aria-hidden="true"></span>
+    <button class="help-button" id="help-button" type="button" popovertarget="help" aria-label="How to play" title="How to play">?</button>
   </header>
+  <div class="help" id="help" popover>Tap a letter, then another in line with it. A red line means no match yet: keep tapping further along to extend it. Tap the last letter again to deselect.</div>
 
   <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
 
@@ -57,7 +58,6 @@
         </div>
         <ul class="words" id="words"></ul>
       </div>
-      <p class="help">Tap a letter, then another in line with it. A red line means no match yet: keep tapping further along to extend it. Tap the last letter again to deselect.</p>
     </aside>
   </main>
 </div>
