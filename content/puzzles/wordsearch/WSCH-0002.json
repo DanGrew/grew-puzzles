@@ -1,0 +1,325 @@
+{
+  "hiddenId": "WSCH-0002",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Flowers",
+  "wordGroups": [
+    "flowers"
+  ],
+  "words": [
+    {
+      "word": "Aster",
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Begonia",
+      "start": {
+        "row": 1,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Buttercup",
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Carnation",
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Clover",
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Cosmos",
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Dahlia",
+      "start": {
+        "row": 14,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Daisy",
+      "start": {
+        "row": 5,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Foxglove",
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Freesia",
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Fuchsia",
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Gerbera",
+      "start": {
+        "row": 13,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Gladiolus",
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Heather",
+      "start": {
+        "row": 5,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Honeysuckle",
+      "start": {
+        "row": 11,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Hyacinth",
+      "start": {
+        "row": 6,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Iris",
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lily",
+      "start": {
+        "row": 11,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lotus",
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Lupin",
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Marigold",
+      "start": {
+        "row": 2,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Orchid",
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Peony",
+      "start": {
+        "row": 6,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Poinsettia",
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Poppy",
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Primrose",
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Rose",
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Sweet pea",
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Tansy",
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Tulip",
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Violet",
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Water lily",
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Zinnia",
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 6
+    }
+  ],
+  "grid": [
+    "WATERLILYXWMTZC",
+    "BPEYAINOGEBYEAG",
+    "FULMARIGOLDSLEL",
+    "RCKDAITTESNIOPA",
+    "ORCHIDZINNIAITD",
+    "PEUEHEATHERDVEI",
+    "ITSPEONYPPOPHEO",
+    "LTYPFSBPIRISYWL",
+    "UUERUURETSAAASU",
+    "TBNTSICFALAICRS",
+    "RCOSMOSHNUISIER",
+    "OLHRLILYSPLENVO",
+    "EVOLGXOFYIHETOS",
+    "LSAREBREGNARHLE",
+    "ECARNATIONDFNCE"
+  ]
+}

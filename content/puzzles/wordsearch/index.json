@@ -1,3 +1,16 @@
 {
-  "puzzles": []
+  "puzzles": [
+    {
+      "hiddenId": "WSCH-0001",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Farm Animals"
+    },
+    {
+      "hiddenId": "WSCH-0002",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Flowers"
+    }
+  ]
 }

@@ -1,0 +1,442 @@
+{
+  "hiddenId": "WSCH-0001",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Farm Animals",
+  "wordGroups": [
+    "farm-animals"
+  ],
+  "words": [
+    {
+      "word": "Alpaca",
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Bantam",
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Boar",
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Bull",
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Bullock",
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Calf",
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Cat",
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Chick",
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Cockerel",
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Colt",
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Cow",
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Dog",
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Donkey",
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Drake",
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Duck",
+      "start": {
+        "row": 10,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Emu",
+      "start": {
+        "row": 1,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Ewe",
+      "start": {
+        "row": 11,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Ferret",
+      "start": {
+        "row": 12,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Filly",
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Foal",
+      "start": {
+        "row": 12,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Goat",
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Goose",
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Gosling",
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Guinea fowl",
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Heifer",
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Hen",
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Hog",
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Horse",
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Kid",
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Lamb",
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Llama",
+      "start": {
+        "row": 6,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Mare",
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Mule",
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Ox",
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "W",
+      "length": 2
+    },
+    {
+      "word": "Peacock",
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Pig",
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Piglet",
+      "start": {
+        "row": 6,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Pony",
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Quail",
+      "start": {
+        "row": 2,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Rabbit",
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ram",
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Rooster",
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Sheep",
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Sheepdog",
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Sow",
+      "start": {
+        "row": 14,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Turkey",
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 6
+    }
+  ],
+  "grid": [
+    "SKCOCAEPGNILSOG",
+    "PEEHSLCXYEKNODM",
+    "XOTLOCQAMLHENEA",
+    "UENGMEOUPALCMMR",
+    "MKOYLDDCALNIAKE",
+    "AABULLOCKIALFIR",
+    "TRMRCWEBPELGEDO",
+    "NDAHFBOTBIRATGO",
+    "AOILMEMFETGEUOS",
+    "BCAURWSAARULLDT",
+    "KCUDAGNRLERREBE",
+    "GTACBMOGOHNEKTR",
+    "IDOHBLAOFHWIFET",
+    "PWHEIFERSELLUBY",
+    "LWOSTSSHEEPDOGB"
+  ]
+}
