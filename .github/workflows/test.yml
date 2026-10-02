@@ -1,0 +1,330 @@
+name: Tests
+
+# Mirrors homeschooling-app's gate set, minus its content-specific gates (manifests,
+# catalogue refs, page/speakable contracts, learnings-reachable) and minus
+# no-json-in-repo — puzzles are JSON. Mutation is never here: it is the owner's
+# on-demand sweep (claude-workflow/tools/mutation-all).
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: git fetch origin main
+      - run: npm run test:coverage
+      - name: Write coverage report
+        if: always()
+        run: node scripts/write-coverage-report.js
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-coverage
+          path: coverage-report.md
+
+  check-untested:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Check untested files
+        run: |
+          set -o pipefail
+          node scripts/check-untested.js 2>&1 | tee untested-report.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-untested
+          path: untested-report.txt
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install chromium --with-deps
+      - run: npm test
+
+  no-dom-in-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-dom-in-core reports/no-dom.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-dom
+          path: reports/no-dom.txt
+
+  no-ui-imports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-ui-imports reports/no-ui-imports.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-ui-imports
+          path: reports/no-ui-imports.txt
+
+  ui-cyclomatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: git fetch origin main
+      - run: mkdir -p reports
+      - run: node scripts/check-ui-cyclomatic.js reports/ui-cyclomatic.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-ui-cyclomatic
+          path: reports/ui-cyclomatic.txt
+
+  no-stray-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-stray-files reports/no-stray-files.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-stray-files
+          path: reports/no-stray-files.txt
+
+  no-app-exports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-app-exports reports/no-app-exports.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-app-exports
+          path: reports/no-app-exports.txt
+
+  app-index-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js app-index-only reports/app-index-only.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-app-index-only
+          path: reports/app-index-only.txt
+
+  no-media-outside-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-media-outside-assets reports/no-media-outside-assets.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-media-outside-assets
+          path: reports/no-media-outside-assets.txt
+
+  no-css-outside-styles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-css-outside-styles reports/no-css-outside-styles.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-css-outside-styles
+          path: reports/no-css-outside-styles.txt
+
+  no-md-outside-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-md-outside-docs reports/no-md-outside-docs.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-md-outside-docs
+          path: reports/no-md-outside-docs.txt
+
+  no-guard-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-guard-chain reports/no-guard-chain.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-guard-chain
+          path: reports/no-guard-chain.txt
+
+  no-filter-conditional:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-filter-conditional reports/no-filter-conditional.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-filter-conditional
+          path: reports/no-filter-conditional.txt
+
+  no-pure-fn-outside-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-pure-fn-outside-core reports/no-pure-fn-outside-core.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-pure-fn-outside-core
+          path: reports/no-pure-fn-outside-core.txt
+
+  no-logic-in-inline-callbacks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-logic-in-inline-callbacks reports/no-logic-in-inline-callbacks.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-logic-in-inline-callbacks
+          path: reports/no-logic-in-inline-callbacks.txt
+
+  validate-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: mkdir -p reports
+      - run: node scripts/validate-schemas.js reports/validate-json.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-validate-json
+          path: reports/validate-json.txt
+
+  pr-report:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    needs:
+      - coverage
+      - check-untested
+      - no-dom-in-core
+      - no-ui-imports
+      - ui-cyclomatic
+      - no-stray-files
+      - no-app-exports
+      - app-index-only
+      - no-media-outside-assets
+      - no-css-outside-styles
+      - no-md-outside-docs
+      - no-guard-chain
+      - no-filter-conditional
+      - no-pure-fn-outside-core
+      - no-logic-in-inline-callbacks
+      - validate-json
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Download reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: report-*
+          path: reports
+          merge-multiple: true
+
+      - name: Combine reports
+        run: |
+          smry() { grep '^SUMMARY:' "$1" 2>/dev/null | sed 's/^SUMMARY: //' || echo "❌ missing"; }
+          row() { echo "| $1 | $2 |"; }
+          {
+            echo "<!-- ci-report -->"
+            echo "**CI Report** · \`${GITHUB_SHA:0:7}\` · $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo "| Check | Result |"
+            echo "|-------|--------|"
+            COV=$(grep '| Lines' reports/coverage-report.md 2>/dev/null | awk -F'|' '{print $3}' | tr -d ' ' || echo "❌ missing")
+            row "Coverage (lines)" "${COV:-❌ missing}"
+            row "Untested files" "$(smry reports/untested-report.txt)"
+            row "no-dom-in-core" "$(smry reports/no-dom.txt)"
+            row "no-ui-imports" "$(smry reports/no-ui-imports.txt)"
+            row "no-stray-files" "$(smry reports/no-stray-files.txt)"
+            row "no-app-exports" "$(smry reports/no-app-exports.txt)"
+            row "app-index-only" "$(smry reports/app-index-only.txt)"
+            row "no-media-outside-assets" "$(smry reports/no-media-outside-assets.txt)"
+            row "no-css-outside-styles" "$(smry reports/no-css-outside-styles.txt)"
+            row "no-md-outside-docs" "$(smry reports/no-md-outside-docs.txt)"
+            row "no-guard-chain" "$(smry reports/no-guard-chain.txt)"
+            row "no-filter-conditional" "$(smry reports/no-filter-conditional.txt)"
+            row "no-pure-fn-outside-core" "$(smry reports/no-pure-fn-outside-core.txt)"
+            row "no-logic-in-inline-callbacks" "$(smry reports/no-logic-in-inline-callbacks.txt)"
+            row "validate-json" "$(smry reports/validate-json.txt)"
+            row "ui-cyclomatic" "$(smry reports/ui-cyclomatic.txt)"
+          } > combined.md
+
+      - name: Find existing CI report comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- ci-report -->'
+
+      - name: Comment on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: combined.md
+          edit-mode: replace

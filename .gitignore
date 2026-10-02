@@ -2,7 +2,9 @@ node_modules
 test-results/
 playwright-report/
 coverage/
+coverage-report.md
 reports/
+.stryker-tmp/
 
 .idea/
 .claude/
