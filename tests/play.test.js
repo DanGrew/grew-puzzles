@@ -1,16 +1,14 @@
 const { test, expect } = require('@playwright/test');
-const PUZZLE = require('./fixtures/vanilla-0007.json');
+const PUZZLE = require('./fixtures/WSCH-0007.json');
 
-// The site publishes no puzzle of its own here: the fixture is served as Vanilla 7.
-const MANIFEST = { collection: 'vanilla', name: 'Vanilla', puzzles: [{ publicId: 7, title: PUZZLE.title, file: '0007.json' }] };
+// The site publishes no puzzle of its own here: the fixture is served as WSCH-0007.
 const COLS = PUZZLE.grid[0].length;
 const FOUND_INK = 'rgb(15, 42, 36)';
 const WRONG_RED = 'rgb(224, 71, 59)';
 
-async function open(page, query) {
-  await page.route('**/content/puzzles/wordsearch/vanilla/manifest.json', route => route.fulfill({ json: MANIFEST }));
-  await page.route('**/content/puzzles/wordsearch/vanilla/0007.json', route => route.fulfill({ json: PUZZLE }));
-  await page.goto('/app/play.html' + (query || '?collection=vanilla&id=7'));
+async function open(page, query, puzzle) {
+  await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: puzzle || PUZZLE }));
+  await page.goto('/app/play.html' + (query || '?id=WSCH-0007'));
 }
 
 function cell(page, r, c) {
@@ -30,20 +28,35 @@ const ALL_WORDS = [
   [[0, 0], [0, 7]], [[0, 7], [2, 7]], [[7, 2], [7, 0]], [[1, 0], [6, 0]]
 ];
 
-test('the play URL shows the title at the top and "Vanilla 7" in the grid band, never the hidden ID', async ({ page }) => {
+test('the address holds the hidden ID; the page shows the title centred with the date small beneath, and the type in the grid band', async ({ page }) => {
   await open(page);
+  await expect(page).toHaveURL(/\/app\/play\.html\?id=WSCH-0007$/);
   const title = page.locator('#title');
+  const created = page.locator('#created');
   await expect(title).toHaveText('Farm Kitchen');
+  await expect(created).toHaveText('2 Oct 2026');
   await expect(page).toHaveTitle('Farm Kitchen · Grew Puzzles');
-  await expect(page.locator('#label')).toHaveText('Vanilla 7');
+  await expect(page.locator('#label')).toHaveText('Vanilla');
   await expect(page.locator('#grid .cell')).toHaveCount(64);
   await expect(cell(page, 0, 0)).toHaveText('I');
   await expect(page.locator('.site .brand')).toHaveText('Grew Puzzles');
 
-  const box = await title.boundingBox();
   const wrap = await page.locator('.play-head').boundingBox();
-  expect(Math.abs((box.x + box.width / 2) - (wrap.x + wrap.width / 2))).toBeLessThan(2);
-  expect(await page.content()).not.toContain('WSCH');
+  const centre = box => box.x + box.width / 2;
+  const box = await title.boundingBox();
+  const date = await created.boundingBox();
+  expect(Math.abs(centre(box) - centre(wrap))).toBeLessThan(2);
+  expect(Math.abs(centre(date) - centre(wrap))).toBeLessThan(2);
+  expect(date.y).toBeGreaterThanOrEqual(box.y + box.height);
+  const size = locator => locator.evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+  expect(await size(created)).toBeLessThan(await size(title));
+  await expect(page.locator('body')).not.toContainText('WSCH');
+});
+
+test('a type name shows in the band exactly as written', async ({ page }) => {
+  await open(page, null, { ...PUZZLE, type: 'Mirra?e' });
+  await expect(page.locator('#label')).toHaveText('Mirra?e');
+  await expect(page.locator('#solution-label')).toHaveText('Mirra?e · Solution');
 });
 
 test('the word list shows every word as written, with the count', async ({ page }) => {
@@ -134,7 +147,7 @@ test('the corner icon flips to the solution and back, keeping the found words', 
   await expect(page.locator('#card')).toHaveClass(/flipped/);
   await expect(flip).toHaveAttribute('aria-pressed', 'true');
   await expect(flip).toHaveAttribute('aria-label', 'Back to puzzle');
-  await expect(page.locator('#solution-label')).toHaveText('Vanilla 7 · Solution');
+  await expect(page.locator('#solution-label')).toHaveText('Vanilla · Solution');
   await expect(page.locator('#back')).toHaveAttribute('aria-hidden', 'false');
   await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(8);
   await expect(page.locator('#solution-overlay circle.mark-shared')).toHaveCount(2);
@@ -198,20 +211,20 @@ test('clicking away closes the instructions', async ({ page }) => {
   await expect(page.locator('#help')).toBeHidden();
 });
 
-test('an ID with no puzzle says so', async ({ page }) => {
-  await open(page, '?collection=vanilla&id=99');
+test('a hidden ID with no puzzle says so', async ({ page }) => {
+  await open(page, '?id=WSCH-0099');
   await expect(page.locator('#title')).toHaveText('Puzzle not found');
+  await expect(page.locator('#created')).toHaveText('');
   await expect(page.locator('#missing')).toBeVisible();
   await expect(page.locator('#play')).toBeHidden();
 });
 
-test('a collection the site does not have says so', async ({ page }) => {
-  await open(page, '?collection=nope&id=7');
-  await expect(page.locator('#title')).toHaveText('Puzzle not found');
-});
-
-test('a missing puzzle file says so', async ({ page }) => {
-  await page.route('**/content/puzzles/wordsearch/vanilla/manifest.json', route => route.fulfill({ json: { ...MANIFEST, puzzles: [{ publicId: 7, title: 'Gone', file: '0099.json' }] } }));
-  await page.goto('/app/play.html?collection=vanilla&id=7');
-  await expect(page.locator('#title')).toHaveText('Puzzle not found');
-});
+for (const query of ['', '?id=7', '?collection=vanilla&id=7', '?id=../index']) {
+  test(`an address that names no hidden ID says so, fetching nothing (${query || 'no query'})`, async ({ page }) => {
+    const fetched = [];
+    await page.route('**/content/**', route => { fetched.push(route.request().url()); return route.abort(); });
+    await page.goto('/app/play.html' + query);
+    await expect(page.locator('#title')).toHaveText('Puzzle not found');
+    expect(fetched).toEqual([]);
+  });
+}

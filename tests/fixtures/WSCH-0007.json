@@ -1,7 +1,7 @@
 {
   "hiddenId": "WSCH-0007",
-  "collection": "vanilla",
-  "publicId": 7,
+  "type": "Vanilla",
+  "created": "2026-10-02",
   "title": "Farm Kitchen",
   "wordGroups": ["farm-animals", "cafe-menu"],
   "words": [

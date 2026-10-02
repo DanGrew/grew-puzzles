@@ -1,27 +1,38 @@
 import {
-  PER_PAGE, shownCollections, orderByPublicId, pageCount, pageOf,
-  tileLabel, playHref, totalLabel, pagerButtons,
+  PER_PAGE, newestFirst, pageCount, pageOf, tileDetail, playHref, totalLabel, pagerButtons,
 } from '../../core/browse-core.js';
 
-const puzzles = n => Array.from({ length: n }, (_, i) => ({ publicId: i + 1, title: `T${i + 1}`, file: 'x' }));
+const id = n => `WSCH-${String(n).padStart(4, '0')}`;
+// Puzzle n was saved on day n of October, so the highest is the newest.
+const puzzles = n => Array.from({ length: n }, (_, i) => ({
+  hiddenId: id(i + 1), type: 'Vanilla', created: `2026-10-${String(i + 1).padStart(2, '0')}`, title: `T${i + 1}`,
+}));
 
 describe('browse-core.js', () => {
   test('a page holds 24 puzzles', () => {
     expect(PER_PAGE).toBe(24);
   });
 
-  test('only Vanilla shows, whatever else the index names', () => {
-    expect(shownCollections({ collections: ['other', 'vanilla', 'more'] })).toEqual(['vanilla']);
-    expect(shownCollections({ collections: ['other'] })).toEqual([]);
+  test('puzzles order newest first by created date, leaving the index as it was', () => {
+    const index = [
+      { hiddenId: id(1), created: '2026-09-30' },
+      { hiddenId: id(2), created: '2026-11-01' },
+      { hiddenId: id(3), created: '2026-10-15' },
+    ];
+    expect(newestFirst(index).map(p => p.hiddenId)).toEqual([id(2), id(3), id(1)]);
+    expect(index.map(p => p.hiddenId)).toEqual([id(1), id(2), id(3)]);
   });
 
-  test('puzzles order by public ID, not manifest order, leaving the manifest as it was', () => {
-    const manifest = [{ publicId: 10 }, { publicId: 2 }, { publicId: 1 }];
-    expect(orderByPublicId(manifest).map(p => p.publicId)).toEqual([1, 2, 10]);
-    expect(manifest.map(p => p.publicId)).toEqual([10, 2, 1]);
+  test('puzzles saved the same day order by the later hidden ID first, as numbers', () => {
+    const index = [
+      { hiddenId: 'WSCH-9999', created: '2026-10-02' },
+      { hiddenId: 'WSCH-10000', created: '2026-10-02' },
+      { hiddenId: 'WSCH-0002', created: '2026-10-02' },
+    ];
+    expect(newestFirst(index).map(p => p.hiddenId)).toEqual(['WSCH-10000', 'WSCH-9999', 'WSCH-0002']);
   });
 
-  test('page count rounds up, and an empty collection still has one page', () => {
+  test('page count rounds up, and an empty index still has one page', () => {
     expect(pageCount(0)).toBe(1);
     expect(pageCount(1)).toBe(1);
     expect(pageCount(24)).toBe(1);
@@ -30,19 +41,19 @@ describe('browse-core.js', () => {
     expect(pageCount(49)).toBe(3);
   });
 
-  test('each page holds the next 24 by public ID', () => {
-    const all = puzzles(30).reverse();
-    expect(pageOf(all, 1).map(p => p.publicId)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
-    expect(pageOf(all, 2).map(p => p.publicId)).toEqual([25, 26, 27, 28, 29, 30]);
+  test('each page holds the next 24, newest first', () => {
+    const all = puzzles(30);
+    expect(pageOf(all, 1).map(p => p.title)).toEqual(Array.from({ length: 24 }, (_, i) => `T${30 - i}`));
+    expect(pageOf(all, 2).map(p => p.title)).toEqual(['T6', 'T5', 'T4', 'T3', 'T2', 'T1']);
   });
 
-  test('a tile reads collection name then public ID', () => {
-    expect(tileLabel('Vanilla', 7)).toBe('Vanilla 7');
+  test('beneath the title, a tile reads the type as written, then the created date, a line each', () => {
+    expect(tileDetail({ hiddenId: id(3), type: 'Mirra?e', created: '2026-10-02', title: 'Farm' })).toEqual(['Mirra?e', '2 Oct 2026']);
   });
 
-  test('a tile links to the play page by collection and public ID', () => {
-    expect(playHref('vanilla', 7)).toBe('play.html?collection=vanilla&id=7');
-    expect(playHref('a b&c', 3)).toBe('play.html?collection=a%20b%26c&id=3');
+  test('a tile links to the play page by hidden ID', () => {
+    expect(playHref('WSCH-0007')).toBe('play.html?id=WSCH-0007');
+    expect(playHref('a b&c')).toBe('play.html?id=a%20b%26c');
   });
 
   test('the total reads in puzzles, singular for one', () => {

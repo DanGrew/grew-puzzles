@@ -2,41 +2,23 @@
 // does, and what the board shows. Pure — the DOM work is ui/wordsearch/play-ui.js. The
 // puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
 // the page imports it through ui/, and the unit tests import it directly.
+import { dayLabel } from '../day-core.js';
 
-// The play page plays wordsearches: their collection list and their puzzles' folder.
-export var PLAY_INDEX_URL = '../content/collections/wordsearch.json';
-var PLAY_PUZZLES = '../content/puzzles/wordsearch/';
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
 // ---- Finding the puzzle ----
 
-export function playQuery(search) {
-  var params = new URLSearchParams(search);
-  return { collection: params.get('collection'), id: params.get('id') };
+// The play URL names a wordsearch by its hidden ID — play.html?id=WSCH-0003 — and its file
+// carries that name. Anything else names no puzzle, so it never becomes a path.
+export function puzzleUrl(search) {
+  var id = new URLSearchParams(search).get('id');
+  if (!/^WSCH-[0-9]{4,}$/.test(id)) throw new Error('No such puzzle');
+  return '../content/puzzles/wordsearch/' + id + '.json';
 }
 
 export function playJson(response) {
   if (!response.ok) throw new Error('No such puzzle');
   return response.json();
-}
-
-export function requireCollection(index, collection) {
-  if (!index.collections.includes(collection)) throw new Error('No such puzzle');
-  return collection;
-}
-
-export function manifestUrl(collection) {
-  return PLAY_PUZZLES + collection + '/manifest.json';
-}
-
-export function findPuzzleEntry(manifest, id) {
-  var entry = manifest.puzzles.find(function (p) { return String(p.publicId) === id; });
-  if (!entry) throw new Error('No such puzzle');
-  return entry;
-}
-
-export function puzzleUrl(collection, file) {
-  return PLAY_PUZZLES + collection + '/' + file;
 }
 
 // ---- The board ----
@@ -48,12 +30,13 @@ export function wordCells(word) {
   });
 }
 
-export function playBoard(puzzle, manifest) {
-  var label = manifest.name + ' ' + puzzle.publicId;
+// The type is the board's only label: shown exactly as written, in the grid's header band.
+export function playBoard(puzzle) {
   return {
     title: puzzle.title,
-    label: label,
-    solutionLabel: label + ' · Solution',
+    created: dayLabel(puzzle.created),
+    label: puzzle.type,
+    solutionLabel: puzzle.type + ' · Solution',
     letters: puzzle.grid.map(function (row) { return row.split(''); }),
     rows: puzzle.grid.length,
     cols: puzzle.grid[0].length,
