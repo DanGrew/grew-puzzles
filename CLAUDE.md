@@ -30,4 +30,5 @@ Root holds only this file and `README.md`; everything else is `docs/`, flat, are
 | name | what it holds | read it when |
 |---|---|---|
 | `README.md` | what the site is, for a human arriving cold | you're new here, or explaining it to someone |
+| `docs/PUZZLE-FORMAT.md` | the puzzle file, the collection manifest, the play URL, and the ten checks CI runs over `puzzles/` | you're writing, reading or checking a puzzle |
 | `docs/GATES.md` | every enforced PR gate, the pre-push hook, the local command and the on-demand mutation sweep | before pushing, or a gate went red |

@@ -1,0 +1,7 @@
+{
+  "collection": "vanilla",
+  "name": "Vanilla",
+  "puzzles": [
+    { "publicId": 1, "title": "Farmyard", "file": "0001.json" }
+  ]
+}

@@ -34,10 +34,30 @@ function findFiles(dir, predicate) {
   return results;
 }
 
-// One entry per content type: { label, schema, searchDir, match }. Empty until the
-// puzzle format lands (TASK-4-PUZZLE-FORMAT adds the puzzle and manifest schemas) —
-// the gate runs from the first commit and passes on zero files.
-const MAPPINGS = [];
+// One entry per content type: { label, schema, searchDir, match }. The format is
+// docs/PUZZLE-FORMAT.md: puzzles/collections.json, then puzzles/<collection>/ holding
+// manifest.json and one file per puzzle.
+const PUZZLES = path.join(ROOT, 'puzzles');
+const MAPPINGS = [
+  {
+    label: 'collection index',
+    schema: 'schemas/collections.schema.json',
+    searchDir: 'puzzles',
+    match: (name, full) => path.dirname(full) === PUZZLES && name === 'collections.json',
+  },
+  {
+    label: 'collection manifests',
+    schema: 'schemas/manifest.schema.json',
+    searchDir: 'puzzles',
+    match: (name, full) => path.dirname(full) !== PUZZLES && name === 'manifest.json',
+  },
+  {
+    label: 'puzzles',
+    schema: 'schemas/puzzle.schema.json',
+    searchDir: 'puzzles',
+    match: (name, full) => path.dirname(full) !== PUZZLES && name.endsWith('.json') && name !== 'manifest.json',
+  },
+];
 
 let totalErrors = 0;
 let totalChecked = 0;

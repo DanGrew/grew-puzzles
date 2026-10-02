@@ -6,7 +6,7 @@ are JSON.
 
 | job | what it checks |
 |---|---|
-| `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
+| `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js`. The suite includes the puzzle checks over every file in `puzzles/` (`PUZZLE-FORMAT.md`) — a failing puzzle fails this job, a check-10 warning prints in its log |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`); `--pass-with-no-tests` until the first page lands |
 | `ui-cyclomatic` | inline page scripts and `ui/` stay at complexity 1 — only files this PR touches block |
