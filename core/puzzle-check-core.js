@@ -59,7 +59,7 @@ function occurrences(grid, answer) {
   grid.forEach((line, row) => [...line].forEach((_, col) => Object.keys(DIRECTIONS).forEach(direction => {
     const cells = lineCells(row, col, direction, answer.length);
     const spelled = cells.map(cell => letterAt(grid, cell)).join('');
-    const key = cells.map(cellKey).sort().join(' ');
+    const key = JSON.stringify(cells.map(cellKey).sort());
     if (spelled === answer && !found.has(key)) found.set(key, { row, col, direction, cells });
   })));
   return [...found.values()];
@@ -86,7 +86,7 @@ function checkPuzzle(puzzle) {
   });
 
   // 3 — every letter outside the words comes from the fill pool.
-  const pool = new Set(puzzle.fillPool || answers.join(''));
+  const pool = new Set(puzzle.fillPool || answers.flatMap(answer => [...answer]));
   const covered = new Set(cells.flat().map(cellKey));
   grid.forEach((line, row) => [...line].forEach((letter, col) => {
     if (!covered.has(cellKey([row, col])) && !pool.has(letter)) fail(3, `filler ${letter} at row ${row}, col ${col} is not in the fill pool`);
