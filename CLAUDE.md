@@ -13,7 +13,7 @@ not here.
 | `grew-puzzles-tooling` | **private** | the generator, the word groups, every placement and construction rule, and the puzzle format and its checks |
 
 - ⛔ This repo holds **puzzles and pages, nothing else**. No generation, word-group or placement logic ever ships here, not even as page code — a page only plays a puzzle that already exists.
-- No puzzle format, schema or check lives here either: they're all in tooling. This repo's local checks run tooling's `origin/main` checks over `puzzles/` (`scripts/check-puzzles.sh`); the format is tooling's `docs/PUZZLE-FORMAT.md`.
+- No puzzle format, schema or check lives here either: they're all in tooling. This repo's local checks run tooling's `origin/main` checks over `collections/` and `puzzles/` (`scripts/check-puzzles.sh`); the format is tooling's `docs/PUZZLE-FORMAT.md`.
 
 ## Before you implement
 
@@ -39,10 +39,11 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | path | what it is |
 |---|---|
 | `index.html` | root redirect to `app/` |
-| `app/index.html` | the landing page — the browse grid, read from `puzzles/collections.json` and each manifest, never a puzzle file |
+| `app/index.html` | the landing page — the browse grid, read from `collections/wordsearch.json` and each manifest, never a puzzle file |
 | `app/play.html` | the play page — `play.html?collection=<slug>&id=<public ID>`, the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
 | `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules, `core/wordsearch/play-core.js` the play page's |
 | `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page |
+| `collections/` · `puzzles/` | the puzzles, by type — `collections/<type>.json` lists a type's collections, `puzzles/<type>/<collection>/` holds its manifest and puzzle files; the layout is tooling's `docs/PUZZLE-FORMAT.md` |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
 | `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` · `styles/play.css` | the Banded tokens (light only), the site bar's look, the browse grid's, and the play page's |
 | `tests/fixtures/` | a test puzzle the e2e suite serves in place of a real one — never on the site |

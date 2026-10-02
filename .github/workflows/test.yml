@@ -262,7 +262,7 @@ jobs:
           path: reports/validate-json.txt
 
   puzzles:
-    # Every puzzle under puzzles/ against grew-puzzles-tooling's origin/main checks —
+    # Every puzzle under collections/ and puzzles/ against grew-puzzles-tooling's origin/main checks —
     # local only (scripts/check-puzzles.sh).
     runs-on: ubuntu-latest
     steps:

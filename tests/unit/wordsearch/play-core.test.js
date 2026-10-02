@@ -33,7 +33,7 @@ describe('finding the puzzle a play URL names', () => {
   });
 
   it('opens the collections index first', () => {
-    expect(PLAY_INDEX_URL).toBe('../puzzles/collections.json');
+    expect(PLAY_INDEX_URL).toBe('../collections/wordsearch.json');
   });
 
   it('reads a fetched file as JSON', async () => {
@@ -54,7 +54,7 @@ describe('finding the puzzle a play URL names', () => {
   });
 
   it("opens the collection's manifest", () => {
-    expect(manifestUrl('vanilla')).toBe('../puzzles/vanilla/manifest.json');
+    expect(manifestUrl('vanilla')).toBe('../puzzles/wordsearch/vanilla/manifest.json');
   });
 
   it('finds the manifest entry with that public ID', () => {
@@ -67,7 +67,7 @@ describe('finding the puzzle a play URL names', () => {
   });
 
   it("opens the entry's file in its collection", () => {
-    expect(puzzleUrl('vanilla', '0007.json')).toBe('../puzzles/vanilla/0007.json');
+    expect(puzzleUrl('vanilla', '0007.json')).toBe('../puzzles/wordsearch/vanilla/0007.json');
   });
 });
 

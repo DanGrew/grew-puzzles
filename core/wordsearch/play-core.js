@@ -3,7 +3,9 @@
 // puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
 // the page imports it through ui/, and the unit tests import it directly.
 
-export var PLAY_INDEX_URL = '../puzzles/collections.json';
+// The play page plays wordsearches: their collection list and their puzzles' folder.
+export var PLAY_INDEX_URL = '../collections/wordsearch.json';
+var PLAY_PUZZLES = '../puzzles/wordsearch/';
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
 // ---- Finding the puzzle ----
@@ -24,7 +26,7 @@ export function requireCollection(index, collection) {
 }
 
 export function manifestUrl(collection) {
-  return '../puzzles/' + collection + '/manifest.json';
+  return PLAY_PUZZLES + collection + '/manifest.json';
 }
 
 export function findPuzzleEntry(manifest, id) {
@@ -34,7 +36,7 @@ export function findPuzzleEntry(manifest, id) {
 }
 
 export function puzzleUrl(collection, file) {
-  return '../puzzles/' + collection + '/' + file;
+  return PLAY_PUZZLES + collection + '/' + file;
 }
 
 // ---- The board ----
