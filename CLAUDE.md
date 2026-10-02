@@ -40,5 +40,9 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 |---|---|
 | `index.html` | root redirect to `app/` |
 | `app/index.html` | the landing page |
+| `app/play.html` | the play page — `play.html?collection=<slug>&id=<public ID>`, the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
+| `core/` | pure page logic, `*-core.js`, unit-tested and under the mutation gate — `core/wordsearch/play-core.js` is the play page's rules |
+| `ui/` | each page's DOM code, branch-free (`ui-cyclomatic`) — `ui/wordsearch/play-ui.js` draws and wires the play page |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>` |
-| `styles/theme.css` · `styles/site-bar.css` | the Banded tokens (light only), and the site bar's look |
+| `styles/theme.css` · `styles/site-bar.css` · `styles/play.css` | the Banded tokens (light only), the site bar's look, and the play page's |
+| `tests/fixtures/` | a test puzzle the e2e suite serves in place of a real one — never on the site |
