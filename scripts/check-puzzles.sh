@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Checks this checkout's collections/ and puzzles/ with the private grew-puzzles-tooling repo's checks, taken
+# Checks this checkout's content/ — its collections/ and puzzles/ — with the private grew-puzzles-tooling repo's checks, taken
 # from its origin/main — never its working copy, so an unmerged tooling change can't pass a
 # site check. The site holds no puzzle rules of its own (docs/PUZZLE-FORMAT.md in tooling).
 #
@@ -26,4 +26,4 @@ trap 'rm -rf "$export_dir"' EXIT
 git -C "$tooling" archive origin/main | tar -x -C "$export_dir"
 
 echo "grew-puzzles-tooling origin/main @ $(git -C "$tooling" rev-parse --short origin/main)" | tee "$report"
-"$export_dir/tools/grew-puzzles-checks" "$site" | tee -a "$report"
+"$export_dir/tools/grew-puzzles-checks" "$site/content" | tee -a "$report"

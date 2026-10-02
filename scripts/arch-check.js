@@ -246,6 +246,30 @@ if (rule === 'no-filter-conditional') {
   });
 }
 
+if (rule === 'no-json-in-repo') {
+  // homeschooling-app's rule: the site's data lives in content/, apart from its code. tests/ is
+  // out too — its fixtures stand in for content in the e2e suite and must never be served.
+  const EXCLUDED_DIRS = new Set(['node_modules', 'content', 'tests', 'coverage', 'reports', 'test-results', '.claude']);
+  const ALLOWED_FILES = new Set(['package.json', 'package-lock.json', 'serve.json', '.claude/settings.local.json']);
+
+  function walkJson(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      const rel = path.relative(ROOT, full).replace(/\\/g, '/');
+      if (entry.isDirectory()) {
+        if (!EXCLUDED_DIRS.has(entry.name)) walkJson(full);
+      } else if (entry.name.endsWith('.json')) {
+        if (!ALLOWED_FILES.has(rel)) {
+          scanned.push(rel);
+          violations.push(`${rel} — JSON must live under content/`);
+        }
+      }
+    }
+  }
+  walkJson(ROOT);
+}
+
 if (rule === 'app-index-only') {
   const appDir = path.join(ROOT, 'app');
   function walkApp(dir) {

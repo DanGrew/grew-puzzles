@@ -172,6 +172,18 @@ jobs:
           name: report-no-media-outside-assets
           path: reports/no-media-outside-assets.txt
 
+  no-json-in-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p reports
+      - run: node scripts/arch-check.js no-json-in-repo reports/no-json-in-repo.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-no-json-in-repo
+          path: reports/no-json-in-repo.txt
+
   no-css-outside-styles:
     runs-on: ubuntu-latest
     steps:
@@ -262,7 +274,7 @@ jobs:
           path: reports/validate-json.txt
 
   puzzles:
-    # Every puzzle under collections/ and puzzles/ against grew-puzzles-tooling's origin/main checks —
+    # Every puzzle under content/ against grew-puzzles-tooling's origin/main checks —
     # local only (scripts/check-puzzles.sh).
     runs-on: ubuntu-latest
     steps:
@@ -289,6 +301,7 @@ jobs:
       - no-app-exports
       - app-index-only
       - no-media-outside-assets
+      - no-json-in-repo
       - no-css-outside-styles
       - no-md-outside-docs
       - no-guard-chain
@@ -325,6 +338,7 @@ jobs:
             row "no-app-exports" "$(smry reports/no-app-exports.txt)"
             row "app-index-only" "$(smry reports/app-index-only.txt)"
             row "no-media-outside-assets" "$(smry reports/no-media-outside-assets.txt)"
+            row "no-json-in-repo" "$(smry reports/no-json-in-repo.txt)"
             row "no-css-outside-styles" "$(smry reports/no-css-outside-styles.txt)"
             row "no-md-outside-docs" "$(smry reports/no-md-outside-docs.txt)"
             row "no-guard-chain" "$(smry reports/no-guard-chain.txt)"

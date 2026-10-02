@@ -4,18 +4,17 @@ The gates are **local checks**: the `Tests` workflow is disabled on GitHub (Acti
 on — Pages deploys through it).
 `.github/workflows/test.yml` is the job list `checks-local` replays before a push — keep its
 `pull_request` trigger, which is how that tool finds it.
-The set mirrors `homeschooling-app`'s, minus its content-specific gates and minus
-`no-json-in-repo` — puzzles are JSON.
+The set mirrors `homeschooling-app`'s, minus its content-specific gates.
 
 | job | what it checks |
 |---|---|
-| `puzzles` | every file in `collections/` and `puzzles/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside this repo. A failing puzzle names its file and check; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
+| `puzzles` | every file in `content/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside this repo. A failing puzzle names its file and check; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
 | `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |
 | `ui-cyclomatic` | inline page scripts and `ui/` stay at complexity 1 — only files this PR touches block |
 | `validate-json` | every JSON content file against its schema — mappings in `scripts/validate-schemas.js` |
-| arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
+| arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-json-in-repo` (JSON only in `content/`; `tests/` fixtures aside) · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
 
 Each gate passes on an empty layer, so it runs from the first commit rather than switching on
 later. `checks-local --post` puts the local verdict on the PR.
