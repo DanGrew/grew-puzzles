@@ -13,7 +13,7 @@ not here.
 | `grew-puzzles-tooling` | **private** | the generator, the word groups, and every placement and construction rule |
 
 - ⛔ This repo holds **puzzles and pages, nothing else**. No generation, word-group or placement logic ever ships here, not even as page code — a page only plays a puzzle that already exists.
-- The puzzle checker is a CI test here, never page code.
+- No puzzle format, schema or check lives here either: they're all in tooling. This repo's local checks run tooling's `origin/main` checks over `puzzles/` (`scripts/check-puzzles.sh`); the format is tooling's `docs/PUZZLE-FORMAT.md`.
 
 ## Before you implement
 
@@ -30,8 +30,7 @@ Root holds only this file and `README.md`; everything else is `docs/`, flat, are
 | name | what it holds | read it when |
 |---|---|---|
 | `README.md` | what the site is, for a human arriving cold | you're new here, or explaining it to someone |
-| `docs/PUZZLE-FORMAT.md` | the puzzle file, the collection manifest, the play URL, and the ten checks CI runs over `puzzles/` | you're writing, reading or checking a puzzle |
-| `docs/GATES.md` | every enforced PR gate, the pre-push hook, the local command and the on-demand mutation sweep | before pushing, or a gate went red |
+| `docs/GATES.md` | every local gate, including the puzzle check, the pre-push hook and the on-demand mutation sweep | before pushing, or a gate went red |
 
 ## The shape of the site
 

@@ -34,30 +34,10 @@ function findFiles(dir, predicate) {
   return results;
 }
 
-// One entry per content type: { label, schema, searchDir, match }. The format is
-// docs/PUZZLE-FORMAT.md: puzzles/collections.json, then puzzles/<collection>/ holding
-// manifest.json and one file per puzzle.
-const PUZZLES = path.join(ROOT, 'puzzles');
-const MAPPINGS = [
-  {
-    label: 'collection index',
-    schema: 'schemas/collections.schema.json',
-    searchDir: 'puzzles',
-    match: (name, full) => path.dirname(full) === PUZZLES && name === 'collections.json',
-  },
-  {
-    label: 'collection manifests',
-    schema: 'schemas/manifest.schema.json',
-    searchDir: 'puzzles',
-    match: (name, full) => path.dirname(full) !== PUZZLES && name === 'manifest.json',
-  },
-  {
-    label: 'puzzles',
-    schema: 'schemas/puzzle.schema.json',
-    searchDir: 'puzzles',
-    match: (name, full) => path.dirname(full) !== PUZZLES && name.endsWith('.json') && name !== 'manifest.json',
-  },
-];
+// One entry per content type: { label, schema, searchDir, match }. Empty: a puzzle's
+// shape and rules live in the private grew-puzzles-tooling repo, run against puzzles/ by
+// scripts/check-puzzles.sh. The gate stays for any future site-only JSON and passes on none.
+const MAPPINGS = [];
 
 let totalErrors = 0;
 let totalChecked = 0;

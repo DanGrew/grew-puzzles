@@ -25,6 +25,9 @@ node scripts/arch-check.js no-logic-in-inline-callbacks "$TMPDIR_HOOK/no-inline-
 echo "[pre-push] validate-json..."
 node scripts/validate-schemas.js "$TMPDIR_HOOK/validate-json.txt" || fail "validate-json"
 
+echo "[pre-push] puzzles (grew-puzzles-tooling origin/main)..."
+bash scripts/check-puzzles.sh "$TMPDIR_HOOK/puzzles.txt" || fail "puzzles"
+
 echo "[pre-push] ui-cyclomatic..."
 node scripts/check-ui-cyclomatic.js "$TMPDIR_HOOK/ui-cyclomatic.txt" || fail "ui-cyclomatic"
 
