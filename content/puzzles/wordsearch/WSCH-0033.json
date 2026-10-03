@@ -1,0 +1,444 @@
+{
+  "hiddenId": "WSCH-0033",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Easter",
+  "wordGroups": [
+    "easter"
+  ],
+  "words": [
+    {
+      "word": "Angel",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Basket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Blossom",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Bunny",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Chick",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Church",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Cross",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Daffodil",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Easter",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Eggs",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Faith",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Family",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Feast",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Gospel",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Grace",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Heaven",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Holy",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hot cross bun",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Hunt",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Hymn",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Jesus",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Joy",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Lamb",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Lent",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Lily",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Parade",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Pastel",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Peace",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Prayer",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Rabbit",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Rebirth",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Sacrifice",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Service",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Simnel cake",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Spring",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Sunday",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Tomb",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "TNELSIMNELCAKEP",
+        "SACRIFICEECARGA",
+        "MASUNDAYPPJESUS",
+        "FIHOTCROSSBUNPT",
+        "LEGNANYSSORCRAE",
+        "HIAJOYNCJGHALRL",
+        "DYLSVLNCHURCHAB",
+        "ABMYTIUGNIRPSDR",
+        "FMMNBMBTHNEVAEH",
+        "FFOARABBITUPTNP",
+        "OHASLFSIPDRSVCR",
+        "DOSISFVKTEAIHUA",
+        "ILRGTOMBEEAIBLY",
+        "LYMNGHLOUTCCJEE",
+        "ECIVRESBRKKSEIR"
+      ],
+      "wildcards": [
+        {
+          "row": 2,
+          "col": 0
+        },
+        {
+          "row": 3,
+          "col": 11
+        },
+        {
+          "row": 4,
+          "col": 6
+        },
+        {
+          "row": 5,
+          "col": 3
+        },
+        {
+          "row": 6,
+          "col": 1
+        },
+        {
+          "row": 7,
+          "col": 7
+        },
+        {
+          "row": 9,
+          "col": 3
+        },
+        {
+          "row": 10,
+          "col": 6
+        },
+        {
+          "row": 11,
+          "col": 8
+        },
+        {
+          "row": 13,
+          "col": 2
+        }
+      ]
+    }
+  ]
+}

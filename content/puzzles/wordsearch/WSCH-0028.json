@@ -1,0 +1,364 @@
+{
+  "hiddenId": "WSCH-0028",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Bushes",
+  "wordGroups": [
+    "bushes"
+  ],
+  "words": [
+    {
+      "word": "Abelia",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Aucuba",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Azalea",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Barberry",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bay",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Boxwood",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bramble",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Broom",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Buddleia",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Camellia",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Currant",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Elderberry",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Euonymus",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Gardenia",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Gooseberry",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Gorse",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Hebe",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hibiscus",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Holly",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Juniper",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Laurel",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Lilac",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Myrtle",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Oleander",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Privet",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Pyracantha",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Rose",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Rosemary",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Winterberry",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 11
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "REOYLLOHIBISCUS",
+        "SBLAIYRREBESOOG",
+        "UOEDZGELILACCRY",
+        "MXAYEABUCUAUXRD",
+        "YWNASRLAGBRCRGY",
+        "NODHRDBEIRREAAW",
+        "OOETOESEAEBOIEX",
+        "UDRNGNPNRRLLOEY",
+        "EEJAHITIERLDLMR",
+        "LLPCEAMTNEYBDAR",
+        "ETRABRNCMUMXIUE",
+        "RRIREIOAYAJLGOB",
+        "UYVYWJCSRUEBDGR",
+        "AMEPEBRBEBUADLA",
+        "LUTROSEMARYYVRB"
+      ],
+      "wildcards": [
+        {
+          "row": 2,
+          "col": 6
+        },
+        {
+          "row": 4,
+          "col": 3
+        },
+        {
+          "row": 5,
+          "col": 1
+        },
+        {
+          "row": 5,
+          "col": 7
+        },
+        {
+          "row": 6,
+          "col": 9
+        },
+        {
+          "row": 6,
+          "col": 11
+        },
+        {
+          "row": 8,
+          "col": 0
+        },
+        {
+          "row": 8,
+          "col": 13
+        },
+        {
+          "row": 13,
+          "col": 3
+        },
+        {
+          "row": 13,
+          "col": 14
+        }
+      ]
+    }
+  ]
+}

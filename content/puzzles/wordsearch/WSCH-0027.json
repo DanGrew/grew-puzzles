@@ -1,0 +1,554 @@
+{
+  "hiddenId": "WSCH-0027",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Wildlife Animals",
+  "wordGroups": [
+    "wildlife"
+  ],
+  "words": [
+    {
+      "word": "Adder",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 4
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Bat",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Bear",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Beaver",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Bee",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Beetle",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Coyote",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Crow",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Deer",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Doe",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Dormouse",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Eagle",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Elk",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Fawn",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Firefly",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Fox",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Frog",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Hare",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Hawk",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Heron",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Jay",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Kestrel",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Magpie",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Mole",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Moose",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Moth",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Newt",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Otter",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Owl",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Pheasant",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Polecat",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Rabbit",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Robin",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Salmon",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Shrew",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Skunk",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Slug",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Snail",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Spider",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Stag",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Swan",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Toad",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Trout",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Turtle",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Vole",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Weasel",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Wolf",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Wren",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "HBEETLEMAGPIERF",
+        "TSODNGPSKUNKSEL",
+        "OWEEDOEVKNPFWVO",
+        "MERFLEMOSEHLEAW",
+        "RAAETMOLEWEIAEH",
+        "HWCONUOEATAASBR",
+        "NAYGHERONSSNELF",
+        "TOOSLBBTSHASLEI",
+        "CROWTEJALENKTRR",
+        "FKOHEASBUETRTTE",
+        "SPIDERGHGFOOOSF",
+        "DORMOUSERUCBAEL",
+        "OTTERYAJTEWIDKY",
+        "REDDAELKAXWNXOF",
+        "IIEAGLETIBBARRF"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 14
+        },
+        {
+          "row": 1,
+          "col": 10
+        },
+        {
+          "row": 4,
+          "col": 9
+        },
+        {
+          "row": 5,
+          "col": 12
+        },
+        {
+          "row": 6,
+          "col": 2
+        },
+        {
+          "row": 9,
+          "col": 2
+        },
+        {
+          "row": 9,
+          "col": 7
+        },
+        {
+          "row": 11,
+          "col": 7
+        },
+        {
+          "row": 14,
+          "col": 0
+        },
+        {
+          "row": 14,
+          "col": 6
+        }
+      ]
+    }
+  ]
+}

@@ -155,6 +155,54 @@
       "type": "Repeats",
       "created": "2026-10-03",
       "title": "Restarts"
+    },
+    {
+      "hiddenId": "WSCH-0027",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Wildlife Animals"
+    },
+    {
+      "hiddenId": "WSCH-0028",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Bushes"
+    },
+    {
+      "hiddenId": "WSCH-0029",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Planes"
+    },
+    {
+      "hiddenId": "WSCH-0030",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Beach Equipment"
+    },
+    {
+      "hiddenId": "WSCH-0031",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Rugby"
+    },
+    {
+      "hiddenId": "WSCH-0032",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Hands Free Games"
+    },
+    {
+      "hiddenId": "WSCH-0033",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Easter"
+    },
+    {
+      "hiddenId": "WSCH-0034",
+      "type": "Wildcards",
+      "created": "2026-10-03",
+      "title": "Digital"
     }
   ]
 }

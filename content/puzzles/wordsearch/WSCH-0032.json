@@ -1,0 +1,274 @@
+{
+  "hiddenId": "WSCH-0032",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Hands Free Games",
+  "wordGroups": [
+    "hands-free-games"
+  ],
+  "words": [
+    {
+      "word": "Alphabet game",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Categories",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Charades",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Fizz buzz",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Hide and seek",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 11
+    },
+    {
+      "word": "I spy",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Memory game",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Mirror game",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Opposites",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Riddles",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Simon says",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Sleeping lions",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 13
+    },
+    {
+      "word": "Statues",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Tag",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Thumb war",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Tongue twisters",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 14
+    },
+    {
+      "word": "Who am I",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Wink murder",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Word chain",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Yes no game",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "AOPPOSITESMSASF",
+        "LWRIDDLESEIPNEY",
+        "PHLOWEOFMMTOGUE",
+        "HOANOEZOOAIPPTS",
+        "AAGHRBRNGLHNCAN",
+        "BMTFUYSRGIWAYTO",
+        "EIBBGAANDOTLPSG",
+        "TPYAYWIEREOHSSA",
+        "GGMSBPADGFEOIPM",
+        "AEYMENCOIMPSHWE",
+        "MLUEDHRFIZZBUZZ",
+        "EHLSAICHARADESF",
+        "TSEIEEMAGRORRIM",
+        "RENSREDRUMKNIWA",
+        "KTONGUETWISTERS"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 11
+        },
+        {
+          "row": 1,
+          "col": 3
+        },
+        {
+          "row": 3,
+          "col": 10
+        },
+        {
+          "row": 7,
+          "col": 2
+        },
+        {
+          "row": 7,
+          "col": 6
+        },
+        {
+          "row": 9,
+          "col": 8
+        },
+        {
+          "row": 11,
+          "col": 0
+        },
+        {
+          "row": 13,
+          "col": 7
+        },
+        {
+          "row": 14,
+          "col": 4
+        },
+        {
+          "row": 14,
+          "col": 13
+        }
+      ]
+    }
+  ]
+}

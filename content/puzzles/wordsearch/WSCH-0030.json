@@ -1,0 +1,414 @@
+{
+  "hiddenId": "WSCH-0030",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Beach Equipment",
+  "wordGroups": [
+    "beach-equipment"
+  ],
+  "words": [
+    {
+      "word": "Armbands",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Ball",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Bucket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Chair",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Cool box",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Crab line",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Deckchair",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Fan",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "First aid kit",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Fishing net",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Flask",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Flip flops",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Float",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Frisbee",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Goggles",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Hat",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Headphones",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Inflatable",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Kite",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lilo",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Mat",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Paddleboard",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Radio",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Rubber ring",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Sandals",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Spade",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Sunhat",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Surfboard",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Swimsuit",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Tarp",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Tent",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Tote",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Towel",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Wetsuit",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 7
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "BUUSURFBOARDSCG",
+        "DTENTAMKWGTFEHN",
+        "RIAHCKCEDEFLNAI",
+        "AEFTKITENERIOIR",
+        "OLIEASFGXGIPHRR",
+        "BBRLUONTOUSFPAE",
+        "EASIEILGBSBLDDB",
+        "LTTTHWGFLNEOAIB",
+        "DAASALOAOTEPEOU",
+        "DLIFERDTOTSSHTR",
+        "AFDSONPTCTELLAB",
+        "PNKLAEKSALFKHHT",
+        "TIISWIMSUITDCNF",
+        "LLTTLARMBANDSUT",
+        "CRABLINEXNAFASB"
+      ],
+      "wildcards": [
+        {
+          "row": 2,
+          "col": 9
+        },
+        {
+          "row": 4,
+          "col": 11
+        },
+        {
+          "row": 4,
+          "col": 14
+        },
+        {
+          "row": 6,
+          "col": 5
+        },
+        {
+          "row": 6,
+          "col": 11
+        },
+        {
+          "row": 8,
+          "col": 2
+        },
+        {
+          "row": 10,
+          "col": 0
+        },
+        {
+          "row": 10,
+          "col": 13
+        },
+        {
+          "row": 11,
+          "col": 4
+        },
+        {
+          "row": 12,
+          "col": 12
+        }
+      ]
+    }
+  ]
+}

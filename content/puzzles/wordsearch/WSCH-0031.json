@@ -1,0 +1,424 @@
+{
+  "hiddenId": "WSCH-0031",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Rugby",
+  "wordGroups": [
+    "rugby"
+  ],
+  "words": [
+    {
+      "word": "Advantage",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Backs",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Ball",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Captain",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Centre",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Conversion",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Fixture",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Grubber",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Haka",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Hand-off",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Kick-off",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "League",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Lineout",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Lock",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Maul",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Number eight",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Offload",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pack",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Passing",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Penalty",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Posts",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Prop",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Ruck",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Scrum",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Scrum cap",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Sevens",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Sin bin",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Tactics",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Touchline",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Tour",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Try",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Try line",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Union",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Up and under",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Yellow card",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 10
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "SEVENSOFFLOADWK",
+        "NNIBNISKFFOKCIK",
+        "KISENILHCUOTPEY",
+        "ELMHUPANDUNDERR",
+        "RYERUOTDRLRCNPT",
+        "UREBBURGVEUSAAU",
+        "TTPASSINGAHCLKH",
+        "XSTSOPPMVGNITCP",
+        "IKBLOCKACUSTYAO",
+        "FCAPTAINCEMCAPR",
+        "RALHAKAYNMNARGP",
+        "BBLSCLINEOUTUUE",
+        "NOISREVNOCIRRLM",
+        "THGIEREBMUNNCED",
+        "BKDRACWOLLEYUSV"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 12
+        },
+        {
+          "row": 3,
+          "col": 9
+        },
+        {
+          "row": 6,
+          "col": 7
+        },
+        {
+          "row": 6,
+          "col": 13
+        },
+        {
+          "row": 8,
+          "col": 12
+        },
+        {
+          "row": 9,
+          "col": 8
+        },
+        {
+          "row": 11,
+          "col": 7
+        },
+        {
+          "row": 12,
+          "col": 0
+        },
+        {
+          "row": 12,
+          "col": 10
+        },
+        {
+          "row": 14,
+          "col": 3
+        }
+      ]
+    }
+  ]
+}

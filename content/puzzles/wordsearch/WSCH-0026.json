@@ -1,0 +1,382 @@
+{
+  "hiddenId": "WSCH-0026",
+  "type": "Repeats",
+  "created": "2026-10-03",
+  "title": "Restarts",
+  "wordGroups": [
+    "laptops"
+  ],
+  "words": [
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Restart",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 7
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "ETRATSERESTARTT",
+        "RRERESTARTTESRS",
+        "EATTTATTTRATSER",
+        "STRTRRRRESTARTS",
+        "TSATAAASRESTART",
+        "AETTTTTATRATSER",
+        "RRSSSASSTRATSER",
+        "TEEERAERESTARTT",
+        "RRRTERRRRRRRRRT",
+        "TRATSEREEEEEEER",
+        "RESTARTSSSSSSSA",
+        "TRATSERATTTTTTT",
+        "TRATSERAAAAAAAS",
+        "RRESTARTRRRRRRE",
+        "RRESTARTTTTTTTR"
+      ]
+    }
+  ]
+}
