@@ -103,8 +103,8 @@ svg.overlay circle { fill: none; }
 .mark-wrong { stroke: var(--wrong); }
 .mark-select { stroke: var(--select); }
 
-/* The corner buttons: flip at the top-right; the words layout, the text size and, in Overlay,
-   show/hide words at the top-left. Each icon button shows only the icon for its current state. */
+/* The corner buttons: flip at the top-right; the words layout, in Overlay show/hide words, and
+   the text size at the top-left. Each icon button shows only the icon for its current state. */
 button.corner { position: absolute; top: 0; z-index: 3;
   width: 38px; height: 38px; color: var(--band-fg); background: var(--band); border: var(--ow) solid var(--line); box-shadow: var(--shadow);
   border-radius: 50%; padding: 0; cursor: pointer; display: grid; place-items: center; }
@@ -113,8 +113,10 @@ button.corner:hover { border-color: var(--fg); }
 button.corner svg { width: 18px; height: 18px; display: none; }
 button.flip { right: 0; transform: translate(35%, -35%); }
 button.words-layout { left: 0; transform: translate(-35%, -35%); }
-button.text-size { left: 34px; transform: translateY(-35%); }
-button.words-toggle { left: 72px; transform: translateY(-35%); }
+/* Each in the next slot along, a 12px gap between: the text size after show/hide words while that
+   shows, else straight after the words layout. */
+button.words-toggle, button.text-size { left: 37px; transform: translateY(-35%); }
+.play[data-words="overlay"] .stage:not(:has(.card.flipped)) button.text-size { left: 87px; }
 button.flip svg, button.text-size svg,
 .play[data-words="bottom"] .icon-bottom, .play[data-words="right"] .icon-right, .play[data-words="overlay"] .icon-overlay,
 .play[data-list="false"] .icon-expand, .play[data-list="true"] .icon-collapse { display: block; }

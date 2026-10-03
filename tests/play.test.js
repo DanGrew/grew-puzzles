@@ -1505,7 +1505,7 @@ test('the text-size button beside the words layout opens Tiny to Huge, each "Aa"
   const size = await box(page, '#text-size');
   const flip = await box(page, '#flip');
   expect(size.y).toBeLessThan(card.y);
-  expect(size.x).toBeGreaterThan(layout.x + layout.width);
+  expect(size.x - (layout.x + layout.width)).toBeCloseTo(12, 0);
   expect(size.x + size.width).toBeLessThan(flip.x);
   await expect(sizeButton(page)).toHaveAttribute('aria-label', 'Text size');
   await expect(sizeMenu(page)).toBeHidden();
@@ -1526,6 +1526,20 @@ test('the text-size button beside the words layout opens Tiny to Huge, each "Aa"
   await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('#play')).toHaveAttribute('data-size', 'normal');
   await expect(cell(page, 0, 0)).toHaveCSS('font-size', '22px');
+});
+
+test('in Overlay the text-size button sits after show/hide words, 12px apart, and back beside the words layout while the solution shows', async ({ page }) => {
+  await openSized(page, 'overlay');
+  const layout = await box(page, '#words-layout');
+  const words = await box(page, '#words-toggle');
+  const size = await box(page, '#text-size');
+  expect(words.x - (layout.x + layout.width)).toBeCloseTo(12, 0);
+  expect(size.x - (words.x + words.width)).toBeCloseTo(12, 0);
+  expect(size.y).toBe(words.y);
+
+  await page.locator('#flip').click();
+  await expect(toggle(page)).toBeHidden();
+  expect((await box(page, '#text-size')).x).toBe(words.x);
 });
 
 test('a size picked mid-puzzle resizes the letters, centred in their cells, and the grid card round them; every found line, circle and red line stays on its letters; the menu closes', async ({ page }) => {
