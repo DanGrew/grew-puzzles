@@ -206,8 +206,8 @@ test('the menu holds How to play, which opens the instructions and closes the me
 
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['How to play']);
-  await entries.click();
+  await expect(entries).toHaveText(['How to play', 'Print']);
+  await entries.first().click();
   await expect(help).toBeVisible();
   await expect(help).toContainText('Tap a letter, then another in line with it.');
   await expect(page.locator('#site-menu')).toBeHidden();
@@ -219,7 +219,7 @@ test('the menu holds How to play, which opens the instructions and closes the me
 test('clicking away closes the instructions', async ({ page }) => {
   await open(page);
   await page.locator('.site .burger').click();
-  await page.locator('#site-menu > *').click();
+  await page.locator('#site-menu > *').first().click();
   await page.mouse.click(10, 800);
   await expect(page.locator('#help')).toBeHidden();
 });
@@ -416,4 +416,122 @@ for (const query of ['', '?id=7', '?collection=vanilla&id=7', '?id=../index']) {
     await expect(page.locator('#title')).toHaveText('Puzzle not found');
     expect(fetched).toEqual([]);
   });
+}
+
+// ---- Print ----
+
+// A grid twice as tall and wide as a big real one: it must still print on one page.
+const BIG_PUZZLE = { ...PUZZLE, grid: Array.from({ length: 30 }, (_, r) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCD'.slice(r % 4) + 'WXYZ'.slice(0, r % 4)) };
+
+function pdfPages(pdf) {
+  return (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+}
+
+// Plays every on-screen state print has to ignore: a found word, a red line with its circle, and the flip.
+async function messUp(page) {
+  await tapAll(page, [[4, 2], [2, 2], [0, 0], [0, 3]]);
+  await page.locator('#flip').click();
+}
+
+async function printedBoxes(page) {
+  await page.emulateMedia({ media: 'print' });
+  const box = selector => page.locator(selector).boundingBox();
+  return { title: await box('#title'), created: await box('#created'), type: await box('#label'),
+    grid: await box('#grid'), words: await box('#words-list') };
+}
+
+test('Print in the menu opens the browser\'s print dialog and closes the menu', async ({ page }) => {
+  await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed += 1; }; });
+  await open(page);
+  await page.locator('.site .burger').click();
+  await page.locator('#site-menu > *', { hasText: 'Print' }).click();
+  expect(await page.evaluate(() => window.printed)).toBe(1);
+  await expect(page.locator('#site-menu')).toBeHidden();
+});
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`the printout is title, date and type, then the grid, then the words beneath it, from ${layout}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await openIn(page, layout);
+    const b = await printedBoxes(page);
+    expect(b.created.y).toBeGreaterThanOrEqual(b.title.y + b.title.height);
+    expect(b.type.y).toBeGreaterThanOrEqual(b.created.y + b.created.height);
+    expect(b.grid.y).toBeGreaterThan(b.type.y + b.type.height);
+    expect(b.words.y).toBeGreaterThan(b.grid.y + b.grid.height);
+    await expect(page.locator('#words li')).toHaveCount(8);
+    await expect(page.locator('#words li').first()).toBeVisible();
+  });
+}
+
+test('the printout is black on white with no site bar, menu, corner buttons, bands, shadows or count', async ({ page }) => {
+  await open(page);
+  await page.emulateMedia({ media: 'print' });
+  for (const selector of ['.site', '.burger', '#flip', '#words-layout', '#words-toggle', '#count', '#back']) {
+    await expect(page.locator(selector)).toBeHidden();
+  }
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(cell(page, 0, 0)).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await expect(page.locator('#title')).toHaveCSS('color', 'rgb(0, 0, 0)');
+  for (const selector of ['#label', '.list-head', '#front', '.words-box']) {
+    await expect(page.locator(selector)).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(page.locator(selector)).toHaveCSS('box-shadow', 'none');
+  }
+  await expect(page.locator('#board')).toHaveCSS('border-top-width', '1px');
+  await expect(page.locator('#board')).toHaveCSS('border-top-color', 'rgb(0, 0, 0)');
+});
+
+test('the printout is the clean puzzle whatever was found, selected or flipped on screen', async ({ page }) => {
+  await open(page);
+  await messUp(page);
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#overlay')).toBeHidden();
+  await expect(page.locator('#back')).toBeHidden();
+  await expect(page.locator('#card')).toHaveCSS('transform', 'none');
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveCSS('text-decoration-line', 'none');
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveCSS('color', 'rgb(0, 0, 0)');
+});
+
+test('a finished puzzle prints without Puzzle complete or its sparkles', async ({ page }) => {
+  await open(page);
+  for (const ends of ALL_WORDS) await tapAll(page, ends);
+  await expect(page.locator('#complete')).toBeVisible();
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#complete')).toBeHidden();
+  await expect(page.locator('#board .spark').first()).toBeHidden();
+});
+
+test('in Overlay with the list open, the printout still puts the words beneath the grid', async ({ page }) => {
+  await open(page);
+  await toggle(page).click();
+  const b = await printedBoxes(page);
+  expect(b.words.y).toBeGreaterThan(b.grid.y + b.grid.height);
+});
+
+test('after printing, the screen is as the player left it', async ({ page }) => {
+  await open(page);
+  await messUp(page);
+  const before = await page.locator('#overlay').innerHTML();
+  await page.emulateMedia({ media: 'print' });
+  await page.emulateMedia({ media: 'screen' });
+  await expect(page.locator('#card')).toHaveClass(/flipped/);
+  await expect(page.locator('#flip')).toBeVisible();
+  expect(await page.locator('#overlay').innerHTML()).toBe(before);
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'overlay');
+});
+
+for (const format of ['A4', 'Letter']) {
+  for (const [name, puzzle] of [['the puzzle', PUZZLE], ['a 30×30 puzzle', BIG_PUZZLE]]) {
+    test(`${name} prints on one ${format} page, its letters saved as text`, async ({ page }) => {
+      // Wide enough to play the 30×30 on screen first; print sizes it to the page whatever the window.
+      await page.setViewportSize({ width: 1800, height: 900 });
+      await page.addInitScript(key => localStorage.setItem(key, 'right'), LAYOUT_KEY);
+      await open(page, null, puzzle);
+      await expect(cell(page, 0, 0)).toBeVisible();
+      await messUp(page);
+      const pdf = await page.pdf({ format });
+      expect(pdfPages(pdf)).toBe(1);
+      expect(pdf.toString('latin1')).toContain('/ToUnicode');
+    });
+  }
 }

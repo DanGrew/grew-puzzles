@@ -105,3 +105,35 @@ ul.words li.done { color: var(--muted); text-decoration: line-through; text-deco
   .board.pop { animation: none; }
   .spark { display: none; }
 }
+
+/* Print — Print in the menu, or the browser's own: one clean black-and-white page, A4 or Letter.
+   Title, date and type, the grid in one thin outline, the words in columns beneath. The printout
+   is always the blank puzzle — whatever is flipped, found, selected or laid out on screen. The
+   cell is sized so the grid leaves the words room on the page, however many rows and columns. */
+@page { margin: 12mm; }
+@media print {
+  :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --shadow: none; }
+  .play { --cell: min(40px, calc(170mm / var(--cols)), calc(150mm / var(--rows))); }
+  .wrap { max-width: none; padding: 0; }
+  .site, .help, button.corner, .complete, .back-face, svg.overlay, .spark, .count { display: none; }
+
+  .play-head { margin: 0; }
+  .play-head h1 { font-size: 24px; }
+  .play-head .created { font-size: 11px; }
+  .play, .play[data-words] { flex-flow: column; align-items: center; gap: 22px; }
+  .col { max-width: none; margin: 0; padding: 0; overflow: visible; }
+  .card, .card.flipped { transform: none; transform-style: flat; transition: none; }
+  .face { border: 0; border-radius: 0; padding: 0; background: none; overflow: visible; }
+  .band { margin: 4px 0 18px; padding: 0; background: none; border: 0; color: var(--fg); font: 400 11px var(--font-body); letter-spacing: .04em; }
+  .board { padding: 10px; border: 1px solid var(--line); border-radius: 6px; animation: none; }
+  .cell { font-weight: 400; outline: none; }
+
+  /* The words come home beneath the grid from wherever they sat, open or closed. */
+  .stage > aside { position: static; margin-top: 22px; }
+  aside, .play[data-words][data-list] aside { display: block; max-width: calc(var(--cell) * var(--cols) + 22px); }
+  .words-box, .stage > aside .words-box { height: auto; display: block; border: 0; border-radius: 0; padding: 0; background: none; overflow: visible; }
+  .list-head { justify-content: flex-start; margin: 0 0 8px; padding: 0 0 4px; background: none; border-bottom: 1px solid var(--line); }
+  .list-head h2 { color: var(--fg); font-size: 12px; letter-spacing: .04em; }
+  ul.words, .stage > aside ul.words { gap: 3px 16px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); overflow: visible; }
+  ul.words li, ul.words li.done { font-size: 12px; justify-self: start; text-align: left; color: var(--fg); text-decoration: none; }
+}

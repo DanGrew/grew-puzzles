@@ -23,6 +23,7 @@ function playEl(id) {
 }
 
 export function openPlayPage(search) {
+  playEl('print').addEventListener('click', function () { window.print(); });
   Promise.resolve(search)
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
@@ -46,6 +47,7 @@ function showPuzzle(board) {
   playEl('label').textContent = board.label;
   playEl('solution-label').textContent = board.solutionLabel;
   playEl('play').style.setProperty('--cols', board.cols);
+  playEl('play').style.setProperty('--rows', board.rows);
   fillGrid(playEl('grid'), board, function (r, c) {
     var cell = document.createElement('button');
     cell.type = 'button';
