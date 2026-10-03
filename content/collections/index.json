@@ -1,0 +1,20 @@
+{
+  "collections": [
+    {
+      "slug": "issue-1-remake",
+      "name": "Issue #1 (remake)",
+      "description": "The first Grew Puzzles book, remade one puzzle at a time.",
+      "created": "2026-10-03",
+      "puzzles": [
+        {
+          "id": "WSCH-0001",
+          "number": 1
+        },
+        {
+          "id": "WSCH-0002",
+          "number": 2
+        }
+      ]
+    }
+  ]
+}
