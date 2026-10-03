@@ -255,6 +255,75 @@ test('the brand is the one way back to the puzzles: no All puzzles link, no Word
   await expect(page.locator('#site-menu')).not.toContainText('Wordsearches');
 });
 
+// ---- A puzzle with a missing word ----
+
+const REVEAL_RED = 'rgb(179, 38, 30)';
+// The fixture as a Missing puzzle: Goat listed, sorted in among the rest, nowhere in the grid.
+const MISSING_PUZZLE = {
+  ...PUZZLE, type: 'Missing',
+  words: [...PUZZLE.words.slice(0, 3), { word: 'Goat', missing: true }, ...PUZZLE.words.slice(3)]
+};
+const goat = page => page.locator('#words li', { hasText: 'Goat' });
+
+// Opens the Missing puzzle with the words under the grid, so the list is always in view.
+async function openMissing(page) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, 'bottom']);
+  await open(page, null, MISSING_PUZZLE);
+}
+
+test('a Missing puzzle lists every word unmarked, counts only the placed ones, and says Missing in the band', async ({ page }) => {
+  await openMissing(page);
+  await expect(page.locator('#label')).toHaveText('Missing');
+  await expect(page.locator('#words li')).toHaveText(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+  await expect(page.locator('#words li.done, #words li.revealed')).toHaveCount(0);
+  await expect(page.locator('#count')).toHaveText('0/8');
+});
+
+test('finding the last real word completes a Missing puzzle and turns the missing word red', async ({ page }) => {
+  await openMissing(page);
+  for (const ends of ALL_WORDS.slice(0, -1)) await tapAll(page, ends);
+  await expect(page.locator('#count')).toHaveText('7/8');
+  await expect(goat(page)).not.toHaveClass(/revealed/);
+  await expect(page.locator('#complete')).toBeHidden();
+
+  await tapAll(page, ALL_WORDS[ALL_WORDS.length - 1]);
+  await expect(page.locator('#count')).toHaveText('8/8');
+  await expect(page.locator('#complete')).toBeVisible();
+  await expect(page.locator('#board .spark')).toHaveCount(28);
+  await expect(goat(page)).toHaveClass(/revealed/);
+  await expect(goat(page)).not.toHaveClass(/done/);
+  await expect(goat(page)).toHaveCSS('color', REVEAL_RED);
+  await expect(page.locator('#words li.revealed')).toHaveCount(1);
+});
+
+test('the solution of a Missing puzzle lines through every placed word and shows the missing one red until flipped back', async ({ page }) => {
+  await openMissing(page);
+  await tapAll(page, [[4, 2], [2, 2]]);
+  const flip = page.locator('#flip');
+
+  await flip.click();
+  await expect(page.locator('#solution-label')).toHaveText('Missing · Solution');
+  await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(8);
+  await expect(goat(page)).toHaveClass(/revealed/);
+  await expect(goat(page)).toHaveCSS('color', REVEAL_RED);
+
+  await flip.click();
+  await expect(goat(page)).not.toHaveClass(/revealed/);
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
+  await expect(page.locator('#count')).toHaveText('1/8');
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+});
+
+test('a puzzle with no missing word shows nothing red, finished or flipped', async ({ page }) => {
+  await openIn(page, 'bottom');
+  await page.locator('#flip').click();
+  await expect(page.locator('#words li.revealed')).toHaveCount(0);
+  await page.locator('#flip').click();
+  for (const ends of ALL_WORDS) await tapAll(page, ends);
+  await expect(page.locator('#count')).toHaveText('8/8');
+  await expect(page.locator('#words li.revealed')).toHaveCount(0);
+});
+
 // ---- Where the words sit ----
 
 const layoutButton = page => page.locator('#words-layout');

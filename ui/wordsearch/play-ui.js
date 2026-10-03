@@ -60,7 +60,7 @@ function showPuzzle(board) {
     playEl('words').appendChild(li);
   });
   drawMarks(playEl('solution-overlay'), board, playMarks(solvedPlay(board.words), board.words));
-  wireFlip();
+  wireFlip(render);
   wireWords();
   render();
   playEl('play').hidden = false;
@@ -73,8 +73,9 @@ function showPuzzle(board) {
 
   function render() {
     drawMarks(playEl('overlay'), board, playMarks(play, board.words));
-    wordList(play, board.words).forEach(function (item, i) {
+    wordList(play, board.words, playEl('card').classList.contains('flipped')).forEach(function (item, i) {
       playEl('words').children[i].classList.toggle('done', item.done);
+      playEl('words').children[i].classList.toggle('revealed', item.revealed);
     });
     playEl('count').textContent = countLabel(play, board.words);
   }
@@ -124,7 +125,8 @@ function drawRing(svg, cell, kind) {
 }
 
 // The grid turns over like a revolving door; the found words on the front stay as they were.
-function wireFlip() {
+// onFlip redraws the list, which shows a missing word red only while the solution shows.
+function wireFlip(onFlip) {
   var card = playEl('card'), button = playEl('flip');
   button.addEventListener('click', function () {
     var on = card.classList.toggle('flipped');
@@ -134,6 +136,7 @@ function wireFlip() {
     playEl('front').inert = on;
     playEl('back').inert = !on;
     playEl('back').setAttribute('aria-hidden', String(!on));
+    onFlip();
   });
 }
 

@@ -1,7 +1,7 @@
 /* The play page — Banded, light only, after docs/MOCKUP-PLAY-PAGE.html in the product entry. The
    grid card and the words card are index cards: black outline, hard offset shadow, green band. */
 :root {
-  --wrong: #e0473b; --select: #1f6f5c; --found: #0f2a24; --spark: #f2b705;
+  --wrong: #e0473b; --select: #1f6f5c; --found: #0f2a24; --spark: #f2b705; --reveal: #b3261e;
   --gw: 600; --cell: clamp(26px, 5.4vw, 44px);
 }
 
@@ -87,6 +87,8 @@ aside { min-width: 0; }
 ul.words { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px 16px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 ul.words li { font-size: 16px; position: relative; width: fit-content; justify-self: center; text-align: center; transition: color .3s; }
 ul.words li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
+/* A missing word, revealed: red, deeper than the line red so it reads on the white card. */
+ul.words li.revealed { color: var(--reveal); font-weight: 700; }
 
 /* Completion: a short pop and sparkle */
 .board.pop { animation: pop .6s cubic-bezier(.2,1.6,.4,1); }

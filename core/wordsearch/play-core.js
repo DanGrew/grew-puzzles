@@ -30,6 +30,11 @@ export function wordCells(word) {
   });
 }
 
+// A missing word is listed but sits nowhere in the grid, so it has no cells.
+function boardWord(w) {
+  return { text: w.word, missing: Boolean(w.missing), cells: w.missing ? [] : wordCells(w) };
+}
+
 // The type is the board's only label: shown exactly as written, in the grid's header band.
 export function playBoard(puzzle) {
   return {
@@ -40,8 +45,18 @@ export function playBoard(puzzle) {
     letters: puzzle.grid.map(function (row) { return row.split(''); }),
     rows: puzzle.grid.length,
     cols: puzzle.grid[0].length,
-    words: puzzle.words.map(function (w) { return { text: w.word, cells: wordCells(w) }; })
+    words: puzzle.words.map(boardWord)
   };
+}
+
+// The words a player can find — every listed word bar the missing ones, by index.
+function placedWords(words) {
+  return words.map(function (_, i) { return i; }).filter(function (i) { return !words[i].missing; });
+}
+
+// The puzzle ends on the last placed word: the player is never asked to find a missing one.
+function solved(play, words) {
+  return play.found.length === placedWords(words).length;
 }
 
 // ---- Tapping ----
@@ -54,7 +69,7 @@ export function newPlay() {
 }
 
 export function solvedPlay(words) {
-  return { picked: [], found: words.map(function (_, i) { return i; }), events: [] };
+  return { picked: [], found: placedWords(words), events: [] };
 }
 
 function sameCell(a, b) {
@@ -76,12 +91,14 @@ function keep(play, picked) {
   return { picked: picked, found: play.found, events: [] };
 }
 
-// Only a word's real placement counts — P then G inside PIGLET is not PIG.
+// Only a word's real placement counts — P then G inside PIGLET is not PIG. A missing word has
+// no placement, so no tap finds it.
 function check(play, picked, words) {
-  var hit = words.findIndex(function (w, i) { return !play.found.includes(i) && spans(w.cells, picked); });
-  if (hit === -1) return keep(play, picked);
-  var found = play.found.concat([hit]);
-  return { picked: [], found: found, events: found.length === words.length ? ['complete'] : [] };
+  var hit = placedWords(words).find(function (i) { return !play.found.includes(i) && spans(words[i].cells, picked); });
+  if (hit === undefined) return keep(play, picked);
+  var next = { picked: [], found: play.found.concat([hit]), events: [] };
+  next.events = solved(next, words) ? ['complete'] : [];
+  return next;
 }
 
 function tapFirst(play, cell) {
@@ -129,12 +146,16 @@ export function playMarks(play, words) {
   };
 }
 
-export function wordList(play, words) {
-  return words.map(function (w, i) { return { text: w.text, done: play.found.includes(i) }; });
+// revealed: a missing word shown red — once every placed word is found, or while the solution
+// shows (flipped); flipping back hides it again until the puzzle is done.
+export function wordList(play, words, flipped) {
+  var reveal = flipped || solved(play, words);
+  return words.map(function (w, i) { return { text: w.text, done: play.found.includes(i), revealed: w.missing && reveal }; });
 }
 
+// Out of the placed words only: a missing word is never there to find.
 export function countLabel(play, words) {
-  return play.found.length + '/' + words.length;
+  return play.found.length + '/' + placedWords(words).length;
 }
 
 // ---- Where the words sit ----
