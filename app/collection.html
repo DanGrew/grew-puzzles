@@ -19,6 +19,7 @@
       <h1 id="collection-title"></h1>
     </div>
     <p class="collection-description" id="description"></p>
+    <p class="collection-book" id="book" hidden><a class="print-book" id="print-book">Print book</a></p>
     <p class="collection-missing" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
     <ul class="tiles" id="tiles"></ul>
   </main>
@@ -53,6 +54,8 @@ function show([index, published]) {
   document.getElementById('collection-title').textContent = view.name;
   document.getElementById('description').textContent = view.description;
   document.getElementById('description').hidden = !view.found;
+  document.getElementById('print-book').href = view.book;
+  document.getElementById('book').hidden = !view.found;
   document.getElementById('missing').hidden = view.found;
   document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   document.getElementById('tiles').replaceChildren(...view.tiles.map(tile));

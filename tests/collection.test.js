@@ -56,6 +56,20 @@ test('the collection page has no filter, no sort and no pager', async ({ page })
   await expect(page.locator('main select, main button')).toHaveCount(0);
 });
 
+test('a collection page offers Print book, between its description and its puzzles', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/collection.html?slug=issue-1');
+  const print = page.locator('#print-book');
+  await expect(print).toBeVisible();
+  await expect(print).toHaveText('Print book');
+  await expect(print).toHaveAttribute('href', 'book.html?slug=issue-1');
+  const description = await page.locator('#description').boundingBox();
+  const button = await print.boundingBox();
+  const grid = await page.locator('#tiles').boundingBox();
+  expect(button.y).toBeGreaterThanOrEqual(description.y + description.height);
+  expect(grid.y).toBeGreaterThanOrEqual(button.y + button.height);
+});
+
 test('tapping a numbered tile opens that puzzle on the play page', async ({ page }) => {
   await serve(page);
   await page.goto('/app/collection.html?slug=issue-1');
@@ -85,6 +99,7 @@ test('an address naming no collection says so, and leads back to the collections
   await expect(page.locator('#collection-title')).toHaveText('Collection not found');
   await expect(page.locator('#missing')).toBeVisible();
   await expect(page.locator('#description')).toBeHidden();
+  await expect(page.locator('#print-book')).toBeHidden();
   await expect(tiles(page)).toHaveCount(0);
   await page.locator('#missing a').click();
   await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
