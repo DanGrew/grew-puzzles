@@ -122,6 +122,7 @@ describe('browse-core.js', () => {
     expect(toggleType(state, 'Vanilla')).toEqual({ types: ['Missing', 'Vanilla'], sort: 'title', dir: 'asc' });
     expect(toggleType(state, 'Missing')).toEqual({ types: [], sort: 'title', dir: 'asc' });
     expect(state.types).toEqual(['Missing']);
+    expect(toggleType({ ...state, types: ['Missing', 'Vanilla'] }, 'Missing').types).toEqual(['Vanilla']);
   });
 
   test('clearing the filters keeps the sort', () => {
