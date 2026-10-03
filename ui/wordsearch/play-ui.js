@@ -2,7 +2,7 @@
 // and wires the taps, the flip, where the words sit and the completion pop. Every rule lives
 // in core/wordsearch/play-core.js; nothing here decides anything.
 import {
-  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles,
+  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, listedWords, wordList, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout
 } from '../../core/wordsearch/play-core.js';
 
@@ -60,9 +60,13 @@ export function drawSheet(part, board, onCell) {
     return cell;
   });
   board.wild.flat().forEach(function (wild, i) { part('grid').children[i].classList.toggle('wild', wild); });
-  board.words.forEach(function (w) {
+  // One line per word, however many copies; a word's progress sits beside it, on screen only.
+  listedWords(board.words).forEach(function (entry) {
     var li = document.createElement('li');
-    li.textContent = w.text;
+    var progress = document.createElement('span');
+    li.textContent = entry.text;
+    progress.className = 'progress';
+    li.appendChild(progress);
     part('words').appendChild(li);
   });
   part('play').hidden = false;
@@ -98,6 +102,7 @@ function showPuzzle(board) {
     wordList(play, board.words, playEl('card').classList.contains('flipped')).forEach(function (item, i) {
       playEl('words').children[i].classList.toggle('done', item.done);
       playEl('words').children[i].classList.toggle('revealed', item.revealed);
+      playEl('words').children[i].querySelector('.progress').textContent = item.progress;
     });
     playEl('count').textContent = countLabel(play, board.words);
   }
