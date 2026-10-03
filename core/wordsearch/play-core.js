@@ -47,6 +47,7 @@ export function playBoard(puzzle) {
 // ---- Tapping ----
 // A play is { picked, found, events }: picked holds the selection's start, then its end
 // (0–2 cells); found the indices of the words crossed off; events what this tap set off.
+// The start stays put: each later tap in line with it only points the line at that letter.
 
 export function newPlay() {
   return { picked: [], found: [], events: [] };
@@ -63,14 +64,6 @@ function sameCell(a, b) {
 function inLine(a, b) {
   var dr = b[0] - a[0], dc = b[1] - a[1];
   return dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc);
-}
-
-// Further along start→end, in the same direction, past end.
-function beyond(start, end, cell) {
-  var dr = Math.sign(end[0] - start[0]), dc = Math.sign(end[1] - start[1]);
-  var kr = cell[0] - end[0], kc = cell[1] - end[1];
-  var steps = Math.max(Math.abs(kr), Math.abs(kc));
-  return kr === dr * steps && kc === dc * steps;
 }
 
 function spans(cells, picked) {
@@ -95,21 +88,16 @@ function tapFirst(play, cell) {
   return keep(play, [cell]);
 }
 
-function tapSecond(play, cell, words) {
+// Only the start deselects; a tap off its lines is ignored. Tapping the line's own end
+// redraws the same line, so nothing changes.
+function tapNext(play, cell, words) {
   var start = play.picked[0];
   if (sameCell(cell, start)) return keep(play, []);
   if (!inLine(start, cell)) return keep(play, play.picked);
   return check(play, [start, cell], words);
 }
 
-function tapFurther(play, cell, words) {
-  var start = play.picked[0], end = play.picked[1];
-  if (sameCell(cell, end)) return keep(play, []);
-  if (!beyond(start, end, cell)) return keep(play, play.picked);
-  return check(play, [start, cell], words);
-}
-
-var PLAY_TAPS = [tapFirst, tapSecond, tapFurther];
+var PLAY_TAPS = [tapFirst, tapNext, tapNext];
 
 export function tap(play, cell, words) {
   return PLAY_TAPS[play.picked.length](play, cell, words);

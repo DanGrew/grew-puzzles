@@ -100,41 +100,63 @@ test('a first tap rings the letter', async ({ page }) => {
   await expect(page.locator('#overlay circle.mark-select')).toHaveCount(1);
 });
 
-test('two letters that spell no word draw a red line, and tapping further along extends it until they do', async ({ page }) => {
+test('two letters that spell no word draw a red line; each later in-line tap points it from the circle until it spans a word', async ({ page }) => {
   await open(page);
-  await tapAll(page, [[0, 0], [0, 3]]);
+  await tapAll(page, [[0, 2], [0, 5]]);
   const red = page.locator('#overlay line.mark-wrong');
-  expect(await lineEnds(red)).toEqual([0.5, 0.5, 3.5, 0.5]);
+  expect(await lineEnds(red)).toEqual([2.5, 0.5, 5.5, 0.5]);
   await expect(red).toHaveCSS('stroke', WRONG_RED);
   await expect(page.locator('#overlay circle.mark-wrong')).toHaveCount(1);
 
-  await tapAll(page, [[0, 5]]);
-  expect(await lineEnds(red)).toEqual([0.5, 0.5, 5.5, 0.5]);
+  await tapAll(page, [[0, 3]]);
+  expect(await lineEnds(red)).toEqual([2.5, 0.5, 3.5, 0.5]);
+  await tapAll(page, [[0, 6]]);
+  expect(await lineEnds(red)).toEqual([2.5, 0.5, 6.5, 0.5]);
+  await tapAll(page, [[3, 2]]);
+  expect(await lineEnds(red)).toEqual([2.5, 0.5, 2.5, 3.5]);
+  await expect(page.locator('#overlay circle.mark-wrong')).toHaveCount(1);
   await expect(page.locator('#count')).toHaveText('0/8');
+});
 
-  await tapAll(page, [[0, 7]]);
-  await expect(red).toHaveCount(0);
-  await expect(page.locator('#words li', { hasText: 'Ice cream' })).toHaveClass(/done/);
+test('a red line pointed at the far end of a word crosses it off and the circle goes', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[4, 2], [4, 4], [2, 2]]);
+  await expect(page.locator('#overlay .mark-wrong')).toHaveCount(0);
+  await expect(page.locator('#overlay circle')).toHaveCount(0);
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
   await expect(page.locator('#count')).toHaveText('1/8');
 });
 
-test('a tap off the line changes nothing; tapping the last letter again clears the selection', async ({ page }) => {
+test("a tap off the circle's lines or on the red line's end changes nothing; tapping the circle clears it all", async ({ page }) => {
   await open(page);
   await tapAll(page, [[0, 0], [0, 3]]);
   const before = await page.locator('#overlay').innerHTML();
   await tapAll(page, [[2, 1]]);
   expect(await page.locator('#overlay').innerHTML()).toBe(before);
-
   await tapAll(page, [[0, 3]]);
+  expect(await page.locator('#overlay').innerHTML()).toBe(before);
+
+  await tapAll(page, [[0, 0]]);
   await expect(page.locator('#overlay > *')).toHaveCount(0);
 });
 
-test('P then G inside PIGLET draws a red line and does not cross off PIG', async ({ page }) => {
+test('tapping a lone circled letter again clears it', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[0, 0], [0, 0]]);
+  await expect(page.locator('#overlay > *')).toHaveCount(0);
+});
+
+test('P then G inside PIGLET stays red, then tapping the T crosses off PIGLET', async ({ page }) => {
   await open(page);
   await tapAll(page, [[1, 0], [3, 0]]);
   await expect(page.locator('#overlay line.mark-wrong')).toHaveCount(1);
   await expect(page.locator('#words li', { hasText: /^Pig$/ })).not.toHaveClass(/done/);
   await expect(page.locator('#count')).toHaveText('0/8');
+
+  await tapAll(page, [[6, 0]]);
+  await expect(page.locator('#overlay .mark-wrong')).toHaveCount(0);
+  await expect(page.locator('#words li', { hasText: 'Piglet' })).toHaveClass(/done/);
+  await expect(page.locator('#count')).toHaveText('1/8');
 });
 
 test('a letter two found words share is circled', async ({ page }) => {
@@ -209,7 +231,8 @@ test('the menu holds How to play, which opens the instructions and closes the me
   await expect(entries).toHaveText(['How to play', 'Print']);
   await entries.first().click();
   await expect(help).toBeVisible();
-  await expect(help).toContainText('Tap a letter, then another in line with it.');
+  await expect(help).toContainText('Tap a letter to circle it, then tap another in line with it.');
+  await expect(help).toContainText('Tap the circled letter again to deselect.');
   await expect(page.locator('#site-menu')).toBeHidden();
 
   await page.keyboard.press('Escape');
