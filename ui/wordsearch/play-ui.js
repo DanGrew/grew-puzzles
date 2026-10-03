@@ -269,29 +269,35 @@ function wireWordsFit() {
 }
 
 // The page measured for play-core's wordsFit, and its answer drawn: where the list sits, the grid
-// card's size for the words card to take, and each word's column and row. The play area is the
-// window wide (styles/play.css), so the page is measured once it is. The words are measured
-// as revealed, the boldest they get.
+// card's size for the words card to take, the grid's letter size and the words' text size, and
+// each word's column and row. The play area is the window wide (styles/play.css), so the page is
+// measured once it is. The words are measured at the page's own text size, as revealed, the
+// boldest they get.
 function layoutWords() {
   var play = playEl('play'), list = playEl('words'), box = list.parentElement;
   play.style.setProperty('--view-w', document.documentElement.clientWidth + 'px');
-  var card = playEl('stage').getBoundingClientRect();
+  var card = playEl('stage').getBoundingClientRect(), cell = playEl('grid').firstElementChild.getBoundingClientRect().width;
+  var cols = Number(play.style.getPropertyValue('--cols')), rows = Number(play.style.getPropertyValue('--rows'));
   list.classList.add('measuring');
   var widths = Array.from(list.children).map(function (li) { return li.getBoundingClientRect().width; });
+  var word = { size: parseFloat(getComputedStyle(list.firstElementChild).fontSize), height: list.firstElementChild.getBoundingClientRect().height };
   list.classList.remove('measuring');
   var fit = wordsFit(play.dataset.words, {
-    count: list.children.length, wordWidths: widths, rowHeight: list.firstElementChild.getBoundingClientRect().height,
+    count: list.children.length, wordWidths: widths, wordSize: word.size, rowHeight: word.height,
     colGap: parseFloat(getComputedStyle(list).columnGap), rowGap: parseFloat(getComputedStyle(list).rowGap),
-    cardWidth: card.width, cardHeight: card.height,
+    gridCols: cols, gridRows: rows, naturalCell: playEl('cell-size').getBoundingClientRect().width,
+    cardChromeWidth: card.width - cols * cell, cardChromeHeight: card.height - rows * cell,
     chromeWidth: box.getBoundingClientRect().width - list.clientWidth,
     chromeHeight: box.getBoundingClientRect().height - list.getBoundingClientRect().height,
     pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap)
   });
   play.dataset.sits = fit.sits;
-  play.style.setProperty('--card-w', card.width + 'px');
-  play.style.setProperty('--card-h', card.height + 'px');
+  play.style.setProperty('--fit-cell', fit.cell + 'px');
+  play.style.setProperty('--card-w', fit.cardWidth + 'px');
+  play.style.setProperty('--card-h', fit.cardHeight + 'px');
   list.style.setProperty('--word-cols', fit.columns);
   list.style.setProperty('--word-w', fit.wordWidth + 'px');
+  list.style.setProperty('--word-size', fit.wordSize + 'px');
   fit.places.forEach(function (place, i) { list.children[i].style.gridArea = place[0] + ' / ' + place[1]; });
 }
 

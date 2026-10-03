@@ -828,13 +828,80 @@ test('in Right a 25-column grid has its words beside it whenever the window is w
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1400);
 });
 
-test('in Right a list that needs more room beside the grid than the window has drops under, and comes back beside when widened', async ({ page }) => {
+// A Mirrorise-size puzzle: 25 × 35 letters and 140 words, too many to sit beside the grid at
+// its own letter size on a 1440px screen.
+const MIRRORISE_SIZE_PUZZLE = {
+  ...LONG_PUZZLE,
+  grids: [{ rows: Array.from({ length: 35 }, (_, r) => PUZZLE.grids[0].rows[r % 8].repeat(4).slice(0, 25)) }],
+  words: [...PUZZLE.words, ...Array.from({ length: 132 }, (_, i) => ({ word: 'Something long ' + String(i + 1).padStart(3, '0'), missing: true }))]
+};
+const letterSize = page => page.locator('#grid .cell').first().evaluate(c => c.getBoundingClientRect().width);
+
+test('in Right a big grid\'s words shrink to 13px, then its letters, until the words fit beside it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openWords(page, 'bottom', MIRRORISE_SIZE_PUZZLE);
+  const own = await letterSize(page);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  const shrunk = await letterSize(page);
+  expect(shrunk).toBeLessThan(own);
+  expect(shrunk).toBeGreaterThanOrEqual(26);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '13px');
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+  expect(Math.abs(aside.height - stage.height)).toBeLessThan(1);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(1440);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1440);
+  for (const word of await wordBoxes(page)) expect(word.right).toBeLessThanOrEqual(aside.x + aside.width);
+  expectEven(columnsOf(await wordBoxes(page)));
+
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'overlay');
+  expect(await letterSize(page)).toBe(own);
+  await toggle(page).click();
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+});
+
+test('in Right a list a little too wide shrinks its words, and the grid keeps its letters', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', LONG_PUZZLE);
+  const own = await letterSize(page);
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+  // A window a few pixels narrower than grid, gap and words need, with the page's 24px edges.
+  const needed = aside.x + aside.width - stage.x;
+  await page.setViewportSize({ width: Math.floor(needed + 48 - 4), height: 900 });
+  await expect(async () => {
+    const size = parseFloat(await page.locator('#words li').first().evaluate(li => getComputedStyle(li).fontSize));
+    expect(size).toBeLessThan(16);
+    expect(size).toBeGreaterThanOrEqual(13);
+  }).toPass();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  expect(await letterSize(page)).toBe(own);
+});
+
+test('in Right the letters shrink no smaller than 26px: a window too narrow even then has the words under the grid, its letters their own size', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 900 });
+  await openWords(page, 'bottom', WIDE_PUZZLE);
+  const own = await letterSize(page);
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'right');
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'bottom');
+  expect(await letterSize(page)).toBe(own);
+});
+
+test('in Right a list that needs more room beside the grid than the window has, even at the smallest letters, drops under, and comes back beside when widened', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openWords(page, 'right', LONG_PUZZLE);
   const stage = await box(page, '.stage');
   expect((await box(page, 'aside')).x).toBeGreaterThan(stage.x + stage.width);
 
-  await page.setViewportSize({ width: 900, height: 900 });
+  await page.setViewportSize({ width: 600, height: 900 });
   await expect(async () => {
     const now = await box(page, '.stage');
     expect((await box(page, 'aside')).y).toBeGreaterThan(now.y + now.height);

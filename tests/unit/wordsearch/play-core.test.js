@@ -574,11 +574,14 @@ describe('where the words sit', () => {
 });
 
 describe('how the words fill their card', () => {
-  // Ten words, the widest 99.2px wide (a column of 100px), 20px rows; 116px a column with its gap,
-  // 27px a row with its. The grid card is 400 × 300; the words card's band and edges take 36 × 60.
-  const page = over => ({
-    count: 10, wordWidths: [80, 99.2, 60], rowHeight: 20, colGap: 16, rowGap: 7,
-    cardWidth: 400, cardHeight: 300, chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, ...over
+  // Ten words in 16px text, the widest 99.2px wide (a column of 100px), 20px rows; 116px a column with its gap,
+  // 27px a row with its. The grid is 8 × 6 letters at 40px, its card 400 × 300 with its band and
+  // edges (80 × 60); the words card's band and edges take 36 × 60. cardWidth/cardHeight set the
+  // grid card's size at 40px by its band and edges.
+  const page = ({ cardWidth = 400, cardHeight = 300, ...over } = {}) => ({
+    count: 10, wordWidths: [80, 99.2, 60], wordSize: 16, rowHeight: 20, colGap: 16, rowGap: 7,
+    gridCols: 8, gridRows: 6, naturalCell: 40, cardChromeWidth: cardWidth - 320, cardChromeHeight: cardHeight - 240,
+    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, ...over
   });
   const columnsOf = fit => fit.places.reduce((lengths, [, c]) => ({ ...lengths, [c]: (lengths[c] || 0) + 1 }), {});
 
@@ -628,10 +631,41 @@ describe('how the words fill their card', () => {
     expect(wordsFit('right', page({ cardHeight: 0, pageWidth: 2000 }))).toMatchObject({ sits: 'right', columns: 10 });
   });
 
-  it('in Right drops under the grid as Bottom when the page has no room beside it for the columns', () => {
+  it('draws the grid and the words at the page\'s own sizes, under, over, and beside when there\'s room', () => {
+    ['bottom', 'overlay', 'right'].forEach(layout => {
+      expect(wordsFit(layout, page())).toMatchObject({ cell: 40, wordSize: 16, cardWidth: 400, cardHeight: 300, wordWidth: 100 });
+    });
     // 400 grid card + 28 gap + 36 edges + two 100px columns and the 16px gap between them = 680.
-    expect(wordsFit('right', page({ pageWidth: 680 }))).toMatchObject({ sits: 'right', columns: 2 });
-    expect(wordsFit('right', page({ pageWidth: 679 }))).toMatchObject({ sits: 'bottom', columns: 3 });
+    expect(wordsFit('right', page({ pageWidth: 680 }))).toMatchObject({ sits: 'right', cell: 40, wordSize: 16, columns: 2 });
+  });
+
+  it('in Right shrinks the words\' text first, a pixel at a time, keeping the grid\'s letters', () => {
+    // At 15px the widest word is 93px: two columns, 666 end to end.
+    expect(wordsFit('right', page({ pageWidth: 679 }))).toMatchObject({ sits: 'right', cell: 40, wordSize: 15, wordWidth: 93, columns: 2 });
+    expect(wordsFit('right', page({ pageWidth: 666 })).wordSize).toBe(15);
+    // At 14px ten 17.5px rows fit down the card: one column of 87px, 551 end to end.
+    expect(wordsFit('right', page({ pageWidth: 665 }))).toMatchObject({ cell: 40, wordSize: 14, wordWidth: 87, columns: 1 });
+    expect(wordsFit('right', page({ pageWidth: 550 }))).toMatchObject({ cell: 40, wordSize: 13, wordWidth: 81, columns: 1 });
+  });
+
+  it('in Right shrinks the words no smaller than 13px, then the grid\'s letters, a pixel at a time', () => {
+    // One word: at 13px it is 81px wide, and 545 end to end beside the 40px grid.
+    expect(wordsFit('right', page({ count: 1, pageWidth: 545 }))).toMatchObject({ cell: 40, wordSize: 13 });
+    expect(wordsFit('right', page({ count: 1, pageWidth: 544 }))).toMatchObject({ sits: 'right', cell: 39, wordSize: 13, cardWidth: 392, cardHeight: 294 });
+    expect(wordsFit('right', page({ pageWidth: 536 }))).toMatchObject({ sits: 'right', cell: 38, wordSize: 13, columns: 1 });
+  });
+
+  it('in Right shrinks the letters no smaller than 26px, then drops under the grid as Bottom at the page\'s own sizes', () => {
+    // One word: at 26px the grid card is 288 wide, 433 end to end.
+    expect(wordsFit('right', page({ count: 1, pageWidth: 433 }))).toMatchObject({ sits: 'right', cell: 26, wordSize: 13, cardWidth: 288, cardHeight: 216 });
+    expect(wordsFit('right', page({ count: 1, pageWidth: 432 }))).toMatchObject({ sits: 'bottom', cell: 40, wordSize: 16, cardWidth: 400 });
+    expect(wordsFit('right', page({ pageWidth: 528 }))).toMatchObject({ sits: 'bottom', cell: 40, wordSize: 16, columns: 3 });
+  });
+
+  it('in Right keeps the page\'s own letters when they are already the smallest, and tries no smaller', () => {
+    expect(wordsFit('right', page({ count: 1, naturalCell: 26, pageWidth: 433 }))).toMatchObject({ sits: 'right', cell: 26, wordSize: 13 });
+    expect(wordsFit('right', page({ count: 1, naturalCell: 26, pageWidth: 432 }))).toMatchObject({ sits: 'bottom', cell: 26 });
+    expect(wordsFit('right', page({ naturalCell: 26.5, pageWidth: 10000 })).cell).toBe(26.5);
   });
 
   it('reads down each column, then on to the next, the longer columns first', () => {
