@@ -55,8 +55,8 @@ function placedWords(words) {
 }
 
 // The puzzle ends on the last placed word: the player is never asked to find a missing one.
-function solved(play, words) {
-  return play.found.length === placedWords(words).length;
+function solved(found, words) {
+  return found.length === placedWords(words).length;
 }
 
 // ---- Tapping ----
@@ -96,9 +96,8 @@ function keep(play, picked) {
 function check(play, picked, words) {
   var hit = placedWords(words).find(function (i) { return !play.found.includes(i) && spans(words[i].cells, picked); });
   if (hit === undefined) return keep(play, picked);
-  var next = { picked: [], found: play.found.concat([hit]), events: [] };
-  next.events = solved(next, words) ? ['complete'] : [];
-  return next;
+  var found = play.found.concat([hit]);
+  return { picked: [], found: found, events: solved(found, words) ? ['complete'] : [] };
 }
 
 function tapFirst(play, cell) {
@@ -149,7 +148,7 @@ export function playMarks(play, words) {
 // revealed: a missing word shown red — once every placed word is found, or while the solution
 // shows (flipped); flipping back hides it again until the puzzle is done.
 export function wordList(play, words, flipped) {
-  var reveal = flipped || solved(play, words);
+  var reveal = flipped || solved(play.found, words);
   return words.map(function (w, i) { return { text: w.text, done: play.found.includes(i), revealed: w.missing && reveal }; });
 }
 
