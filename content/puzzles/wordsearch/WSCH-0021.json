@@ -1,0 +1,452 @@
+{
+  "hiddenId": "WSCH-0021",
+  "type": "Repeats",
+  "created": "2026-10-03",
+  "title": "Tickets",
+  "wordGroups": [
+    "trains"
+  ],
+  "words": [
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Ticket",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 6
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "KKTICKETTEKCITT",
+        "TICKETITICKETTE",
+        "ETTEKCITECTKKCK",
+        "KITEKCITTKKKTTC",
+        "CCTEKCKEECCETEI",
+        "IKTEKCKEKEKITKT",
+        "TETEKCITCCICTCI",
+        "ITTEICITICKETIC",
+        "CIITKCITTEKCITK",
+        "KCTCKCITTTTTTTE",
+        "EKTEKCITEEEIEET",
+        "TETECETTKKCKKKI",
+        "TTEKCITCCKCICCT",
+        "TEKCITIIEIEIIIE",
+        "TICKETTTEKCITTT"
+      ]
+    }
+  ]
+}

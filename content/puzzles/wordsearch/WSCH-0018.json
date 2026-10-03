@@ -1,0 +1,1347 @@
+{
+  "hiddenId": "WSCH-0018",
+  "type": "Mirra?e",
+  "created": "2026-10-03",
+  "title": "Camping",
+  "wordGroups": [
+    "camping"
+  ],
+  "words": [
+    {
+      "word": "Adventure",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Axe",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Backpack",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bear",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Binoculars",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Birdsong",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 18
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Bug spray",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bush",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Cabin",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Camp bed",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Camp mug",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 21
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Camp table",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Campervan",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Campervan",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Campervan",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Campervan",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Campervan",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Campfire",
+      "missing": true
+    },
+    {
+      "word": "Campsite",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Canyon",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Cereal bar",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Cliff",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Compass",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Cooking",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Cool box",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Crickets",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Deer",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Dew",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Dry bag",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Explore",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Fern",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Field",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Firelighter",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Firewood",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Fishing rod",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Flask",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 17
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Folding chair",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Footpath",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Forest",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Fox",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Frying pan",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Gear",
+      "missing": true
+    },
+    {
+      "word": "Ghost stories",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Glade",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Grass",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Griddle",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Grill",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Groundsheet",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Hammock",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Hatchet",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Head torch",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Hike",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Hiking boots",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Hiking pole",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Hill",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Insects",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Kindling",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Knife",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Lake",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Lantern",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Lighter",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Log",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 21
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Mallet",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Map",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 15
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Marshmallow",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Matches",
+      "missing": true
+    },
+    {
+      "word": "Meadow",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 20
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Mess tin",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 17
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Midges",
+      "missing": true
+    },
+    {
+      "word": "Moonlight",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Moss",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Motorhome",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Mountain",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 20
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Nature",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Navigation",
+      "missing": true
+    },
+    {
+      "word": "Night sky",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Night-time",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Orienteering",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 13
+      },
+      "direction": "NE",
+      "length": 12
+    },
+    {
+      "word": "Owl",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 22
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Path",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Penknife",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Poncho",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Pond",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Ramble",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Ridge",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 17
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "River",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Rope",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 13
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Rucksack",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Scout",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 18
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Shelter",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Sleeping bag",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Sleeping mat",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Squirrel",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Stargazing",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 11
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Stars",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Stick",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Stove",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Stream",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 18
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Sunglasses",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Sunhat",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Sunrise",
+      "missing": true
+    },
+    {
+      "word": "Sunscreen",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Sunset",
+      "missing": true
+    },
+    {
+      "word": "Survival",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Tarp",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Tent",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Tent flap",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Tent pegs",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Tent pole",
+      "missing": true
+    },
+    {
+      "word": "Torch",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Trail",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Trail guide",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Tree",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Valley",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Water bottle",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 18
+      },
+      "direction": "NW",
+      "length": 11
+    },
+    {
+      "word": "Waterfall",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Wellies",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Whistle",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Wilderness",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wildlife",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Wood pile",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Woods",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 5
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "TSNUPENKNIFEELBATPMACTROG",
+        "ICOOLBOXNEKMOLKZRXWURGGMH",
+        "KFBEUFIASWCMPECCTYCDMTYPE",
+        "DNVGEWVTYNWDARAXDMAEBKLTA",
+        "FYIRNRPAQBDPQRPWKSAOLWEED",
+        "EBNFENOIFOPLZIKWDDGHNDXQT",
+        "STDPEPYQIXLBKUCFOERIAXMAO",
+        "XHMEDHXWSADAIQAWLEOKVGUFR",
+        "UANRXNXYHTZNNSBIRCUIRXKCC",
+        "CRISVPOUIIAUGCPUGCNNEVMNH",
+        "UNGYLCLPNPSIKDGMXZDGPIHDY",
+        "PKHXAEDOGQZTOCOTASSBMPWNB",
+        "UNTHYPZNRHCOLQALKPHOAGVBF",
+        "QBSYWCISOEWAWEGIEUEOCLOGV",
+        "PGKDAYOTDGBNNEDPFKETDMBVO",
+        "ETYLRXIIDBQSEYOMMVTSWWHMG",
+        "AFNFZWECCEYTVROFQXGRILLNT",
+        "RZMGGQPKWLDCOQCNEERCSNUST",
+        "XAYNNHHZPBAETPHGSELETBNLE",
+        "NDBTGCXCAMASSCZFAMBKQPHBL",
+        "CEGLDPAKYAKNQSLPIWUPPAEOL",
+        "XATRAYPMERXIEELQZPBXMTOOA",
+        "GTMLAESCPMYSGKBMQYIMRPURM",
+        "KNEPOSRRAEODXWCIWEOWILKSF",
+        "AKIUETSENBRHYDZRACXAAFNEY",
+        "CRWKDRXHCSIVRICQKSPTHQAIC",
+        "WAEGOTVYFOUNAOTZWDVECDVRA",
+        "AORBXOXAUGGNINTUOCSRGYROM",
+        "QHUCYOCRNRVQGTYOCFGFNRETP",
+        "SCTOTAFPCIGRILSIMYBAIZPSS",
+        "RNNSADWSHDZBKCASGCOLDZMTI",
+        "ROETHVEGCDVBOBFSERQLLNAST",
+        "OPVANPSURLWYNYHNSMKTOECOE",
+        "HFDRURPBOEFMMDGCNEMLFSWHX",
+        "PDASSKRWTTIEKIHGUFSEVVQGC"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 13
+        },
+        {
+          "row": 3,
+          "col": 0
+        },
+        {
+          "row": 4,
+          "col": 17
+        },
+        {
+          "row": 5,
+          "col": 7
+        },
+        {
+          "row": 15,
+          "col": 22
+        },
+        {
+          "row": 18,
+          "col": 0
+        },
+        {
+          "row": 18,
+          "col": 5
+        },
+        {
+          "row": 19,
+          "col": 16
+        },
+        {
+          "row": 21,
+          "col": 3
+        },
+        {
+          "row": 27,
+          "col": 20
+        }
+      ]
+    },
+    {
+      "rows": [
+        "OATVTRAILBMWDYLTRAILGUIDE",
+        "TTENRPDPFFHIHEFFNPYGEOBAA",
+        "AHHRZAHDQXCLSLEEPINGBAGMZ",
+        "GBCTLTIBEOHDPLYHIKINGPOLE",
+        "AFTEANEWTYFLOAHHHIFXCTCGQ",
+        "SWANAPKNIASIPVSLZMTPHABDD",
+        "SHHTQTZGTHPFOLEFCGLFMTESG",
+        "LKEFSMZRTKVEDQIOAKFPDGPNK",
+        "WOLLAMHSRAMGCALBWIBVCXIMH",
+        "TITATRWEUFVEGMLNLEGDQRQNA",
+        "ECVPFEQKOAQFSEECDWNVEKMRC",
+        "DWFCKCRCUVBVUWWTLWYESSOAR",
+        "BINOCULARSWOERUTANTAMYVEZ",
+        "MEDHILLCSGEPTNETSNLOMETBS",
+        "OMNTUYIRUZGSRGFZEFUCGKIZE",
+        "OIAWTBBHTAPTOOFIHNIDIUEQE",
+        "NTCLEEVNDSNNYQRITBIYLZWNR",
+        "LTOVNBMRTNSWDOZADRGABYRDT",
+        "IHMWFWIEEEVDUNIWILDERNESS",
+        "GGPHIVKTYLCSONXTILQGLADEZ",
+        "HIASLCUHCTTWTOFRUCKSACKLD",
+        "TNSLIIDGEDATHAWORPSPLNAFO",
+        "UOSRAVSIKWWQOVRARGNSFVWOO",
+        "MOCVIKCLUOPGDBAGMEBHINEMG",
+        "ZIVTNHEKEFXCNARHAUSVRODRL",
+        "BGNEILIKNEVKOOVESZRTEFXFP",
+        "SDGKALHYHBPKKPSHTUILLWAGB",
+        "IONXCUHOWMPIAZODSAWNIDODV",
+        "AOILMSBFFPXFNMXGRCWTGPHWN",
+        "UWLWMHLLIIUOMGAKUILRHAASL",
+        "GEDBPRATEREVIRMEPMBITLKRB",
+        "PRNRETNALAEUTNOARTPBEIIED",
+        "GIIOMTKBDTVEOFONTTCMRLQED",
+        "MFKHUFWZWYMSDHVZHNSRAVCEB",
+        "KSFPGBZPLYAGUGMZZRCWBCLAT"
+      ],
+      "wildcards": [
+        {
+          "row": 3,
+          "col": 12
+        },
+        {
+          "row": 8,
+          "col": 20
+        },
+        {
+          "row": 14,
+          "col": 1
+        },
+        {
+          "row": 17,
+          "col": 9
+        },
+        {
+          "row": 19,
+          "col": 2
+        },
+        {
+          "row": 20,
+          "col": 11
+        },
+        {
+          "row": 28,
+          "col": 1
+        },
+        {
+          "row": 28,
+          "col": 5
+        },
+        {
+          "row": 30,
+          "col": 18
+        },
+        {
+          "row": 31,
+          "col": 12
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1567 @@
+{
+  "hiddenId": "WSCH-0017",
+  "type": "Mirra?e",
+  "created": "2026-10-03",
+  "title": "Home",
+  "wordGroups": [
+    "home"
+  ],
+  "words": [
+    {
+      "word": "Alarm",
+      "missing": true
+    },
+    {
+      "word": "Art",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 24
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Banister",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 19
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bath",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 21
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Bathroom",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bed",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 23
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Bedroom",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 18
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Bin",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 21
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Blanket",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Blender",
+      "missing": true
+    },
+    {
+      "word": "Blinds",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Bowl",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Bread bin",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Broom",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Brush",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 15
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Bulb",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Cabinet",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 11
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Calendar",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 16
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Candle",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Carpet",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Ceiling",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Cellar",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 13
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Chair",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Chest of drawers",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 14
+    },
+    {
+      "word": "Clock",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Coat hook",
+      "missing": true
+    },
+    {
+      "word": "Coffee table",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Comb",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Conservatory",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Cookbook",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Cooker",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 16
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Couch",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Cup",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Curtains",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Cushion",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cutlery",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Desk",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Desk",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Desk",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Desk",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Desk",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Detergent",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Dining room",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 19
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Dishwasher",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Door",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 17
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Doorbell",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Doorknob",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Doormat",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Drawer",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Duster",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Dustpan",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Duvet",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Fan",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Fence",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Fireplace",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Floor",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 19
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Fork",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Frame",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Freezer",
+      "missing": true
+    },
+    {
+      "word": "Fridge",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Garage",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Garden",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Hallway",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Heater",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Hob",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Home office",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Iron",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Ironing board",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Kettle",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Key",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Kitchen",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 15
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Knife",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Lamp",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 15
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Landing",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Laundry",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Laundry basket",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Letterbox",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Living room",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Lock",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Loft",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Mantelpiece",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Mat",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Microwave",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Mirror",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Modem",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Mop",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 21
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Mug",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Napkin",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Nightlight",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Oven",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Paint",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Pan",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 20
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Pantry",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Pegs",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Picture",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pillow",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Plant",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Plate",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Plug socket",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Porch",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 17
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Pot",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Radiator",
+      "missing": true
+    },
+    {
+      "word": "Recycling",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Roof",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Router",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Rug",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Shelf",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Shoe rack",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Shower",
+      "missing": true
+    },
+    {
+      "word": "Sink",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Soap",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Sofa",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 20
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Spatula",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Speaker",
+      "missing": true
+    },
+    {
+      "word": "Sponge",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 23
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Spoon",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Stairs",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Switch",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Table",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Teapot",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Thermostat",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Tile",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Tissue",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Toaster",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Toilet",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Toothbrush",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Toothpaste",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Towel",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 19
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Toys",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 20
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Tray",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 19
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Tumble dryer",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "TV",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 2
+    },
+    {
+      "word": "Utility room",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Vacuum",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Vase",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Wall",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Wall art",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Wallpaper",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Wardrobe",
+      "missing": true
+    },
+    {
+      "word": "Washing line",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 13
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Washing machine",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 24
+      },
+      "direction": "W",
+      "length": 14
+    },
+    {
+      "word": "Washing-up liquid",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 15
+    },
+    {
+      "word": "Whisk",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Window",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 6
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "MSLAFOIYRDNUALQDDUSTERXYE",
+        "IIAYPOBMOCKNCLGFDESKLXCAE",
+        "CCDSRXTNIAPWWFWEAWPPUKXBL",
+        "RBOOGOXGKOWWFAAKKVLFUKLXT",
+        "OGDGHDUDCANDLELGSHAMRDMST",
+        "WSINIGHTLIGHTNLWVCNOXUPTE",
+        "APUHTOPAETEGYAWMSRTOIOCEK",
+        "VOQWFSLWRRCMMYCPDOERNDQLT",
+        "EOISNIATRUCLEHCXKPMGVMFIO",
+        "VNLFLYYDCSDWDXPOTBENYBBOO",
+        "XIPYPFTXTBAKOUQEFLEIDTKTT",
+        "CPUWTXDACXXHMVFOQICNEESGH",
+        "BXGYXRIOSYKROFGEHNQISKENB",
+        "KQNFIRARBTYOWCHABDDDKCDIR",
+        "BXIOSHNLALSDUKEERSLNPOYLU",
+        "PLHKNCCRLSUTYSKKAARSUSUCS",
+        "AKSSNROIOALBOCISYTGXRGDYH",
+        "QQALWFOTXEWEPTKSHOEEPUXCX",
+        "REWARDKBRFPMCODOENDRGLRED",
+        "GRUVXCBYLVOHIFOXVBBOMPTRA",
+        "XCUSHIONIDEULAUNDRYBASKET",
+        "IEGOWTOLVNCDTFXWYARTYKOMB",
+        "PLFGMNKUIMFENIHCAMGNIHSAW",
+        "YVXXKEDDNYRWHDLWFQBTQWORD",
+        "EMAAWGHEGBEGTWOBELOMECEEW",
+        "KTLLTRQLRGPLFCEURWTEVUDHS",
+        "QGHLUEITOFAGOEESEUHCEWRSU",
+        "MDPAITRCOLPALIXLMASTQBGAY",
+        "OEGNKEAQMALKMLHFLPFHAHTWY",
+        "OPEDBDTPCELHYIGUEADOLBQHW",
+        "RFMIBFGDSOASQNCGDIRKSKCSG",
+        "HERNISNMQEWLGGSKLIFKSOLIU",
+        "TTFGBCFEFQKTEUSSITSMUEGDY",
+        "ASREWARDFOTSEHCDYECCSYDVB",
+        "BQVGMOORBLANKETTDFHXTOYSE"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 7
+        },
+        {
+          "row": 4,
+          "col": 3
+        },
+        {
+          "row": 13,
+          "col": 2
+        },
+        {
+          "row": 13,
+          "col": 18
+        },
+        {
+          "row": 13,
+          "col": 24
+        },
+        {
+          "row": 14,
+          "col": 4
+        },
+        {
+          "row": 18,
+          "col": 1
+        },
+        {
+          "row": 27,
+          "col": 14
+        },
+        {
+          "row": 28,
+          "col": 1
+        },
+        {
+          "row": 32,
+          "col": 15
+        }
+      ]
+    },
+    {
+      "rows": [
+        "LDCMSNTRIAHCMMRFHVBRGMQLT",
+        "OOVOMDFKKGRFIYNCUAFETUFYK",
+        "YOVSSCTILEEENADINSTTOOLWU",
+        "DRDCLWNSFMCCPYFFOENSOKBFN",
+        "OKCSRBIXUIUKAWHISKPITKCKW",
+        "ONEUBACTFKIGPBMMNRHNHDWOO",
+        "ROGNBKQFCNDNEXIXMFPAPYECL",
+        "BBVHTUOSEHPTINSNIPABASFBN",
+        "EBPSUEFUPCAGAETRELNQSYTKI",
+        "LPOVMAMICLCPCYEPETTXTFSBY",
+        "LEKOBYKDPATTCPTMCPRSEBINS",
+        "LPHQLTDQRSWULATADVYHNMTBM",
+        "NIVLEYXPUKVAMKLLFHCLOOLOE",
+        "LLHGDKEDRLCLNEDYILNPMIOIU",
+        "BLSIRTBIDEWANPYSOLMFRRLKK",
+        "HOSPYCLKPSODRXICGCTQDQNTU",
+        "RWHHEXNCLOAFTEKVDIOEBYOFT",
+        "BWMMRIVBERSFIVOIOVBLAAMYA",
+        "OAOUSEPFRWUNSXKHECNEFDHVB",
+        "YHYDUDLUIEROGSBNSHQICBLAL",
+        "BALYNDOECOAOTATSOMREHTQCE",
+        "KLXEMINFOPIDCWFXRAKBOWLUH",
+        "RLICHFWFWLRABLAPIELUODNUI",
+        "YWHOXFVNTROREIKSXDCNVAFMR",
+        "CAFNNWLKEONHCUNNHDFBPHERO",
+        "PYCSCWTFSDSGQGKSCIOFONGWN",
+        "RVXEIQPQKNIFECHOEINOWABSI",
+        "MOORYTILITUCWROHUSFGRRCPN",
+        "WCBVLRORRIMVRKGGQMPDLLRBG",
+        "LPRAKHVUDKABEBQLKCEHVIXAB",
+        "RFETTOASTERREDNRLNXNWQNHO",
+        "DRTOMANTELPIECELOPICTUREA",
+        "KATRFPYADOORMATONOHUUBRBR",
+        "LMEYSEWYFTGKCNOMCSLUWIALD",
+        "UELICFRIDGEGELBATEEFFOCPV"
+      ],
+      "wildcards": [
+        {
+          "row": 5,
+          "col": 5
+        },
+        {
+          "row": 10,
+          "col": 24
+        },
+        {
+          "row": 13,
+          "col": 13
+        },
+        {
+          "row": 18,
+          "col": 1
+        },
+        {
+          "row": 21,
+          "col": 9
+        },
+        {
+          "row": 21,
+          "col": 24
+        },
+        {
+          "row": 23,
+          "col": 3
+        },
+        {
+          "row": 25,
+          "col": 13
+        },
+        {
+          "row": 27,
+          "col": 5
+        },
+        {
+          "row": 28,
+          "col": 22
+        }
+      ]
+    }
+  ]
+}

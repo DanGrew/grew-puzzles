@@ -1,0 +1,312 @@
+{
+  "hiddenId": "WSCH-0025",
+  "type": "Repeats",
+  "created": "2026-10-03",
+  "title": "Presents",
+  "wordGroups": [
+    "christmas"
+  ],
+  "words": [
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 8
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "PRESENTSPPERPPN",
+        "PRESENTSRPTNNSP",
+        "NREPRESENTSPNPS",
+        "EEPSNSSTNESERPP",
+        "RPPREETSTNESERP",
+        "PRRSNNSSTNESERP",
+        "REETPSTSTNESERP",
+        "ESSNERNSTNESERP",
+        "SEEEPPESTNESERP",
+        "ENNSNSSSTNESERP",
+        "NTTEPRESENTSERR",
+        "TSSREERSTNESERP",
+        "SNEPSSPSERTSERP",
+        "SESPRESENTSSRNP",
+        "PRESENTSTNESERP"
+      ]
+    }
+  ]
+}
