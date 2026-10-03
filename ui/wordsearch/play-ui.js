@@ -28,16 +28,48 @@ export function openPlayPage(search) {
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(markPrintout)
+    .then(function (puzzle) { return markPrintout(playEl, puzzle); })
     .then(playBoard)
     .then(showPuzzle, showMissing);
 }
 
 // The hidden ID never reaches the board on screen: only the printout carries it, small under the
 // words card, to match a sheet to its puzzle (styles/play.css draws it from this attribute).
-function markPrintout(puzzle) {
-  playEl('words-list').setAttribute('data-hidden-id', puzzle.hiddenId);
+// part finds a part of the page by its id: the play page's own, or a copy of it in the book.
+export function markPrintout(part, puzzle) {
+  part('words-list').setAttribute('data-hidden-id', puzzle.hiddenId);
   return puzzle;
+}
+
+// The printout's side of a puzzle — its title and date, the puzzle grid under its type band, and
+// its words — drawn into the parts part finds. The play page draws it into itself, each cell
+// tapping onCell; the book (ui/book-ui.js) draws it into each copy of the play page it prints, so
+// the printout and the book's pages are one layout.
+export function drawSheet(part, board, onCell) {
+  part('title').textContent = board.title;
+  part('created').textContent = board.created;
+  part('label').textContent = board.label;
+  part('play').style.setProperty('--cols', board.cols);
+  part('play').style.setProperty('--rows', board.rows);
+  // The puzzle side shows a wildcard's ?, never its letter — in its label too.
+  fillGrid(part('grid'), board.shown, function (r, c) {
+    var cell = document.createElement('button');
+    cell.type = 'button';
+    cell.setAttribute('aria-label', board.shown[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
+    cell.addEventListener('click', function () { onCell([r, c]); });
+    return cell;
+  });
+  board.wild.flat().forEach(function (wild, i) { part('grid').children[i].classList.toggle('wild', wild); });
+  // One line per word, however many copies; a word's progress sits beside it, on screen only.
+  listedWords(board.words).forEach(function (entry) {
+    var li = document.createElement('li');
+    var progress = document.createElement('span');
+    li.textContent = entry.text;
+    progress.className = 'progress';
+    li.appendChild(progress);
+    part('words').appendChild(li);
+  });
+  part('play').hidden = false;
 }
 
 function showMissing() {
@@ -50,37 +82,14 @@ function showMissing() {
 function showPuzzle(board) {
   var play = newPlay();
   document.title = board.title + ' · Grew Puzzles';
-  playEl('title').textContent = board.title;
-  playEl('created').textContent = board.created;
-  playEl('label').textContent = board.label;
+  drawSheet(playEl, board, onTap);
+  // The solution side, on screen only, shows every real letter.
   playEl('solution-label').textContent = board.solutionLabel;
-  playEl('play').style.setProperty('--cols', board.cols);
-  playEl('play').style.setProperty('--rows', board.rows);
-  // The puzzle side shows a wildcard's ?, never its letter — in its label too; the solution side
-  // shows every real letter.
-  fillGrid(playEl('grid'), board.shown, function (r, c) {
-    var cell = document.createElement('button');
-    cell.type = 'button';
-    cell.setAttribute('aria-label', board.shown[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
-    cell.addEventListener('click', function () { onTap([r, c]); });
-    return cell;
-  });
-  board.wild.flat().forEach(function (wild, i) { playEl('grid').children[i].classList.toggle('wild', wild); });
   fillGrid(playEl('solution-grid'), board.letters, function () { return document.createElement('span'); });
-  // One line per word, however many copies; a word's progress sits beside it.
-  listedWords(board.words).forEach(function (entry) {
-    var li = document.createElement('li');
-    var progress = document.createElement('span');
-    li.textContent = entry.text;
-    progress.className = 'progress';
-    li.appendChild(progress);
-    playEl('words').appendChild(li);
-  });
   drawMarks(playEl('solution-overlay'), board, playMarks(solvedPlay(board.words), board.words));
   wireFlip(render);
   wireWords();
   render();
-  playEl('play').hidden = false;
 
   function onTap(cell) {
     play = tap(play, cell, board.words);
