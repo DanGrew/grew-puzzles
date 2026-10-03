@@ -598,16 +598,24 @@ describe('how the words fill their card', () => {
     expect(wordsFit('bottom', page({ cardWidth: 484, pageWidth: 484 })).columns).toBe(4);
   });
 
-  it('in Overlay fits as many columns as the grid card is wide, whatever the page', () => {
-    expect(wordsFit('overlay', page({ cardWidth: 483 })).columns).toBe(3);
-    expect(wordsFit('overlay', page({ cardWidth: 484, pageWidth: 300 }))).toMatchObject({ sits: 'overlay', columns: 4 });
+  it('in Overlay fills the grid card\'s height before adding a column', () => {
+    // 300 tall holds nine 27px rows: ten words take two columns, though three fit across.
+    expect(wordsFit('overlay', page())).toMatchObject({ sits: 'overlay', columns: 2 });
+    expect(wordsFit('overlay', page({ cardHeight: 323 })).columns).toBe(1);
+    expect(wordsFit('overlay', page({ count: 19, cardHeight: 322 })).columns).toBe(3);
+  });
+
+  it('in Overlay fits no more columns than the grid card is wide, whatever the page, and scrolls the rest', () => {
+    // 87 tall holds one row: every word wants its own column, and the width caps them.
+    expect(wordsFit('overlay', page({ cardHeight: 87, cardWidth: 483 })).columns).toBe(3);
+    expect(wordsFit('overlay', page({ cardHeight: 87, cardWidth: 484, pageWidth: 300 }))).toMatchObject({ sits: 'overlay', columns: 4 });
   });
 
   it('never has more columns than words, nor fewer than one', () => {
     expect(wordsFit('bottom', page({ count: 2, wordWidths: [10] })).columns).toBe(2);
-    expect(wordsFit('overlay', page({ count: 2, wordWidths: [10] })).columns).toBe(2);
+    expect(wordsFit('overlay', page({ count: 2, wordWidths: [10], cardHeight: 87 })).columns).toBe(2);
     expect(wordsFit('bottom', page({ cardWidth: 50 })).columns).toBe(1);
-    expect(wordsFit('overlay', page({ cardWidth: 50 })).columns).toBe(1);
+    expect(wordsFit('overlay', page({ cardWidth: 50, cardHeight: 87 })).columns).toBe(1);
   });
 
   it('in Right fills as many rows as the grid card is tall, then adds columns', () => {

@@ -269,10 +269,12 @@ function wireWordsFit() {
 }
 
 // The page measured for play-core's wordsFit, and its answer drawn: where the list sits, the grid
-// card's size for the words card to take, and each word's column and row. The words are measured
+// card's size for the words card to take, and each word's column and row. The play area is the
+// window wide (styles/play.css), so the page is measured once it is. The words are measured
 // as revealed, the boldest they get.
 function layoutWords() {
   var play = playEl('play'), list = playEl('words'), box = list.parentElement;
+  play.style.setProperty('--view-w', document.documentElement.clientWidth + 'px');
   var card = playEl('stage').getBoundingClientRect();
   list.classList.add('measuring');
   var widths = Array.from(list.children).map(function (li) { return li.getBoundingClientRect().width; });

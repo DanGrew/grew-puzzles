@@ -728,8 +728,9 @@ for (const layout of ['bottom', 'right', 'overlay']) {
       const columns = columnsOf(boxes);
       expect(columns.flat()).toHaveLength(puzzle.words.length);
       expectEven(columns);
-      // Beside the grid, eight words fit one column; anywhere else, and sixty anywhere, take more.
-      expect(columns.length > 1).toBe(!(layout === 'right' && name === 'eight'));
+      // Beside or over the grid, eight words fit one column down its height; under it they spread
+      // across its width; sixty take more than one anywhere.
+      expect(columns.length > 1).toBe(layout === 'bottom' || name === 'sixty');
       await expect(page.locator('#words li').first()).toHaveCSS('justify-self', 'center');
     });
   }
@@ -812,6 +813,21 @@ test('in Right on a screen too narrow for the columns beside the grid, the list 
   expectEven(columnsOf(await wordBoxes(page)));
 });
 
+// The fixture 25 columns wide, as a Mirrorise grid is: a grid card wider than the site's 1080px page.
+const WIDE_25_PUZZLE = { ...PUZZLE, grids: [{ rows: PUZZLE.grids[0].rows.map(row => row.repeat(4).slice(0, 25)) }] };
+
+test('in Right a 25-column grid has its words beside it whenever the window is wide enough for both', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', WIDE_25_PUZZLE);
+  const stage = await box(page, '.stage');
+  expect(stage.width).toBeGreaterThan(1080);
+  const aside = await box(page, 'aside');
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(1400);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1400);
+});
+
 test('in Right a list that needs more room beside the grid than the window has drops under, and comes back beside when widened', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
   await openWords(page, 'right', LONG_PUZZLE);
@@ -825,6 +841,19 @@ test('in Right a list that needs more room beside the grid than the window has d
   }).toPass();
   await page.setViewportSize({ width: 1400, height: 900 });
   await expect(async () => expect((await box(page, 'aside')).x).toBeGreaterThan((await box(page, '.stage')).x + stage.width)).toPass();
+});
+
+test('in Overlay a list fills the grid card\'s height before it adds a column, leaving no wasted room below', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'overlay', { ...LONG_PUZZLE, words: LONG_PUZZLE.words.slice(0, 30) });
+  const list = await box(page, '#words');
+  const columns = columnsOf(await wordBoxes(page));
+  expect(columns.length).toBeGreaterThan(1);
+  // As few columns as the card's height allows: one fewer, full to the foot, couldn't hold them.
+  const pitch = columns[0][1].top - columns[0][0].top;
+  const rows = Math.floor((list.y + list.height - columns[0][0].top) / pitch);
+  expect((columns.length - 1) * rows).toBeLessThan(30);
+  expect(Math.max(...columns.map(c => c.length))).toBeLessThanOrEqual(rows);
 });
 
 test('in Overlay the list lies over the grid card at its size, and a long list scrolls down inside it to every word, never sideways', async ({ page }) => {

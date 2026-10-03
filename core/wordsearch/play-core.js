@@ -265,7 +265,8 @@ export function saveWordsLayout(write, layout) {
 // The list reads like the paper: down each column, then on to the next, no column more than one
 // word longer than another. Its card takes its size from the grid card: under it, never wider and
 // growing down; beside it, exactly as tall and growing into more columns — or under it, as
-// Bottom, when the page has no room beside; over it, exactly its size and scrolling down.
+// Bottom, when the page has no room beside; over it, exactly its size, filling its height before
+// adding columns, and scrolling down once no more fit across.
 // m is the page measured in px: count words, the widest of wordWidths (each as revealed, so a
 // reveal never reflows), rowHeight and the list's colGap/rowGap; the grid card's cardWidth and
 // cardHeight; the words card's own chromeWidth/chromeHeight round its list; and the page's
@@ -292,14 +293,20 @@ function underFit() {
   return { sits: 'bottom', columns: function (m) { return acrossColumns(m, Math.min(m.cardWidth, m.pageWidth)); } };
 }
 
+// Over: as few columns as fill the grid card's height, never more than fit across it — a list
+// longer than that scrolls down.
 function overFit() {
-  return { sits: 'overlay', columns: function (m) { return acrossColumns(m, m.cardWidth); } };
+  return { sits: 'overlay', columns: function (m) { return Math.min(acrossColumns(m, m.cardWidth), Math.ceil(m.count / downRows(m))); } };
+}
+
+// As many rows as the grid card's height holds, and always one.
+function downRows(m) {
+  return Math.max(1, Math.floor((m.cardHeight - m.chromeHeight + m.rowGap) / (m.rowHeight + m.rowGap)));
 }
 
 // Beside: as many rows as the grid card's height holds, then as many columns as the words need.
 function besideFit(m) {
-  var rows = Math.max(1, Math.floor((m.cardHeight - m.chromeHeight + m.rowGap) / (m.rowHeight + m.rowGap)));
-  var columns = Math.ceil(m.count / rows);
+  var columns = Math.ceil(m.count / downRows(m));
   var width = m.cardWidth + m.pageGap + m.chromeWidth + columns * (widestWord(m) + m.colGap) - m.colGap;
   var beside = { sits: 'right', columns: function () { return columns; } };
   return { true: beside, false: underFit() }[width <= m.pageWidth];

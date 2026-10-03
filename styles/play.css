@@ -31,11 +31,15 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
    in Right is under the grid when there's no room beside it; --card-w and --card-h are the grid
    card's size; the list is --word-cols columns, each --word-w or wider, every word placed down
    its column. Bottom: the grid card's width at most, growing down. Right: the grid card's height
-   exactly, growing into more columns. Overlay: the card's size, scrolling down. */
+   exactly, growing into more columns. Overlay: the card's size, filling its height first,
+   scrolling down. The grid and its words may use the whole window, past the page's 1080px — a
+   wide grid keeps its words beside it whenever the window has room for both: --view-w is the
+   window's width, less the page's 24px edges. A word never breaks onto two lines. */
 @media screen {
+  .play[data-sits] { margin-inline: min(0px, calc((100% - var(--view-w)) / 2 + 24px)); }
   .play[data-sits] .words-box { box-sizing: border-box; display: flex; flex-direction: column; }
   .play[data-sits] ul.words { flex: 1 1 auto; min-height: 0; align-content: start; }
-  .play[data-sits] ul.words li { width: max-content; }
+  .play[data-sits] ul.words li { width: max-content; white-space: nowrap; }
   .play[data-sits] ul.words.measuring li { font-weight: 700; }
   .play[data-sits="bottom"] { flex-flow: column; align-items: center; }
   .play[data-sits="bottom"] aside { flex: none; width: min(var(--card-w), 100%); max-width: none; }
