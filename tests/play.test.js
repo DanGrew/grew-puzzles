@@ -324,6 +324,81 @@ test('a puzzle with no missing word shows nothing red, finished or flipped', asy
   await expect(page.locator('#words li.revealed')).toHaveCount(0);
 });
 
+// ---- A puzzle with wildcards ----
+
+// The fixture as a Wildcards puzzle: Cat's A (row 3, col 2) and Ice cream's second C (row 0, col 3) show ?.
+const WILD_PUZZLE = { ...PUZZLE, type: 'Wildcards', wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] };
+const solutionCell = (page, r, c) => page.locator('#solution-grid .cell').nth(r * COLS + c);
+
+test('a Wildcards puzzle shows ? at its wildcards, letter-sized, and says Wildcards in the band', async ({ page }) => {
+  await open(page, null, WILD_PUZZLE);
+  await expect(page.locator('#label')).toHaveText('Wildcards');
+  await expect(cell(page, 3, 2)).toHaveText('?');
+  await expect(cell(page, 0, 3)).toHaveText('?');
+  await expect(page.locator('#grid .cell', { hasText: '?' })).toHaveCount(2);
+  await expect(page.locator('#grid .cell.wild')).toHaveCount(2);
+  await expect(cell(page, 3, 2)).toHaveAttribute('aria-label', '?, row 4, column 3');
+
+  const size = locator => locator.evaluate(el => {
+    const s = getComputedStyle(el);
+    return [s.fontSize, s.fontWeight, el.getBoundingClientRect().width, el.getBoundingClientRect().height];
+  });
+  expect(await size(cell(page, 3, 2))).toEqual(await size(cell(page, 3, 1)));
+  await expect(cell(page, 3, 2)).toHaveCSS('color', 'rgb(31, 111, 92)');
+  await expect(cell(page, 3, 1)).toHaveCSS('color', FOUND_INK);
+});
+
+test('a word through a ? is found and crossed off, and the ? stays a ?', async ({ page }) => {
+  await open(page, null, WILD_PUZZLE);
+  await tapAll(page, [[4, 2], [2, 2]]);
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
+  await expect(page.locator('#count')).toHaveText('1/8');
+  await expect(cell(page, 3, 2)).toHaveText('?');
+});
+
+test('the solution of a Wildcards puzzle shows every real letter, lined through; flipping back the ?s return with the found words', async ({ page }) => {
+  await open(page, null, WILD_PUZZLE);
+  await tapAll(page, [[4, 2], [2, 2]]);
+  await page.locator('#flip').click();
+  await expect(page.locator('#solution-label')).toHaveText('Wildcards · Solution');
+  await expect(page.locator('#solution-grid .cell', { hasText: '?' })).toHaveCount(0);
+  await expect(solutionCell(page, 3, 2)).toHaveText('A');
+  await expect(solutionCell(page, 0, 3)).toHaveText('C');
+  await expect(page.locator('#solution-grid .cell.wild')).toHaveCount(0);
+  await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(8);
+
+  await page.locator('#flip').click();
+  await expect(cell(page, 3, 2)).toHaveText('?');
+  await expect(cell(page, 0, 3)).toHaveText('?');
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+  await expect(page.locator('#count')).toHaveText('1/8');
+});
+
+test('every word of a Wildcards puzzle can be found, completing it', async ({ page }) => {
+  await open(page, null, WILD_PUZZLE);
+  for (const ends of ALL_WORDS) await tapAll(page, ends);
+  await expect(page.locator('#count')).toHaveText('8/8');
+  await expect(page.locator('#complete')).toBeVisible();
+  await expect(page.locator('#grid .cell', { hasText: '?' })).toHaveCount(2);
+});
+
+test('a puzzle with no wildcards shows no ?, on either side', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('#grid .cell', { hasText: '?' })).toHaveCount(0);
+  await expect(page.locator('#grid .cell.wild')).toHaveCount(0);
+  await expect(cell(page, 3, 2)).toHaveText('A');
+  await expect(solutionCell(page, 3, 2)).toHaveText('A');
+});
+
+test('a Wildcards puzzle prints its ?s in black, letter-sized', async ({ page }) => {
+  await open(page, null, WILD_PUZZLE);
+  await page.emulateMedia({ media: 'print' });
+  await expect(cell(page, 3, 2)).toHaveText('?');
+  await expect(cell(page, 3, 2)).toHaveCSS('color', 'rgb(0, 0, 0)');
+});
+
 // ---- Where the words sit ----
 
 const layoutButton = page => page.locator('#words-layout');

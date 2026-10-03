@@ -35,14 +35,35 @@ function boardWord(w) {
   return { text: w.word, missing: Boolean(w.missing), cells: w.missing ? [] : wordCells(w) };
 }
 
+// A wildcard cell shows ? on the puzzle side only: the grid keeps its real letter, and the
+// solution side shows it. wild marks those cells; a puzzle without wildcards has none.
+function wildCells(puzzle, letters) {
+  return letters.map(function (row, r) {
+    return row.map(function (_, c) {
+      return Boolean(puzzle.wildcards?.some(function (w) { return w.row === r && w.col === c; }));
+    });
+  });
+}
+
+function shownLetters(letters, wild) {
+  return letters.map(function (row, r) {
+    return row.map(function (letter, c) { return { true: '?', false: letter }[wild[r][c]]; });
+  });
+}
+
 // The type is the board's only label: shown exactly as written, in the grid's header band.
+// letters are the real ones, for the solution side; shown is what the puzzle side shows.
 export function playBoard(puzzle) {
+  var letters = puzzle.grid.map(function (row) { return row.split(''); });
+  var wild = wildCells(puzzle, letters);
   return {
     title: puzzle.title,
     created: dayLabel(puzzle.created),
     label: puzzle.type,
     solutionLabel: puzzle.type + ' · Solution',
-    letters: puzzle.grid.map(function (row) { return row.split(''); }),
+    letters: letters,
+    shown: shownLetters(letters, wild),
+    wild: wild,
     rows: puzzle.grid.length,
     cols: puzzle.grid[0].length,
     words: puzzle.words.map(boardWord)

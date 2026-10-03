@@ -1,7 +1,7 @@
 /* The play page — Banded, light only, after docs/MOCKUP-PLAY-PAGE.html in the product entry. The
    grid card and the words card are index cards: black outline, hard offset shadow, green band. */
 :root {
-  --wrong: #e0473b; --select: #1f6f5c; --found: #0f2a24; --spark: #f2b705; --reveal: #b3261e;
+  --wrong: #e0473b; --select: #1f6f5c; --found: #0f2a24; --spark: #f2b705; --reveal: #b3261e; --wild: #1f6f5c;
   --gw: 600; --cell: clamp(26px, 5.4vw, 44px);
 }
 
@@ -48,6 +48,8 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
 .grid { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-auto-rows: var(--cell); }
 .cell { font: var(--gw) calc(var(--cell) * .5)/1 var(--font-body); color: var(--fg); background: none; border: 0; padding: 0;
   display: grid; place-items: center; cursor: pointer; border-radius: 50%; user-select: none; }
+/* A wildcard's ?: the letters' size and weight, so the grid stays even — told apart by colour. */
+.cell.wild { color: var(--wild); }
 .cell:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .cell:focus-visible { outline: 2px solid var(--select); outline-offset: -2px; }
 .back-face .cell { cursor: default; }
@@ -115,7 +117,7 @@ ul.words li.revealed { color: var(--reveal); font-weight: 700; }
    screen. The cell is sized so the grid leaves the words room, however many rows and columns. */
 @page { margin: 12mm; }
 @media print {
-  :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff;
+  :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff; --wild: #000;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
   .wrap { max-width: none; padding: 0; }
