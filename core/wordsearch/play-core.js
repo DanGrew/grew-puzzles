@@ -82,7 +82,8 @@ function solved(found, words) {
 
 // ---- Tapping ----
 // A play is { picked, found, events }: picked holds the selection's start, then its end
-// (0–2 cells); found the indices of the words crossed off; events what this tap set off.
+// (0–2 cells); found the indices of the words crossed off — each copy of a repeated word is its
+// own entry, so its own find; events what this tap set off.
 // The start stays put: each later tap in line with it only points the line at that letter.
 
 export function newPlay() {
@@ -166,14 +167,35 @@ export function playMarks(play, words) {
   };
 }
 
-// revealed: a missing word shown red — once every placed word is found, or while the solution
-// shows (flipped); flipping back hides it again until the puzzle is done.
-export function wordList(play, words, flipped) {
-  var reveal = flipped || solved(play.found, words);
-  return words.map(function (w, i) { return { text: w.text, done: play.found.includes(i), revealed: w.missing && reveal }; });
+// The list names each word once, where it first appears: a word with several copies is listed
+// once in the file per copy, and copies holds every one of them, by index.
+export function listedWords(words) {
+  var texts = words.map(function (w) { return w.text; });
+  return texts.filter(function (text, i) { return texts.indexOf(text) === i; }).map(function (text) {
+    return { text: text, copies: texts.map(function (_, i) { return i; }).filter(function (i) { return texts[i] === text; }) };
+  });
 }
 
-// Out of the placed words only: a missing word is never there to find.
+// One entry per listed word. done: every copy found; progress: copies found out of all of them,
+// for a word with more than one copy only. revealed: a missing word shown red — once every placed
+// word is found, or while the solution shows (flipped); flipping back hides it again until the
+// puzzle is done.
+export function wordList(play, words, flipped) {
+  var reveal = flipped || solved(play.found, words);
+  return listedWords(words).map(function (entry) {
+    var isFound = function (i) { return play.found.includes(i); };
+    var found = entry.copies.filter(isFound);
+    var copies = entry.copies.length;
+    return {
+      text: entry.text,
+      done: entry.copies.every(isFound),
+      revealed: words[entry.copies[0]].missing && reveal,
+      progress: { true: found.length + '/' + copies, false: '' }[copies > 1]
+    };
+  });
+}
+
+// Out of the placed copies only: a missing word is never there to find.
 export function countLabel(play, words) {
   return play.found.length + '/' + placedWords(words).length;
 }

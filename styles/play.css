@@ -91,6 +91,9 @@ ul.words li { font-size: 16px; position: relative; width: fit-content; justify-s
 ul.words li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
 /* A missing word, revealed: red, deeper than the line red so it reads on the white card. */
 ul.words li.revealed { color: var(--reveal); font-weight: 700; }
+/* A repeated word's progress, beside it: copies found out of all of them. */
+ul.words li .progress { margin-left: 6px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+ul.words li .progress:empty { display: none; }
 
 /* Completion: a short pop and sparkle */
 .board.pop { animation: pop .6s cubic-bezier(.2,1.6,.4,1); }
@@ -121,7 +124,7 @@ ul.words li.revealed { color: var(--reveal); font-weight: 700; }
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .help, button.corner, .complete, .back-face, svg.overlay, .spark, .count { display: none; }
+  .site, .help, button.corner, .complete, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
 
   .play-head { margin: 0 0 16px; }
   .play-head h1 { font-size: 26px; }
