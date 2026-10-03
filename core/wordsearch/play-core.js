@@ -38,9 +38,10 @@ function boardWord(w) {
 // A wildcard cell shows ? on the puzzle side only: the grid keeps its real letter, and the
 // solution side shows it. wild marks those cells; a puzzle without wildcards has none.
 function wildCells(puzzle, letters) {
-  var keys = (puzzle.wildcards || []).map(function (c) { return c.row + ',' + c.col; });
   return letters.map(function (row, r) {
-    return row.map(function (_, c) { return keys.includes(r + ',' + c); });
+    return row.map(function (_, c) {
+      return Boolean(puzzle.wildcards?.some(function (w) { return w.row === r && w.col === c; }));
+    });
   });
 }
 
