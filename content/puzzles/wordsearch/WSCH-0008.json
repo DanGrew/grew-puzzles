@@ -1,0 +1,332 @@
+{
+  "hiddenId": "WSCH-0008",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Mobile Phones",
+  "wordGroups": [
+    "mobile-phones"
+  ],
+  "words": [
+    {
+      "word": "App",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Battery",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Call log",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Camera",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Charger",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Data plan",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Emoji",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Face ID",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Keypad",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Lock",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Missed call",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "MMS",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Mobile",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Notification",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Passcode",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Ringtone",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Roaming",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Signal",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Silent mode",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "SIM card",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "SMS",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Swipe",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Texting",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Top up",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Touchscreen",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Unlock",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Vibrate",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Video call",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Voicemail",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Wi-Fi",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "YMDWGSMSPHSMMJI",
+        "RIUINVADATAPLAN",
+        "ESBFIGOMSWIPEXE",
+        "TSDITOBISTOPUPE",
+        "TEAPXLLACOEDIVR",
+        "ADPCELIDOELOVTC",
+        "BCYATLRLDTMIUKS",
+        "SAECHARGERBAICH",
+        "ILKDCCMNNRVOIOC",
+        "GLMMJOOFACEIDLU",
+        "NMIPBTMTLOCKLNO",
+        "ASPIGDECAMERAUT",
+        "LALNEDOMTNELISP",
+        "REIGNIMAOREMOJI",
+        "IRNOTIFICATIONI"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "hiddenId": "WSCH-0004",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Beach Games",
+  "wordGroups": [
+    "beach-games"
+  ],
+  "words": [
+    {
+      "word": "Bat and ball",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Beach ball",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Beach tennis",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Beanbag toss",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Bocce",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Boules",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Bowling",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Catch",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Cricket",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Digging",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Football",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Frisbee",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Hide and seek",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Hopscotch",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Kite",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Kubb",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Leapfrog",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Limbo",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Race",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Ring toss",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Rounders",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Sandcastle",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Tag",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Tug of war",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Volleyball",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Water fight",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "MHIDEANDSEEKBKS",
+        "KUBBYVOLLEYBALL",
+        "UGBEACHTENNISVB",
+        "SSOTGABNAEBKSEO",
+        "WATERFIGHTCILLC",
+        "SSOTGNIRCLGTRLC",
+        "VRECARTKTESEDAE",
+        "CWEORESFOALIMBO",
+        "TASDKAORCPUPGDG",
+        "DCTCNOWDSFFUNNB",
+        "KUICTUNFPRPTIAO",
+        "URWBHAODOOSLGTU",
+        "CAADSFPRHGWGGAL",
+        "VLFRISBEEOUAIBE",
+        "LLABHCAEBWATDPS"
+      ]
+    }
+  ]
+}

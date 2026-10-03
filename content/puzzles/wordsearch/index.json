@@ -11,6 +11,42 @@
       "type": "Vanilla",
       "created": "2026-10-03",
       "title": "Flowers"
+    },
+    {
+      "hiddenId": "WSCH-0003",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Cars"
+    },
+    {
+      "hiddenId": "WSCH-0004",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Beach Games"
+    },
+    {
+      "hiddenId": "WSCH-0005",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Football"
+    },
+    {
+      "hiddenId": "WSCH-0006",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Tabletop Games"
+    },
+    {
+      "hiddenId": "WSCH-0007",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Birthdays"
+    },
+    {
+      "hiddenId": "WSCH-0008",
+      "type": "Vanilla",
+      "created": "2026-10-03",
+      "title": "Mobile Phones"
     }
   ]
 }

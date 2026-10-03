@@ -1,0 +1,462 @@
+{
+  "hiddenId": "WSCH-0005",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Football",
+  "wordGroups": [
+    "football"
+  ],
+  "words": [
+    {
+      "word": "Ball",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Bench",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Captain",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Card",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Chants",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Clean sheet",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Club",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Coach",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Corner",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Cup",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Defend",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Defender",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Draw",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Dribble",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Dugout",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Fans",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Final",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Foul",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Goal",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Half-time",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Header",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Kick",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Kit",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "League",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Match",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Net",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Offside",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Pass",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Pitch",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Referee",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Save",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Score",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Shot",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Sub",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Tackle",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Team",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Throw-in",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Trophy",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "VAR",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Volley",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Whistle",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Winger",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Yellow card",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "NLPBTSCELBBIRDU",
+        "IEAAITDONIWORHT",
+        "AASLKNUDRACACTS",
+        "TGSLHAGSHNWNECY",
+        "PUKCSHOTUBEEOHM",
+        "AEAVBCUCUBHRPAG",
+        "COWHISTLESEOTLE",
+        "CTENDRCGNERCEFD",
+        "HYLLPNOAETHOVTI",
+        "CEKUFAERFANSAIS",
+        "TLCOLLEFKICKSMF",
+        "ILAFCFGREGNIWEF",
+        "POTHEADERDVARDO",
+        "IVMRREDNEFEDLMA",
+        "TEAMDRACWOLLEYE"
+      ]
+    }
+  ]
+}

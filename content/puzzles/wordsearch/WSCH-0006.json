@@ -1,0 +1,292 @@
+{
+  "hiddenId": "WSCH-0006",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Tabletop Games",
+  "wordGroups": [
+    "tabletop-games"
+  ],
+  "words": [
+    {
+      "word": "Azul",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Boggle",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Catan",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Chess",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Cluedo",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Codenames",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Draughts",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Go",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 2
+    },
+    {
+      "word": "Guess Who",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Hungry Hippos",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Jenga",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Kerplunk",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Liars dice",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Ludo",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Mahjong",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Mancala",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Mastermind",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Monopoly",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Mousetrap",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Risk",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Rummikub",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Scrabble",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Stratego",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Taboo",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Tiddlywinks",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 11
+    },
+    {
+      "word": "Yahtzee",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "EDIHNDGNOJHAMNR",
+        "PROGUJNGEOUIBCU",
+        "SANSPNEICLDPEHM",
+        "EURYKTGNMLGUEEM",
+        "CGHTANMRGRWGLSI",
+        "IHPREKIJYAEBOSK",
+        "DTTSLSSWWHBTUBU",
+        "SSAEJIUKYAIYSGB",
+        "RYAMJRPORLLPUAL",
+        "AALAZULCMODEPTM",
+        "IHANPKSUPCSDAOD",
+        "LTCENRSOASCBIHS",
+        "CZNDWPNTWDOUUTR",
+        "KEAOJOAHLODEULC",
+        "UEMCMNOKNULPREK"
+      ]
+    }
+  ]
+}

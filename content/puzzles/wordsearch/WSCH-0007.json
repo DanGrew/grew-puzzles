@@ -1,0 +1,392 @@
+{
+  "hiddenId": "WSCH-0007",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Birthdays",
+  "wordGroups": [
+    "birthdays"
+  ],
+  "words": [
+    {
+      "word": "Age",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Balloons",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Banner",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Bouncy castle",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Bow",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 11
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Bunting",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Cake",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Cards",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 4
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Clown",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Dance",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Decorations",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Disco",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Face paint",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Fun",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Games",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Gift",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Guests",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Hats",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Helium",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ice cream",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Icing",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Invites",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Jelly",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Magician",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Napkins",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Party bag",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Photos",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Pizza",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Popper",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Presents",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Ribbon",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Sticker",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Theme",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Toy",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Treats",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Wish",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "GGSTICKERDHFSHH",
+        "EARGICECREAMGSE",
+        "LBINVITESCRUKIL",
+        "TYBIESTNESERPWI",
+        "STBTJGFPCSPCOYU",
+        "ARONVEAUTLPBNYM",
+        "CANUGILSNOOLLAB",
+        "YPEBNCELLKPWSND",
+        "CATTIASWYBANNER",
+        "NTZFCKTMAGICIAN",
+        "UHTZIEADBDGAMES",
+        "OEOSIGETSNIKPAN",
+        "BMYVTPRATNTSPTD",
+        "DECORATIONSUCKE",
+        "SDRACHHPHOTOSOY"
+      ]
+    }
+  ]
+}

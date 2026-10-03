@@ -1,0 +1,392 @@
+{
+  "hiddenId": "WSCH-0003",
+  "type": "Vanilla",
+  "created": "2026-10-03",
+  "title": "Cars",
+  "wordGroups": [
+    "car-brands"
+  ],
+  "words": [
+    {
+      "word": "Audi",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Bentley",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "BMW",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Bugatti",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Buick",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Chevy",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Citroën",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Dacia",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Dodge",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Ferrari",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Fiat",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Ford",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Honda",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Jaguar",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Jeep",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Kia",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Land Rover",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Lexus",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Lotus",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Maserati",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Mazda",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "McLaren",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Mercedes",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Mini",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Mitsubishi",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Nissan",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Peugeot",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Porsche",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Renault",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Rolls-Royce",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Seat",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Skoda",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Suzuki",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Tesla",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Toyota",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Volvo",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "MITSUBISHITAIFC",
+        "CHEVYHVMERCEDES",
+        "KUHRMNNYCFORDTI",
+        "GRCOITIEELMOIAT",
+        "LISLNOFSOLATZEA",
+        "ARRLIEEJSRTRDSR",
+        "UEOSRGBPAATNELE",
+        "DVPRDUEUGGNIENS",
+        "IOAOVEKUILUWCBA",
+        "KRDYJPBSECMAXSM",
+        "IDCCWSKXCBKGRUM",
+        "RNRETOUDALSETZA",
+        "FAIKDSETHONDAUZ",
+        "TLUANERTOYOTAKD",
+        "ACBEVOLVOLDACIA"
+      ]
+    }
+  ]
+}
