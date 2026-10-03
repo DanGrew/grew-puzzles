@@ -2,7 +2,7 @@
 // and wires the taps, the flip, where the words sit and the completion pop. Every rule lives
 // in core/wordsearch/play-core.js; nothing here decides anything.
 import {
-  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, listedWords, wordList, countLabel, sparkles,
+  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, turnPage, tap, playMarks, listedWords, wordList, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout
 } from '../../core/wordsearch/play-core.js';
 
@@ -10,8 +10,9 @@ var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
 var PLAY_LAYOUT_KEY = 'grew-puzzles.words-layout';
 var PLAY_LAYOUT_LABELS = { bottom: 'Words: under the grid', right: 'Words: beside the grid', overlay: 'Words: over the grid' };
-// Under and beside, the list is the page's; in Overlay it sits in the stage, over the card.
-var PLAY_LAYOUT_HOMES = { bottom: 'play', right: 'play', overlay: 'stage' };
+// Under and beside, the list is the page's, in its own slot ahead of the printed grids; in
+// Overlay it sits in the stage, over the card.
+var PLAY_LAYOUT_HOMES = { bottom: 'words-home', right: 'words-home', overlay: 'stage' };
 var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
@@ -44,22 +45,16 @@ export function markPrintout(part, puzzle) {
 // The printout's side of a puzzle — its title and date, the puzzle grid under its type band, and
 // its words — drawn into the parts part finds. The play page draws it into itself, each cell
 // tapping onCell; the book (ui/book-ui.js) draws it into each copy of the play page it prints, so
-// the printout and the book's pages are one layout.
+// the printout and the book's pages are one layout. A puzzle of several grids prints its words
+// alone first, then each grid on a sheet of its own (styles/play.css, data-paged).
 export function drawSheet(part, board, onCell) {
   part('title').textContent = board.title;
   part('created').textContent = board.created;
   part('label').textContent = board.label;
   part('play').style.setProperty('--cols', board.cols);
   part('play').style.setProperty('--rows', board.rows);
-  // The puzzle side shows a wildcard's ?, never its letter — in its label too.
-  fillGrid(part('grid'), board.shown, function (r, c) {
-    var cell = document.createElement('button');
-    cell.type = 'button';
-    cell.setAttribute('aria-label', board.shown[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
-    cell.addEventListener('click', function () { onCell([r, c]); });
-    return cell;
-  });
-  board.wild.flat().forEach(function (wild, i) { part('grid').children[i].classList.toggle('wild', wild); });
+  part('play').dataset.paged = String(board.sheets.length > 0);
+  drawPuzzleGrid(part('grid'), board.grids[0], onCell);
   // One line per word, however many copies; a word's progress sits beside it, on screen only.
   listedWords(board.words).forEach(function (entry) {
     var li = document.createElement('li');
@@ -69,7 +64,38 @@ export function drawSheet(part, board, onCell) {
     li.appendChild(progress);
     part('words').appendChild(li);
   });
+  board.sheets.forEach(function (label, i) {
+    part('print-grids').appendChild(gridSheet(part('grid-sheet'), board, label, board.grids[i]));
+  });
   part('play').hidden = false;
+}
+
+// The puzzle side of one grid. It shows a wildcard's ?, never its letter — in its label too.
+function drawPuzzleGrid(grid, page, onCell) {
+  grid.replaceChildren();
+  fillGrid(grid, page.shown, function (r, c) {
+    var cell = document.createElement('button');
+    cell.type = 'button';
+    cell.setAttribute('aria-label', page.shown[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
+    cell.addEventListener('click', function () { onCell([r, c]); });
+    return cell;
+  });
+  markWild(grid, page.wild);
+}
+
+function markWild(grid, wild) {
+  wild.flat().forEach(function (on, i) { grid.children[i].classList.toggle('wild', on); });
+}
+
+// One printed grid of several: the title, then the blank grid under a band naming its page.
+function gridSheet(template, board, label, page) {
+  var sheet = template.content.firstElementChild.cloneNode(true);
+  var grid = sheet.querySelector('.grid');
+  sheet.querySelector('h1').textContent = board.title;
+  sheet.querySelector('.band').textContent = label;
+  fillGrid(grid, page.shown, function () { return document.createElement('span'); });
+  markWild(grid, page.wild);
+  return sheet;
 }
 
 function showMissing() {
@@ -83,13 +109,26 @@ function showPuzzle(board) {
   var play = newPlay();
   document.title = board.title + ' · Grew Puzzles';
   drawSheet(playEl, board, onTap);
-  // The solution side, on screen only, shows every real letter.
   playEl('solution-label').textContent = board.solutionLabel;
-  fillGrid(playEl('solution-grid'), board.letters, function () { return document.createElement('span'); });
-  drawMarks(playEl('solution-overlay'), board, playMarks(solvedPlay(board.words), board.words));
+  // The tabs sit on both sides of the card, so a page can be picked whichever way it faces.
+  drawTabs(playEl('tabs'), board.tabs, showPage);
+  drawTabs(playEl('solution-tabs'), board.tabs, showPage);
   wireFlip(render);
   wireWords();
-  render();
+  showPage(0);
+
+  // A page's grid on both sides — the solution side, on screen only, shows every real letter —
+  // its tab picked on both, and its finds drawn. The word list never changes with it.
+  function showPage(page) {
+    play = turnPage(play, page);
+    drawPuzzleGrid(playEl('grid'), board.grids[page], onTap);
+    playEl('solution-grid').replaceChildren();
+    fillGrid(playEl('solution-grid'), board.grids[page].letters, function () { return document.createElement('span'); });
+    drawMarks(playEl('solution-overlay'), board, playMarks(solvedPlay(board.words, page), board.words));
+    pickTab(playEl('tabs'), page);
+    pickTab(playEl('solution-tabs'), page);
+    render();
+  }
 
   function onTap(cell) {
     play = tap(play, cell, board.words);
@@ -108,6 +147,23 @@ function showPuzzle(board) {
   }
 
   var PLAY_EVENTS = { complete: celebrate };
+}
+
+// One tab per page; a puzzle of one grid has none, and its empty tab row doesn't show.
+function drawTabs(list, tabs, onPick) {
+  tabs.forEach(function (name, i) {
+    var tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'tab';
+    tab.setAttribute('role', 'tab');
+    tab.textContent = name;
+    tab.addEventListener('click', function () { onPick(i); });
+    list.appendChild(tab);
+  });
+}
+
+function pickTab(list, page) {
+  Array.from(list.children).forEach(function (tab, i) { tab.setAttribute('aria-selected', String(i === page)); });
 }
 
 function fillGrid(grid, letters, makeCell) {

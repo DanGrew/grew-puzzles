@@ -74,13 +74,16 @@ function sheetTemplate(playPage) {
   return page;
 }
 
-// One puzzle's page, drawn exactly as the play page draws its printout. Each copy then drops the
+// One puzzle's page, drawn exactly as the play page draws its printout — a puzzle of several grids
+// runs on over a page per grid, each headed with the puzzle's number too. Each copy then drops the
 // play page's ids, which belong to the play page alone.
 function sheet(template, heading, puzzle) {
   var page = template.cloneNode(true);
   var part = function (id) { return page.querySelector('#' + id); };
-  page.querySelector('.sheet-number').textContent = heading;
+  var number = page.querySelector('.sheet-number');
+  number.textContent = heading;
   drawSheet(part, playBoard(markPrintout(part, puzzle)), function () {});
+  page.querySelectorAll('.grid-sheet').forEach(function (grid) { grid.prepend(number.cloneNode(true)); });
   page.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
   return page;
 }

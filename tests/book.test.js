@@ -3,15 +3,26 @@ const PUZZLE = require('./fixtures/WSCH-0007.json');
 
 // Stand-ins for a collection and its puzzles: the fixture served as WSCH-0007, a Wildcards
 // variant of it, and a 30×30 grid — listed out of number order, as a published collection may be.
-const WILD = { ...PUZZLE, hiddenId: 'WSCH-0008', title: 'Wild Kitchen', type: 'Wildcards', wildcards: [{ row: 0, col: 0 }] };
+const WILD = { ...PUZZLE, hiddenId: 'WSCH-0008', title: 'Wild Kitchen', type: 'Wildcards', grids: [{ rows: PUZZLE.grids[0].rows, wildcards: [{ row: 0, col: 0 }] }] };
 const BIG = {
   ...PUZZLE, hiddenId: 'WSCH-0009', title: 'Big Kitchen',
-  grid: Array.from({ length: 30 }, (_, r) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCD'.slice(r % 4) + 'WXYZ'.slice(0, r % 4)),
+  grids: [{ rows: Array.from({ length: 30 }, (_, r) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCD'.slice(r % 4) + 'WXYZ'.slice(0, r % 4)) }],
 };
-const FILES = { 'WSCH-0007': PUZZLE, 'WSCH-0008': WILD, 'WSCH-0009': BIG };
+// A 3-page Saga: the fixture's grid three times over, its words spread across them.
+const SAGA = {
+  ...PUZZLE, hiddenId: 'WSCH-0010', title: 'Farm Saga', type: 'Saga',
+  words: PUZZLE.words.map((w, i) => ({ ...w, grid: i % 3 })),
+  grids: [0, 1, 2].map(() => ({ rows: PUZZLE.grids[0].rows })),
+};
+const FILES = { 'WSCH-0007': PUZZLE, 'WSCH-0008': WILD, 'WSCH-0009': BIG, 'WSCH-0010': SAGA };
 const issue = {
   slug: 'issue-1', name: 'Issue #1', description: 'The first book, remade.', created: '2026-01-05',
   puzzles: [{ id: 'WSCH-0009', number: 3 }, { id: 'WSCH-0007', number: 1 }, { id: 'WSCH-0008', number: 2 }],
+};
+// A book holding the Saga first, then a single-grid puzzle after it.
+const sagas = {
+  slug: 'sagas', name: 'Sagas', description: 'A long one, then a short one.', created: '2026-10-03',
+  puzzles: [{ id: 'WSCH-0010', number: 1 }, { id: 'WSCH-0007', number: 2 }],
 };
 const index = { puzzles: Object.values(FILES).map(p => ({ hiddenId: p.hiddenId, type: p.type, created: p.created, title: p.title })) };
 
@@ -19,7 +30,7 @@ const index = { puzzles: Object.values(FILES).map(p => ({ hiddenId: p.hiddenId, 
 // connection would.
 async function serve(page, { slow = [], missing = [] } = {}) {
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: index }));
-  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue] } }));
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, sagas] } }));
   await page.route(/\/puzzles\/wordsearch\/WSCH-\d+\.json$/, async r => {
     const id = r.request().url().match(/(WSCH-\d+)\.json$/)[1];
     if (slow.includes(id)) await new Promise(done => setTimeout(done, 800));
@@ -35,10 +46,10 @@ async function catchPrint(page) {
   });
 }
 
-async function openBook(page, options) {
+async function openBook(page, options, slug) {
   await serve(page, options);
   await catchPrint(page);
-  await page.goto('/app/book.html?slug=issue-1');
+  await page.goto('/app/book.html?slug=' + (slug || 'issue-1'));
   await expect(page.locator('#ready')).toBeVisible();
 }
 
@@ -120,6 +131,31 @@ for (const format of ['A4', 'Letter']) {
     expect(pdf).toContain('/ToUnicode');
   });
 }
+
+test('a Saga fills four book pages — its words, then Pages 1–3 — each headed with its number, and the next puzzle starts on a fresh page', async ({ page }) => {
+  await openBook(page, {}, 'sagas');
+  await page.emulateMedia({ media: 'print' });
+  const saga = sheets(page).nth(0);
+  await expect(saga.locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 1', 'Puzzle 1', 'Puzzle 1']);
+  await expect(saga.locator('aside')).toBeVisible();
+  await expect(saga.locator('.front-face')).toBeHidden();
+  await expect(saga.locator('.grid-sheet .band')).toHaveText(['Saga · Page 1 of 3', 'Saga · Page 2 of 3', 'Saga · Page 3 of 3']);
+  for (const i of [0, 1, 2]) {
+    const sheet = saga.locator('.grid-sheet').nth(i);
+    const number = await sheet.locator('.sheet-number').boundingBox();
+    const title = await sheet.locator('h1').boundingBox();
+    expect(number.y + number.height).toBeLessThanOrEqual(title.y);
+    await expect(sheet.locator('.cell')).toHaveCount(64);
+  }
+  await expect(sheets(page).nth(1).locator('.sheet-number')).toHaveText('Puzzle 2');
+  await expect(sheets(page).nth(1).locator('.grid-sheet')).toHaveCount(0);
+  expect(await page.locator('.sheet, .grid-sheet').evaluateAll(s => s.map(el => getComputedStyle(el).breakBefore))).toEqual(['page', 'page', 'page', 'page', 'page']);
+  for (const format of ['A4', 'Letter']) {
+    const pdf = (await page.pdf({ format })).toString('latin1');
+    // The title page, the Saga's four, then the single-grid puzzle's one.
+    expect((pdf.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(6);
+  }
+});
 
 test('nothing the book adds shows an answer or a hidden ID', async ({ page }) => {
   await openBook(page);

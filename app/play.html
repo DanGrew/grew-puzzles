@@ -32,6 +32,7 @@
         <div class="card" id="card">
           <div class="face front-face" id="front">
             <div class="band" id="label"></div>
+            <div class="tabs" id="tabs" role="tablist" aria-label="Pages"></div>
             <div class="board" id="board">
               <div class="grid" id="grid"></div>
               <svg class="overlay" id="overlay" aria-hidden="true"></svg>
@@ -39,6 +40,7 @@
           </div>
           <div class="face back-face" id="back" aria-hidden="true" inert>
             <div class="band" id="solution-label"></div>
+            <div class="tabs" id="solution-tabs" role="tablist" aria-label="Pages"></div>
             <div class="board">
               <div class="grid" id="solution-grid"></div>
               <svg class="overlay" id="solution-overlay" aria-hidden="true"></svg>
@@ -61,15 +63,22 @@
       <div class="complete" id="complete" hidden>Puzzle complete</div>
     </div>
 
-    <aside id="words-list">
-      <div class="words-box">
-        <div class="list-head">
-          <h2>Words</h2>
-          <span class="count" id="count"></span>
+    <!-- Where the list sits under or beside the grid: always before the printed grids. -->
+    <div class="words-home" id="words-home">
+      <aside id="words-list">
+        <div class="words-box">
+          <div class="list-head">
+            <h2>Words</h2>
+            <span class="count" id="count"></span>
+          </div>
+          <ul class="words" id="words"></ul>
         </div>
-        <ul class="words" id="words"></ul>
-      </div>
-    </aside>
+      </aside>
+    </div>
+
+    <!-- A puzzle of several grids prints each one on a sheet of its own, after the words. -->
+    <div class="print-grids" id="print-grids"></div>
+    <template id="grid-sheet"><section class="grid-sheet"><header class="play-head"><h1></h1></header><div class="face print-face"><div class="band"></div><div class="grid"></div></div></section></template>
   </main>
 </div>
 <script src="../components/site-bar.js"></script>
