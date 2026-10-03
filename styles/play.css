@@ -115,24 +115,29 @@ ul.words li.done { color: var(--muted); text-decoration: line-through; text-deco
 @media print {
   :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .play { --cell: min(36px, calc(165mm / var(--cols)), calc(125mm / var(--rows))); }
+  .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
   .wrap { max-width: none; padding: 0; }
   .site, .help, button.corner, .complete, .back-face, svg.overlay, .spark, .count { display: none; }
 
-  .play-head { margin: 0 0 20px; }
+  .play-head { margin: 0 0 16px; }
   .play-head h1 { font-size: 26px; }
   .play-head .created { font-size: 12px; }
-  .play, .play[data-words] { flex-flow: column; align-items: center; gap: 24px; }
+  .play, .play[data-words] { flex-flow: column; align-items: center; gap: 20px; }
   .col { max-width: none; margin: 0; padding: 0; overflow: visible; }
   .card, .card.flipped { transform: none; transform-style: flat; transition: none; }
   .board { animation: none; }
   .cell { outline: none; }
 
   /* The words come home beneath the grid from wherever they sat, open or closed. */
-  .stage > aside { position: static; margin-top: 24px; }
+  .stage > aside { position: static; margin-top: 20px; }
   .play[data-words][data-list] aside { display: block; }
   .stage > aside .words-box { height: auto; display: block; }
   ul.words, .stage > aside ul.words { display: block; columns: 88px; column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
     font-size: 13px; text-align: center; color: var(--fg); text-decoration: none; }
+
+  /* The hidden ID, small under the words card's corner: matches a sheet to its puzzle. Paper only —
+     drawn from the attribute, so it's never page text on screen. */
+  aside::after { content: attr(data-hidden-id); display: block; margin-top: 9px; text-align: right;
+    font: 400 8pt var(--font-body); letter-spacing: .06em; }
 }

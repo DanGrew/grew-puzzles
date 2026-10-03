@@ -28,8 +28,16 @@ export function openPlayPage(search) {
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
+    .then(markPrintout)
     .then(playBoard)
     .then(showPuzzle, showMissing);
+}
+
+// The hidden ID never reaches the board on screen: only the printout carries it, small under the
+// words card, to match a sheet to its puzzle (styles/play.css draws it from this attribute).
+function markPrintout(puzzle) {
+  playEl('words-list').setAttribute('data-hidden-id', puzzle.hiddenId);
+  return puzzle;
 }
 
 function showMissing() {

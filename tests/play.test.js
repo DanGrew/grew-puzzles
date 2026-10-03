@@ -509,6 +509,22 @@ test('the printout is the site\'s cards in black and white, with no site bar, me
   await expect(page.locator('html')).toHaveCSS('print-color-adjust', 'exact');
 });
 
+test('the printout marks the hidden ID small under the words card\'s right corner; the screen never shows it', async ({ page }) => {
+  await open(page);
+  const mark = () => page.locator('#words-list').evaluate(el => {
+    const s = getComputedStyle(el, '::after');
+    return { content: s.content, size: parseFloat(s.fontSize), align: s.textAlign };
+  });
+  expect((await mark()).content).toBe('none');
+  await expect(page.locator('body')).not.toContainText('WSCH');
+
+  await page.emulateMedia({ media: 'print' });
+  const printed = await mark();
+  expect(printed.content).toBe('"WSCH-0007"');
+  expect(printed.align).toBe('right');
+  expect(printed.size).toBeLessThan(parseFloat(await page.locator('#words li').first().evaluate(li => getComputedStyle(li).fontSize)));
+});
+
 test('the printed words read down each column, then on to the next', async ({ page }) => {
   await open(page);
   await page.emulateMedia({ media: 'print' });
