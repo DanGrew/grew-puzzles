@@ -24,9 +24,51 @@ export function typesOf(puzzles) {
   return [...new Set(puzzles.map(p => p.type))].sort();
 }
 
-// The filter buttons: Collections first while a collection exists, then each puzzle type.
+// The filters an address may pick: Collections first while a collection exists, then each
+// puzzle type.
 export function filterOptions(puzzles, collections) {
   return [...(collections.length > 0 ? [COLLECTIONS] : []), ...typesOf(puzzles)];
+}
+
+// How hard each type is — the one place it is written. A tile's strip and the type's filter row
+// both take their colour from it, a colour per difficulty in styles/browse.css. A type with no
+// difficulty here counts as Easy, so a new type never ships uncoloured.
+export function difficultyOf(type) {
+  const difficulty = new Map([
+    ['Vanilla', 'Easy'], ['Saga', 'Medium'], ['Wildcards', 'Medium'], ['Missing', 'Hard'], ['Repeats', 'Hard'],
+    ['Mirra?e', 'Extreme'],
+  ]);
+  return difficulty.get(type) ?? 'Easy';
+}
+
+// The filter popup: a row per difficulty, Easy to Extreme, holding its types A to Z — a
+// difficulty with none has no row — then Collections on a row of its own, with no name. Each
+// row's tone names its colour.
+export function filterRows(types) {
+  const rowOf = type => (type === COLLECTIONS ? COLLECTION_TYPE : difficultyOf(type));
+  const named = { [COLLECTION_TYPE]: '' };
+  return ['Easy', 'Medium', 'Hard', 'Extreme', COLLECTION_TYPE]
+    .map(tone => ({ name: named[tone] ?? tone, tone, types: types.filter(t => rowOf(t) === tone) }))
+    .filter(row => row.types.length > 0);
+}
+
+// A filter shows pressed while every type it stands for is picked — one for a type, the whole
+// row for a difficulty's name.
+export function picked(state, types) {
+  return String(types.every(t => state.types.includes(t)));
+}
+
+// Pressing a difficulty's name picks the rest of its row, or — all of it already picked —
+// unpicks the row. Types in other rows never change.
+export function toggleRow(state, row) {
+  const all = picked(state, row) === 'true';
+  const types = all ? state.types.filter(t => !row.includes(t)) : [...state.types, ...row.filter(t => !state.types.includes(t))];
+  return { ...state, types };
+}
+
+// The Filters button counts the picks once there are any: "Filters · 2".
+export function filtersLabel(state) {
+  return ['Filters', ...(state.types.length > 0 ? [state.types.length] : [])].join(' · ');
 }
 
 // How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing".
@@ -44,17 +86,19 @@ export function collectionHref(slug) {
   return `collection.html?slug=${encodeURIComponent(slug)}`;
 }
 
-// Every tile browse can show, as one list: a puzzle by its own title, type and date, and a
-// collection by its name, as the type Collection, and its created date. A collection's puzzles
-// are never tiles here — each puzzle shows once, however many collections hold it.
+// Every tile browse can show, as one list: a puzzle by its own title, type and date, in its
+// difficulty's tone, and a collection by its name, as the type Collection, in the collections'
+// tone, and its created date. A collection's puzzles are never tiles here — each puzzle shows
+// once, however many collections hold it.
 export function browseItems(puzzles, collections) {
   return [
     ...puzzles.map(p => ({
-      ...p, kind: 'puzzle', filter: p.type, rank: idNumber(p.hiddenId), href: playHref(p.hiddenId), lines: tileDetail(p),
+      ...p, kind: 'puzzle', filter: p.type, tone: difficultyOf(p.type), rank: idNumber(p.hiddenId), href: playHref(p.hiddenId),
+      lines: tileDetail(p),
     })),
     ...collections.map(c => ({
-      kind: 'collection', title: c.name, type: COLLECTION_TYPE, filter: COLLECTIONS, created: c.created, rank: 0,
-      href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)],
+      kind: 'collection', title: c.name, type: COLLECTION_TYPE, filter: COLLECTIONS, tone: COLLECTION_TYPE, created: c.created,
+      rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)],
     })),
   ];
 }
@@ -100,11 +144,6 @@ export function pageCount(total) {
 
 export function pageOf(list, page) {
   return list.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-}
-
-// A filter button per type, pressed when that type is picked.
-export function filterChips(types, state) {
-  return types.map(t => ({ label: t, pressed: String(state.types.includes(t)) }));
 }
 
 // Picking a type adds it; picking it again takes it away.

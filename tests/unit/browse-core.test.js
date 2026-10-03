@@ -1,7 +1,8 @@
 import {
   PER_PAGE, COLLECTIONS, COLLECTION_TYPE, typesOf, filterOptions, typeBreakdown, collectionHref, browseItems,
-  browseState, browseSearch, browseList, pageCount, pageOf, filterChips, toggleType, clearTypes, noTypesPicked,
-  withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons,
+  browseState, browseSearch, browseList, pageCount, pageOf, toggleType, clearTypes, noTypesPicked,
+  withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons, difficultyOf, filterRows, picked, toggleRow,
+  filtersLabel,
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
@@ -116,11 +117,55 @@ describe('browse-core.js', () => {
     expect(by('date', 'asc')).toEqual([id(1), id(3), id(2)]);
   });
 
-  test('a filter button per type, pressed when picked', () => {
-    expect(filterChips(['Missing', 'Vanilla'], { types: ['Vanilla'] })).toEqual([
-      { label: 'Missing', pressed: 'false' },
-      { label: 'Vanilla', pressed: 'true' },
+  test('each type has a difficulty, Easy to Extreme; a type the site has none for counts as Easy', () => {
+    expect(['Vanilla', 'Saga', 'Wildcards', 'Missing', 'Repeats', 'Mirra?e'].map(difficultyOf))
+      .toEqual(['Easy', 'Medium', 'Medium', 'Hard', 'Hard', 'Extreme']);
+    expect(difficultyOf('Brand New')).toBe('Easy');
+    expect(difficultyOf('constructor')).toBe('Easy');
+  });
+
+  test('the filter rows run Easy to Extreme, each with its types A to Z, then Collections with no name', () => {
+    const types = ['Collections', 'Mirra?e', 'Missing', 'Repeats', 'Saga', 'Vanilla', 'Wildcards'];
+    expect(filterRows(types)).toEqual([
+      { name: 'Easy', tone: 'Easy', types: ['Vanilla'] },
+      { name: 'Medium', tone: 'Medium', types: ['Saga', 'Wildcards'] },
+      { name: 'Hard', tone: 'Hard', types: ['Missing', 'Repeats'] },
+      { name: 'Extreme', tone: 'Extreme', types: ['Mirra?e'] },
+      { name: '', tone: 'Collection', types: ['Collections'] },
     ]);
+  });
+
+  test('a difficulty with no type, or no collection, has no row; a type with no difficulty sits under Easy', () => {
+    expect(filterRows(['Mirra?e', 'Brand New', 'Vanilla'])).toEqual([
+      { name: 'Easy', tone: 'Easy', types: ['Brand New', 'Vanilla'] },
+      { name: 'Extreme', tone: 'Extreme', types: ['Mirra?e'] },
+    ]);
+    expect(filterRows([])).toEqual([]);
+  });
+
+  test('a filter is pressed while every type it stands for is picked', () => {
+    const state = { types: ['Missing', 'Vanilla'] };
+    expect(picked(state, ['Vanilla'])).toBe('true');
+    expect(picked(state, ['Saga'])).toBe('false');
+    expect(picked(state, ['Missing', 'Vanilla'])).toBe('true');
+    expect(picked(state, ['Missing', 'Repeats'])).toBe('false');
+  });
+
+  test('a difficulty\'s name picks the rest of its row, or unpicks a full row, leaving other rows and the sort', () => {
+    const hard = ['Missing', 'Repeats'];
+    const state = types => ({ types, sort: 'title', dir: 'asc' });
+    expect(toggleRow(state(['Vanilla']), hard)).toEqual(state(['Vanilla', 'Missing', 'Repeats']));
+    expect(toggleRow(state(['Repeats', 'Vanilla']), hard)).toEqual(state(['Repeats', 'Vanilla', 'Missing']));
+    expect(toggleRow(state(['Missing', 'Vanilla', 'Repeats']), hard)).toEqual(state(['Vanilla']));
+    const before = state(['Missing']);
+    toggleRow(before, hard);
+    expect(before.types).toEqual(['Missing']);
+  });
+
+  test('the Filters button counts the picks once there are any', () => {
+    expect(filtersLabel({ types: [] })).toBe('Filters');
+    expect(filtersLabel({ types: ['Vanilla'] })).toBe('Filters · 1');
+    expect(filtersLabel({ types: ['Vanilla', 'Collections'] })).toBe('Filters · 2');
   });
 
   test('picking a type adds it, picking it again takes it away, leaving the sort alone', () => {
@@ -246,14 +291,25 @@ describe('browse-core.js', () => {
     const index = puzzles(2);
     const items = browseItems(index, [collection('Issue', '2026-10-05', [id(2), id(1)])]);
     expect(items).toEqual([
-      { ...index[0], kind: 'puzzle', filter: 'Vanilla', rank: 1, href: 'play.html?id=WSCH-0001', lines: ['Vanilla', '1 Oct 2026'] },
-      { ...index[1], kind: 'puzzle', filter: 'Vanilla', rank: 2, href: 'play.html?id=WSCH-0002', lines: ['Vanilla', '2 Oct 2026'] },
       {
-        kind: 'collection', title: 'Issue', type: 'Collection', filter: 'Collections', created: '2026-10-05', rank: 0,
-        href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'],
+        ...index[0], kind: 'puzzle', filter: 'Vanilla', tone: 'Easy', rank: 1, href: 'play.html?id=WSCH-0001',
+        lines: ['Vanilla', '1 Oct 2026'],
+      },
+      {
+        ...index[1], kind: 'puzzle', filter: 'Vanilla', tone: 'Easy', rank: 2, href: 'play.html?id=WSCH-0002',
+        lines: ['Vanilla', '2 Oct 2026'],
+      },
+      {
+        kind: 'collection', title: 'Issue', type: 'Collection', filter: 'Collections', tone: 'Collection', created: '2026-10-05',
+        rank: 0, href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'],
       },
     ]);
     expect(COLLECTION_TYPE).toBe('Collection');
+  });
+
+  test('a puzzle tile takes its type\'s difficulty as its tone', () => {
+    const index = [{ hiddenId: id(1), type: 'Mirra?e', created: '2026-10-01', title: 'a' }];
+    expect(browseItems(index, [])[0].tone).toBe('Extreme');
   });
 
   test('the Collections filter shows only collections; a type shows only its puzzles', () => {
