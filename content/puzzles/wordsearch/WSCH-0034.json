@@ -1,0 +1,504 @@
+{
+  "hiddenId": "WSCH-0034",
+  "type": "Wildcards",
+  "created": "2026-10-03",
+  "title": "Digital",
+  "wordGroups": [
+    "digital"
+  ],
+  "words": [
+    {
+      "word": "App",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Avatar",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Binary",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Bit",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Blog",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Bookmark",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Byte",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Click",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Cloud",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Code",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Cookie",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Data",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Delete",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Email",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Emoji",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Feed",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "File type",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Folder",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "GIF",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Inbox",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "JPEG",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Like",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Link",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Livestream",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Meme",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "PDF",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Pixels",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Playlist",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Post",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "QR code",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "React",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Script",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Scroll",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Selfie",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Spam",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Stream",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Subscribe",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Tag",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Trending",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Upload",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Viral",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Vlog",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Website",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 7
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "FILETYPEDELETEP",
+        "ELIJOMEVLOGOLBE",
+        "IIAASUBSCRIBESM",
+        "FVMGLARIVCLOUDE",
+        "LEETISBEWPLINKM",
+        "ESDSMFDUISCROLL",
+        "STEOPOPXPOTBITP",
+        "CRETCAERORYKBBP",
+        "REFRVLMKETCIQEA",
+        "IAQASDINEINBOXS",
+        "PMTTAEDPLAYLIST",
+        "TAVTSIXCRFOLDER",
+        "RUADNOFYEKILOSE",
+        "JPEGFDPXUPLOADA",
+        "EKRAMKOOBYQTAGM"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 12
+        },
+        {
+          "row": 2,
+          "col": 13
+        },
+        {
+          "row": 3,
+          "col": 0
+        },
+        {
+          "row": 5,
+          "col": 13
+        },
+        {
+          "row": 6,
+          "col": 1
+        },
+        {
+          "row": 6,
+          "col": 10
+        },
+        {
+          "row": 10,
+          "col": 12
+        },
+        {
+          "row": 11,
+          "col": 10
+        },
+        {
+          "row": 13,
+          "col": 3
+        },
+        {
+          "row": 14,
+          "col": 9
+        }
+      ]
+    }
+  ]
+}
