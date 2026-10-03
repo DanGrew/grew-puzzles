@@ -23,12 +23,21 @@ function playEl(id) {
 }
 
 export function openPlayPage(search) {
+  playEl('print').addEventListener('click', function () { window.print(); });
   Promise.resolve(search)
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
+    .then(markPrintout)
     .then(playBoard)
     .then(showPuzzle, showMissing);
+}
+
+// The hidden ID never reaches the board on screen: only the printout carries it, small under the
+// words card, to match a sheet to its puzzle (styles/play.css draws it from this attribute).
+function markPrintout(puzzle) {
+  playEl('words-list').setAttribute('data-hidden-id', puzzle.hiddenId);
+  return puzzle;
 }
 
 function showMissing() {
@@ -46,6 +55,7 @@ function showPuzzle(board) {
   playEl('label').textContent = board.label;
   playEl('solution-label').textContent = board.solutionLabel;
   playEl('play').style.setProperty('--cols', board.cols);
+  playEl('play').style.setProperty('--rows', board.rows);
   fillGrid(playEl('grid'), board, function (r, c) {
     var cell = document.createElement('button');
     cell.type = 'button';
