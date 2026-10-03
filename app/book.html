@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/play.css">
+<link rel="stylesheet" href="../styles/book.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="collections"></header>
+  <main class="book" aria-labelledby="book-title">
+    <section class="title-page" id="title-page">
+      <h1 id="book-title"></h1>
+      <p class="book-description" id="book-description"></p>
+      <p class="answers" id="answers"></p>
+      <p class="address" id="address"></p>
+    </section>
+    <p class="book-status" id="status">Putting the book together…</p>
+    <p class="book-status" id="ready" hidden><button type="button" id="print-again">Print book</button> <a id="back">Back to the collection</a></p>
+    <p class="book-status" id="failed" hidden>The book couldn't be put together. <a href="">Try again</a>.</p>
+    <p class="book-status" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
+  </main>
+  <div class="sheets" id="sheets"></div>
+</div>
+<!-- A book page: its number, then the play page's own printout, copied in by ui/book-ui.js. -->
+<template id="sheet"><section class="sheet"><p class="sheet-number"></p></section></template>
+<script src="../components/site-bar.js"></script>
+<script type="module">
+import { openBook } from '../ui/book-ui.js';
+openBook(location.search);
+</script>
+</body>
+</html>

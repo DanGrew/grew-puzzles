@@ -1,0 +1,26 @@
+/* The collection book (app/book.html): a title page, then each puzzle's own printout from
+   styles/play.css, one to a page, headed with its number. Only the title page and its
+   number headings are this file's; on screen the title page shows with Print book, and the
+   puzzle pages are paper only. */
+.book [hidden] { display: none; }
+.title-page { max-width: 520px; margin: 8px auto 28px; text-align: center; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.title-page h1 { margin: 0; padding: 18px 20px; background: var(--band); color: var(--band-fg); border-bottom: var(--ow) solid var(--line);
+  font: var(--dw) 30px/1.2 var(--font-display); text-wrap: balance; }
+.title-page p { margin: 16px 24px; }
+.title-page .book-description { font-size: 17px; text-wrap: balance; }
+.title-page .answers { font-size: 14px; line-height: 1.5; color: var(--muted); text-wrap: balance; }
+.title-page .address { margin-bottom: 22px; font: 600 15px var(--font-display); }
+.book-status { text-align: center; }
+.book-status a { color: var(--fg); margin-left: 12px; }
+.book-status button { font: 600 14px var(--font-body); height: 36px; padding: 0 16px; color: var(--band-fg); background: var(--band);
+  border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: var(--shadow); cursor: pointer; }
+.sheets { display: none; }
+.sheet-number { margin: 0 0 6px; text-align: center; font: 600 15px var(--font-display); letter-spacing: .02em; }
+
+@media print {
+  .book-status { display: none; }
+  .title-page { margin: 50mm auto 0; }
+  .sheets { display: block; }
+  .sheet { break-before: page; }
+}
