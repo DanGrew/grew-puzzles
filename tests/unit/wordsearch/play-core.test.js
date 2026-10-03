@@ -224,12 +224,90 @@ describe('what the board shows', () => {
   });
 
   it('crosses off found words in the list', () => {
-    expect(wordList(taps([[4, 2], [2, 2]]), WORDS).slice(0, 2)).toEqual([{ text: 'Cat', done: true }, { text: 'Cow', done: false }]);
+    expect(wordList(taps([[4, 2], [2, 2]]), WORDS, false).slice(0, 2)).toEqual([
+      { text: 'Cat', done: true, revealed: false }, { text: 'Cow', done: false, revealed: false }
+    ]);
+  });
+
+  it('shows no word red in a puzzle with none missing, solved or flipped', () => {
+    expect(wordList(solvedPlay(WORDS), WORDS, true).filter(item => item.revealed)).toEqual([]);
   });
 
   it('counts found words out of all of them', () => {
     expect(countLabel(newPlay(), WORDS)).toBe('0/8');
     expect(countLabel(taps([[4, 2], [2, 2]]), WORDS)).toBe('1/8');
+  });
+});
+
+describe('a puzzle with a missing word', () => {
+  // The fixture with Goat listed but nowhere in the grid, sorted in among the rest.
+  let MISSING;
+  beforeEach(() => {
+    const words = PUZZLE.words.slice();
+    words.splice(3, 0, { word: 'Goat', missing: true });
+    MISSING = playBoard(Object.assign({}, PUZZLE, { type: 'Missing', words: words })).words;
+  });
+  const goat = () => MISSING.findIndex(w => w.text === 'Goat');
+  const placed = () => MISSING.map((_, i) => i).filter(i => i !== goat());
+  const allBut = last => ({ picked: [], found: placed().filter(i => i !== last), events: [] });
+
+  it('lists the missing word among the rest, with no cells', () => {
+    expect(MISSING.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+    expect(MISSING[goat()]).toEqual({ text: 'Goat', missing: true, cells: [] });
+    expect(MISSING[0].missing).toBe(false);
+  });
+
+  it('counts only the placed words', () => {
+    expect(countLabel(newPlay(), MISSING)).toBe('0/8');
+    expect(countLabel(solvedPlay(MISSING), MISSING)).toBe('8/8');
+  });
+
+  it('shows every word unmarked at the start, the missing one too', () => {
+    expect(wordList(newPlay(), MISSING, false).filter(item => item.done || item.revealed)).toEqual([]);
+  });
+
+  it('sets off completion on the last placed word', () => {
+    const piglet = MISSING.findIndex(w => w.text === 'Piglet');
+    const done = tap(tap(allBut(piglet), [1, 0], MISSING), [6, 0], MISSING);
+    expect(done.events).toEqual(['complete']);
+    expect(done.found).toHaveLength(8);
+  });
+
+  it('does not set off completion one word short', () => {
+    const piglet = MISSING.findIndex(w => w.text === 'Piglet');
+    const cat = MISSING.findIndex(w => w.text === 'Cat');
+    const short = { picked: [], found: placed().filter(i => i !== piglet && i !== cat), events: [] };
+    expect(tap(tap(short, [1, 0], MISSING), [6, 0], MISSING).events).toEqual([]);
+  });
+
+  it('turns the missing word red once every placed word is found', () => {
+    const list = wordList(solvedPlay(MISSING), MISSING, false);
+    expect(list[goat()]).toEqual({ text: 'Goat', done: false, revealed: true });
+    expect(list.filter(item => item.revealed)).toHaveLength(1);
+  });
+
+  it('turns the missing word red while the solution shows, and back once it does not', () => {
+    expect(wordList(newPlay(), MISSING, true)[goat()].revealed).toBe(true);
+    expect(wordList(newPlay(), MISSING, false)[goat()].revealed).toBe(false);
+  });
+
+  it('keeps the missing word unmarked one word short of the end', () => {
+    expect(wordList(allBut(0), MISSING, false)[goat()].revealed).toBe(false);
+  });
+
+  it('solves only the placed words for the solution side', () => {
+    expect(solvedPlay(MISSING).found).toEqual(placed());
+  });
+
+  it('never lines through or rings the missing word', () => {
+    const marks = playMarks(solvedPlay(MISSING), MISSING);
+    expect(marks.found).toHaveLength(8);
+    expect(marks.shared).toEqual(playMarks(solvedPlay(WORDS), WORDS).shared);
+  });
+
+  it('a tap never finds the missing word', () => {
+    expect(taps([[4, 2], [2, 2]]).found).toEqual([at('Cat')]);
+    expect(tap(tap(newPlay(), [3, 0], MISSING), [7, 0], MISSING).found).toEqual([]);
   });
 });
 
