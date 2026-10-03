@@ -38,8 +38,8 @@
 <script src="../components/site-bar.js"></script>
 <script type="module">
 import {
-  typesOf, browseState, browseSearch, browseList, pageOf, pageCount, filterChips, toggleType, clearTypes,
-  noTypesPicked, withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons,
+  filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterChips, toggleType,
+  clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons,
 } from '../core/browse-core.js';
 
 const tiles = document.getElementById('tiles');
@@ -48,7 +48,7 @@ const filters = document.getElementById('filters');
 const clear = document.getElementById('clear');
 const sort = document.getElementById('sort');
 const dir = document.getElementById('dir');
-let puzzles = [];
+let items = [];
 let types = [];
 let state;
 
@@ -59,13 +59,13 @@ function part(className, text) {
   return span;
 }
 
-function tile(puzzle) {
+function tile(item) {
   const a = document.createElement('a');
-  a.className = 'tile';
-  a.href = playHref(puzzle.hiddenId);
+  a.className = `tile ${item.kind}`;
+  a.href = item.href;
   const detail = part('detail', '');
-  detail.append(...tileDetail(puzzle).map(text => part('line', text)));
-  a.append(part('name', puzzle.title), detail);
+  detail.append(...item.lines.map(text => part('line', text)));
+  a.append(part('name', item.title), detail);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -93,8 +93,8 @@ function chip(spec) {
 }
 
 function show(page) {
-  const list = browseList(puzzles, state);
-  document.getElementById('total').textContent = totalLabel(list.length);
+  const list = browseList(items, state);
+  document.getElementById('total').textContent = totalLabel(list);
   filters.replaceChildren(...filterChips(types, state).map(chip));
   clear.hidden = noTypesPicked(state);
   sort.value = state.sort;
@@ -115,16 +115,20 @@ clear.addEventListener('click', () => update(clearTypes(state)));
 sort.addEventListener('change', () => update(withSort(state, sort.value)));
 dir.addEventListener('click', () => update(flipDir(state)));
 
-function load(index) {
-  puzzles = index.puzzles;
-  types = typesOf(puzzles);
+// The site bar's Collections entry shows only while a collection exists.
+function load([index, published]) {
+  items = browseItems(index.puzzles, published.collections);
+  types = filterOptions(index.puzzles, published.collections);
+  document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   state = browseState(location.search, types);
   show(1);
 }
 
-fetch('../content/puzzles/wordsearch/index.json')
-  .then(r => r.json())
-  .then(load);
+// A site with no collections has no collections file: that reads as none.
+Promise.all([
+  fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
+  fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
+]).then(load);
 </script>
 </body>
 </html>

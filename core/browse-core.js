@@ -1,17 +1,22 @@
-// The browse grid's rules: which puzzles show, their order and paging, what each tile, filter
-// and pager button says, and how the filter and sort ride in the page address. Reads only the
-// index's entries — never a puzzle file.
+// The browse grid's rules: which tiles show — every puzzle once, and every collection as a tile of
+// its own — their order and paging, what each tile, filter and pager button says, and how the
+// filter and sort ride in the page address. Reads only the indexes' entries — never a puzzle file.
 import { dayLabel } from './day-core.js';
 
 export const PER_PAGE = 24;
+
+// The filter that shows only collection tiles; a collection sorts by type as COLLECTION_TYPE.
+export const COLLECTIONS = 'Collections';
+export const COLLECTION_TYPE = 'Collection';
 
 function idNumber(hiddenId) {
   return Number(hiddenId.split('-')[1]);
 }
 
-// Newest first: by created date, then — saved the same day — by the later hidden ID.
+// Newest first: by created date, then — the same day — the later hidden ID, a puzzle before a
+// collection, and two collections by name.
 function newer(a, b) {
-  return b.created.localeCompare(a.created) || idNumber(b.hiddenId) - idNumber(a.hiddenId);
+  return b.created.localeCompare(a.created) || b.rank - a.rank || a.title.localeCompare(b.title);
 }
 
 // Every type at least one puzzle has, once each, A to Z — never a hand-kept list.
@@ -19,8 +24,43 @@ export function typesOf(puzzles) {
   return [...new Set(puzzles.map(p => p.type))].sort();
 }
 
-// The filter and sort a page address asks for. A type no puzzle has, or a sort or direction the
-// page doesn't offer, falls back as if it were never asked: every type, date, newest first.
+// The filter buttons: Collections first while a collection exists, then each puzzle type.
+export function filterOptions(puzzles, collections) {
+  return [...(collections.length > 0 ? [COLLECTIONS] : []), ...typesOf(puzzles)];
+}
+
+// How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing".
+export function typeBreakdown(collection, puzzles) {
+  const typeOf = new Map(puzzles.map(p => [p.hiddenId, p.type]));
+  const counts = new Map();
+  collection.puzzles.map(({ id }) => typeOf.get(id)).forEach(t => counts.set(t, (counts.get(t) ?? 0) + 1));
+  return [...counts]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([type, n]) => `${n} ${type}`)
+    .join(' · ');
+}
+
+export function collectionHref(slug) {
+  return `collection.html?slug=${encodeURIComponent(slug)}`;
+}
+
+// Every tile browse can show, as one list: a puzzle by its own title, type and date, and a
+// collection by its name, as the type Collection, and its created date. A collection's puzzles
+// are never tiles here — each puzzle shows once, however many collections hold it.
+export function browseItems(puzzles, collections) {
+  return [
+    ...puzzles.map(p => ({
+      ...p, kind: 'puzzle', filter: p.type, rank: idNumber(p.hiddenId), href: playHref(p.hiddenId), lines: tileDetail(p),
+    })),
+    ...collections.map(c => ({
+      kind: 'collection', title: c.name, type: COLLECTION_TYPE, filter: COLLECTIONS, created: c.created, rank: 0,
+      href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)],
+    })),
+  ];
+}
+
+// The filter and sort a page address asks for. A filter the page doesn't offer, or a sort or
+// direction it doesn't have, falls back as if it were never asked: everything, date, newest first.
 export function browseState(search, types) {
   const params = new URLSearchParams(search);
   const sort = params.get('sort');
@@ -42,14 +82,15 @@ export function browseSearch(state) {
   return query ? `?${query}` : '';
 }
 
-// The puzzles a state shows, in its order. No type picked shows every puzzle; picked types widen,
-// since a puzzle has exactly one. Ties fall back to newest first, whichever way the sort runs.
-export function browseList(puzzles, state) {
+// The tiles a state shows, in its order. No filter picked shows every tile; picked filters widen,
+// since a tile matches exactly one — its puzzle's type, or Collections. Ties fall back to newest
+// first, whichever way the sort runs.
+export function browseList(items, state) {
   const keys = { date: p => p.created, title: p => p.title, type: p => p.type };
   const key = keys[state.sort];
   const sign = state.dir === 'asc' ? 1 : -1;
-  return puzzles
-    .filter(p => state.types.length === 0 || state.types.includes(p.type))
+  return items
+    .filter(p => state.types.length === 0 || state.types.includes(p.filter))
     .sort((a, b) => sign * key(a).localeCompare(key(b)) || newer(a, b));
 }
 
@@ -108,8 +149,17 @@ export function playHref(hiddenId) {
   return `play.html?id=${encodeURIComponent(hiddenId)}`;
 }
 
-export function totalLabel(total) {
-  return total === 1 ? '1 puzzle' : `${total} puzzles`;
+function counted(n, word) {
+  return n === 1 ? `1 ${word}` : `${n} ${word}s`;
+}
+
+// What the tiles shown add up to: the puzzles, then the collections once any show — "0 puzzles"
+// when nothing does.
+export function totalLabel(items) {
+  const collections = items.filter(i => i.kind === 'collection').length;
+  const puzzles = items.length - collections;
+  const parts = [[puzzles, 'puzzle'], [collections, 'collection']].filter(([n]) => n > 0);
+  return parts.map(([n, word]) => counted(n, word)).join(' · ') || counted(0, 'puzzle');
 }
 
 // One page needs no pager; more get previous, a button per page, then next.
