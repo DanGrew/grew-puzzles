@@ -4,6 +4,15 @@
   box-shadow: var(--shadow); padding: 10px 20px; }
 .browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
 .browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
+/* The filter and sort row: a pill per type, pressed in the band colour, then the sort. */
+.controls { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 14px; margin: 0 0 24px; }
+.filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.controls button, .controls select { font: 600 14px var(--font-body); height: 36px; padding: 0 14px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
+.controls .chip[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
+.controls .clear { border-style: dashed; }
+.controls [hidden] { display: none; }
+.sort { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
 .tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); grid-auto-rows: 1fr; gap: 18px; }
 .tile { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s; }

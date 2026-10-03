@@ -24,7 +24,8 @@ test('the site opens straight onto the browse grid, with no intro', async ({ pag
   await expect(page.locator('#browse-title')).toHaveText('Wordsearches');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
   await expect(page.locator('.tiles .tile')).toHaveCount(3);
-  await expect(page.locator('main > *')).toHaveCount(3);
+  // The heading, the filter and sort row, the grid and the pager — nothing else.
+  await expect(page.locator('main > *')).toHaveCount(4);
 });
 
 test('a tile shows the title, with its type and created date small beneath — no number, no hidden ID', async ({ page }) => {
@@ -112,6 +113,126 @@ test('Wordsearches in the burger menu brings you back to the grid', async ({ pag
   await page.locator('#site-menu').getByText('Wordsearches').click();
   await expect(page).toHaveURL(/\/app\/index\.html$/);
   await expect(page.locator('.tiles .tile')).toHaveCount(3);
+});
+
+// A mixed index: puzzle n was saved n days into the year and takes its type in turn — Vanilla,
+// Missing, Mirra?e, Vanilla, … — so 30 puzzles are 10 of each.
+function mixed(count) {
+  const served = index(count);
+  const types = ['Vanilla', 'Missing', 'Mirra?e'];
+  served.puzzles.forEach((p, i) => { p.type = types[i % 3]; });
+  return served;
+}
+
+const tileNames = page => page.locator('.tiles .tile .name');
+const tileTypes = page => page.locator('.tiles .tile .detail .line:first-child');
+const chip = (page, name) => page.locator('#filters').getByRole('button', { name, exact: true });
+
+test('above the grid, a filter for each type a puzzle has, none picked', async ({ page }) => {
+  await serve(page, mixed(30));
+  await page.goto('/app/');
+  await expect(page.locator('#filters button')).toHaveText(['Mirra?e', 'Missing', 'Vanilla']);
+  await expect(page.locator('#filters button[aria-pressed="false"]')).toHaveCount(3);
+  await expect(page.locator('#clear')).toBeHidden();
+  const filters = await page.locator('#filters').boundingBox();
+  const grid = await page.locator('#tiles').boundingBox();
+  expect(filters.y + filters.height).toBeLessThanOrEqual(grid.y);
+  await expect(page.locator('#sort')).toHaveValue('date');
+  await expect(page.locator('#dir')).toHaveText('Newest first');
+});
+
+test('picking Missing shows only Missing puzzles, back on page 1', async ({ page }) => {
+  await serve(page, mixed(30));
+  await page.goto('/app/');
+  await page.locator('#pager').getByRole('button', { name: 'Page 2' }).click();
+  await chip(page, 'Missing').click();
+  await expect(chip(page, 'Missing')).toHaveAttribute('aria-pressed', 'true');
+  await expect(tileTypes(page)).toHaveText(Array(10).fill('Missing'));
+  await expect(tileNames(page).first()).toHaveText('Puzzle 29');
+  await expect(page.locator('#total')).toHaveText('10 puzzles');
+  await expect(page.locator('#pager button')).toHaveCount(0);
+});
+
+test('picking two types shows puzzles of either', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  await chip(page, 'Missing').click();
+  await chip(page, 'Mirra?e').click();
+  await expect(tileNames(page)).toHaveText(['Puzzle 9', 'Puzzle 8', 'Puzzle 6', 'Puzzle 5', 'Puzzle 3', 'Puzzle 2']);
+  await chip(page, 'Missing').click();
+  await expect(tileTypes(page)).toHaveText(Array(3).fill('Mirra?e'));
+});
+
+test('clearing the filters shows every puzzle again', async ({ page }) => {
+  await serve(page, mixed(30));
+  await page.goto('/app/');
+  await chip(page, 'Vanilla').click();
+  await expect(page.locator('#total')).toHaveText('10 puzzles');
+  await page.locator('#clear').click();
+  await expect(page.locator('#total')).toHaveText('30 puzzles');
+  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveCount(0);
+  await expect(page.locator('#clear')).toBeHidden();
+  await expect(page).toHaveURL(/\/app\/$/);
+});
+
+test('picking a sort and a direction reorders, back on page 1', async ({ page }) => {
+  const served = index(30);
+  served.puzzles.find(p => p.hiddenId === 'WSCH-0005').title = 'Apples';
+  await serve(page, served);
+  await page.goto('/app/');
+  await page.locator('#pager').getByRole('button', { name: 'Page 2' }).click();
+  await page.locator('#sort').selectOption('title');
+  await expect(page.locator('#dir')).toHaveText('Z to A');
+  await expect(tileNames(page).first()).toHaveText('Puzzle 9');
+  await expect(page.locator('#pager').getByRole('button', { name: 'Page 1' })).toHaveAttribute('aria-current', 'page');
+  await page.locator('#dir').click();
+  await expect(page.locator('#dir')).toHaveText('A to Z');
+  await expect(tileNames(page).first()).toHaveText('Apples');
+  await page.locator('#sort').selectOption('date');
+  await expect(page.locator('#dir')).toHaveText('Oldest first');
+  await expect(tileNames(page).first()).toHaveText('Puzzle 1');
+});
+
+test('sorting by type groups the types, ties newest first', async ({ page }) => {
+  await serve(page, mixed(6));
+  await page.goto('/app/');
+  await page.locator('#sort').selectOption('type');
+  await page.locator('#dir').click();
+  await expect(tileTypes(page)).toHaveText(['Mirra?e', 'Mirra?e', 'Missing', 'Missing', 'Vanilla', 'Vanilla']);
+  await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 3', 'Puzzle 5', 'Puzzle 2', 'Puzzle 4', 'Puzzle 1']);
+});
+
+test('sorting and filtering together shows the filtered puzzles in the chosen order', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  await chip(page, 'Vanilla').click();
+  await page.locator('#dir').click();
+  await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 4', 'Puzzle 7']);
+});
+
+test('a filter and a sort survive opening a puzzle and pressing back', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.route(/\/puzzles\/.*WSCH-\d+\.json$/, r => r.fulfill({ json: {} }));
+  await page.goto('/app/');
+  await chip(page, 'Mirra?e').click();
+  await page.locator('#sort').selectOption('title');
+  await page.locator('#dir').click();
+  await expect(page).toHaveURL(/\?type=Mirra%3Fe&sort=title&dir=asc$/);
+  await page.locator('.tiles .tile').first().click();
+  await expect(page).toHaveURL(/play\.html/);
+  await page.goBack();
+  await expect(chip(page, 'Mirra?e')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#sort')).toHaveValue('title');
+  await expect(page.locator('#dir')).toHaveText('A to Z');
+  await expect(tileNames(page)).toHaveText(['Puzzle 3', 'Puzzle 6', 'Puzzle 9']);
+});
+
+test('a shared link opens with its filter and sort set', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/?type=Mirra%3Fe&type=Vanilla&sort=title&dir=asc');
+  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveText(['Mirra?e', 'Vanilla']);
+  await expect(page.locator('#clear')).toBeVisible();
+  await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4', 'Puzzle 6', 'Puzzle 7', 'Puzzle 9']);
 });
 
 test('the real wordsearch index loads', async ({ page }) => {

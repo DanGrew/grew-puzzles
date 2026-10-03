@@ -39,7 +39,7 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | path | what it is |
 |---|---|
 | `index.html` | root redirect to `app/` |
-| `app/index.html` | the landing page — the browse grid, newest first, read from `content/puzzles/wordsearch/index.json` alone, never a puzzle file |
+| `app/index.html` | the landing page — the browse grid, filtered by type and sorted by date, title or type (newest first by default), the filter and sort held in the address (`?type=…&sort=…&dir=…`), read from `content/puzzles/wordsearch/index.json` alone, never a puzzle file |
 | `app/play.html` | the play page — `play.html?id=<hidden ID>`, which opens `content/puzzles/wordsearch/<hidden ID>.json`; the play URL in tooling's `docs/PUZZLE-FORMAT.md` |
 | `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules, `core/wordsearch/play-core.js` the play page's, `core/day-core.js` how both show a created date |
 | `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page |
