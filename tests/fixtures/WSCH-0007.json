@@ -5,23 +5,25 @@
   "title": "Farm Kitchen",
   "wordGroups": ["farm-animals", "cafe-menu"],
   "words": [
-    { "word": "Cat", "start": { "row": 4, "col": 2 }, "direction": "N", "length": 3 },
-    { "word": "Cow", "start": { "row": 1, "col": 2 }, "direction": "SE", "length": 3 },
-    { "word": "Ewe", "start": { "row": 5, "col": 0 }, "direction": "E", "length": 3 },
-    { "word": "Hen", "start": { "row": 6, "col": 3 }, "direction": "NE", "length": 3 },
-    { "word": "Ice cream", "start": { "row": 0, "col": 0 }, "direction": "E", "length": 8 },
-    { "word": "Map", "start": { "row": 0, "col": 7 }, "direction": "S", "length": 3 },
-    { "word": "Pig", "start": { "row": 7, "col": 2 }, "direction": "W", "length": 3 },
-    { "word": "Piglet", "start": { "row": 1, "col": 0 }, "direction": "S", "length": 6 }
+    { "word": "Cat", "grid": 0, "start": { "row": 4, "col": 2 }, "direction": "N", "length": 3 },
+    { "word": "Cow", "grid": 0, "start": { "row": 1, "col": 2 }, "direction": "SE", "length": 3 },
+    { "word": "Ewe", "grid": 0, "start": { "row": 5, "col": 0 }, "direction": "E", "length": 3 },
+    { "word": "Hen", "grid": 0, "start": { "row": 6, "col": 3 }, "direction": "NE", "length": 3 },
+    { "word": "Ice cream", "grid": 0, "start": { "row": 0, "col": 0 }, "direction": "E", "length": 8 },
+    { "word": "Map", "grid": 0, "start": { "row": 0, "col": 7 }, "direction": "S", "length": 3 },
+    { "word": "Pig", "grid": 0, "start": { "row": 7, "col": 2 }, "direction": "W", "length": 3 },
+    { "word": "Piglet", "grid": 0, "start": { "row": 1, "col": 0 }, "direction": "S", "length": 6 }
   ],
-  "grid": [
-    "ICECREAM",
-    "PLCRTLRA",
-    "IRTOLRTP",
-    "GTALWTLR",
-    "LRCTRNRT",
-    "EWERELTL",
-    "TLRHLTRR",
-    "GIPLRTLR"
+  "grids": [
+    { "rows": [
+      "ICECREAM",
+      "PLCRTLRA",
+      "IRTOLRTP",
+      "GTALWTLR",
+      "LRCTRNRT",
+      "EWERELTL",
+      "TLRHLTRR",
+      "GIPLRTLR"
+    ] }
   ]
 }

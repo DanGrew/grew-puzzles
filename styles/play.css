@@ -15,6 +15,8 @@
    as the grid card, its words in centred columns. Right: beside the grid, dropping under it when
    the screen is too narrow for both. Overlay: in the stage, over the card, only while open. */
 .play { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+/* The list's slot under or beside the grid lays it out as the page's own item. */
+.words-home { display: contents; }
 .play[hidden] { display: none; }
 aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
 .play[data-words="right"] { flex-flow: row wrap; justify-content: center; align-items: flex-start; }
@@ -43,6 +45,16 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
 .face.back-face { position: absolute; inset: 0; transform: rotateY(180deg); }
 .band { margin: 0 -14px 14px; padding: 10px 16px; background: var(--band); color: var(--band-fg); border-bottom: var(--ow) solid var(--line);
   text-align: center; font: 600 17px var(--font-display); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* A puzzle's pages: Banded tabs inside the grid card, under its band, the page on show filled in
+   the band's green. A puzzle of one grid has no tabs, and the row takes no room. */
+.tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.tabs:empty { display: none; }
+.tab { font: 600 14px var(--font-display); height: 32px; padding: 0 14px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; font-variant-numeric: tabular-nums; }
+.tab:hover { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
+.tab[aria-selected="true"] { background: var(--band); color: var(--band-fg); }
+.print-grids { display: none; }
 
 .board { position: relative; }
 .grid { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-auto-rows: var(--cell); }
@@ -147,4 +159,14 @@ ul.words li .progress:empty { display: none; }
      drawn from the attribute, so it's never page text on screen. */
   aside::after { content: attr(data-hidden-id); display: block; margin-top: 9px; text-align: right;
     font: 400 8pt var(--font-body); letter-spacing: .06em; }
+
+  /* A puzzle of several grids: the first sheet is the title and the words card alone, however the
+     screen shows them; then each grid on a sheet of its own, under the title and a band naming its
+     page — every grid the same size, sized to the sheet with no words to leave room for. */
+  .tabs { display: none; }
+  .play[data-paged="true"] .card { display: none; }
+  .play[data-paged="true"] aside { width: 165mm; max-width: none; }
+  .play[data-paged="true"] .print-grids { display: block; --cell: min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows))); }
+  .grid-sheet { break-before: page; display: flex; flex-direction: column; align-items: center; }
+  .print-face { width: max-content; }
 }

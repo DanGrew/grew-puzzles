@@ -2,13 +2,13 @@ const { test, expect } = require('@playwright/test');
 const PUZZLE = require('./fixtures/WSCH-0007.json');
 
 // The site publishes no puzzle of its own here: the fixture is served as WSCH-0007.
-const COLS = PUZZLE.grid[0].length;
+const COLS = PUZZLE.grids[0].rows[0].length;
 const FOUND_INK = 'rgb(15, 42, 36)';
 const WRONG_RED = 'rgb(224, 71, 59)';
 
 const LAYOUT_KEY = 'grew-puzzles.words-layout';
 // The fixture with each row written twice: a grid wider than a phone, or than 600px beside a list.
-const WIDE_PUZZLE = { ...PUZZLE, grid: PUZZLE.grid.map(row => row.repeat(2)) };
+const WIDE_PUZZLE = { ...PUZZLE, grids: [{ rows: PUZZLE.grids[0].rows.map(row => row.repeat(2)) }] };
 
 async function open(page, query, puzzle) {
   await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: puzzle || PUZZLE }));
@@ -327,7 +327,7 @@ test('a puzzle with no missing word shows nothing red, finished or flipped', asy
 // ---- A puzzle with wildcards ----
 
 // The fixture as a Wildcards puzzle: Cat's A (row 3, col 2) and Ice cream's second C (row 0, col 3) show ?.
-const WILD_PUZZLE = { ...PUZZLE, type: 'Wildcards', wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] };
+const WILD_PUZZLE = { ...PUZZLE, type: 'Wildcards', grids: [{ rows: PUZZLE.grids[0].rows, wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] }] };
 const solutionCell = (page, r, c) => page.locator('#solution-grid .cell').nth(r * COLS + c);
 
 test('a Wildcards puzzle shows ? at its wildcards, letter-sized, and says Wildcards in the band', async ({ page }) => {
@@ -409,20 +409,20 @@ const SHEEP_ENDS = Array.from({ length: 45 }, (_, i) => {
 });
 const SHEEP_PUZZLE = {
   ...PUZZLE, type: 'Repeats', title: 'Sheep',
-  grid: Array.from({ length: 15 }, (_, r) => ['SHEEP', 'PEEHS'][r % 2].repeat(3)),
+  grids: [{ rows: Array.from({ length: 15 }, (_, r) => ['SHEEP', 'PEEHS'][r % 2].repeat(3)) }],
   words: SHEEP_ENDS.map(([start, end]) => ({
-    word: 'Sheep', start: { row: start[0], col: start[1] }, direction: end[1] > start[1] ? 'E' : 'W', length: 5
+    word: 'Sheep', grid: 0, start: { row: start[0], col: start[1] }, direction: end[1] > start[1] ? 'E' : 'W', length: 5
   }))
 };
 // Cup five times among Cow and Hen.
-const cup = (row, col, direction) => ({ word: 'Cup', start: { row, col }, direction, length: 3 });
+const cup = (row, col, direction) => ({ word: 'Cup', grid: 0, start: { row, col }, direction, length: 3 });
 const CUP_PUZZLE = {
   ...PUZZLE, type: 'Repeats', title: 'Cups',
-  grid: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR'],
+  grids: [{ rows: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR'] }],
   words: [
-    { word: 'Cow', start: { row: 2, col: 3 }, direction: 'E', length: 3 },
+    { word: 'Cow', grid: 0, start: { row: 2, col: 3 }, direction: 'E', length: 3 },
     cup(0, 0, 'E'), cup(0, 4, 'E'), cup(1, 2, 'W'), cup(2, 0, 'S'), cup(4, 4, 'E'),
-    { word: 'Hen', start: { row: 1, col: 3 }, direction: 'E', length: 3 }
+    { word: 'Hen', grid: 0, start: { row: 1, col: 3 }, direction: 'E', length: 3 }
   ]
 };
 const sheepCell = (page, r, c) => page.locator('#grid .cell').nth(r * SHEEP_COLS + c);
@@ -711,7 +711,7 @@ for (const query of ['', '?id=7', '?collection=vanilla&id=7', '?id=../index']) {
 // ---- Print ----
 
 // A grid twice as tall and wide as a big real one: it must still print on one page.
-const BIG_PUZZLE = { ...PUZZLE, grid: Array.from({ length: 30 }, (_, r) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCD'.slice(r % 4) + 'WXYZ'.slice(0, r % 4)) };
+const BIG_PUZZLE = { ...PUZZLE, grids: [{ rows: Array.from({ length: 30 }, (_, r) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCD'.slice(r % 4) + 'WXYZ'.slice(0, r % 4)) }] };
 
 function pdfPages(pdf) {
   return (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
@@ -860,3 +860,268 @@ for (const format of ['A4', 'Letter']) {
     });
   }
 }
+
+// ---- A puzzle of several grids ----
+
+// The fixture as a 3-page Saga: its eight words spread over three copies of its grid, told apart
+// by the bottom-right letter — R, S, T — which sits in no word.
+const SAGA_PAGES = { Cat: 0, Cow: 0, Ewe: 0, Hen: 1, 'Ice cream': 1, Map: 1, Pig: 2, Piglet: 2 };
+const SAGA = {
+  ...PUZZLE, type: 'Saga', title: 'Farm Saga',
+  words: PUZZLE.words.map(w => ({ ...w, grid: SAGA_PAGES[w.word] })),
+  grids: ['R', 'S', 'T'].map(corner => ({ rows: PUZZLE.grids[0].rows.map((row, r) => (r === 7 ? row.slice(0, 7) + corner : row)) }))
+};
+// Each word's ends, in ALL_WORDS's order (Cat, Cow, Ewe, Hen, Ice cream, Map, Pig, Piglet), with its page.
+const SAGA_ENDS = ALL_WORDS.map((ends, i) => [[0, 0, 0, 1, 1, 1, 2, 2][i], ends]);
+const HEN = ALL_WORDS[3];
+const tabs = page => page.locator('#tabs .tab');
+const solutionTabs = page => page.locator('#solution-tabs .tab');
+
+async function openSaga(page, layout) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout || 'bottom']);
+  await open(page, null, SAGA);
+}
+
+async function findOnPage(page, number, ends) {
+  await tabs(page).nth(number).click();
+  await tapAll(page, ends);
+}
+
+test('a 3-page puzzle shows tabs Page 1 · Page 2 · Page 3 above the grid, Page 1 picked, and every word from all three', async ({ page }) => {
+  await openSaga(page);
+  await expect(tabs(page)).toHaveText(['Page 1', 'Page 2', 'Page 3']);
+  await expect(tabs(page).nth(0)).toHaveAttribute('aria-selected', 'true');
+  await expect(tabs(page).nth(1)).toHaveAttribute('aria-selected', 'false');
+  await expect(cell(page, 7, 7)).toHaveText('R');
+  await expect(page.locator('#words li')).toHaveText(['Cat', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+  await expect(page.locator('#count')).toHaveText('0/8');
+
+  const band = await page.locator('#label').boundingBox();
+  const row = await page.locator('#tabs').boundingBox();
+  const grid = await page.locator('#grid').boundingBox();
+  const card = await page.locator('#front').boundingBox();
+  expect(row.y).toBeGreaterThanOrEqual(band.y + band.height);
+  expect(grid.y).toBeGreaterThanOrEqual(row.y + row.height);
+  expect(row.x).toBeGreaterThanOrEqual(card.x);
+  expect(row.x + row.width).toBeLessThanOrEqual(card.x + card.width);
+});
+
+test('the picked tab is filled in the band\'s green, the others white, all in the Banded outline', async ({ page }) => {
+  await openSaga(page);
+  await expect(tabs(page).nth(0)).toHaveCSS('background-color', 'rgb(31, 111, 92)');
+  await expect(tabs(page).nth(0)).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(tabs(page).nth(1)).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(tabs(page).nth(1)).toHaveCSS('border-top', '2px solid rgb(15, 42, 36)');
+});
+
+test('switching tabs changes the grid and leaves the word list exactly as it was', async ({ page }) => {
+  await openSaga(page);
+  await tapAll(page, ALL_WORDS[0]);
+  const list = await page.locator('#words-list').innerHTML();
+  await tabs(page).nth(1).click();
+  await expect(tabs(page).nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(tabs(page).nth(0)).toHaveAttribute('aria-selected', 'false');
+  await expect(cell(page, 7, 7)).toHaveText('S');
+  await tabs(page).nth(2).click();
+  await expect(cell(page, 7, 7)).toHaveText('T');
+  await expect(page.locator('#grid .cell')).toHaveCount(64);
+  expect(await page.locator('#words-list').innerHTML()).toBe(list);
+});
+
+test('a word found on Page 2 is crossed off, and its line is still on Page 2 after a trip to Page 1', async ({ page }) => {
+  await openSaga(page);
+  await findOnPage(page, 1, HEN);
+  await expect(page.locator('#words li', { hasText: 'Hen' })).toHaveClass(/done/);
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+
+  await tabs(page).nth(0).click();
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(0);
+  await expect(page.locator('#words li', { hasText: 'Hen' })).toHaveClass(/done/);
+
+  await tabs(page).nth(1).click();
+  const line = page.locator('#overlay line.mark-found');
+  await expect(line).toHaveCount(1);
+  expect(await lineEnds(line)).toEqual([3.5, 6.5, 5.5, 4.5]);
+  await expect(page.locator('#count')).toHaveText('1/8');
+});
+
+test('only the words placed on the grid on show can be found', async ({ page }) => {
+  await openSaga(page);
+  await tapAll(page, HEN);
+  await expect(page.locator('#overlay line.mark-wrong')).toHaveCount(1);
+  await expect(page.locator('#words li', { hasText: 'Hen' })).not.toHaveClass(/done/);
+  await expect(page.locator('#count')).toHaveText('0/8');
+});
+
+test('turning the page drops an open selection', async ({ page }) => {
+  await openSaga(page);
+  await tapAll(page, [[0, 0], [0, 3]]);
+  await tabs(page).nth(1).click();
+  await tabs(page).nth(0).click();
+  await expect(page.locator('#overlay > *')).toHaveCount(0);
+});
+
+test('finding every word across all three pages plays the completion sparkle, and not before', async ({ page }) => {
+  await openSaga(page);
+  for (const [number, ends] of SAGA_ENDS.slice(0, -1)) await findOnPage(page, number, ends);
+  await expect(page.locator('#count')).toHaveText('7/8');
+  await expect(page.locator('#complete')).toBeHidden();
+  await findOnPage(page, ...SAGA_ENDS[SAGA_ENDS.length - 1]);
+  await expect(page.locator('#count')).toHaveText('8/8');
+  await expect(page.locator('#complete')).toBeVisible();
+  await expect(page.locator('#board .spark')).toHaveCount(28);
+});
+
+test('flipped, each tab shows its own page\'s solution; flipping back, the finds are intact on every page', async ({ page }) => {
+  await openSaga(page);
+  await findOnPage(page, 0, ALL_WORDS[0]);
+  await findOnPage(page, 1, HEN);
+  await page.locator('#flip').click();
+  await expect(page.locator('#solution-label')).toHaveText('Saga · Solution');
+  await expect(solutionTabs(page)).toHaveText(['Page 1', 'Page 2', 'Page 3']);
+  await expect(solutionTabs(page).nth(1)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#solution-grid .cell').nth(63)).toHaveText('S');
+  await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(3);
+
+  for (const [number, corner, lines] of [[2, 'T', 2], [0, 'R', 3]]) {
+    await solutionTabs(page).nth(number).click();
+    await expect(page.locator('#card')).toHaveClass(/flipped/);
+    await expect(solutionTabs(page).nth(number)).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#solution-grid .cell').nth(63)).toHaveText(corner);
+    await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(lines);
+  }
+
+  await page.locator('#flip').click();
+  await expect(tabs(page).nth(0)).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+  await tabs(page).nth(1).click();
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
+  await expect(page.locator('#count')).toHaveText('2/8');
+});
+
+test('a Saga puzzle says Saga in the band', async ({ page }) => {
+  await openSaga(page);
+  await expect(page.locator('#label')).toHaveText('Saga');
+});
+
+test('a single-grid puzzle has no tabs, and its grid sits under the band as before', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('.tab')).toHaveCount(0);
+  await expect(page.locator('#tabs')).toBeHidden();
+  const band = await page.locator('#label').boundingBox();
+  const grid = await page.locator('#grid').boundingBox();
+  expect(grid.y - (band.y + band.height)).toBeLessThan(16);
+});
+
+function wordEnd(w) {
+  const step = { N: [-1, 0], NE: [-1, 1], E: [0, 1], SE: [1, 1], S: [1, 0], SW: [1, -1], W: [0, -1], NW: [-1, -1] }[w.direction];
+  return [w.start.row + step[0] * (w.length - 1), w.start.col + step[1] * (w.length - 1)];
+}
+
+for (const id of ['WSCH-0001', 'WSCH-0002']) {
+  const real = require(`../content/puzzles/wordsearch/${id}.json`);
+  test(`${real.title}, as published, plays, flips and prints as before`, async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await page.addInitScript(key => localStorage.setItem(key, 'right'), LAYOUT_KEY);
+    await page.goto(`/app/play.html?id=${id}`);
+    await expect(page.locator('#title')).toHaveText(real.title);
+    await expect(page.locator('#label')).toHaveText('Vanilla');
+    await expect(page.locator('.tab')).toHaveCount(0);
+    await expect(page.locator('#words li')).toHaveCount(new Set(real.words.map(w => w.word)).size);
+    const cols = real.grids[0].rows[0].length;
+    const first = real.words[0];
+    for (const [r, c] of [[first.start.row, first.start.col], wordEnd(first)]) await page.locator('#grid .cell').nth(r * cols + c).click();
+    await expect(page.locator('#count')).toHaveText(`1/${real.words.length}`);
+    await page.locator('#flip').click();
+    await expect(page.locator('#solution-overlay line.mark-found')).toHaveCount(real.words.length);
+    for (const format of ['A4', 'Letter']) expect(pdfPages(await page.pdf({ format }))).toBe(1);
+  });
+}
+
+// ---- Printing a puzzle of several grids ----
+
+for (const [tab, layout] of [[0, 'bottom'], [1, 'right'], [2, 'overlay']]) {
+  test(`a 3-page puzzle prints four sheets — the words, then a grid to a sheet — from Page ${tab + 1} in ${layout}, flipped and played`, async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 900 });
+    await openSaga(page, layout);
+    await findOnPage(page, 0, ALL_WORDS[0]);
+    await findOnPage(page, tab, [[0, 0], [0, 3]]);
+    await page.locator('#flip').click();
+    for (const format of ['A4', 'Letter']) {
+      const pdf = await page.pdf({ format });
+      expect(pdfPages(pdf)).toBe(4);
+      expect(pdf.toString('latin1')).toContain('/ToUnicode');
+    }
+  });
+}
+
+// The Saga at a real Saga's size, 15 × 25 a page, its words where they were.
+const BIG_SAGA = { ...SAGA, grids: SAGA.grids.map(g => ({ rows: Array.from({ length: 25 }, (_, r) => (g.rows[r] || 'ABCDEFGH').padEnd(15, 'X')) })) };
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`a real-size 3-page puzzle prints its words first, then Pages 1–3, four sheets in all, from ${layout}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await open(page, null, BIG_SAGA);
+    for (const format of ['A4', 'Letter']) expect(pdfPages(await page.pdf({ format }))).toBe(4);
+    await page.emulateMedia({ media: 'print' });
+    const words = await page.locator('#words-list').boundingBox();
+    const grids = await page.locator('.grid-sheet').evaluateAll(s => s.map(el => el.getBoundingClientRect().top));
+    expect(grids[0]).toBeGreaterThan(words.y + words.height);
+    expect(grids).toEqual([...grids].sort((a, b) => a - b));
+  });
+}
+
+test('the leading sheet is the title, date and words card with the hidden ID beneath, and no grid', async ({ page }) => {
+  await openSaga(page, 'overlay');
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#title')).toBeVisible();
+  await expect(page.locator('#created')).toBeVisible();
+  await expect(page.locator('#words-list')).toBeVisible();
+  await expect(page.locator('#words li')).toHaveCount(8);
+  await expect(page.locator('#card')).toBeHidden();
+  await expect(page.locator('#tabs')).toBeHidden();
+  expect(await page.locator('#words-list').evaluate(el => getComputedStyle(el, '::after').content)).toBe('"WSCH-0007"');
+  const words = await page.locator('#words-list').boundingBox();
+  const first = await page.locator('.grid-sheet').first().boundingBox();
+  expect(first.y).toBeGreaterThan(words.y + words.height);
+});
+
+test('each grid sheet is the title and its blank grid alone, banded Saga · Page n of 3, every grid one size', async ({ page }) => {
+  await openSaga(page);
+  await findOnPage(page, 1, HEN);
+  await page.locator('#flip').click();
+  await page.emulateMedia({ media: 'print' });
+  const sheets = page.locator('.grid-sheet');
+  await expect(sheets).toHaveCount(3);
+  await expect(sheets.locator('h1')).toHaveText(['Farm Saga', 'Farm Saga', 'Farm Saga']);
+  await expect(sheets.locator('.band')).toHaveText(['Saga · Page 1 of 3', 'Saga · Page 2 of 3', 'Saga · Page 3 of 3']);
+  expect(await sheets.evaluateAll(s => s.map(el => getComputedStyle(el).breakBefore))).toEqual(['page', 'page', 'page']);
+  for (const [i, corner] of ['R', 'S', 'T'].entries()) {
+    await expect(sheets.nth(i).locator('.cell')).toHaveCount(64);
+    await expect(sheets.nth(i).locator('.cell').nth(63)).toHaveText(corner);
+  }
+  // Blank: no words, no found lines, no circles, no solution side.
+  await expect(sheets.locator('li, svg, .created')).toHaveCount(0);
+  const sizes = await sheets.locator('.grid').evaluateAll(gs => gs.map(g => [g.offsetWidth, g.offsetHeight]));
+  expect(new Set(sizes.map(String)).size).toBe(1);
+  expect(sizes[0][0]).toBeGreaterThan(0);
+  await expect(sheets.first().locator('.band')).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  await expect(sheets.first().locator('.cell').first()).toHaveCSS('color', 'rgb(0, 0, 0)');
+  await expect(page.locator('#words li', { hasText: 'Hen' })).toHaveCSS('text-decoration-line', 'none');
+});
+
+test('a 3-page puzzle\'s printed grids keep their ?s, on the page they sit', async ({ page }) => {
+  const wild = { ...SAGA, grids: SAGA.grids.map((g, i) => ({ ...g, wildcards: [[], [{ row: 7, col: 7 }], []][i] })) };
+  await open(page, null, wild);
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.grid-sheet .cell', { hasText: '?' })).toHaveCount(1);
+  await expect(page.locator('.grid-sheet').nth(1).locator('.cell').nth(63)).toHaveText('?');
+});
+
+test('a single-grid puzzle prints no sheets of its own beyond the one', async ({ page }) => {
+  await open(page);
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.grid-sheet')).toHaveCount(0);
+  await expect(page.locator('#card')).toBeVisible();
+});

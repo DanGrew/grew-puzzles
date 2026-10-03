@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
+  wordCells, playBoard, newPlay, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
@@ -74,10 +74,20 @@ describe('the board', () => {
   });
 
   it('splits the grid into letters, rows by columns', () => {
-    const wide = playBoard(Object.assign({}, PUZZLE, { grid: ['ABC', 'DEF'] }));
-    expect(wide.letters).toEqual([['A', 'B', 'C'], ['D', 'E', 'F']]);
+    const wide = playBoard(Object.assign({}, PUZZLE, { grids: [{ rows: ['ABC', 'DEF'] }] }));
+    expect(wide.grids).toHaveLength(1);
+    expect(wide.grids[0].letters).toEqual([['A', 'B', 'C'], ['D', 'E', 'F']]);
     expect(wide.rows).toBe(2);
     expect(wide.cols).toBe(3);
+  });
+
+  it('has no tabs and no sheets of its own for a puzzle of one grid', () => {
+    expect(BOARD.tabs).toEqual([]);
+    expect(BOARD.sheets).toEqual([]);
+  });
+
+  it('keeps which grid each word sits in', () => {
+    expect(WORDS.map(w => w.grid)).toEqual([0, 0, 0, 0, 0, 0, 0, 0]);
   });
 
   it('lists the words as shown, in file order, with their cells', () => {
@@ -88,11 +98,11 @@ describe('the board', () => {
 
 describe('tapping', () => {
   it('starts a selection on the first tap', () => {
-    expect(taps([[0, 0]])).toEqual({ picked: [[0, 0]], found: [], events: [] });
+    expect(taps([[0, 0]])).toEqual({ picked: [[0, 0]], found: [], events: [], page: 0 });
   });
 
   it('crosses a word off when its two ends are tapped', () => {
-    expect(taps([[4, 2], [2, 2]])).toEqual({ picked: [], found: [at('Cat')], events: [] });
+    expect(taps([[4, 2], [2, 2]])).toEqual({ picked: [], found: [at('Cat')], events: [], page: 0 });
   });
 
   it('crosses a word off from either end', () => {
@@ -107,28 +117,28 @@ describe('tapping', () => {
   });
 
   it('keeps a non-word selection open, as a red line', () => {
-    expect(taps([[0, 0], [0, 3]])).toEqual({ picked: [[0, 0], [0, 3]], found: [], events: [] });
+    expect(taps([[0, 0], [0, 3]])).toEqual({ picked: [[0, 0], [0, 3]], found: [], events: [], page: 0 });
   });
 
   it('points an open red line at any other in-line letter: nearer, further, or another way', () => {
     const open = taps([[0, 2], [0, 5]]);
-    expect(taps([[0, 3]], open)).toEqual({ picked: [[0, 2], [0, 3]], found: [], events: [] });
-    expect(taps([[0, 6]], open)).toEqual({ picked: [[0, 2], [0, 6]], found: [], events: [] });
-    expect(taps([[0, 0]], open)).toEqual({ picked: [[0, 2], [0, 0]], found: [], events: [] });
-    expect(taps([[3, 2]], open)).toEqual({ picked: [[0, 2], [3, 2]], found: [], events: [] });
-    expect(taps([[2, 4]], open)).toEqual({ picked: [[0, 2], [2, 4]], found: [], events: [] });
-    expect(taps([[2, 0]], open)).toEqual({ picked: [[0, 2], [2, 0]], found: [], events: [] });
+    expect(taps([[0, 3]], open)).toEqual({ picked: [[0, 2], [0, 3]], found: [], events: [], page: 0 });
+    expect(taps([[0, 6]], open)).toEqual({ picked: [[0, 2], [0, 6]], found: [], events: [], page: 0 });
+    expect(taps([[0, 0]], open)).toEqual({ picked: [[0, 2], [0, 0]], found: [], events: [], page: 0 });
+    expect(taps([[3, 2]], open)).toEqual({ picked: [[0, 2], [3, 2]], found: [], events: [], page: 0 });
+    expect(taps([[2, 4]], open)).toEqual({ picked: [[0, 2], [2, 4]], found: [], events: [], page: 0 });
+    expect(taps([[2, 0]], open)).toEqual({ picked: [[0, 2], [2, 0]], found: [], events: [], page: 0 });
   });
 
   it('crosses a word off when a redrawn line spans it, from either end', () => {
     expect(taps([[0, 0], [0, 3], [0, 7]]).found).toEqual([at('Ice cream')]);
     expect(taps([[0, 7], [0, 5], [0, 0]]).found).toEqual([at('Ice cream')]);
-    expect(taps([[4, 2], [4, 4], [2, 2]])).toEqual({ picked: [], found: [at('Cat')], events: [] });
+    expect(taps([[4, 2], [4, 4], [2, 2]])).toEqual({ picked: [], found: [at('Cat')], events: [], page: 0 });
     expect(taps([[3, 4], [3, 2], [1, 2]]).found).toEqual([at('Cow')]);
   });
 
   it('ignores a tap that is not in line with the start', () => {
-    expect(taps([[0, 0], [2, 1]])).toEqual({ picked: [[0, 0]], found: [], events: [] });
+    expect(taps([[0, 0], [2, 1]])).toEqual({ picked: [[0, 0]], found: [], events: [], page: 0 });
   });
 
   it('ignores a tap off every line through the start while a red line shows', () => {
@@ -158,16 +168,16 @@ describe('tapping', () => {
   });
 
   it('crosses off PIGLET when its T is tapped after the red P-to-G line', () => {
-    expect(taps([[1, 0], [3, 0], [6, 0]])).toEqual({ picked: [], found: [at('Piglet')], events: [] });
+    expect(taps([[1, 0], [3, 0], [6, 0]])).toEqual({ picked: [], found: [at('Piglet')], events: [], page: 0 });
   });
 
   it('does not find a word from a selection sharing only one of its ends', () => {
-    expect(taps([[2, 2], [2, 4]])).toEqual({ picked: [[2, 2], [2, 4]], found: [], events: [] });
-    expect(taps([[4, 2], [4, 4]])).toEqual({ picked: [[4, 2], [4, 4]], found: [], events: [] });
+    expect(taps([[2, 2], [2, 4]])).toEqual({ picked: [[2, 2], [2, 4]], found: [], events: [], page: 0 });
+    expect(taps([[4, 2], [4, 4]])).toEqual({ picked: [[4, 2], [4, 4]], found: [], events: [], page: 0 });
   });
 
   it('does not cross off PIG for P then G inside PIGLET', () => {
-    expect(taps([[1, 0], [3, 0]])).toEqual({ picked: [[1, 0], [3, 0]], found: [], events: [] });
+    expect(taps([[1, 0], [3, 0]])).toEqual({ picked: [[1, 0], [3, 0]], found: [], events: [], page: 0 });
   });
 
   it('crosses off PIG at its own placement', () => {
@@ -175,20 +185,20 @@ describe('tapping', () => {
   });
 
   it('does not find a found word twice', () => {
-    expect(taps([[4, 2], [2, 2], [4, 2], [2, 2]])).toEqual({ picked: [[4, 2], [2, 2]], found: [at('Cat')], events: [] });
+    expect(taps([[4, 2], [2, 2], [4, 2], [2, 2]])).toEqual({ picked: [[4, 2], [2, 2]], found: [at('Cat')], events: [], page: 0 });
   });
 
   it('sets off completion when the last word is found, and only then', () => {
-    const allButOne = { picked: [], found: [0, 1, 2, 3, 4, 5, 6], events: [] };
-    expect(taps([[1, 0], [6, 0]], allButOne)).toEqual({ picked: [], found: [0, 1, 2, 3, 4, 5, 6, 7], events: ['complete'] });
+    const allButOne = { picked: [], found: [0, 1, 2, 3, 4, 5, 6], events: [], page: 0 };
+    expect(taps([[1, 0], [6, 0]], allButOne)).toEqual({ picked: [], found: [0, 1, 2, 3, 4, 5, 6, 7], events: ['complete'], page: 0 });
   });
 
   it('starts every play with nothing picked or found', () => {
-    expect(newPlay()).toEqual({ picked: [], found: [], events: [] });
+    expect(newPlay()).toEqual({ picked: [], found: [], events: [], page: 0 });
   });
 
   it('solves every word for the solution side', () => {
-    expect(solvedPlay(WORDS)).toEqual({ picked: [], found: [0, 1, 2, 3, 4, 5, 6, 7], events: [] });
+    expect(solvedPlay(WORDS, 0)).toEqual({ picked: [], found: [0, 1, 2, 3, 4, 5, 6, 7], events: [], page: 0 });
   });
 });
 
@@ -232,11 +242,11 @@ describe('what the board shows', () => {
   it('lists each word once, with no progress, when every word has one copy', () => {
     expect(listedWords(WORDS).map(entry => entry.copies)).toEqual([[0], [1], [2], [3], [4], [5], [6], [7]]);
     expect(wordList(newPlay(), WORDS, false).map(item => item.text)).toEqual(WORDS.map(w => w.text));
-    expect(wordList(solvedPlay(WORDS), WORDS, false).filter(item => item.progress !== '')).toEqual([]);
+    expect(wordList(solvedPlay(WORDS, 0), WORDS, false).filter(item => item.progress !== '')).toEqual([]);
   });
 
   it('shows no word red in a puzzle with none missing, solved or flipped', () => {
-    expect(wordList(solvedPlay(WORDS), WORDS, true).filter(item => item.revealed)).toEqual([]);
+    expect(wordList(solvedPlay(WORDS, 0), WORDS, true).filter(item => item.revealed)).toEqual([]);
   });
 
   it('counts found words out of all of them', () => {
@@ -255,7 +265,7 @@ describe('a puzzle with a missing word', () => {
   });
   const goat = () => MISSING.findIndex(w => w.text === 'Goat');
   const placed = () => MISSING.map((_, i) => i).filter(i => i !== goat());
-  const allBut = last => ({ picked: [], found: placed().filter(i => i !== last), events: [] });
+  const allBut = last => ({ picked: [], found: placed().filter(i => i !== last), events: [], page: 0 });
 
   it('lists the missing word among the rest, with no cells', () => {
     expect(MISSING.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
@@ -265,7 +275,7 @@ describe('a puzzle with a missing word', () => {
 
   it('counts only the placed words', () => {
     expect(countLabel(newPlay(), MISSING)).toBe('0/8');
-    expect(countLabel(solvedPlay(MISSING), MISSING)).toBe('8/8');
+    expect(countLabel(solvedPlay(MISSING, 0), MISSING)).toBe('8/8');
   });
 
   it('shows every word unmarked at the start, the missing one too', () => {
@@ -282,12 +292,12 @@ describe('a puzzle with a missing word', () => {
   it('does not set off completion one word short', () => {
     const piglet = MISSING.findIndex(w => w.text === 'Piglet');
     const cat = MISSING.findIndex(w => w.text === 'Cat');
-    const short = { picked: [], found: placed().filter(i => i !== piglet && i !== cat), events: [] };
+    const short = { picked: [], found: placed().filter(i => i !== piglet && i !== cat), events: [], page: 0 };
     expect(tap(tap(short, [1, 0], MISSING), [6, 0], MISSING).events).toEqual([]);
   });
 
   it('turns the missing word red once every placed word is found', () => {
-    const list = wordList(solvedPlay(MISSING), MISSING, false);
+    const list = wordList(solvedPlay(MISSING, 0), MISSING, false);
     expect(list[goat()]).toEqual({ text: 'Goat', done: false, revealed: true, progress: '' });
     expect(list.filter(item => item.revealed)).toHaveLength(1);
   });
@@ -302,13 +312,13 @@ describe('a puzzle with a missing word', () => {
   });
 
   it('solves only the placed words for the solution side', () => {
-    expect(solvedPlay(MISSING).found).toEqual(placed());
+    expect(solvedPlay(MISSING, 0).found).toEqual(placed());
   });
 
   it('never lines through or rings the missing word', () => {
-    const marks = playMarks(solvedPlay(MISSING), MISSING);
+    const marks = playMarks(solvedPlay(MISSING, 0), MISSING);
     expect(marks.found).toHaveLength(8);
-    expect(marks.shared).toEqual(playMarks(solvedPlay(WORDS), WORDS).shared);
+    expect(marks.shared).toEqual(playMarks(solvedPlay(WORDS, 0), WORDS).shared);
   });
 
   it('a tap never finds the missing word', () => {
@@ -321,27 +331,29 @@ describe('a puzzle with wildcards', () => {
   // The fixture as a Wildcards puzzle: Cat's A (row 3, col 2) and Ice cream's second C (row 0, col 3) show ?.
   let WILD;
   beforeEach(() => {
-    WILD = playBoard(Object.assign({}, PUZZLE, { type: 'Wildcards', wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] }));
+    WILD = playBoard(Object.assign({}, PUZZLE, {
+      type: 'Wildcards', grids: [{ rows: PUZZLE.grids[0].rows, wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] }]
+    }));
   });
 
   it('shows ? on the puzzle side at each wildcard, and only there', () => {
-    expect(WILD.shown[3][2]).toBe('?');
-    expect(WILD.shown[0][3]).toBe('?');
-    expect(WILD.shown.flat().filter(l => l === '?')).toHaveLength(2);
-    expect(WILD.shown[0]).toEqual(['I', 'C', 'E', '?', 'R', 'E', 'A', 'M']);
+    expect(WILD.grids[0].shown[3][2]).toBe('?');
+    expect(WILD.grids[0].shown[0][3]).toBe('?');
+    expect(WILD.grids[0].shown.flat().filter(l => l === '?')).toHaveLength(2);
+    expect(WILD.grids[0].shown[0]).toEqual(['I', 'C', 'E', '?', 'R', 'E', 'A', 'M']);
   });
 
   it('marks each wildcard cell, and only those', () => {
-    expect(WILD.wild[3][2]).toBe(true);
-    expect(WILD.wild[0][3]).toBe(true);
-    expect(WILD.wild.flat().filter(Boolean)).toHaveLength(2);
-    expect(WILD.wild[2][3]).toBe(false);
-    expect(WILD.wild[3][0]).toBe(false);
+    expect(WILD.grids[0].wild[3][2]).toBe(true);
+    expect(WILD.grids[0].wild[0][3]).toBe(true);
+    expect(WILD.grids[0].wild.flat().filter(Boolean)).toHaveLength(2);
+    expect(WILD.grids[0].wild[2][3]).toBe(false);
+    expect(WILD.grids[0].wild[3][0]).toBe(false);
   });
 
   it('keeps every real letter for the solution side', () => {
-    expect(WILD.letters).toEqual(PUZZLE.grid.map(row => row.split('')));
-    expect(WILD.letters[3][2]).toBe('A');
+    expect(WILD.grids[0].letters).toEqual(PUZZLE.grids[0].rows.map(row => row.split('')));
+    expect(WILD.grids[0].letters[3][2]).toBe('A');
   });
 
   it('says Wildcards in the band', () => {
@@ -355,10 +367,10 @@ describe('a puzzle with wildcards', () => {
   });
 
   it('shows every real letter, and marks none, in a puzzle with no wildcards', () => {
-    expect(BOARD.shown).toEqual(BOARD.letters);
-    expect(BOARD.wild.flat().some(Boolean)).toBe(false);
-    expect(BOARD.wild).toHaveLength(8);
-    expect(BOARD.wild[0]).toHaveLength(8);
+    expect(BOARD.grids[0].shown).toEqual(BOARD.grids[0].letters);
+    expect(BOARD.grids[0].wild.flat().some(Boolean)).toBe(false);
+    expect(BOARD.grids[0].wild).toHaveLength(8);
+    expect(BOARD.grids[0].wild[0]).toHaveLength(8);
   });
 });
 
@@ -366,15 +378,15 @@ describe('a puzzle with repeated words', () => {
   // Cup five times among Cow and Hen, each copy listed once in the file at its own placement.
   let REPEATS;
   beforeEach(() => {
-    const cup = (row, col, direction) => ({ word: 'Cup', start: { row: row, col: col }, direction: direction, length: 3 });
+    const cup = (row, col, direction) => ({ word: 'Cup', grid: 0, start: { row: row, col: col }, direction: direction, length: 3 });
     REPEATS = playBoard({
       hiddenId: 'WSCH-0009', type: 'Repeats', created: '2026-10-03', title: 'Cups',
       words: [
-        { word: 'Cow', start: { row: 2, col: 3 }, direction: 'E', length: 3 },
+        { word: 'Cow', grid: 0, start: { row: 2, col: 3 }, direction: 'E', length: 3 },
         cup(0, 0, 'E'), cup(0, 4, 'E'), cup(1, 2, 'W'), cup(2, 0, 'S'), cup(4, 4, 'E'),
-        { word: 'Hen', start: { row: 1, col: 3 }, direction: 'E', length: 3 }
+        { word: 'Hen', grid: 0, start: { row: 1, col: 3 }, direction: 'E', length: 3 }
       ],
-      grid: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR']
+      grids: [{ rows: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR'] }]
     }).words;
   });
   const find = (cells, play) => cells.reduce((p, cell) => tap(p, cell, REPEATS), play || newPlay());
@@ -410,7 +422,7 @@ describe('a puzzle with repeated words', () => {
   });
 
   it('crosses Cup off only once every copy is found', () => {
-    const four = { picked: [], found: [1, 2, 3, 4], events: [] };
+    const four = { picked: [], found: [1, 2, 3, 4], events: [], page: 0 };
     expect(wordList(four, REPEATS, false)[1]).toEqual({ text: 'Cup', done: false, revealed: false, progress: '4/5' });
     const all = find([[4, 4], [4, 6]], four);
     expect(wordList(all, REPEATS, false)[1]).toEqual({ text: 'Cup', done: true, revealed: false, progress: '5/5' });
@@ -418,17 +430,112 @@ describe('a puzzle with repeated words', () => {
 
   it('counts every copy in the overall count', () => {
     expect(countLabel(newPlay(), REPEATS)).toBe('0/7');
-    expect(countLabel({ picked: [], found: cups(), events: [] }, REPEATS)).toBe('5/7');
+    expect(countLabel({ picked: [], found: cups(), events: [], page: 0 }, REPEATS)).toBe('5/7');
   });
 
   it('sets off completion on the last copy, and not before', () => {
-    const allButOne = { picked: [], found: [0, 1, 2, 3, 4, 6], events: [] };
+    const allButOne = { picked: [], found: [0, 1, 2, 3, 4, 6], events: [], page: 0 };
     expect(find([[4, 4], [4, 6]], allButOne).events).toEqual(['complete']);
-    expect(find([[4, 4], [4, 6]], { picked: [], found: [0, 1, 2, 3, 4], events: [] }).events).toEqual([]);
+    expect(find([[4, 4], [4, 6]], { picked: [], found: [0, 1, 2, 3, 4], events: [], page: 0 }).events).toEqual([]);
   });
 
   it('lines through every copy on the solution side', () => {
-    expect(playMarks(solvedPlay(REPEATS), REPEATS).found).toHaveLength(7);
+    expect(playMarks(solvedPlay(REPEATS, 0), REPEATS).found).toHaveLength(7);
+  });
+});
+
+describe('a puzzle of several grids', () => {
+  // A 3-page Saga: Cat on page 1 and Dog on page 2 sit on the same cells of their own grids, Cow
+  // shares page 2, Hen is page 3's with a ? in its corner, and Goat is missing from every page.
+  let SAGA;
+  beforeEach(() => {
+    const word = (text, grid, row) => ({ word: text, grid: grid, start: { row: row, col: 0 }, direction: 'E', length: 3 });
+    SAGA = playBoard({
+      hiddenId: 'WSCH-0010', type: 'Saga', created: '2026-10-03', title: 'Farm Saga',
+      words: [word('Cat', 0, 0), word('Cow', 1, 1), word('Dog', 1, 0), { word: 'Goat', missing: true }, word('Hen', 2, 0)],
+      grids: [
+        { rows: ['CATX', 'XXXX', 'XXXX', 'XXXX'] },
+        { rows: ['DOGX', 'COWX', 'XXXX', 'XXXX'] },
+        { rows: ['HENX', 'XXXX', 'XXXX', 'XXXZ'], wildcards: [{ row: 3, col: 3 }] }
+      ]
+    });
+  });
+  const words = () => SAGA.words;
+  const at = text => SAGA.words.findIndex(w => w.text === text);
+  const find = (cells, play) => cells.reduce((p, cell) => tap(p, cell, words()), play || newPlay());
+
+  it('names a tab for each page, and bands each printed sheet with its page out of all of them', () => {
+    expect(SAGA.tabs).toEqual(['Page 1', 'Page 2', 'Page 3']);
+    expect(SAGA.sheets).toEqual(['Saga · Page 1 of 3', 'Saga · Page 2 of 3', 'Saga · Page 3 of 3']);
+    expect(SAGA.label).toBe('Saga');
+    expect(SAGA.solutionLabel).toBe('Saga · Solution');
+  });
+
+  it('keeps each grid its own letters and its own wildcards, all one size', () => {
+    expect(SAGA.grids.map(g => g.letters[0].join(''))).toEqual(['CATX', 'DOGX', 'HENX']);
+    expect(SAGA.grids[2].shown[3]).toEqual(['X', 'X', 'X', '?']);
+    expect(SAGA.grids[2].letters[3][3]).toBe('Z');
+    expect(SAGA.grids.map(g => g.wild.flat().filter(Boolean).length)).toEqual([0, 0, 1]);
+    expect([SAGA.rows, SAGA.cols]).toEqual([4, 4]);
+  });
+
+  it('opens on page 1', () => {
+    expect(newPlay().page).toBe(0);
+  });
+
+  it('finds only the words placed on the grid on show', () => {
+    expect(find([[0, 0], [0, 2]]).found).toEqual([at('Cat')]);
+    expect(find([[0, 0], [0, 2]], turnPage(newPlay(), 1)).found).toEqual([at('Dog')]);
+    expect(find([[1, 0], [1, 2]], turnPage(newPlay(), 2))).toEqual({ picked: [[1, 0], [1, 2]], found: [], events: [], page: 2 });
+  });
+
+  it('turning the page keeps every find and drops the open selection', () => {
+    const open = find([[0, 0], [0, 2], [1, 1], [2, 1]]);
+    expect(turnPage(open, 2)).toEqual({ picked: [], found: [at('Cat')], events: [], page: 2 });
+  });
+
+  it('marks only the finds on the grid on show, so each page keeps its own lines', () => {
+    const both = find([[0, 0], [0, 2]], turnPage(find([[0, 0], [0, 2]]), 1));
+    expect(both.found).toEqual([at('Cat'), at('Dog')]);
+    expect(playMarks(turnPage(both, 0), words()).found).toEqual([[[0, 0], [0, 2]]]);
+    expect(playMarks(turnPage(both, 1), words()).found).toEqual([[[0, 0], [0, 2]]]);
+    expect(playMarks(turnPage(both, 2), words()).found).toEqual([]);
+  });
+
+  it('rings a letter shared only by found words on the grid on show', () => {
+    // Dog and Ox share page 2's O; Cat sits on page 1's same cells as Dog.
+    const pair = playBoard({
+      hiddenId: 'WSCH-0011', type: 'Saga', created: '2026-10-03', title: 'Pair',
+      words: [
+        { word: 'Cat', grid: 0, start: { row: 0, col: 0 }, direction: 'E', length: 3 },
+        { word: 'Dog', grid: 1, start: { row: 0, col: 0 }, direction: 'E', length: 3 },
+        { word: 'Ox', grid: 1, start: { row: 0, col: 1 }, direction: 'S', length: 2 }
+      ],
+      grids: [{ rows: ['CAT', 'XXX'] }, { rows: ['DOG', 'XXX'] }]
+    }).words;
+    const play = { picked: [], found: [0, 1, 2], events: [], page: 1 };
+    expect(playMarks(play, pair).shared).toEqual([[0, 1]]);
+    expect(playMarks(turnPage(play, 0), pair).shared).toEqual([]);
+  });
+
+  it('solves each page on its own for the solution side', () => {
+    expect(playMarks(solvedPlay(words(), 1), words()).found).toHaveLength(2);
+    expect(playMarks(solvedPlay(words(), 2), words()).found).toEqual([[[0, 0], [0, 2]]]);
+    expect(solvedPlay(words(), 2).page).toBe(2);
+  });
+
+  it('lists every word from every page, whichever page shows', () => {
+    const play = find([[0, 0], [0, 2]]);
+    expect(wordList(play, words(), false).map(item => item.text)).toEqual(['Cat', 'Cow', 'Dog', 'Goat', 'Hen']);
+    expect(wordList(turnPage(play, 2), words(), false)).toEqual(wordList(play, words(), false));
+    expect(countLabel(turnPage(play, 1), words())).toBe('1/4');
+  });
+
+  it('sets off completion only once every word on every page is found', () => {
+    const allButHen = { picked: [], found: [at('Cat'), at('Cow'), at('Dog')], events: [], page: 2 };
+    expect(find([[0, 0], [0, 2]], allButHen).events).toEqual(['complete']);
+    const allButCat = { picked: [], found: [at('Cow'), at('Dog')], events: [], page: 2 };
+    expect(find([[0, 0], [0, 2]], allButCat).events).toEqual([]);
   });
 });
 

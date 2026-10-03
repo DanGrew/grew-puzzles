@@ -30,17 +30,18 @@ export function wordCells(word) {
   });
 }
 
-// A missing word is listed but sits nowhere in the grid, so it has no cells.
+// A missing word is listed but sits in no grid, so it has no cells; a placed word sits in the
+// grid its own grid names.
 function boardWord(w) {
-  return { text: w.word, missing: Boolean(w.missing), cells: w.missing ? [] : wordCells(w) };
+  return { text: w.word, missing: Boolean(w.missing), grid: w.grid, cells: w.missing ? [] : wordCells(w) };
 }
 
 // A wildcard cell shows ? on the puzzle side only: the grid keeps its real letter, and the
-// solution side shows it. wild marks those cells; a puzzle without wildcards has none.
-function wildCells(puzzle, letters) {
+// solution side shows it. wild marks those cells; a grid without wildcards has none.
+function wildCells(grid, letters) {
   return letters.map(function (row, r) {
     return row.map(function (_, c) {
-      return Boolean(puzzle.wildcards?.some(function (w) { return w.row === r && w.col === c; }));
+      return Boolean(grid.wildcards?.some(function (w) { return w.row === r && w.col === c; }));
     });
   });
 }
@@ -51,21 +52,35 @@ function shownLetters(letters, wild) {
   });
 }
 
-// The type is the board's only label: shown exactly as written, in the grid's header band.
-// letters are the real ones, for the solution side; shown is what the puzzle side shows.
+// One grid of the puzzle: letters are the real ones, for the solution side; shown is what the
+// puzzle side shows.
+function boardGrid(grid) {
+  var letters = grid.rows.map(function (row) { return row.split(''); });
+  var wild = wildCells(grid, letters);
+  return { letters: letters, shown: shownLetters(letters, wild), wild: wild };
+}
+
+// A puzzle of several grids is played a page at a time, under tabs, and printed a grid to a
+// sheet, each banded with its page; a puzzle of one grid has no tabs and no sheets of its own.
+function pageNames(count, name) {
+  var names = Array.from({ length: count }, function (_, i) { return name(i + 1, count); });
+  return { true: names, false: [] }[count > 1];
+}
+
+// The type is the board's only label on screen: shown exactly as written, in the grid's header
+// band. Every grid is the same size, so the first one sizes them all.
 export function playBoard(puzzle) {
-  var letters = puzzle.grid.map(function (row) { return row.split(''); });
-  var wild = wildCells(puzzle, letters);
+  var count = puzzle.grids.length;
   return {
     title: puzzle.title,
     created: dayLabel(puzzle.created),
     label: puzzle.type,
     solutionLabel: puzzle.type + ' · Solution',
-    letters: letters,
-    shown: shownLetters(letters, wild),
-    wild: wild,
-    rows: puzzle.grid.length,
-    cols: puzzle.grid[0].length,
+    grids: puzzle.grids.map(boardGrid),
+    tabs: pageNames(count, function (n) { return 'Page ' + n; }),
+    sheets: pageNames(count, function (n, of) { return puzzle.type + ' · Page ' + n + ' of ' + of; }),
+    rows: puzzle.grids[0].rows.length,
+    cols: puzzle.grids[0].rows[0].length,
     words: puzzle.words.map(boardWord)
   };
 }
@@ -75,23 +90,35 @@ function placedWords(words) {
   return words.map(function (_, i) { return i; }).filter(function (i) { return !words[i].missing; });
 }
 
+// The words that sit in the grid on show, by index: the only ones a tap can find or the board
+// marks. A missing word sits on no page.
+function pageWords(indices, words, page) {
+  return indices.filter(function (i) { return words[i].grid === page; });
+}
+
 // The puzzle ends on the last placed word: the player is never asked to find a missing one.
 function solved(found, words) {
   return found.length === placedWords(words).length;
 }
 
 // ---- Tapping ----
-// A play is { picked, found, events }: picked holds the selection's start, then its end
+// A play is { picked, found, events, page }: picked holds the selection's start, then its end
 // (0–2 cells); found the indices of the words crossed off — each copy of a repeated word is its
-// own entry, so its own find; events what this tap set off.
+// own entry, so its own find; events what this tap set off; page the grid on show, from 0.
 // The start stays put: each later tap in line with it only points the line at that letter.
 
 export function newPlay() {
-  return { picked: [], found: [], events: [] };
+  return { picked: [], found: [], events: [], page: 0 };
 }
 
-export function solvedPlay(words) {
-  return { picked: [], found: placedWords(words), events: [] };
+// The solution side of one page: every placed word found.
+export function solvedPlay(words, page) {
+  return { picked: [], found: placedWords(words), events: [], page: page };
+}
+
+// Another tab: its grid shows, the open selection goes, every find stays where it was.
+export function turnPage(play, page) {
+  return { picked: [], found: play.found, events: [], page: page };
 }
 
 function sameCell(a, b) {
@@ -110,16 +137,18 @@ function spans(cells, picked) {
 }
 
 function keep(play, picked) {
-  return { picked: picked, found: play.found, events: [] };
+  return { picked: picked, found: play.found, events: [], page: play.page };
 }
 
-// Only a word's real placement counts — P then G inside PIGLET is not PIG. A missing word has
-// no placement, so no tap finds it.
+// Only a word's real placement counts — P then G inside PIGLET is not PIG — and only in the grid
+// on show. A missing word has no placement, so no tap finds it.
 function check(play, picked, words) {
-  var hit = placedWords(words).find(function (i) { return !play.found.includes(i) && spans(words[i].cells, picked); });
+  var hit = pageWords(placedWords(words), words, play.page).find(function (i) {
+    return !play.found.includes(i) && spans(words[i].cells, picked);
+  });
   if (hit === undefined) return keep(play, picked);
   var found = play.found.concat([hit]);
-  return { picked: [], found: found, events: solved(found, words) ? ['complete'] : [] };
+  return { picked: [], found: found, events: solved(found, words) ? ['complete'] : [], page: play.page };
 }
 
 function tapFirst(play, cell) {
@@ -154,10 +183,11 @@ export function sharedCells(words) {
   return Object.keys(counts).filter(function (k) { return counts[k] > 1; }).map(function (k) { return JSON.parse(k); });
 }
 
-// found: a line through each found word; shared: a ring on each letter two found words
-// share; wrong: the red line of an open selection; rings: a ring on its start letter.
+// The grid on show only. found: a line through each found word; shared: a ring on each letter
+// two found words share; wrong: the red line of an open selection; rings: a ring on its start
+// letter.
 export function playMarks(play, words) {
-  var done = play.found.map(function (i) { return words[i]; });
+  var done = pageWords(play.found, words, play.page).map(function (i) { return words[i]; });
   var start = play.picked.slice(0, 1);
   return {
     found: done.map(function (w) { return [w.cells[0], w.cells[w.cells.length - 1]]; }),
