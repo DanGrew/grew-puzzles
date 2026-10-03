@@ -7,11 +7,11 @@
       "created": "2026-10-03",
       "puzzles": [
         {
-          "hiddenId": "WSCH-0001",
+          "id": "WSCH-0001",
           "number": 1
         },
         {
-          "hiddenId": "WSCH-0002",
+          "id": "WSCH-0002",
           "number": 2
         }
       ]
