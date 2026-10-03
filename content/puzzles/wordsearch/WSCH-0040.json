@@ -1,0 +1,1130 @@
+{
+  "hiddenId": "WSCH-0040",
+  "type": "Saga",
+  "created": "2026-10-03",
+  "title": "Video Games",
+  "wordGroups": [
+    "video-games"
+  ],
+  "words": [
+    {
+      "word": "Among Us",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Angry Birds",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Animal Crossing",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 14
+    },
+    {
+      "word": "Apex Legends",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Asteroids",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Banjo-Kazooie",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Battlefield",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Bayonetta",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "BioShock",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Bomberman",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Brawl Stars",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Bulletstorm",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Call of Duty",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Candy Crush",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Castlevania",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Clash of Clans",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Clash Royale",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Counter-Strike",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Crash Bandicoot",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 14
+    },
+    {
+      "word": "Cuphead",
+      "grid": 2,
+      "start": {
+        "row": 15,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Dark Souls",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Destiny",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Diablo",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Donkey Kong",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Doom",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Dying Light",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Elden Ring",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Evolve",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Fall Guys",
+      "grid": 2,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Fallout",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Far Cry",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "FIFA",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Final Fantasy",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Fortnite",
+      "grid": 2,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Frogger",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Gears of War",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "God of War",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Gran Turismo",
+      "grid": 2,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "GTA V",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Halo",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hitman",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Hollow Knight",
+      "grid": 2,
+      "start": {
+        "row": 13,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Horizon",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Journey",
+      "grid": 2,
+      "start": {
+        "row": 21,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Just Dance",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Katamari",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Kirby",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Lego Star Wars",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Lemmings",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Limbo",
+      "grid": 2,
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "LittleBigPlanet",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 15
+    },
+    {
+      "word": "Mad Max",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Madden",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Mario Kart",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Mario Party",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Max Payne",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Mega Man",
+      "grid": 2,
+      "start": {
+        "row": 17,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Metroid",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Minecraft",
+      "grid": 2,
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Mortal Kombat",
+      "grid": 2,
+      "start": {
+        "row": 24,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Need for Speed",
+      "grid": 2,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Outlast",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Overwatch",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Pac-Man",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Pikmin",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Pokémon Blue",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Pokémon Go",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Pokémon Red",
+      "grid": 2,
+      "start": {
+        "row": 15,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Pong",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Portal",
+      "grid": 2,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Prey",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Rage",
+      "grid": 2,
+      "start": {
+        "row": 20,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Ratchet and Clank",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 15
+    },
+    {
+      "word": "Rayman",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Red Dead",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Roblox",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Rocket League",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Rust",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Sims",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Skyrim",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Sonic",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Space Invaders",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Spelunky",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Splatoon",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Spyro",
+      "grid": 2,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Stardew Valley",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 13
+    },
+    {
+      "word": "Street Fighter",
+      "grid": 2,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Super Smash Bros",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 14
+    },
+    {
+      "word": "Tekken",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Terraria",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Tetris",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "The Last of Us",
+      "grid": 2,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Titanfall",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Tomb Raider",
+      "grid": 2,
+      "start": {
+        "row": 23,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Uncharted",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Until Dawn",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Valorant",
+      "grid": 2,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Vampyr",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Watch Dogs",
+      "grid": 2,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Wii Sports",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Witcher",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Worms",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Zelda",
+      "grid": 2,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 5
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "RATCHETANDCLANK",
+        "EASREDAVNIECAPS",
+        "GVKFHYAIDBSMROW",
+        "GWWYRCALLOFDUTY",
+        "ODRCELAYORHSALC",
+        "ROREVLOVESRYYHH",
+        "FASLUOSKRADSGAU",
+        "FITDIABLOXCANLD",
+        "NAMONGUSWKWTIOI",
+        "BULLETSTORMNSZO",
+        "BATTLEFIELDASOR",
+        "GIXYERWBYNUFORT",
+        "ELFDTTABBDOLRUE",
+        "AEUYXRRDRZCACSM",
+        "RGPIFOAAIPVNLTG",
+        "SOONLPLPKIIIASR",
+        "OSKGRUOBOOJFMGE",
+        "FTELPMTNOIIKIND",
+        "WAMISMISGRRRNID",
+        "AROGNOMEKOPAAME",
+        "RWNHBIOSHOCKMMA",
+        "PABTYNITSEDGNED",
+        "HRLSNALCFOHSALC",
+        "XSUBANJOKAZOOIE",
+        "LFEKTERRARIASYJ"
+      ]
+    },
+    {
+      "rows": [
+        "SAVGRAYMANVXMMW",
+        "RDOIHUYYWALFLII",
+        "WOIJUZIEZPSKTRT",
+        "HOWXDARLGEPREYC",
+        "AMCCFNKLMXEBNKH",
+        "IASOSCDANLLOASE",
+        "NJPURUOVWEUMLDR",
+        "AZLNYTNWAGNBPAK",
+        "VCATPIKEDEKEGAW",
+        "ERTEMTEDLNYRIFI",
+        "LAORAAYRIDLMBII",
+        "TSOSVNKATSSAEFS",
+        "SHNTUFOTNWVNLRP",
+        "ABYRYANSUFKHTOO",
+        "CAGIGLGRAACPTCR",
+        "UNLKKLGLTTBGIKT",
+        "NDAELRLAAHNHLES",
+        "OISCKOMWSIRTETI",
+        "ZCTJUARRRMBVULB",
+        "IOETREXNAVSABEN",
+        "RORIVWEDEAXTZAI",
+        "OTOOPDMICTBGHGM",
+        "HSIVLABPACMANUK",
+        "EADEXRAWFODOGEI",
+        "IDSUSDRIBYRGNAP"
+      ]
+    },
+    {
+      "rows": [
+        "DBTDBWUMEJUHHSJ",
+        "IEWFNAAXUISTRVW",
+        "TOTCOXYSTUMAEAN",
+        "PHRRPRTORMTLTTE",
+        "MAEAADTCNSWCASK",
+        "KIYLAHYNLEHMVAK",
+        "DNNNADCWIDTVULE",
+        "EWCENSANOTATMTT",
+        "REOACRTGULEAAUG",
+        "NHCRBRSOOODPSOS",
+        "OPISYVARFDDNPVU",
+        "MUOTPPAFEUNCTSP",
+        "EFLRMNSNTNSSFTE",
+        "KBAZTANKZEGPHRR",
+        "OLRLEANKFERPOES",
+        "PNEYLLLYLDACLEM",
+        "OZDEZGDPGFNULTA",
+        "FMINRYUACOTPOFS",
+        "LEARUCHYCRUHWIH",
+        "IGRUCINOSSREKGB",
+        "MABOZCSMRPIANHR",
+        "BMMJJMCAHESDITO",
+        "OAOBRCGWSEMDGES",
+        "TNTVUECRJDORHRB",
+        "AMORTALKOMBATXN"
+      ]
+    }
+  ]
+}

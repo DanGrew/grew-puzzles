@@ -1,0 +1,1220 @@
+{
+  "hiddenId": "WSCH-0042",
+  "type": "Saga",
+  "created": "2026-10-03",
+  "title": "Technology",
+  "wordGroups": [
+    "technology"
+  ],
+  "words": [
+    {
+      "word": "Adapter",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Algorithm",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "App",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Backup",
+      "grid": 2,
+      "start": {
+        "row": 6,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Bandwidth",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Barcode",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Battery",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Binary",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Blog",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Bluetooth",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Browser",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Bug",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Cable",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Cache",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Camera",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Charger",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Chatbot",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Chip",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Circuit",
+      "grid": 2,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cloud",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Code",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Command line",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Console",
+      "grid": 2,
+      "start": {
+        "row": 17,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Cybersecurity",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Data",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Database",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Decryption",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Desktop",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Document",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Download",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Drone",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Email",
+      "grid": 2,
+      "start": {
+        "row": 17,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Encryption",
+      "grid": 2,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Engine",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Fan",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "File",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Fingerprint",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Firewall",
+      "grid": 2,
+      "start": {
+        "row": 3,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Folder",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Forum",
+      "grid": 2,
+      "start": {
+        "row": 21,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Gadget",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Gigabyte",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Hacker",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Hard drive",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Hardware",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Headset",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "History",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Interface",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Internet",
+      "grid": 2,
+      "start": {
+        "row": 20,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Joystick",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Keyboard",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "LAN",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Laptop",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Link",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Login",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Machine learning",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 15
+    },
+    {
+      "word": "Malware",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Memory",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Microphone",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Modem",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Monitor",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Motherboard",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Mouse",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Network",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Password",
+      "grid": 2,
+      "start": {
+        "row": 24,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Patch",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Phishing",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Pixel",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Plug",
+      "grid": 2,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Port",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Printer",
+      "grid": 2,
+      "start": {
+        "row": 16,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Processor",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Programming",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "QR code",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Resolution",
+      "grid": 2,
+      "start": {
+        "row": 16,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Robot",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Router",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Satellite",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Scanner",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Script",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Search",
+      "grid": 2,
+      "start": {
+        "row": 21,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Sensor",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Server",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Shortcut",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Smart home",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Smart speaker",
+      "grid": 2,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Smartwatch",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Socket",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Software",
+      "grid": 2,
+      "start": {
+        "row": 23,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Spam",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Speaker",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Spreadsheet",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 11
+    },
+    {
+      "word": "Streaming",
+      "grid": 2,
+      "start": {
+        "row": 22,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Sync",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Tab",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Tablet",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Toolbar",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Touchscreen",
+      "grid": 2,
+      "start": {
+        "row": 22,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Update",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Upgrade",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Upload",
+      "grid": 2,
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "USB",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Video call",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Virtual reality",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 14
+    },
+    {
+      "word": "Virus",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Voice chat",
+      "grid": 2,
+      "start": {
+        "row": 18,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "VPN",
+      "grid": 2,
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "WAN",
+      "grid": 2,
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Wearable",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Webcam",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Website",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Wi-Fi",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "QMMEKSBATTERYBL",
+        "IUOSLGHRSCANNER",
+        "RCWTTBNCUMSUEPT",
+        "YHYXHHAITWCYAFE",
+        "ENORDEKCHTIRNFK",
+        "KUESOYRQASLFNCC",
+        "YLNCCHSBWTIOIHO",
+        "RHIADRLHORTHGGS",
+        "AALMOEITEACTPIF",
+        "NRDETRRPSARPCAN",
+        "IDNRGUSITTDDNPR",
+        "BDAAWPIHCAASIKG",
+        "DRMUUGCSTNTJEEN",
+        "WIMJJRLAVNAHITI",
+        "VVOQWAEDCRBSSAM",
+        "VECTADSKVBAOEDM",
+        "PGADGETACJSHHPA",
+        "OBHILOOHTAEHGUR",
+        "TNETISBEWEHFLEG",
+        "PIEHCACRRNLEDXO",
+        "ANMBPGOXUJXLJIR",
+        "LLINKBCCUIODIFP",
+        "KEYBOARDPFDAGTN",
+        "GVITWERAWDRAHIE",
+        "WOBDOCUMENTHEHL"
+      ]
+    },
+    {
+      "rows": [
+        "XPNSURIVCHATBOT",
+        "YBJAUXSLEMAPSXY",
+        "DBXYROTSIHHCTAP",
+        "CVCJFINGERPRINT",
+        "DMHTIROGLAVXXON",
+        "MAAYHBCUWYRSCAN",
+        "UUOSMORMYSVMVSG",
+        "KGILDOOXMIEAPBG",
+        "VIFENUDADNARVLN",
+        "HGWRSWREIDETIOI",
+        "TAFEPTOGMAGWRGN",
+        "DBWOHCNDDTCATTR",
+        "IYROAEFSYOQTUUA",
+        "WTMLREHRVORCACE",
+        "DELHNEOHELCHLTL",
+        "NNCFEMXBUBORRRE",
+        "ALGTETUTSADOEON",
+        "BXDMSGHQBRETAHI",
+        "RYWYRETUORLILSH",
+        "LEHTOOTEULBNIWC",
+        "OOTWEARABLEOTJA",
+        "QUPPVGKRKKQMYSM",
+        "QGECAFRETNICNXU",
+        "BLTCBDROSSECORP",
+        "ISELIFAEDOCRABO"
+      ]
+    },
+    {
+      "rows": [
+        "CYBERSECURITYGS",
+        "CPGCIRCUITBIKEI",
+        "QUFBDTRMFEFCNCS",
+        "XKMSBFRENQISHPQ",
+        "DCACEEICGTORIGG",
+        "UACCKNRRSRCHCAH",
+        "OBBAAYTYEBAPLUG",
+        "LTELPCOUNWNHNSM",
+        "CPWTHJHEYOAJCAY",
+        "SLINFDTAIGMLLRN",
+        "SOGPNWATPISWLAT",
+        "NMLVOOUVCPAEWDA",
+        "MLARQLIRTROLTJH",
+        "DKKROAOTEDCOPLC",
+        "AYISTPGEPPLSOIE",
+        "OAEFHSDNTYONTAC",
+        "LROOPJPRIFROKMI",
+        "PTNLMROEMMLCSEO",
+        "UEYQVFITAUAEEDV",
+        "RESWORBNKKREDDH",
+        "QFEFYUBITDEORTV",
+        "MGRHCRAESEMRFTG",
+        "DQVTOUCHSCREENS",
+        "DJEERAWTFOSMJNV",
+        "ILREDIDPASSWORD"
+      ]
+    }
+  ]
+}
