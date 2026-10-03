@@ -11,9 +11,9 @@
 .missing { text-align: center; }
 .missing a { color: var(--fg); }
 
-/* Where the words sit — #play's data-words, the player's choice. Bottom: under the grid, as wide
-   as the grid card, its words in centred columns. Right: beside the grid, dropping under it when
-   the screen is too narrow for both. Overlay: in the stage, over the card, only while open. */
+/* Where the words sit — #play's data-words, the player's choice. Bottom: under the grid. Right:
+   beside the grid, dropping under it when the screen is too narrow for both. Overlay: in the
+   stage, over the card, only while open. */
 .play { display: flex; flex-direction: column; align-items: center; gap: 28px; }
 /* The list's slot under or beside the grid lays it out as the page's own item. */
 .words-home { display: contents; }
@@ -25,6 +25,36 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
 .stage > aside .words-box { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; }
 .stage > aside ul.words { min-height: 0; overflow-y: auto; align-content: start; }
 .play[data-words="overlay"][data-list="false"] aside { display: none; }
+
+/* How the words fill their card, on screen — the paper keeps its own columns, under Print. The
+   page lays them out (play-core's wordsFit): #play's data-sits is where the list ended up, which
+   in Right is under the grid when there's no room beside it; --card-w and --card-h are the grid
+   card's size; the list is --word-cols columns, each --word-w or wider, every word placed down
+   its column. Bottom: the grid card's width at most, growing down. Right: the grid card's height
+   exactly, growing into more columns. Overlay: the card's size, filling its height first,
+   scrolling down. The grid and its words may use the whole window, past the page's 1080px — a
+   wide grid keeps its words beside it whenever the window has room for both: --view-w is the
+   window's width, less the page's 24px edges. A word never breaks onto two lines. The grid's
+   letters are --fit-cell and the words' text --word-size: in Right, when the words need the
+   room, the text shrinks first and then the letters; .cell-size, unseen, is the page's own
+   letter size. A repeated word's count is sized with its word. */
+.cell-size { position: absolute; width: var(--cell); height: 0; visibility: hidden; pointer-events: none; }
+@media screen {
+  .play[data-sits] { margin-inline: min(0px, calc((100% - var(--view-w)) / 2 + 24px)); }
+  .play[data-sits] .stage { --cell: var(--fit-cell); }
+  .play[data-sits] .words-box { box-sizing: border-box; display: flex; flex-direction: column; }
+  .play[data-sits] ul.words { flex: 1 1 auto; min-height: 0; align-content: start; }
+  .play[data-sits] ul.words li { width: max-content; white-space: nowrap; }
+  .play[data-sits] ul.words.measuring li { font-weight: 700; }
+  .play[data-sits] ul.words:not(.measuring) li { font-size: var(--word-size); }
+  .play[data-sits="bottom"] { flex-flow: column; align-items: center; }
+  .play[data-sits="bottom"] aside { flex: none; width: min(var(--card-w), 100%); max-width: none; }
+  .play[data-sits="bottom"] ul.words, .play[data-sits="overlay"] ul.words { grid-template-columns: repeat(var(--word-cols), minmax(var(--word-w), 1fr)); }
+  .play[data-sits="right"] { flex-flow: row nowrap; justify-content: center; align-items: flex-start; }
+  .play[data-sits="right"] aside { flex: none; width: auto; max-width: none; height: var(--card-h); }
+  .play[data-sits="right"] .words-box { height: 100%; }
+  .play[data-sits="right"] ul.words { grid-template-columns: repeat(var(--word-cols), var(--word-w)); }
+}
 
 /* The page stays as wide as the screen: a grid wider than a phone scrolls sideways in its own
    box, with room round it for the corner buttons. Moving and zooming it is TASK-9's. */
@@ -104,7 +134,7 @@ ul.words li.done { color: var(--muted); text-decoration: line-through; text-deco
 /* A missing word, revealed: red, deeper than the line red so it reads on the white card. */
 ul.words li.revealed { color: var(--reveal); font-weight: 700; }
 /* A repeated word's progress, beside it: copies found out of all of them. */
-ul.words li .progress { margin-left: 6px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+ul.words li .progress { display: inline-block; margin-left: 6px; font-size: .8125em; color: var(--muted); font-variant-numeric: tabular-nums; }
 ul.words li .progress:empty { display: none; }
 
 /* Completion: a short pop and sparkle */

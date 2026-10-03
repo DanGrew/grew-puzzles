@@ -204,22 +204,6 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-for (const width of [600, 1200]) {
-  test(`in Bottom the word list sits under the grid, as wide as it, in centred columns (${width}px window)`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await openIn(page, 'bottom');
-    const stage = await page.locator('.stage').boundingBox();
-    const aside = await page.locator('aside').boundingBox();
-    expect(aside.y).toBeGreaterThan(stage.y + stage.height);
-    expect(Math.abs(aside.width - stage.width)).toBeLessThan(2);
-    expect(Math.abs(aside.x - stage.x)).toBeLessThan(2);
-
-    const tops = await page.locator('#words li').evaluateAll(lis => lis.map(li => li.getBoundingClientRect().top));
-    expect(new Set(tops).size).toBeLessThan(tops.length);
-    await expect(page.locator('#words li').first()).toHaveCSS('justify-self', 'center');
-  });
-}
-
 test('the menu holds How to play, which opens the instructions and closes the menu; Escape closes them', async ({ page }) => {
   await open(page);
   const help = page.locator('#help');
@@ -673,6 +657,324 @@ for (const layout of ['bottom', 'right', 'overlay']) {
   });
 }
 
+// ---- How the words fill their card ----
+
+// The fixture with 60 words listed: its eight, then 52 missing ones (Word 01…Word 52) — more than
+// fit beside or over its grid card in one column.
+const LONG_PUZZLE = {
+  ...PUZZLE, type: 'Missing',
+  words: [...PUZZLE.words, ...Array.from({ length: 52 }, (_, i) => ({ word: 'Word ' + String(i + 1).padStart(2, '0'), missing: true }))]
+};
+
+async function openWords(page, layout, puzzle) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+  await open(page, null, puzzle);
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', /./);
+  await page.evaluate(() => document.fonts.ready);
+  await expect(toggle(page)).toBeVisible({ visible: layout === 'overlay' });
+  await [() => {}, () => toggle(page).click()][Number(layout === 'overlay')]();
+}
+
+// Each word's box, in list order.
+function wordBoxes(page) {
+  return page.locator('#words li').evaluateAll(lis => lis.map(li => {
+    const r = li.getBoundingClientRect();
+    return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, centre: r.left + r.width / 2 };
+  }));
+}
+
+// The list's columns, in order, as runs of words sharing a centre line, each word under the one
+// before; a new column starts level with the first word, to its right.
+function columnsOf(boxes) {
+  const columns = [[boxes[0]]];
+  for (const box of boxes.slice(1)) {
+    const column = columns[columns.length - 1], last = column[column.length - 1];
+    if (Math.abs(box.centre - last.centre) < 1) {
+      expect(box.top).toBeGreaterThan(last.top);
+      column.push(box);
+    } else {
+      expect(box.centre).toBeGreaterThan(last.centre);
+      expect(Math.abs(box.top - boxes[0].top)).toBeLessThan(1);
+      columns.push([box]);
+    }
+  }
+  return columns;
+}
+
+function expectEven(columns) {
+  const lengths = columns.map(c => c.length);
+  expect(Math.max(...lengths) - Math.min(...lengths)).toBeLessThanOrEqual(1);
+}
+
+const box = (page, selector) => page.locator(selector).boundingBox();
+
+// Where each word sits in the words card — its centre line and top — and the card's own size:
+// what a find, a cross-off or a reveal must leave as it was.
+async function wordPlaces(page) {
+  const card = await box(page, '#words-list');
+  const at = n => Math.round(n * 10) / 10;
+  return {
+    card: [at(card.width), at(card.height)],
+    words: (await wordBoxes(page)).map(w => [at(w.centre - card.x), at(w.top - card.y)])
+  };
+}
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  for (const [name, puzzle] of [['eight', PUZZLE], ['sixty', LONG_PUZZLE]]) {
+    test(`in ${layout}, ${name} words read down the first column, then the next, the columns even and each word centred`, async ({ page }) => {
+      await page.setViewportSize({ width: 1400, height: 900 });
+      await openWords(page, layout, puzzle);
+      const boxes = await wordBoxes(page);
+      const columns = columnsOf(boxes);
+      expect(columns.flat()).toHaveLength(puzzle.words.length);
+      expectEven(columns);
+      // Beside or over the grid, eight words fit one column down its height; under it they spread
+      // across its width; sixty take more than one anywhere.
+      expect(columns.length > 1).toBe(layout === 'bottom' || name === 'sixty');
+      await expect(page.locator('#words li').first()).toHaveCSS('justify-self', 'center');
+    });
+  }
+}
+
+for (const width of [1400, 900, 600]) {
+  test(`in Bottom the words card is never wider than the grid card, and a longer list makes it taller (${width}px window)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openWords(page, 'bottom', PUZZLE);
+    const stage = await box(page, '.stage');
+    const short = await box(page, 'aside');
+    expect(short.y).toBeGreaterThan(stage.y + stage.height);
+    expect(Math.abs(short.width - stage.width)).toBeLessThan(1);
+    expect(Math.abs(short.x - stage.x)).toBeLessThan(1);
+
+    await page.unrouteAll();
+    await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: LONG_PUZZLE }));
+    await page.reload();
+    await expect(page.locator('#words li')).toHaveCount(60);
+    await page.evaluate(() => document.fonts.ready);
+    const long = await box(page, 'aside');
+    expect(Math.abs(long.width - short.width)).toBeLessThan(1);
+    expect(long.height).toBeGreaterThan(short.height);
+    for (const word of await wordBoxes(page)) {
+      expect(word.left).toBeGreaterThanOrEqual(long.x);
+      expect(word.right).toBeLessThanOrEqual(long.x + long.width);
+    }
+  });
+}
+
+test('in Bottom on a screen narrower than the grid card, the words card is the screen wide, not wider', async ({ page }) => {
+  await page.setViewportSize({ width: 400, height: 900 });
+  await openWords(page, 'bottom', WIDE_PUZZLE);
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  expect(aside.width).toBeLessThan(stage.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(400);
+});
+
+test('in Right the words card lines up with the grid card top and bottom; a short list leaves room under its words', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', { ...PUZZLE, words: PUZZLE.words.slice(0, 3) });
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+  expect(Math.abs(aside.y + aside.height - (stage.y + stage.height))).toBeLessThan(1);
+  const words = await wordBoxes(page);
+  expect(Math.max(...words.map(w => w.bottom))).toBeLessThan(aside.y + aside.height / 2);
+});
+
+test('in Right a long list adds columns to the right instead of growing taller', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', PUZZLE);
+  const short = await box(page, 'aside');
+  const shortColumns = columnsOf(await wordBoxes(page)).length;
+  await page.unrouteAll();
+  await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: LONG_PUZZLE }));
+  await page.reload();
+  await expect(page.locator('#words li')).toHaveCount(60);
+  await page.evaluate(() => document.fonts.ready);
+  const stage = await box(page, '.stage');
+  const long = await box(page, 'aside');
+  expect(long.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(long.y - stage.y)).toBeLessThan(1);
+  expect(Math.abs(long.height - short.height)).toBeLessThan(1);
+  expect(long.width).toBeGreaterThan(short.width);
+  expect(columnsOf(await wordBoxes(page)).length).toBeGreaterThan(shortColumns);
+  for (const word of await wordBoxes(page)) expect(word.bottom).toBeLessThanOrEqual(long.y + long.height);
+});
+
+test('in Right on a screen too narrow for the columns beside the grid, the list drops under it as Bottom', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 900 });
+  await openWords(page, 'right', WIDE_PUZZLE);
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'right');
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  expect(aside.y).toBeGreaterThan(stage.y + stage.height);
+  expect(aside.width).toBeLessThanOrEqual(stage.width);
+  expectEven(columnsOf(await wordBoxes(page)));
+});
+
+// The fixture 25 columns wide, as a Mirrorise grid is: a grid card wider than the site's 1080px page.
+const WIDE_25_PUZZLE = { ...PUZZLE, grids: [{ rows: PUZZLE.grids[0].rows.map(row => row.repeat(4).slice(0, 25)) }] };
+
+test('in Right a 25-column grid has its words beside it whenever the window is wide enough for both', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', WIDE_25_PUZZLE);
+  const stage = await box(page, '.stage');
+  expect(stage.width).toBeGreaterThan(1080);
+  const aside = await box(page, 'aside');
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(1400);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1400);
+});
+
+// A Mirrorise-size puzzle: 25 × 35 letters and 140 words, too many to sit beside the grid at
+// its own letter size on a 1440px screen.
+const MIRRORISE_SIZE_PUZZLE = {
+  ...LONG_PUZZLE,
+  grids: [{ rows: Array.from({ length: 35 }, (_, r) => PUZZLE.grids[0].rows[r % 8].repeat(4).slice(0, 25)) }],
+  words: [...PUZZLE.words, ...Array.from({ length: 132 }, (_, i) => ({ word: 'Something long ' + String(i + 1).padStart(3, '0'), missing: true }))]
+};
+const letterSize = page => page.locator('#grid .cell').first().evaluate(c => c.getBoundingClientRect().width);
+
+test('in Right a big grid\'s words shrink to 13px, then its letters, until the words fit beside it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openWords(page, 'bottom', MIRRORISE_SIZE_PUZZLE);
+  const own = await letterSize(page);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  const shrunk = await letterSize(page);
+  expect(shrunk).toBeLessThan(own);
+  expect(shrunk).toBeGreaterThanOrEqual(26);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '13px');
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+  expect(Math.abs(aside.height - stage.height)).toBeLessThan(1);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(1440);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1440);
+  for (const word of await wordBoxes(page)) expect(word.right).toBeLessThanOrEqual(aside.x + aside.width);
+  expectEven(columnsOf(await wordBoxes(page)));
+
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'overlay');
+  expect(await letterSize(page)).toBe(own);
+  await toggle(page).click();
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+});
+
+test('in Right a list a little too wide shrinks its words, and the grid keeps its letters', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', LONG_PUZZLE);
+  const own = await letterSize(page);
+  const stage = await box(page, '.stage');
+  const aside = await box(page, 'aside');
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+  // A window a few pixels narrower than grid, gap and words need, with the page's 24px edges.
+  const needed = aside.x + aside.width - stage.x;
+  await page.setViewportSize({ width: Math.floor(needed + 48 - 4), height: 900 });
+  await expect(async () => {
+    const size = parseFloat(await page.locator('#words li').first().evaluate(li => getComputedStyle(li).fontSize));
+    expect(size).toBeLessThan(16);
+    expect(size).toBeGreaterThanOrEqual(13);
+  }).toPass();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  expect(await letterSize(page)).toBe(own);
+});
+
+test('in Right the letters shrink no smaller than 26px: a window too narrow even then has the words under the grid, its letters their own size', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 900 });
+  await openWords(page, 'bottom', WIDE_PUZZLE);
+  const own = await letterSize(page);
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'right');
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'bottom');
+  expect(await letterSize(page)).toBe(own);
+});
+
+test('in Right a list that needs more room beside the grid than the window has, even at the smallest letters, drops under, and comes back beside when widened', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'right', LONG_PUZZLE);
+  const stage = await box(page, '.stage');
+  expect((await box(page, 'aside')).x).toBeGreaterThan(stage.x + stage.width);
+
+  await page.setViewportSize({ width: 600, height: 900 });
+  await expect(async () => {
+    const now = await box(page, '.stage');
+    expect((await box(page, 'aside')).y).toBeGreaterThan(now.y + now.height);
+  }).toPass();
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await expect(async () => expect((await box(page, 'aside')).x).toBeGreaterThan((await box(page, '.stage')).x + stage.width)).toPass();
+});
+
+test('in Overlay a list fills the grid card\'s height before it adds a column, leaving no wasted room below', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'overlay', { ...LONG_PUZZLE, words: LONG_PUZZLE.words.slice(0, 30) });
+  const list = await box(page, '#words');
+  const columns = columnsOf(await wordBoxes(page));
+  expect(columns.length).toBeGreaterThan(1);
+  // As few columns as the card's height allows: one fewer, full to the foot, couldn't hold them.
+  const pitch = columns[0][1].top - columns[0][0].top;
+  const rows = Math.floor((list.y + list.height - columns[0][0].top) / pitch);
+  expect((columns.length - 1) * rows).toBeLessThan(30);
+  expect(Math.max(...columns.map(c => c.length))).toBeLessThanOrEqual(rows);
+});
+
+test('in Overlay the list lies over the grid card at its size, and a long list scrolls down inside it to every word, never sideways', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openWords(page, 'overlay', LONG_PUZZLE);
+  const card = await box(page, '.card');
+  const cover = await box(page, '#words-list');
+  expect(cover).toEqual(card);
+  const scroll = await page.locator('#words').evaluate(ul => ({ down: ul.scrollHeight - ul.clientHeight, across: ul.scrollWidth - ul.clientWidth }));
+  expect(scroll.down).toBeGreaterThan(0);
+  expect(scroll.across).toBe(0);
+  for (const word of await wordBoxes(page)) {
+    expect(word.left).toBeGreaterThanOrEqual(cover.x);
+    expect(word.right).toBeLessThanOrEqual(cover.x + cover.width);
+  }
+  const last = page.locator('#words li').last();
+  await expect(last).not.toBeInViewport();
+  await page.locator('#words').evaluate(ul => ul.scrollTo(0, ul.scrollHeight));
+  const list = await box(page, '#words');
+  const lastBox = await last.boundingBox();
+  expect(lastBox.y + lastBox.height).toBeLessThanOrEqual(list.y + list.height + 0.5);
+  expect((await box(page, '#words-list'))).toEqual(card);
+});
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`in ${layout}, finding, crossing off and revealing words moves no word`, async ({ page }) => {
+    await page.setViewportSize({ width: 1400, height: 900 });
+    await openWords(page, layout, MISSING_PUZZLE);
+    const before = await wordPlaces(page);
+    await [() => {}, () => toggle(page).click()][Number(layout === 'overlay')]();
+    for (const ends of ALL_WORDS.slice(0, 3)) await tapAll(page, ends);
+    await page.locator('#flip').click();
+    await expect(goat(page)).toHaveClass(/revealed/);
+    await page.locator('#flip').click();
+    for (const ends of ALL_WORDS.slice(3)) await tapAll(page, ends);
+    await expect(goat(page)).toHaveClass(/revealed/);
+    await [() => {}, () => toggle(page).click()][Number(layout === 'overlay')]();
+    await expect(page.locator('#words li.done')).toHaveCount(8);
+    expect(await wordPlaces(page)).toEqual(before);
+  });
+}
+
+test('a repeated word stays put as its count of copies found grows', async ({ page }) => {
+  await openRepeats(page, SHEEP_PUZZLE);
+  const before = await wordBoxes(page);
+  for (const ends of SHEEP_ENDS.slice(0, 10)) await findSheep(page, ends);
+  await expect(progress(page, 'Sheep')).toHaveText('10/45');
+  const after = await wordBoxes(page);
+  expect(after[0].left).toBe(before[0].left);
+  expect(after[0].right).toBe(before[0].right);
+});
+
+// ---- On a phone ----
+
 test('on a phone the page is the screen wide: burger top-right, title, date and bar centred on the screen', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
@@ -926,6 +1228,28 @@ test('switching tabs changes the grid and leaves the word list exactly as it was
   await expect(cell(page, 7, 7)).toHaveText('T');
   await expect(page.locator('#grid .cell')).toHaveCount(64);
   expect(await page.locator('#words-list').innerHTML()).toBe(list);
+});
+
+test('the words card takes its size from the grid card with its tabs, and switching tabs never resizes it', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 900 });
+  await openSaga(page, 'bottom');
+  await expect(tabs(page)).toHaveCount(3);
+  await page.evaluate(() => document.fonts.ready);
+  const stage = await page.locator('.stage').boundingBox();
+  const tabRow = await page.locator('#tabs').boundingBox();
+  expect(tabRow.y).toBeGreaterThan(stage.y);
+  const under = await page.locator('aside').boundingBox();
+  expect(Math.abs(under.width - stage.width)).toBeLessThan(1);
+  await tabs(page).nth(2).click();
+  expect(await page.locator('aside').boundingBox()).toEqual(under);
+
+  await page.locator('#words-layout').click();
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  const beside = await page.locator('aside').boundingBox();
+  expect(Math.abs(beside.y - stage.y)).toBeLessThan(1);
+  expect(Math.abs(beside.height - stage.height)).toBeLessThan(1);
+  await tabs(page).nth(1).click();
+  expect(await page.locator('aside').boundingBox()).toEqual(beside);
 });
 
 test('a word found on Page 2 is crossed off, and its line is still on Page 2 after a trip to Page 1', async ({ page }) => {
