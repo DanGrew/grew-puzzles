@@ -1,0 +1,1100 @@
+{
+  "hiddenId": "WSCH-0036",
+  "type": "Saga",
+  "created": "2026-10-03",
+  "title": "Gardening",
+  "wordGroups": [
+    "gardening"
+  ],
+  "words": [
+    {
+      "word": "Allotment",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Aquaponics",
+      "grid": 2,
+      "start": {
+        "row": 24,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Bamboo",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Bench",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Bird bath",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Bloom",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Blossom",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Border",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Bulb",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Cane",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Canopy",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Cloche",
+      "grid": 2,
+      "start": {
+        "row": 19,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Cold frame",
+      "grid": 2,
+      "start": {
+        "row": 5,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Compost",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Cutting",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Deadheading",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Dibber",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Digging",
+      "grid": 2,
+      "start": {
+        "row": 17,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Dirt",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Earthworm",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Edger",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Fence",
+      "grid": 2,
+      "start": {
+        "row": 24,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Fertiliser",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Flowerbed",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Foliage",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Fork",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Fruit tree",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Fungicide",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Garden bed",
+      "grid": 2,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Garden cart",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Garden centre",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 12
+    },
+    {
+      "word": "Garden fork",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Garden gloves",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Garden path",
+      "grid": 2,
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Gnome",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Grafting",
+      "grid": 2,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Gravel",
+      "grid": 2,
+      "start": {
+        "row": 16,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Greenhouse",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Grow light",
+      "grid": 2,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Hanging basket",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Harvest",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Hedge",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Hedge trimmer",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Herb",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hoe",
+      "grid": 2,
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Hose",
+      "grid": 2,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Hydroponics",
+      "grid": 2,
+      "start": {
+        "row": 11,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Kneeler",
+      "grid": 2,
+      "start": {
+        "row": 18,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Landscape",
+      "grid": 2,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Lawn",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Lawnmower",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Manure",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Mulch",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Ornamental grass",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 15
+    },
+    {
+      "word": "Path",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Patio",
+      "grid": 2,
+      "start": {
+        "row": 24,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Pebble",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Pesticide",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Plant pot",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Planter",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Plot",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Pond",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Potted plant",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Propagation",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Pruner",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Pruning",
+      "grid": 2,
+      "start": {
+        "row": 8,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Raised bed",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Rake",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Rock garden",
+      "grid": 2,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Rockery",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Root",
+      "grid": 2,
+      "start": {
+        "row": 6,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Sand",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Scythe",
+      "grid": 2,
+      "start": {
+        "row": 22,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Secateurs",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Seed",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Seedling",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Shears",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Shed",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Shovel",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Shrub",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Soil",
+      "grid": 2,
+      "start": {
+        "row": 0,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Sowing",
+      "grid": 2,
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Spade",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Sprinkler",
+      "grid": 2,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Sprout",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Strimmer",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Tarp",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Topsoil",
+      "grid": 2,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Transplanting",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Trellis",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Trowel",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Twine",
+      "grid": 2,
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Vegetable patch",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 14
+    },
+    {
+      "word": "Water feature",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 12
+    },
+    {
+      "word": "Watering can",
+      "grid": 2,
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Weed",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 6
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Weeding",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Weedkiller",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Wheelbarrow",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Window box",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 9
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "FUNGICIDEVGQLQW",
+        "CGNIDAEHDAEDFAR",
+        "DTNALPDETTOPYAX",
+        "ERTRANSPLANTING",
+        "HTTSMFINPXTSYHH",
+        "SUTLLYDREREHBAC",
+        "TAVABHLDODUEAET",
+        "BRDKREAWBMGNRKA",
+        "LHIAQPEEPAUTEXP",
+        "UOIDSLDMIWNESRE",
+        "BRBSGNILDEESPNL",
+        "FNLSCXOFCEDSLSB",
+        "WAOFMFGNNDEGTRA",
+        "OMODRIEDOKNVUAT",
+        "REMAEDNYWITWOEE",
+        "RNRIREPSDLKLRHG",
+        "ATNAOOWEULCFPSE",
+        "BAGMNCEEOEKGSTV",
+        "LLSAOWIDERUNAMG",
+        "EGCHTRACNEDRAGX",
+        "ERTEKSABGNIGNAH",
+        "HABUXOBWODNIWAN",
+        "WSTMBGREENHOUSE",
+        "OSTCNOITAGAPORP",
+        "PLANTEROTSOPMOC"
+      ]
+    },
+    {
+      "rows": [
+        "BFSQKCUKHVNEIYA",
+        "ILILSBRATKPDGRE",
+        "FORCTORUFROILEL",
+        "MWTEFVGLEONCYKB",
+        "OEYNETEQRFDIPCB",
+        "SRRSNNHSTNRTROE",
+        "SBTUAMEMIEESERP",
+        "OETCTQRGLDMEWFL",
+        "LDGBVABFIRMPORH",
+        "BLWAIUEOSAIQMUK",
+        "YNIPRRFFEGRANIW",
+        "NVVLRDDBRETSWTH",
+        "UCAOEGEBOESTATE",
+        "TEHTGSSNARTGLRD",
+        "PKHEDGEKGTDANEG",
+        "EAPSEGQWBLHEWEE",
+        "MRPSESXBEUOMRPT",
+        "OSSLACLRNAXVONR",
+        "NIKNAVAXCFWTELI",
+        "GSDKMNVTHVRQESM",
+        "OQRSYWTVEEFVFTM",
+        "GGOENABPLUODRVE",
+        "YULPBLXLOHRKEWR",
+        "CLFNDFIOSTASULC",
+        "RNYOXSIHXDIBBER"
+      ]
+    },
+    {
+      "rows": [
+        "COOBMABLIOSMAPB",
+        "UVSYOVEXBYUMLAN",
+        "TYCDFBDVHLTGBTR",
+        "TBITRSROCIONRHC",
+        "IUNOONSHAIPIRIS",
+        "NROOCEGGSBSNOXH",
+        "GHPRKOBRUGOUGRG",
+        "LSOPGELPOFIRCNU",
+        "NPROAAEDVWLPIWE",
+        "ARDSRRXWFSLTNNA",
+        "CIYODTEOFRFIIEL",
+        "GNHWEHRWBAAWGBL",
+        "NKMINWBLRKTMOHO",
+        "ILMNSODGHHCCEMT",
+        "REGGBRGNOSOGIEM",
+        "ERXAXMAEKEHISHE",
+        "TQLGRGRAVELLCCN",
+        "AGADEDDOCTKEIOT",
+        "WGNIHQELEOXKNLM",
+        "GLDGTYNNECVNOCW",
+        "PTSGYNPFBWVEPFE",
+        "KTCICEAAXEAEAHC",
+        "TBANSXTNFPDLUFN",
+        "LEPGVOHEQHTEQWE",
+        "AVEPATIOANSRAAF"
+      ]
+    }
+  ]
+}
