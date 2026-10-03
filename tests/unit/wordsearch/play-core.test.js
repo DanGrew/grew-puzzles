@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, wordList, countLabel, sparkles
+  wordCells, playBoard, newPlay, solvedPlay, tap, sharedCells, playMarks, wordList, countLabel, sparkles,
+  nextWordsLayout, savedWordsLayout, saveWordsLayout
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -215,6 +216,40 @@ describe('what the board shows', () => {
   it('counts found words out of all of them', () => {
     expect(countLabel(newPlay(), WORDS)).toBe('0/8');
     expect(countLabel(taps([[4, 2], [2, 2]]), WORDS)).toBe('1/8');
+  });
+});
+
+describe('where the words sit', () => {
+  it('cycles Bottom → Right → Overlay → Bottom', () => {
+    expect(nextWordsLayout('bottom')).toBe('right');
+    expect(nextWordsLayout('right')).toBe('overlay');
+    expect(nextWordsLayout('overlay')).toBe('bottom');
+  });
+
+  it('uses the choice last stored on this device', () => {
+    ['bottom', 'right', 'overlay'].forEach(layout => {
+      expect(savedWordsLayout(() => layout)).toBe(layout);
+    });
+  });
+
+  it('starts in Overlay on a first visit, or when the stored choice is unknown', () => {
+    [null, '', 'left', 'Bottom'].forEach(saved => {
+      expect(savedWordsLayout(() => saved)).toBe('overlay');
+    });
+  });
+
+  it('falls back to Overlay when the page cannot read the stored choice', () => {
+    expect(savedWordsLayout(() => { throw new Error('blocked'); })).toBe('overlay');
+  });
+
+  it('stores the choice', () => {
+    const stored = [];
+    expect(saveWordsLayout(layout => stored.push(layout), 'right')).toBe(true);
+    expect(stored).toEqual(['right']);
+  });
+
+  it('carries on when the page cannot store the choice', () => {
+    expect(saveWordsLayout(() => { throw new Error('blocked'); }, 'right')).toBe(false);
   });
 });
 

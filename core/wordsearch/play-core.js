@@ -149,6 +149,37 @@ export function countLabel(play, words) {
   return play.found.length + '/' + words.length;
 }
 
+// ---- Where the words sit ----
+// Under the grid, beside it, or in an overlay toggled over it — the player's choice, cycled in
+// that order and kept per device. Overlay is the first-visit default.
+
+export function nextWordsLayout(layout) {
+  return { bottom: 'right', right: 'overlay', overlay: 'bottom' }[layout];
+}
+
+// read() returns the stored choice; a page that can't read it, or reads anything else, gets Overlay.
+export function savedWordsLayout(read) {
+  try {
+    return knownWordsLayout(read());
+  } catch (e) {
+    return 'overlay';
+  }
+}
+
+function knownWordsLayout(saved) {
+  return ['bottom', 'right', 'overlay'].includes(saved) ? saved : 'overlay';
+}
+
+// Whether the choice was stored; a page that can't store it keeps it until it closes.
+export function saveWordsLayout(write, layout) {
+  try {
+    write(layout);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // Where each completion sparkle starts and drifts to, over a board width × height.
 export function sparkles(count, width, height, random) {
   return Array.from({ length: count }, function () {

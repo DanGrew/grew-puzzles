@@ -1,12 +1,18 @@
 // The play page's DOM: loads the puzzle a play URL names, draws it from play-core's view,
-// and wires the taps, the flip and the completion pop. Every rule lives in
-// core/wordsearch/play-core.js; nothing here decides anything.
+// and wires the taps, the flip, where the words sit and the completion pop. Every rule lives
+// in core/wordsearch/play-core.js; nothing here decides anything.
 import {
-  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles
+  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, tap, playMarks, wordList, countLabel, sparkles,
+  nextWordsLayout, savedWordsLayout, saveWordsLayout
 } from '../../core/wordsearch/play-core.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
+var PLAY_LAYOUT_KEY = 'grew-puzzles.words-layout';
+var PLAY_LAYOUT_LABELS = { bottom: 'Words: under the grid', right: 'Words: beside the grid', overlay: 'Words: over the grid' };
+// Under and beside, the list is the page's; in Overlay it sits in the stage, over the card.
+var PLAY_LAYOUT_HOMES = { bottom: 'play', right: 'play', overlay: 'stage' };
+var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
 var PLAY_SPARKLE_COUNT = 28;
@@ -55,6 +61,7 @@ function showPuzzle(board) {
   });
   drawMarks(playEl('solution-overlay'), board, playMarks(solvedPlay(board.words), board.words));
   wireFlip();
+  wireWords();
   render();
   playEl('play').hidden = false;
 
@@ -128,6 +135,38 @@ function wireFlip() {
     playEl('back').inert = !on;
     playEl('back').setAttribute('aria-hidden', String(!on));
   });
+}
+
+// The corner button cycles where the words sit; in Overlay its neighbour lays the list over
+// the grid and lifts it off again, leaving the grid as it was.
+function wireWords() {
+  showLayout(savedWordsLayout(function () { return localStorage.getItem(PLAY_LAYOUT_KEY); }));
+  playEl('words-layout').addEventListener('click', function () {
+    var layout = nextWordsLayout(playEl('play').dataset.words);
+    showLayout(layout);
+    saveWordsLayout(function (l) { localStorage.setItem(PLAY_LAYOUT_KEY, l); }, layout);
+  });
+  playEl('words-toggle').addEventListener('click', function () {
+    showList(playEl('play').dataset.list === 'false');
+  });
+}
+
+function showLayout(layout) {
+  var button = playEl('words-layout');
+  playEl('play').dataset.words = layout;
+  button.setAttribute('aria-label', PLAY_LAYOUT_LABELS[layout]);
+  button.title = PLAY_LAYOUT_LABELS[layout];
+  playEl(PLAY_LAYOUT_HOMES[layout]).appendChild(playEl('words-list'));
+  showList(false);
+}
+
+function showList(open) {
+  var toggle = playEl('words-toggle');
+  playEl('play').dataset.list = String(open);
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.setAttribute('aria-label', PLAY_LIST_LABELS[open]);
+  toggle.title = PLAY_LIST_LABELS[open];
+  playEl('grid').inert = open;
 }
 
 function celebrate() {

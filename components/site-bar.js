@@ -1,9 +1,11 @@
 // The site bar every page shares: fills <header class="site" data-site-bar data-home="…"
 // data-current="…">. data-home is the landing page's path from the page; data-current names
-// the menu entry this page belongs to.
+// the menu entry this page belongs to. A page that puts its own [data-menu-entry] elements
+// inside the header gets those as its menu, in place of the site's sections.
 (function () {
   var bar = document.querySelector('[data-site-bar]');
   var home = bar.dataset.home;
+  var own = Array.from(bar.querySelectorAll('[data-menu-entry]'));
 
   bar.innerHTML =
     '<a class="brand">Grew Puzzles</a>' +
@@ -18,6 +20,11 @@
 
   var burger = bar.querySelector('.burger');
   var panel = bar.querySelector('.menu-panel');
+
+  own.forEach(function (entry) {
+    entry.addEventListener('click', function () { setMenu(false); });
+  });
+  if (own.length) panel.replaceChildren.apply(panel, own);
 
   bar.querySelectorAll('.brand, [data-entry]').forEach(function (a) { a.setAttribute('href', home); });
   bar.querySelectorAll('[data-entry="' + bar.dataset.current + '"]').forEach(function (a) {

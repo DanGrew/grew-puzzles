@@ -6,9 +6,19 @@ const COLS = PUZZLE.grid[0].length;
 const FOUND_INK = 'rgb(15, 42, 36)';
 const WRONG_RED = 'rgb(224, 71, 59)';
 
+const LAYOUT_KEY = 'grew-puzzles.words-layout';
+// The fixture with each row written twice: a grid wider than a phone, or than 600px beside a list.
+const WIDE_PUZZLE = { ...PUZZLE, grid: PUZZLE.grid.map(row => row.repeat(2)) };
+
 async function open(page, query, puzzle) {
   await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: puzzle || PUZZLE }));
   await page.goto('/app/play.html' + (query || '?id=WSCH-0007'));
+}
+
+// Opens the puzzle with a words layout already chosen on this device.
+async function openIn(page, layout) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+  await open(page);
 }
 
 function cell(page, r, c) {
@@ -173,9 +183,9 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
 });
 
 for (const width of [600, 1200]) {
-  test(`the word list sits under the grid, as wide as it, in centred columns (${width}px window)`, async ({ page }) => {
+  test(`in Bottom the word list sits under the grid, as wide as it, in centred columns (${width}px window)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    await open(page);
+    await openIn(page, 'bottom');
     const stage = await page.locator('.stage').boundingBox();
     const aside = await page.locator('aside').boundingBox();
     expect(aside.y).toBeGreaterThan(stage.y + stage.height);
@@ -188,17 +198,19 @@ for (const width of [600, 1200]) {
   });
 }
 
-test('the ? beside the title opens the instructions, and Escape closes them', async ({ page }) => {
+test('the menu holds How to play, which opens the instructions and closes the menu; Escape closes them', async ({ page }) => {
   await open(page);
   const help = page.locator('#help');
   await expect(help).toBeHidden();
+  await expect(page.locator('.play-head button')).toHaveCount(0);
 
-  await page.locator('#help-button').click();
+  await page.locator('.site .burger').click();
+  const entries = page.locator('#site-menu > *');
+  await expect(entries).toHaveText(['How to play']);
+  await entries.click();
   await expect(help).toBeVisible();
   await expect(help).toContainText('Tap a letter, then another in line with it.');
-  const button = await page.locator('#help-button').boundingBox();
-  const card = await help.boundingBox();
-  expect(card.y).toBeGreaterThan(button.y + button.height);
+  await expect(page.locator('#site-menu')).toBeHidden();
 
   await page.keyboard.press('Escape');
   await expect(help).toBeHidden();
@@ -206,9 +218,186 @@ test('the ? beside the title opens the instructions, and Escape closes them', as
 
 test('clicking away closes the instructions', async ({ page }) => {
   await open(page);
-  await page.locator('#help-button').click();
+  await page.locator('.site .burger').click();
+  await page.locator('#site-menu > *').click();
   await page.mouse.click(10, 800);
   await expect(page.locator('#help')).toBeHidden();
+});
+
+test('the brand is the one way back to the puzzles: no All puzzles link, no Wordsearches entry', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('.site .brand')).toHaveAttribute('href', 'index.html');
+  await expect(page.getByRole('link', { name: 'All puzzles', exact: true })).toHaveCount(0);
+  await page.locator('.site .burger').click();
+  await expect(page.locator('#site-menu')).not.toContainText('Wordsearches');
+});
+
+// ---- Where the words sit ----
+
+const layoutButton = page => page.locator('#words-layout');
+const toggle = page => page.locator('#words-toggle');
+
+test('a first visit opens in Overlay: no list on the page, and a show-words button beside the layout button', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('#words-list')).toBeHidden();
+  await expect(layoutButton(page)).toHaveAttribute('title', 'Words: over the grid');
+  await expect(layoutButton(page).locator('.icon-overlay')).toBeVisible();
+  await expect(toggle(page)).toBeVisible();
+  await expect(toggle(page)).toHaveAttribute('aria-label', 'Show words');
+  await expect(toggle(page).locator('.icon-expand')).toBeVisible();
+
+  const card = await page.locator('.card').boundingBox();
+  const layout = await layoutButton(page).boundingBox();
+  const beside = await toggle(page).boundingBox();
+  const flip = await page.locator('#flip').boundingBox();
+  expect(layout.x).toBeLessThan(card.x);
+  expect(layout.y).toBeLessThan(card.y);
+  expect(beside.x).toBeGreaterThan(layout.x + layout.width);
+  expect(beside.x + beside.width).toBeLessThan(flip.x);
+});
+
+test('the layout button cycles Bottom → Right → Overlay → Bottom, its icon and tooltip following, the play untouched', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await openIn(page, 'bottom');
+  await tapAll(page, [[4, 2], [2, 2], [0, 0]]);
+  const steps = [
+    ['bottom', 'Words: under the grid'],
+    ['right', 'Words: beside the grid'],
+    ['overlay', 'Words: over the grid'],
+    ['bottom', 'Words: under the grid']
+  ];
+  for (const [i, [layout, title]] of steps.entries()) {
+    await expect(page.locator('#play')).toHaveAttribute('data-words', layout);
+    await expect(layoutButton(page)).toHaveAttribute('title', title);
+    await expect(layoutButton(page).locator('svg:visible')).toHaveClass('icon-' + layout);
+    await expect(page.locator('#count')).toHaveText('1/8');
+    await expect(page.locator('#overlay circle.mark-select')).toHaveCount(1);
+    if (i < steps.length - 1) await layoutButton(page).click();
+  }
+});
+
+test('in Bottom and Right there is no show/hide words button', async ({ page }) => {
+  await openIn(page, 'bottom');
+  await expect(toggle(page)).toBeHidden();
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'right');
+  await expect(toggle(page)).toBeHidden();
+});
+
+test('in Right the word list sits beside the grid on a wide screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await openIn(page, 'right');
+  const stage = await page.locator('.stage').boundingBox();
+  const aside = await page.locator('aside').boundingBox();
+  expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+  expect(Math.abs(aside.y - stage.y)).toBeLessThan(2);
+});
+
+test('in Right on a screen too narrow for both, the word list sits under the grid', async ({ page }) => {
+  await page.setViewportSize({ width: 600, height: 900 });
+  await page.addInitScript(key => localStorage.setItem(key, 'right'), LAYOUT_KEY);
+  await open(page, null, WIDE_PUZZLE);
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'right');
+  const stage = await page.locator('.stage').boundingBox();
+  const aside = await page.locator('aside').boundingBox();
+  expect(aside.y).toBeGreaterThan(stage.y + stage.height);
+});
+
+test('in Overlay, show words covers the grid with the list and hide words shows the grid as it was', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[4, 2], [2, 2], [0, 0], [0, 3]]);
+  const before = await page.locator('#overlay').innerHTML();
+
+  await toggle(page).click();
+  const list = page.locator('#words-list');
+  await expect(list).toBeVisible();
+  const card = await page.locator('.card').boundingBox();
+  const cover = await list.boundingBox();
+  expect(cover).toEqual(card);
+  await expect(list.locator('.list-head')).toContainText('Words');
+  await expect(page.locator('#count')).toHaveText('1/8');
+  await expect(page.locator('#words li', { hasText: 'Cat' })).toHaveClass(/done/);
+  await expect(toggle(page)).toHaveAttribute('aria-label', 'Hide words');
+  await expect(toggle(page)).toHaveAttribute('aria-expanded', 'true');
+  await expect(toggle(page).locator('.icon-collapse')).toBeVisible();
+  await expect(toggle(page).locator('.icon-expand')).toBeHidden();
+
+  await toggle(page).click();
+  await expect(list).toBeHidden();
+  await expect(toggle(page)).toHaveAttribute('aria-label', 'Show words');
+  expect(await page.locator('#overlay').innerHTML()).toBe(before);
+  await tapAll(page, [[0, 7]]);
+  await expect(page.locator('#count')).toHaveText('2/8');
+});
+
+test('while the list covers the grid, tapping where the grid sits selects nothing', async ({ page }) => {
+  await open(page);
+  await toggle(page).click();
+  const box = await cell(page, 7, 7).boundingBox();
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator('#overlay > *')).toHaveCount(0);
+  await expect(page.locator('#grid')).toHaveJSProperty('inert', true);
+});
+
+test('the solution still works with the list closed, and show words waits while it shows', async ({ page }) => {
+  await open(page);
+  await page.locator('#flip').click();
+  await expect(page.locator('#card')).toHaveClass(/flipped/);
+  await expect(toggle(page)).toBeHidden();
+  await page.locator('#flip').click();
+  await expect(toggle(page)).toBeVisible();
+
+  await toggle(page).click();
+  await expect(page.locator('#flip')).toBeHidden();
+});
+
+test('the choice is remembered on this device across a reload and another puzzle', async ({ page }) => {
+  await open(page);
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'bottom');
+  expect(await page.evaluate(key => localStorage.getItem(key), LAYOUT_KEY)).toBe('bottom');
+
+  await page.reload();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'bottom');
+  await page.route('**/content/puzzles/wordsearch/WSCH-0008.json', route => route.fulfill({ json: PUZZLE }));
+  await page.goto('/app/play.html?id=WSCH-0008');
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'bottom');
+});
+
+test('a page that cannot read or store the choice opens in Overlay and still cycles', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } });
+  });
+  await open(page);
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'overlay');
+  await layoutButton(page).click();
+  await expect(page.locator('#play')).toHaveAttribute('data-words', 'bottom');
+});
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`a finished puzzle still says Puzzle complete in ${layout}`, async ({ page }) => {
+    await openIn(page, layout);
+    for (const ends of ALL_WORDS) await tapAll(page, ends);
+    await expect(page.locator('#complete')).toBeVisible();
+    await expect(page.locator('#complete')).toBeInViewport();
+  });
+}
+
+test('on a phone the page is the screen wide: burger top-right, title, date and bar centred on the screen', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  await open(page, null, WIDE_PUZZLE);
+  await expect(page.locator('#grid .cell').first()).toBeVisible();
+  const screen = 390;
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(screen);
+  const centre = box => box.x + box.width / 2;
+  for (const selector of ['.site', '#title', '#created']) {
+    expect(Math.abs(centre(await page.locator(selector).boundingBox()) - screen / 2)).toBeLessThan(2);
+  }
+  const burger = await page.locator('.site .burger').boundingBox();
+  expect(burger.x + burger.width).toBeGreaterThan(screen - 40);
+  expect(burger.y).toBeLessThan(60);
+  await context.close();
 });
 
 test('a hidden ID with no puzzle says so', async ({ page }) => {
