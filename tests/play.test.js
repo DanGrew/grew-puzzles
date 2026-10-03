@@ -1449,3 +1449,244 @@ test('a single-grid puzzle prints no sheets of its own beyond the one', async ({
   await expect(page.locator('.grid-sheet')).toHaveCount(0);
   await expect(page.locator('#card')).toBeVisible();
 });
+
+// ---- How big the grid and its words are ----
+
+const SIZE_KEY = 'grew-puzzles.text-size';
+const sizeButton = page => page.locator('#text-size');
+const sizeMenu = page => page.locator('#text-size-menu');
+// On a window wide enough for the page's widest letters: each size's letters, and its words by
+// the same ratio, never under 11px.
+const SIZES = { Tiny: [10, 11], Small: [15, 11], Normal: [22, 16], Large: [27, 16 * 27 / 22], Huge: [32, 16 * 32 / 22] };
+const fontSize = locator => locator.evaluate(e => parseFloat(getComputedStyle(e).fontSize));
+
+async function openSized(page, layout, puzzle) {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+  await open(page, null, puzzle);
+  await page.evaluate(() => document.fonts.ready);
+}
+
+async function pickSize(page, label) {
+  await sizeButton(page).click();
+  await sizeMenu(page).getByRole('menuitemradio', { name: label }).click();
+}
+
+async function centreOf(locator) {
+  const b = await locator.boundingBox();
+  return [b.x + b.width / 2, b.y + b.height / 2];
+}
+
+function expectNear(a, b) {
+  expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeLessThan(1);
+}
+
+// Cat found, from (4, 2) up to (2, 2); the circle on (0, 0) and the red line on to (0, 3) — each
+// mark centred on its letters.
+async function expectMarksOnLetters(page) {
+  expectNear(await centreOf(page.locator('#overlay line.mark-found')), await centreOf(cell(page, 3, 2)));
+  expectNear(await centreOf(page.locator('#overlay circle.mark-wrong')), await centreOf(cell(page, 0, 0)));
+  const [from, to] = [await centreOf(cell(page, 0, 0)), await centreOf(cell(page, 0, 3))];
+  expectNear(await centreOf(page.locator('#overlay line.mark-wrong')), [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2]);
+}
+
+test('a first visit opens at Normal: the grid\'s letters and the words exactly as before', async ({ page }) => {
+  await openSized(page, 'bottom');
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'normal');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '22px');
+  expect((await cell(page, 0, 0).boundingBox()).width).toBe(44);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+});
+
+test('the text-size button beside the words layout opens Tiny to Huge, each "Aa" at its letters, the current ticked; pressing outside closes it unchanged', async ({ page }) => {
+  await openSized(page, 'bottom');
+  const card = await box(page, '.card');
+  const layout = await box(page, '#words-layout');
+  const size = await box(page, '#text-size');
+  const flip = await box(page, '#flip');
+  expect(size.y).toBeLessThan(card.y);
+  expect(size.x).toBeGreaterThan(layout.x + layout.width);
+  expect(size.x + size.width).toBeLessThan(flip.x);
+  await expect(sizeButton(page)).toHaveAttribute('aria-label', 'Text size');
+  await expect(sizeMenu(page)).toBeHidden();
+
+  await sizeButton(page).click();
+  await expect(sizeMenu(page)).toBeVisible();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'true');
+  const choices = sizeMenu(page).getByRole('menuitemradio');
+  await expect(choices.locator('span:last-child')).toHaveText(['Tiny', 'Small', 'Normal', 'Large', 'Huge']);
+  await expect(choices.locator('.aa')).toHaveText(Array(5).fill('Aa'));
+  expect(await choices.locator('.aa').evaluateAll(as => as.map(a => parseFloat(getComputedStyle(a).fontSize)))).toEqual([10, 15, 22, 27, 32]);
+  expect(await choices.evaluateAll(cs => cs.map(c => c.getAttribute('aria-checked')))).toEqual(['false', 'false', 'true', 'false', 'false']);
+  expect(await choices.locator('.tick').evaluateAll(ts => ts.map(t => getComputedStyle(t, '::before').content))).toEqual(['none', 'none', '"✓"', 'none', 'none']);
+  expect((await box(page, '#text-size-menu')).y).toBeGreaterThanOrEqual(size.y + size.height);
+
+  await page.mouse.click(5, 880);
+  await expect(sizeMenu(page)).toBeHidden();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'normal');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '22px');
+});
+
+test('a size picked mid-puzzle resizes the letters, centred in their cells, and the grid card round them; every found line, circle and red line stays on its letters; the menu closes', async ({ page }) => {
+  await openSized(page, 'bottom');
+  await tapAll(page, [[4, 2], [2, 2], [0, 0], [0, 3]]);
+  let before = await box(page, '#front');
+  for (const label of ['Small', 'Tiny', 'Large', 'Huge', 'Normal']) {
+    await pickSize(page, label);
+    await expect(sizeMenu(page)).toBeHidden();
+    const letters = SIZES[label][0];
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', letters + 'px');
+    await expect(cell(page, 0, 0)).toHaveCSS('place-items', 'center');
+    expect((await cell(page, 0, 0).boundingBox()).width).toBe(letters * 2);
+    expect((await box(page, '#grid')).width).toBe(letters * 2 * COLS);
+    const now = await box(page, '#front');
+    expect(Math.sign(now.width - before.width)).toBe(Math.sign(now.height - before.height));
+    expect(now.width).not.toBe(before.width);
+    before = now;
+    await expect(page.locator('#count')).toHaveText('1/8');
+    await expectMarksOnLetters(page);
+  }
+});
+
+test('the words scale by the letters\' ratio, never under 11px', async ({ page }) => {
+  await openSized(page, 'bottom');
+  for (const [label, [letters, words]] of Object.entries(SIZES)) {
+    await pickSize(page, label);
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', letters + 'px');
+    expect(await fontSize(page.locator('#words li').first())).toBeCloseTo(words, 2);
+  }
+});
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`in ${layout}, the words card follows the grid card at every size`, async ({ page }) => {
+    await openSized(page, layout);
+    const follows = {
+      bottom: (stage, aside) => {
+        expect(aside.y).toBeGreaterThan(stage.y + stage.height);
+        expect(Math.abs(aside.width - stage.width)).toBeLessThan(1);
+      },
+      right: (stage, aside) => {
+        expect(aside.x).toBeGreaterThan(stage.x + stage.width);
+        expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
+        expect(Math.abs(aside.height - stage.height)).toBeLessThan(1);
+      },
+      overlay: async () => expect(await box(page, '#words-list')).toEqual(await box(page, '.card'))
+    };
+    for (const label of Object.keys(SIZES)) {
+      await pickSize(page, label);
+      await expect(cell(page, 0, 0)).toHaveCSS('font-size', SIZES[label][0] + 'px');
+      await [() => {}, () => toggle(page).click()][Number(layout === 'overlay')]();
+      await expect(page.locator('#play')).toHaveAttribute('data-sits', layout);
+      const stage = await box(page, '.stage');
+      const aside = await box(page, 'aside');
+      await follows[layout](stage, aside);
+      for (const word of await wordBoxes(page)) expect(word.right).toBeLessThanOrEqual(aside.x + aside.width);
+      await [() => {}, () => toggle(page).click()][Number(layout === 'overlay')]();
+    }
+  });
+}
+
+test('the solution is the same size as the puzzle side, and flipping back keeps the size', async ({ page }) => {
+  await openSized(page, 'bottom');
+  await pickSize(page, 'Large');
+  await page.locator('#flip').click();
+  await expect(page.locator('#card')).toHaveClass(/flipped/);
+  expect(await box(page, '#back')).toEqual(await box(page, '#front'));
+  await expect(page.locator('#solution-grid .cell').first()).toHaveCSS('font-size', '27px');
+  await page.locator('#flip').click();
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'large');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '27px');
+});
+
+test('the size is remembered on this device across a reload and another puzzle', async ({ page }) => {
+  await openSized(page, 'bottom');
+  await pickSize(page, 'Huge');
+  expect(await page.evaluate(key => localStorage.getItem(key), SIZE_KEY)).toBe('huge');
+  await page.reload();
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'huge');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '32px');
+  await page.route('**/content/puzzles/wordsearch/WSCH-0008.json', route => route.fulfill({ json: PUZZLE }));
+  await page.goto('/app/play.html?id=WSCH-0008');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '32px');
+  await sizeButton(page).click();
+  await expect(sizeMenu(page).locator('[aria-checked="true"]')).toHaveAttribute('data-size', 'huge');
+});
+
+test('a page that cannot read or store the size opens at Normal and still resizes', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } });
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await open(page);
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'normal');
+  await pickSize(page, 'Small');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '15px');
+  await expect(sizeMenu(page)).toBeHidden();
+});
+
+test('on a Saga every page\'s grid is at the size picked, and switching tabs never changes it', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openSaga(page, 'bottom');
+  await pickSize(page, 'Large');
+  const card = await box(page, '#front');
+  for (const n of [1, 2, 0]) {
+    await tabs(page).nth(n).click();
+    await expect(tabs(page).nth(n)).toHaveAttribute('aria-selected', 'true');
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', '27px');
+    expect(await box(page, '#front')).toEqual(card);
+  }
+});
+
+test('the title, the site bar, the bands\' headings, the tabs and the corner buttons stay their size at every size', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openSaga(page, 'bottom');
+  // The grid band's width is the card's; its heading's size is what stays.
+  const sizes = () => page.evaluate(() => ['#title', '.site', '#label', '.list-head h2', '#tabs .tab', '#flip', '#words-layout', '#text-size'].map(s => {
+    const e = document.querySelector(s), r = e.getBoundingClientRect();
+    return [s, getComputedStyle(e).fontSize, { '#label': 0 }[s] ?? r.width, r.height];
+  }));
+  const normal = await sizes();
+  for (const label of ['Tiny', 'Huge']) {
+    await pickSize(page, label);
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', SIZES[label][0] + 'px');
+    expect(await sizes()).toEqual(normal);
+  }
+});
+
+test('a bigger size on a phone scrolls the grid sideways in its own box, never widening the page', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [SIZE_KEY, 'huge']);
+  await open(page, null, WIDE_PUZZLE);
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'huge');
+  expect((await box(page, '.stage')).width).toBeGreaterThan(390);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+});
+
+test('the printout is the same at every size', async ({ page }) => {
+  await openSized(page, 'bottom');
+  const normal = await printedBoxes(page);
+  await page.emulateMedia({ media: 'screen' });
+  for (const label of ['Tiny', 'Huge']) {
+    await pickSize(page, label);
+    expect(await printedBoxes(page)).toEqual(normal);
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', '18px');
+    await expect(page.locator('#words li').first()).toHaveCSS('font-size', '13px');
+    await page.emulateMedia({ media: 'screen' });
+  }
+});
+
+test('a Saga prints its words and each grid\'s sheet the same at every size', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openSaga(page, 'bottom');
+  const printed = async () => {
+    await page.emulateMedia({ media: 'print' });
+    const sizes = await page.locator('.grid-sheet .grid, aside').evaluateAll(es => es.map(e => [e.offsetWidth, e.offsetHeight]));
+    await page.emulateMedia({ media: 'screen' });
+    return sizes;
+  };
+  const normal = await printed();
+  expect(normal).toHaveLength(4);
+  await pickSize(page, 'Huge');
+  expect(await printed()).toEqual(normal);
+});

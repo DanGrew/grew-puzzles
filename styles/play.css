@@ -103,8 +103,8 @@ svg.overlay circle { fill: none; }
 .mark-wrong { stroke: var(--wrong); }
 .mark-select { stroke: var(--select); }
 
-/* The corner buttons: flip at the top-right; the words layout and, in Overlay, show/hide words
-   at the top-left. Each icon button shows only the icon for its current state. */
+/* The corner buttons: flip at the top-right; the words layout, the text size and, in Overlay,
+   show/hide words at the top-left. Each icon button shows only the icon for its current state. */
 button.corner { position: absolute; top: 0; z-index: 3;
   width: 38px; height: 38px; color: var(--band-fg); background: var(--band); border: var(--ow) solid var(--line); box-shadow: var(--shadow);
   border-radius: 50%; padding: 0; cursor: pointer; display: grid; place-items: center; }
@@ -113,8 +113,9 @@ button.corner:hover { border-color: var(--fg); }
 button.corner svg { width: 18px; height: 18px; display: none; }
 button.flip { right: 0; transform: translate(35%, -35%); }
 button.words-layout { left: 0; transform: translate(-35%, -35%); }
-button.words-toggle { left: 34px; transform: translateY(-35%); }
-button.flip svg,
+button.text-size { left: 34px; transform: translateY(-35%); }
+button.words-toggle { left: 72px; transform: translateY(-35%); }
+button.flip svg, button.text-size svg,
 .play[data-words="bottom"] .icon-bottom, .play[data-words="right"] .icon-right, .play[data-words="overlay"] .icon-overlay,
 .play[data-list="false"] .icon-expand, .play[data-list="true"] .icon-collapse { display: block; }
 /* Show/hide words is Overlay's alone, and never over the solution; flip waits while the list is up. */
@@ -136,6 +137,24 @@ ul.words li.revealed { color: var(--reveal); font-weight: 700; }
 /* A repeated word's progress, beside it: copies found out of all of them. */
 ul.words li .progress { display: inline-block; margin-left: 6px; font-size: .8125em; color: var(--muted); font-variant-numeric: tabular-nums; }
 ul.words li .progress:empty { display: none; }
+
+/* The text size — #play's --scale, the player's pick (play-core's textScale), Normal at 1. On
+   screen it scales the grid's letters and the words' text together, the letters never under
+   20px a cell and the words never under 11px; the grid card, the words card and the found lines
+   all follow the letters. Paper ignores it. The menu, by its corner button, shows each size as
+   "Aa" at the letters it gives, the picked one ticked. */
+@media screen {
+  .play, .text-size-menu button { --cell: max(20px, calc(clamp(26px, 5.4vw, 44px) * var(--scale, 1))); }
+  ul.words li { font-size: max(11px, calc(16px * var(--scale, 1))); }
+}
+.text-size-menu { inset: auto; margin: 0; padding: 6px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: calc(var(--r) * .66); box-shadow: var(--shadow); }
+.text-size-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 12px 6px 8px; color: var(--fg); background: none;
+  border: 0; border-radius: 8px; font: 600 14px var(--font-display); text-align: left; cursor: pointer; }
+.text-size-menu button:hover { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
+.text-size-menu .tick { width: 14px; color: var(--band); }
+.text-size-menu [aria-checked="true"] .tick::before { content: "✓"; }
+.text-size-menu .aa { min-width: 48px; text-align: center; font: var(--gw) calc(var(--cell) * .5)/1 var(--font-body); }
 
 /* Completion: a short pop and sparkle */
 .board.pop { animation: pop .6s cubic-bezier(.2,1.6,.4,1); }
@@ -166,7 +185,7 @@ ul.words li .progress:empty { display: none; }
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .help, button.corner, .complete, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
+  .site, .help, .text-size-menu, button.corner, .complete, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
 
   .play-head { margin: 0 0 16px; }
   .play-head h1 { font-size: 26px; }
