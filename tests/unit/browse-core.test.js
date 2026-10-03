@@ -1,10 +1,16 @@
 import {
-  PER_PAGE, typesOf, browseState, browseSearch, browseList, pageCount, pageOf, filterChips, toggleType,
-  clearTypes, noTypesPicked, withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons,
+  PER_PAGE, COLLECTIONS, COLLECTION_TYPE, typesOf, filterOptions, typeBreakdown, collectionHref, browseItems,
+  browseState, browseSearch, browseList, pageCount, pageOf, filterChips, toggleType, clearTypes, noTypesPicked,
+  withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons,
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
 // Puzzle n was saved on day n of October, so the highest is the newest.
+// The tiles a state shows, by hidden ID or collection name, from the indexes' entries.
+const shown = (index, state, collections = []) => browseList(browseItems(index, collections), state).map(i => i.hiddenId ?? i.title);
+const collection = (name, created, ids = []) => ({
+  slug: name.toLowerCase(), name, description: `About ${name}`, created, puzzles: ids.map((id, i) => ({ id, number: i + 1 })),
+});
 const puzzles = n => Array.from({ length: n }, (_, i) => ({
   hiddenId: id(i + 1), type: 'Vanilla', created: `2026-10-${String(i + 1).padStart(2, '0')}`, title: `T${i + 1}`,
 }));
@@ -20,7 +26,7 @@ describe('browse-core.js', () => {
       { hiddenId: id(2), created: '2026-11-01' },
       { hiddenId: id(3), created: '2026-10-15' },
     ];
-    expect(browseList(index, browseState('', [])).map(p => p.hiddenId)).toEqual([id(2), id(3), id(1)]);
+    expect(shown(index, browseState('', []))).toEqual([id(2), id(3), id(1)]);
     expect(index.map(p => p.hiddenId)).toEqual([id(1), id(2), id(3)]);
   });
 
@@ -30,7 +36,7 @@ describe('browse-core.js', () => {
       { hiddenId: 'WSCH-10000', created: '2026-10-02' },
       { hiddenId: 'WSCH-0002', created: '2026-10-02' },
     ];
-    expect(browseList(index, browseState('', [])).map(p => p.hiddenId)).toEqual(['WSCH-10000', 'WSCH-9999', 'WSCH-0002']);
+    expect(shown(index, browseState('', []))).toEqual(['WSCH-10000', 'WSCH-9999', 'WSCH-0002']);
   });
 
   test('the filters are every type a puzzle has, once each, A to Z', () => {
@@ -77,7 +83,7 @@ describe('browse-core.js', () => {
       { hiddenId: id(2), type: 'Missing', created: '2026-10-02', title: 'b' },
       { hiddenId: id(3), type: 'Mirra?e', created: '2026-10-03', title: 'c' },
     ];
-    const by = types => browseList(index, { types, sort: 'date', dir: 'desc' }).map(p => p.hiddenId);
+    const by = types => shown(index, { types, sort: 'date', dir: 'desc' });
     expect(by(['Missing'])).toEqual([id(2)]);
     expect(by(['Missing', 'Vanilla'])).toEqual([id(2), id(1)]);
     expect(by([])).toEqual([id(3), id(2), id(1)]);
@@ -89,7 +95,7 @@ describe('browse-core.js', () => {
       { hiddenId: id(2), type: 'Vanilla', created: '2026-10-01', title: 'Apples' },
       { hiddenId: id(3), type: 'Mirra?e', created: '2026-10-03', title: 'Cars' },
     ];
-    const by = (sort, dir) => browseList(index, { types: [], sort, dir }).map(p => p.hiddenId);
+    const by = (sort, dir) => shown(index, { types: [], sort, dir });
     expect(by('date', 'asc')).toEqual([id(2), id(1), id(3)]);
     expect(by('date', 'desc')).toEqual([id(3), id(1), id(2)]);
     expect(by('title', 'asc')).toEqual([id(2), id(1), id(3)]);
@@ -104,7 +110,7 @@ describe('browse-core.js', () => {
       { hiddenId: id(3), type: 'Vanilla', created: '2026-10-02', title: 'Same' },
       { hiddenId: id(2), type: 'Vanilla', created: '2026-10-02', title: 'Same' },
     ];
-    const by = (sort, dir) => browseList(index, { types: [], sort, dir }).map(p => p.hiddenId);
+    const by = (sort, dir) => shown(index, { types: [], sort, dir });
     expect(by('title', 'asc')).toEqual([id(3), id(2), id(1)]);
     expect(by('type', 'desc')).toEqual([id(3), id(2), id(1)]);
     expect(by('date', 'asc')).toEqual([id(1), id(3), id(2)]);
@@ -177,9 +183,18 @@ describe('browse-core.js', () => {
   });
 
   test('the total reads in puzzles, singular for one', () => {
-    expect(totalLabel(0)).toBe('0 puzzles');
-    expect(totalLabel(1)).toBe('1 puzzle');
-    expect(totalLabel(32)).toBe('32 puzzles');
+    expect(totalLabel([])).toBe('0 puzzles');
+    expect(totalLabel(browseItems(puzzles(1), []))).toBe('1 puzzle');
+    expect(totalLabel(browseItems(puzzles(32), []))).toBe('32 puzzles');
+  });
+
+  test('the total counts collections apart from puzzles, and only once any show', () => {
+    const one = [collection('A', '2026-10-01')];
+    const two = [...one, collection('B', '2026-10-01')];
+    expect(totalLabel(browseItems(puzzles(2), one))).toBe('2 puzzles · 1 collection');
+    expect(totalLabel(browseItems(puzzles(1), two))).toBe('1 puzzle · 2 collections');
+    expect(totalLabel(browseItems([], two))).toBe('2 collections');
+    expect(totalLabel(browseItems([], one))).toBe('1 collection');
   });
 
   test('one page has no pager', () => {
@@ -203,5 +218,81 @@ describe('browse-core.js', () => {
       { label: '3', target: 3, aria: 'Page 3', current: 'page', disabled: false },
       { label: '›', target: 4, aria: 'Next page', current: 'false', disabled: true },
     ]);
+  });
+
+  test('a collection filter comes first, and only while a collection exists', () => {
+    const index = [{ type: 'Vanilla' }, { type: 'Missing' }];
+    expect(filterOptions(index, [collection('A', '2026-10-01')])).toEqual(['Collections', 'Missing', 'Vanilla']);
+    expect(filterOptions(index, [])).toEqual(['Missing', 'Vanilla']);
+    expect(COLLECTIONS).toBe('Collections');
+  });
+
+  test('a collection\'s breakdown counts each type it holds, most first, ties A to Z', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Vanilla' }, { hiddenId: id(2), type: 'Missing' }, { hiddenId: id(3), type: 'Vanilla' },
+      { hiddenId: id(4), type: 'Wildcards' }, { hiddenId: id(5), type: 'Mirra?e' },
+    ];
+    expect(typeBreakdown(collection('A', '', [id(2), id(1), id(3)]), index)).toBe('2 Vanilla · 1 Missing');
+    expect(typeBreakdown(collection('A', '', [id(4), id(2), id(5)]), index)).toBe('1 Mirra?e · 1 Missing · 1 Wildcards');
+    expect(typeBreakdown(collection('A', '', [id(1)]), index)).toBe('1 Vanilla');
+  });
+
+  test('a collection tile links to its collection page by slug', () => {
+    expect(collectionHref('issue-1-remake')).toBe('collection.html?slug=issue-1-remake');
+    expect(collectionHref('a b&c')).toBe('collection.html?slug=a%20b%26c');
+  });
+
+  test('browse holds each puzzle once and each collection as one tile, never its puzzles again', () => {
+    const index = puzzles(2);
+    const items = browseItems(index, [collection('Issue', '2026-10-05', [id(2), id(1)])]);
+    expect(items).toEqual([
+      { ...index[0], kind: 'puzzle', filter: 'Vanilla', rank: 1, href: 'play.html?id=WSCH-0001', lines: ['Vanilla', '1 Oct 2026'] },
+      { ...index[1], kind: 'puzzle', filter: 'Vanilla', rank: 2, href: 'play.html?id=WSCH-0002', lines: ['Vanilla', '2 Oct 2026'] },
+      {
+        kind: 'collection', title: 'Issue', type: 'Collection', filter: 'Collections', created: '2026-10-05', rank: 0,
+        href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'],
+      },
+    ]);
+    expect(COLLECTION_TYPE).toBe('Collection');
+  });
+
+  test('the Collections filter shows only collections; a type shows only its puzzles', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Vanilla', created: '2026-10-01', title: 'a' },
+      { hiddenId: id(2), type: 'Missing', created: '2026-10-02', title: 'b' },
+    ];
+    const held = [collection('Issue', '2026-10-03', [id(1), id(2)])];
+    const by = types => shown(index, { types, sort: 'date', dir: 'desc' }, held);
+    expect(by(['Collections'])).toEqual(['Issue']);
+    expect(by(['Vanilla'])).toEqual([id(1)]);
+    expect(by(['Collections', 'Missing'])).toEqual(['Issue', id(2)]);
+    expect(by([])).toEqual(['Issue', id(2), id(1)]);
+  });
+
+  test('an address picks Collections only while the page offers it', () => {
+    expect(browseState('?type=Collections', ['Collections', 'Vanilla']).types).toEqual(['Collections']);
+    expect(browseState('?type=Collections', ['Vanilla']).types).toEqual([]);
+  });
+
+  test('collections sort among puzzles by name, as the type Collection, and by created date', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Missing', created: '2026-10-01', title: 'Apples' },
+      { hiddenId: id(2), type: 'Vanilla', created: '2026-10-03', title: 'Cars' },
+    ];
+    const held = [collection('Birds', '2026-10-02')];
+    const by = (sort, dir) => shown(index, { types: [], sort, dir }, held);
+    expect(by('title', 'asc')).toEqual([id(1), 'Birds', id(2)]);
+    expect(by('title', 'desc')).toEqual([id(2), 'Birds', id(1)]);
+    expect(by('type', 'asc')).toEqual(['Birds', id(1), id(2)]);
+    expect(by('date', 'desc')).toEqual([id(2), 'Birds', id(1)]);
+    expect(by('date', 'asc')).toEqual([id(1), 'Birds', id(2)]);
+  });
+
+  test('the same day, a puzzle sits before a collection, and two collections go by name', () => {
+    const index = [{ hiddenId: id(1), type: 'Vanilla', created: '2026-10-01', title: 'Zebras' }];
+    const held = [collection('Bravo', '2026-10-01'), collection('Alpha', '2026-10-01')];
+    expect(shown(index, { types: [], sort: 'date', dir: 'desc' }, held)).toEqual([id(1), 'Alpha', 'Bravo']);
+    expect(shown(index, { types: [], sort: 'date', dir: 'asc' }, held)).toEqual([id(1), 'Alpha', 'Bravo']);
+    expect(shown(index, { types: [], sort: 'type', dir: 'asc' }, held)).toEqual(['Alpha', 'Bravo', id(1)]);
   });
 });

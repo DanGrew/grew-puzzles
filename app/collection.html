@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/browse.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="collections"></header>
+  <main aria-labelledby="collection-title">
+    <div class="browse-head">
+      <h1 id="collection-title"></h1>
+    </div>
+    <p class="collection-description" id="description"></p>
+    <p class="collection-missing" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
+    <ul class="tiles" id="tiles"></ul>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script type="module">
+import { slugOf, collectionView } from '../core/collection-core.js';
+
+function part(className, text) {
+  const span = document.createElement('span');
+  span.className = className;
+  span.textContent = text;
+  return span;
+}
+
+// A numbered tile: the collection's number on its band, then the puzzle's tile as browse shows it.
+function tile(spec) {
+  const a = document.createElement('a');
+  a.className = 'tile numbered';
+  a.href = spec.href;
+  const detail = part('detail', '');
+  detail.append(...spec.lines.map(text => part('line', text)));
+  a.append(part('number', spec.number), part('name', spec.title), detail);
+  const li = document.createElement('li');
+  li.append(a);
+  return li;
+}
+
+function show([index, published]) {
+  const view = collectionView(published.collections, index.puzzles, slugOf(location.search));
+  document.title = `${view.name} · Grew Puzzles`;
+  document.getElementById('collection-title').textContent = view.name;
+  document.getElementById('description').textContent = view.description;
+  document.getElementById('description').hidden = !view.found;
+  document.getElementById('missing').hidden = view.found;
+  document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
+  document.getElementById('tiles').replaceChildren(...view.tiles.map(tile));
+}
+
+Promise.all([
+  fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
+  fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
+]).then(show);
+</script>
+</body>
+</html>

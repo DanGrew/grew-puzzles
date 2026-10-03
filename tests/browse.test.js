@@ -11,9 +11,13 @@ function index(count) {
   return { puzzles };
 }
 
-async function serve(page, served) {
+// Collections are served the same way; left out, the site has none — no collections file at all.
+async function serve(page, served, collections) {
   const fileRequests = [];
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: served }));
+  await page.route('**/content/collections/index.json', r => r.fulfill(
+    collections ? { json: { collections } } : { status: 404, body: 'Not found' },
+  ));
   await page.route(/\/puzzles\/.*WSCH-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.abort(); });
   return fileRequests;
 }
@@ -237,5 +241,100 @@ test('a shared link opens with its filter and sort set', async ({ page }) => {
 
 test('the real wordsearch index loads', async ({ page }) => {
   await page.goto('/app/');
-  await expect(page.locator('#total')).toHaveText(/^\d+ puzzles?$/);
+  await expect(page.locator('#total')).toHaveText(/^\d+ puzzles?( · \d+ collections?)?$/);
+});
+
+// A collection of puzzles 1, 2 and 4 of the mixed index — 2 Vanilla and 1 Missing — numbered
+// backwards, written on 5 January, the day of puzzle 5.
+function issue() {
+  return {
+    slug: 'issue-1', name: 'Issue #1', description: 'The first book, remade.', created: '2026-01-05',
+    puzzles: [{ id: 'WSCH-0001', number: 3 }, { id: 'WSCH-0002', number: 2 }, { id: 'WSCH-0004', number: 1 }],
+  };
+}
+const collectionTiles = page => page.locator('.tiles .tile.collection');
+
+test('a collection tile sits among the puzzles, with its name, description and type breakdown', async ({ page }) => {
+  const fileRequests = await serve(page, mixed(6), [issue()]);
+  await page.goto('/app/');
+  await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 5', 'Issue #1', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  const tile = collectionTiles(page);
+  await expect(tile).toHaveCount(1);
+  await expect(tile.locator('.name')).toHaveText('Issue #1');
+  await expect(tile.locator('.detail .line')).toHaveText(['The first book, remade.', '2 Vanilla · 1 Missing']);
+  await expect(page.locator('#total')).toHaveText('6 puzzles · 1 collection');
+  expect(fileRequests).toEqual([]);
+});
+
+test('a puzzle shows once in browse, however many collections hold it', async ({ page }) => {
+  const again = { ...issue(), slug: 'again', name: 'Again', puzzles: [{ id: 'WSCH-0001', number: 1 }] };
+  await serve(page, mixed(4), [issue(), again]);
+  await page.goto('/app/');
+  await expect(page.locator('.tiles .tile:not(.collection) .name')).toHaveText(['Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  await expect(collectionTiles(page).locator('.name')).toHaveText(['Again', 'Issue #1']);
+  await expect(page.locator('.tiles .tile .number')).toHaveCount(0);
+});
+
+test('the Collections filter comes first and shows only collections; a type shows none', async ({ page }) => {
+  await serve(page, mixed(6), [issue()]);
+  await page.goto('/app/');
+  await expect(page.locator('#filters button')).toHaveText(['Collections', 'Mirra?e', 'Missing', 'Vanilla']);
+  await chip(page, 'Collections').click();
+  await expect(tileNames(page)).toHaveText(['Issue #1']);
+  await expect(page.locator('#total')).toHaveText('1 collection');
+  await expect(page).toHaveURL(/\/app\/\?type=Collections$/);
+  await chip(page, 'Collections').click();
+  await chip(page, 'Vanilla').click();
+  await expect(tileNames(page)).toHaveText(['Puzzle 4', 'Puzzle 1']);
+  await expect(collectionTiles(page)).toHaveCount(0);
+});
+
+test('collections sort by name among titles, together as Collection by type, and by created date', async ({ page }) => {
+  const served = mixed(6);
+  served.puzzles[0].title = 'Apples';
+  await serve(page, served, [issue()]);
+  await page.goto('/app/?sort=title&dir=asc');
+  await expect(tileNames(page)).toHaveText(['Apples', 'Issue #1', 'Puzzle 2', 'Puzzle 3', 'Puzzle 4', 'Puzzle 5', 'Puzzle 6']);
+  await page.locator('#sort').selectOption('type');
+  // Collection, then Mirra?e, Missing and Vanilla, each newest first.
+  await expect(tileNames(page)).toHaveText(['Issue #1', 'Puzzle 6', 'Puzzle 3', 'Puzzle 5', 'Puzzle 2', 'Puzzle 4', 'Apples']);
+  await page.locator('#sort').selectOption('date');
+  await expect(page.locator('#dir')).toHaveText('Oldest first');
+  // Puzzle 5 shares the collection's day, and a tie goes to the puzzle.
+  await expect(tileNames(page)).toHaveText(['Apples', 'Puzzle 2', 'Puzzle 3', 'Puzzle 4', 'Puzzle 5', 'Issue #1', 'Puzzle 6']);
+});
+
+test('a link from before collections opens as it always did', async ({ page }) => {
+  await serve(page, mixed(9), [issue()]);
+  await page.goto('/app/?type=Mirra%3Fe&type=Vanilla&sort=title&dir=asc');
+  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveText(['Mirra?e', 'Vanilla']);
+  await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4', 'Puzzle 6', 'Puzzle 7', 'Puzzle 9']);
+});
+
+test('with no collections, there is no Collections filter and none in the menu', async ({ page }) => {
+  await serve(page, mixed(3));
+  await page.goto('/app/?type=Collections');
+  await expect(page.locator('#filters button')).toHaveText(['Mirra?e', 'Missing', 'Vanilla']);
+  await expect(page.locator('#total')).toHaveText('3 puzzles');
+  await page.locator('.site .burger').click();
+  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches']);
+});
+
+test('Collections in the burger menu opens the landing page filtered to collections', async ({ page }) => {
+  await serve(page, mixed(6), [issue()]);
+  await page.goto('/app/');
+  await page.locator('.site .burger').click();
+  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'Collections']);
+  await page.locator('#site-menu').getByText('Collections').click();
+  await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
+  await expect(chip(page, 'Collections')).toHaveAttribute('aria-pressed', 'true');
+  await expect(tileNames(page)).toHaveText(['Issue #1']);
+});
+
+test('tapping a collection tile opens its collection page', async ({ page }) => {
+  await serve(page, mixed(6), [issue()]);
+  await page.goto('/app/');
+  await collectionTiles(page).click();
+  await expect(page).toHaveURL(/\/app\/collection\.html\?slug=issue-1$/);
+  await expect(page.locator('#collection-title')).toHaveText('Issue #1');
 });
