@@ -100,8 +100,8 @@
     {
       "word": "Cow",
       "start": {
-        "row": 11,
-        "col": 3
+        "row": 4,
+        "col": 7
       },
       "direction": "SW",
       "length": 3
@@ -370,8 +370,8 @@
     {
       "word": "Ram",
       "start": {
-        "row": 13,
-        "col": 7
+        "row": 4,
+        "col": 10
       },
       "direction": "NW",
       "length": 3
@@ -427,15 +427,15 @@
     "PEEHSLCXYEKNODM",
     "XOTLOCQAMLHENEA",
     "UENGMEOUPALCMMR",
-    "MKOYLDDCALNIAKE",
+    "MKOYLDDCALRIAKE",
     "AABULLOCKIALFIR",
     "TRMRCWEBPELGEDO",
     "NDAHFBOTBIRATGO",
     "AOILMEMFETGEUOS",
     "BCAURWSAARULLDT",
     "KCUDAGNRLERREBE",
-    "GTACBMOGOHNEKTR",
-    "IDOHBLAOFHWIFET",
+    "GTACBAOGOHNEKTR",
+    "IDAHBLAOFHWIFET",
     "PWHEIFERSELLUBY",
     "LWOSTSSHEEPDOGB"
   ]
