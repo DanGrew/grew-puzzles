@@ -338,3 +338,89 @@ test('tapping a collection tile opens its collection page', async ({ page }) => 
   await expect(page).toHaveURL(/\/app\/collection\.html\?slug=issue-1$/);
   await expect(page.locator('#collection-title')).toHaveText('Issue #1');
 });
+
+// Each type's strip colour, as the browser computes it: green, yellow, orange, red as it gets
+// harder, collections blue.
+const STRIP = {
+  green: 'rgb(159, 216, 174)', yellow: 'rgb(245, 220, 114)', orange: 'rgb(246, 180, 122)',
+  red: 'rgb(241, 154, 154)', blue: 'rgb(156, 198, 239)',
+};
+const COLOUR_OF = {
+  Vanilla: STRIP.green, Wildcards: STRIP.yellow, Saga: STRIP.yellow, Missing: STRIP.orange, Repeats: STRIP.orange,
+  'Mirra?e': STRIP.red,
+};
+// Every tile shown, as its title, its first detail line (a puzzle's type, a collection's
+// description) and the colour of its strip.
+const strips = page => page.locator('.tiles .tile').evaluateAll(tiles => tiles.map(t => ({
+  title: t.querySelector('.name').textContent,
+  type: t.querySelector('.detail .line').textContent,
+  strip: getComputedStyle(t, '::before').backgroundColor,
+})));
+// One puzzle of each type, Vanilla newest, then a type the site has no colour for.
+function everyType() {
+  const types = ['Vanilla', 'Wildcards', 'Saga', 'Missing', 'Repeats', 'Mirra?e', 'Brand New'];
+  const served = index(types.length);
+  served.puzzles.forEach((p, i) => { p.type = types[types.length - 1 - i]; });
+  return served;
+}
+
+test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blue', async ({ page }) => {
+  await serve(page, everyType(), [{ ...issue(), created: '2025-12-31' }]);
+  await page.goto('/app/');
+  await expect(page.locator('.tiles .tile')).toHaveCount(8);
+  expect(await strips(page)).toEqual([
+    { title: 'Puzzle 7', type: 'Vanilla', strip: STRIP.green },
+    { title: 'Puzzle 6', type: 'Wildcards', strip: STRIP.yellow },
+    { title: 'Puzzle 5', type: 'Saga', strip: STRIP.yellow },
+    { title: 'Puzzle 4', type: 'Missing', strip: STRIP.orange },
+    { title: 'Puzzle 3', type: 'Repeats', strip: STRIP.orange },
+    { title: 'Puzzle 2', type: 'Mirra?e', strip: STRIP.red },
+    { title: 'Puzzle 1', type: 'Brand New', strip: STRIP.green },
+    { title: 'Issue #1', type: 'The first book, remade.', strip: STRIP.blue },
+  ]);
+});
+
+test('the tile green is lighter than the band green, which the heading and pills keep', async ({ page }) => {
+  await serve(page, mixed(3));
+  await page.goto('/app/');
+  await chip(page, 'Vanilla').click();
+  const band = 'rgb(31, 111, 92)';
+  await expect(page.locator('.browse-head')).toHaveCSS('background-color', band);
+  await expect(chip(page, 'Vanilla')).toHaveCSS('background-color', band);
+  await expect(chip(page, 'Missing')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  const lightness = rgb => rgb.match(/\d+/g).map(Number).reduce((a, b) => a + b);
+  expect(lightness(STRIP.green)).toBeGreaterThan(lightness(band) + 200);
+});
+
+test('a collection tile and a Saga tile are the same card as every other — no stack behind', async ({ page }) => {
+  await serve(page, everyType(), [issue()]);
+  await page.goto('/app/');
+  const look = locator => locator.evaluate(el => {
+    const s = getComputedStyle(el);
+    return { shadow: s.boxShadow, border: s.border, radius: s.borderRadius };
+  });
+  const plain = await look(page.locator('.tiles .tile[data-type="Vanilla"]'));
+  expect(await look(collectionTiles(page))).toEqual(plain);
+  expect(await look(page.locator('.tiles .tile[data-type="Saga"]'))).toEqual(plain);
+  expect(plain.shadow).toBe('rgb(15, 42, 36) 5px 5px 0px 0px');
+});
+
+test('filtering, sorting and paging leave every tile its type\'s colour', async ({ page }) => {
+  await serve(page, mixed(30), [issue()]);
+  await page.goto('/app/');
+  const coloured = async () => (await strips(page)).forEach(({ type, strip }) => {
+    expect(strip).toBe(COLOUR_OF[type] ?? STRIP.blue);
+  });
+  await coloured();
+  await page.locator('#pager').getByRole('button', { name: 'Page 2' }).click();
+  await coloured();
+  await page.locator('#sort').selectOption('type');
+  await coloured();
+  await chip(page, 'Mirra?e').click();
+  await expect(tileTypes(page)).toHaveText(Array(10).fill('Mirra?e'));
+  await coloured();
+  await chip(page, 'Collections').click();
+  await expect(page.locator('#total')).toHaveText('10 puzzles · 1 collection');
+  await coloured();
+  expect(new Set((await strips(page)).map(t => t.strip))).toEqual(new Set([STRIP.red, STRIP.blue]));
+});

@@ -62,6 +62,7 @@ function part(className, text) {
 function tile(item) {
   const a = document.createElement('a');
   a.className = `tile ${item.kind}`;
+  a.dataset.type = item.type;
   a.href = item.href;
   const detail = part('detail', '');
   detail.append(...item.lines.map(text => part('line', text)));
