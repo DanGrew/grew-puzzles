@@ -261,6 +261,60 @@ export function saveWordsLayout(write, layout) {
   }
 }
 
+// ---- How the words fill their card ----
+// The list reads like the paper: down each column, then on to the next, no column more than one
+// word longer than another. Its card takes its size from the grid card: under it, never wider and
+// growing down; beside it, exactly as tall and growing into more columns — or under it, as
+// Bottom, when the page has no room beside; over it, exactly its size and scrolling down.
+// m is the page measured in px: count words, the widest of wordWidths (each as revealed, so a
+// reveal never reflows), rowHeight and the list's colGap/rowGap; the grid card's cardWidth and
+// cardHeight; the words card's own chromeWidth/chromeHeight round its list; and the page's
+// pageWidth and pageGap between grid and list.
+// sits is where the list goes, columns how many, wordWidth each column's, and places each
+// word's [row, column], from 1.
+export function wordsFit(layout, m) {
+  var fit = { bottom: underFit, right: besideFit, overlay: overFit }[layout](m);
+  var columns = fit.columns(m);
+  return { sits: fit.sits, columns: columns, wordWidth: widestWord(m), places: wordPlaces(m.count, columns) };
+}
+
+function widestWord(m) {
+  return Math.ceil(Math.max(...m.wordWidths));
+}
+
+// As many columns as fit across width, never more than there are words, and always one.
+function acrossColumns(m, width) {
+  var across = Math.floor((width - m.chromeWidth + m.colGap) / (widestWord(m) + m.colGap));
+  return Math.max(1, Math.min(m.count, across));
+}
+
+function underFit() {
+  return { sits: 'bottom', columns: function (m) { return acrossColumns(m, Math.min(m.cardWidth, m.pageWidth)); } };
+}
+
+function overFit() {
+  return { sits: 'overlay', columns: function (m) { return acrossColumns(m, m.cardWidth); } };
+}
+
+// Beside: as many rows as the grid card's height holds, then as many columns as the words need.
+function besideFit(m) {
+  var rows = Math.max(1, Math.floor((m.cardHeight - m.chromeHeight + m.rowGap) / (m.rowHeight + m.rowGap)));
+  var columns = Math.ceil(m.count / rows);
+  var width = m.cardWidth + m.pageGap + m.chromeWidth + columns * (widestWord(m) + m.colGap) - m.colGap;
+  var beside = { sits: 'right', columns: function () { return columns; } };
+  return { true: beside, false: underFit() }[width <= m.pageWidth];
+}
+
+// Down each column, then the next: the first count % columns columns hold one word more.
+function wordPlaces(count, columns) {
+  var short = Math.floor(count / columns), long = count % columns;
+  var starts = Array.from({ length: columns }, function (_, c) { return c * short + Math.min(c, long); });
+  return Array.from({ length: count }, function (_, i) {
+    var column = starts.filter(function (start) { return start <= i; }).length;
+    return [i - starts[column - 1] + 1, column];
+  });
+}
+
 // Where each completion sparkle starts and drifts to, over a board width × height.
 export function sparkles(count, width, height, random) {
   return Array.from({ length: count }, function () {

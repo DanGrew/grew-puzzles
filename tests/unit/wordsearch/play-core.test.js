@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout
+  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -570,6 +570,78 @@ describe('where the words sit', () => {
 
   it('carries on when the page cannot store the choice', () => {
     expect(saveWordsLayout(() => { throw new Error('blocked'); }, 'right')).toBe(false);
+  });
+});
+
+describe('how the words fill their card', () => {
+  // Ten words, the widest 99.2px wide (a column of 100px), 20px rows; 116px a column with its gap,
+  // 27px a row with its. The grid card is 400 × 300; the words card's band and edges take 36 × 60.
+  const page = over => ({
+    count: 10, wordWidths: [80, 99.2, 60], rowHeight: 20, colGap: 16, rowGap: 7,
+    cardWidth: 400, cardHeight: 300, chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, ...over
+  });
+  const columnsOf = fit => fit.places.reduce((lengths, [, c]) => ({ ...lengths, [c]: (lengths[c] || 0) + 1 }), {});
+
+  it('makes every column as wide as the widest word, rounded up to a whole pixel', () => {
+    expect(wordsFit('bottom', page()).wordWidth).toBe(100);
+    expect(wordsFit('right', page()).wordWidth).toBe(100);
+  });
+
+  it('in Bottom fits as many columns as the grid card is wide, with their gaps', () => {
+    expect(wordsFit('bottom', page()).columns).toBe(3);
+    expect(wordsFit('bottom', page({ cardWidth: 483 })).columns).toBe(3);
+    expect(wordsFit('bottom', page({ cardWidth: 484 }))).toMatchObject({ sits: 'bottom', columns: 4 });
+  });
+
+  it('in Bottom is never wider than the page, when the grid card is', () => {
+    expect(wordsFit('bottom', page({ cardWidth: 484, pageWidth: 483 })).columns).toBe(3);
+    expect(wordsFit('bottom', page({ cardWidth: 484, pageWidth: 484 })).columns).toBe(4);
+  });
+
+  it('in Overlay fits as many columns as the grid card is wide, whatever the page', () => {
+    expect(wordsFit('overlay', page({ cardWidth: 483 })).columns).toBe(3);
+    expect(wordsFit('overlay', page({ cardWidth: 484, pageWidth: 300 }))).toMatchObject({ sits: 'overlay', columns: 4 });
+  });
+
+  it('never has more columns than words, nor fewer than one', () => {
+    expect(wordsFit('bottom', page({ count: 2, wordWidths: [10] })).columns).toBe(2);
+    expect(wordsFit('overlay', page({ count: 2, wordWidths: [10] })).columns).toBe(2);
+    expect(wordsFit('bottom', page({ cardWidth: 50 })).columns).toBe(1);
+    expect(wordsFit('overlay', page({ cardWidth: 50 })).columns).toBe(1);
+  });
+
+  it('in Right fills as many rows as the grid card is tall, then adds columns', () => {
+    expect(wordsFit('right', page({ cardHeight: 323 }))).toMatchObject({ sits: 'right', columns: 1 });
+    expect(wordsFit('right', page({ cardHeight: 322 }))).toMatchObject({ sits: 'right', columns: 2 });
+    expect(wordsFit('right', page({ count: 19, cardHeight: 322 })).columns).toBe(3);
+  });
+
+  it('in Right gives each word a row of its own, however short the grid card', () => {
+    expect(wordsFit('right', page({ cardHeight: 0, pageWidth: 2000 }))).toMatchObject({ sits: 'right', columns: 10 });
+  });
+
+  it('in Right drops under the grid as Bottom when the page has no room beside it for the columns', () => {
+    // 400 grid card + 28 gap + 36 edges + two 100px columns and the 16px gap between them = 680.
+    expect(wordsFit('right', page({ pageWidth: 680 }))).toMatchObject({ sits: 'right', columns: 2 });
+    expect(wordsFit('right', page({ pageWidth: 679 }))).toMatchObject({ sits: 'bottom', columns: 3 });
+  });
+
+  it('reads down each column, then on to the next, the longer columns first', () => {
+    expect(wordsFit('bottom', page({ count: 7 })).places).toEqual([[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [1, 3], [2, 3]]);
+  });
+
+  it('keeps every column within one word of the others, whatever the count and columns', () => {
+    for (let count = 1; count <= 40; count++) {
+      for (let columns = 1; columns <= count; columns++) {
+        const fit = wordsFit('right', page({ count, cardHeight: 60 + 27 * Math.ceil(count / columns) - 7, pageWidth: 1e6 }));
+        const lengths = Object.values(columnsOf(fit));
+        expect(lengths).toHaveLength(fit.columns);
+        expect(Math.max(...lengths) - Math.min(...lengths)).toBeLessThanOrEqual(1);
+        const order = fit.places.map(([r, c]) => c * 1000 + r);
+        expect(order).toEqual([...order].sort((a, b) => a - b));
+        expect(fit.places.filter(([r]) => r === 1)).toHaveLength(fit.columns);
+      }
+    }
   });
 });
 
