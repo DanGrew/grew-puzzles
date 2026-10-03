@@ -56,14 +56,17 @@ function showPuzzle(board) {
   playEl('solution-label').textContent = board.solutionLabel;
   playEl('play').style.setProperty('--cols', board.cols);
   playEl('play').style.setProperty('--rows', board.rows);
-  fillGrid(playEl('grid'), board, function (r, c) {
+  // The puzzle side shows a wildcard's ?, never its letter — in its label too; the solution side
+  // shows every real letter.
+  fillGrid(playEl('grid'), board.shown, function (r, c) {
     var cell = document.createElement('button');
     cell.type = 'button';
-    cell.setAttribute('aria-label', board.letters[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
+    cell.setAttribute('aria-label', board.shown[r][c] + ', row ' + (r + 1) + ', column ' + (c + 1));
     cell.addEventListener('click', function () { onTap([r, c]); });
     return cell;
   });
-  fillGrid(playEl('solution-grid'), board, function () { return document.createElement('span'); });
+  board.wild.flat().forEach(function (wild, i) { playEl('grid').children[i].classList.toggle('wild', wild); });
+  fillGrid(playEl('solution-grid'), board.letters, function () { return document.createElement('span'); });
   board.words.forEach(function (w) {
     var li = document.createElement('li');
     li.textContent = w.text;
@@ -93,8 +96,8 @@ function showPuzzle(board) {
   var PLAY_EVENTS = { complete: celebrate };
 }
 
-function fillGrid(grid, board, makeCell) {
-  board.letters.forEach(function (row, r) {
+function fillGrid(grid, letters, makeCell) {
+  letters.forEach(function (row, r) {
     row.forEach(function (letter, c) {
       var cell = makeCell(r, c);
       cell.className = 'cell';

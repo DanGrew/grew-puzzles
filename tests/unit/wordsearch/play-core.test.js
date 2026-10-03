@@ -311,6 +311,51 @@ describe('a puzzle with a missing word', () => {
   });
 });
 
+describe('a puzzle with wildcards', () => {
+  // The fixture as a Wildcards puzzle: Cat's A (row 3, col 2) and Ice cream's second C (row 0, col 3) show ?.
+  let WILD;
+  beforeEach(() => {
+    WILD = playBoard(Object.assign({}, PUZZLE, { type: 'Wildcards', wildcards: [{ row: 3, col: 2 }, { row: 0, col: 3 }] }));
+  });
+
+  it('shows ? on the puzzle side at each wildcard, and only there', () => {
+    expect(WILD.shown[3][2]).toBe('?');
+    expect(WILD.shown[0][3]).toBe('?');
+    expect(WILD.shown.flat().filter(l => l === '?')).toHaveLength(2);
+    expect(WILD.shown[0]).toEqual(['I', 'C', 'E', '?', 'R', 'E', 'A', 'M']);
+  });
+
+  it('marks each wildcard cell, and only those', () => {
+    expect(WILD.wild[3][2]).toBe(true);
+    expect(WILD.wild[0][3]).toBe(true);
+    expect(WILD.wild.flat().filter(Boolean)).toHaveLength(2);
+    expect(WILD.wild[2][3]).toBe(false);
+    expect(WILD.wild[3][0]).toBe(false);
+  });
+
+  it('keeps every real letter for the solution side', () => {
+    expect(WILD.letters).toEqual(PUZZLE.grid.map(row => row.split('')));
+    expect(WILD.letters[3][2]).toBe('A');
+  });
+
+  it('says Wildcards in the band', () => {
+    expect(WILD.label).toBe('Wildcards');
+    expect(WILD.solutionLabel).toBe('Wildcards · Solution');
+  });
+
+  it('finds a word through a ? at its real placement', () => {
+    const play = tap(tap(newPlay(), [4, 2], WILD.words), [2, 2], WILD.words);
+    expect(play.found).toEqual([WILD.words.findIndex(w => w.text === 'Cat')]);
+  });
+
+  it('shows every real letter, and marks none, in a puzzle with no wildcards', () => {
+    expect(BOARD.shown).toEqual(BOARD.letters);
+    expect(BOARD.wild.flat().some(Boolean)).toBe(false);
+    expect(BOARD.wild).toHaveLength(8);
+    expect(BOARD.wild[0]).toHaveLength(8);
+  });
+});
+
 describe('where the words sit', () => {
   it('cycles Bottom → Right → Overlay → Bottom', () => {
     expect(nextWordsLayout('bottom')).toBe('right');
