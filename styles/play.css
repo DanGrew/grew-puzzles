@@ -5,35 +5,37 @@
   --gw: 600; --cell: clamp(26px, 5.4vw, 44px);
 }
 
-.play-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline; gap: 16px; margin-bottom: 40px; }
-.play-head .back { justify-self: start; }
-.play-head .title-block { min-width: 0; text-align: center; }
+.play-head { min-width: 0; text-align: center; margin-bottom: 40px; }
 .play-head h1 { font-family: var(--font-display); font-weight: var(--dw); font-size: 30px; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 .play-head .created { margin: 4px 0 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
-@media (max-width: 560px) { .play-head { grid-template-columns: 1fr; justify-items: center; gap: 8px; } .play-head .back { justify-self: center; } }
-.back { color: var(--fg); text-decoration: none; font-size: 14px; border-bottom: 1px solid var(--rule); }
-.back:hover { border-color: var(--fg); }
 .missing { text-align: center; }
 .missing a { color: var(--fg); }
 
-/* The word list sits under the grid, as wide as the grid card, its words in centred columns. */
-.play { display: grid; grid-template-columns: 1fr; justify-items: center; gap: 28px; }
+/* Where the words sit — #play's data-words, the player's choice. Bottom: under the grid, as wide
+   as the grid card, its words in centred columns. Right: beside the grid, dropping under it when
+   the screen is too narrow for both. Overlay: in the stage, over the card, only while open. */
+.play { display: flex; flex-direction: column; align-items: center; gap: 28px; }
 .play[hidden] { display: none; }
 aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
+.play[data-words="right"] { flex-flow: row wrap; justify-content: center; align-items: flex-start; }
+.play[data-words="right"] aside { flex: 1 1 200px; }
+.stage > aside { position: absolute; inset: 0; z-index: 2; max-width: none; }
+.stage > aside .words-box { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; }
+.stage > aside ul.words { min-height: 0; overflow-y: auto; align-content: start; }
+.play[data-words="overlay"][data-list="false"] aside { display: none; }
 
-/* How to play: a ? in the title row opens the instructions as a small card under it. */
-.play-head .help-button { justify-self: end; align-self: center; }
-@media (max-width: 560px) { .play-head .help-button { justify-self: center; } }
-.help-button { anchor-name: --help; width: 32px; height: 32px; padding: 0; display: grid; place-items: center; cursor: pointer;
-  font: 700 16px var(--font-display); color: var(--fg); background: var(--surface);
-  border: var(--ow) solid var(--line); border-radius: 50%; box-shadow: 3px 3px 0 var(--line); }
-.help-button:hover { background: color-mix(in srgb, var(--fg) 6%, var(--surface)); }
-.help { position-anchor: --help; inset: auto; top: anchor(bottom); right: anchor(right); margin: 10px 0 0;
-  max-width: 260px; padding: 12px 14px; font: 13px/1.5 var(--font-body); color: var(--fg); background: var(--surface);
+/* The page stays as wide as the screen: a grid wider than a phone scrolls sideways in its own
+   box, with room round it for the corner buttons. Moving and zooming it is TASK-9's. */
+@media (max-width: 760px) {
+  .col { box-sizing: border-box; max-width: calc(100% + 40px); margin: -20px; padding: 20px; overflow-x: auto; }
+}
+
+/* How to play: the menu's entry opens the instructions as a small card mid-screen. */
+.help { max-width: min(300px, calc(100vw - 64px)); padding: 12px 14px; font: 13px/1.5 var(--font-body); color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: calc(var(--r) * .66); box-shadow: var(--shadow); }
 
 /* The flip card */
-.stage { perspective: 1400px; position: relative; }
+.stage { perspective: 1400px; position: relative; width: max-content; }
 .card { position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.7,.3,1); }
 .card.flipped { transform: rotateY(180deg); }
 .face { position: relative; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--surface);
@@ -57,12 +59,23 @@ svg.overlay circle { fill: none; }
 .mark-wrong { stroke: var(--wrong); }
 .mark-select { stroke: var(--select); }
 
-button.flip { position: absolute; top: 0; right: 0; transform: translate(35%, -35%); z-index: 3;
+/* The corner buttons: flip at the top-right; the words layout and, in Overlay, show/hide words
+   at the top-left. Each icon button shows only the icon for its current state. */
+button.corner { position: absolute; top: 0; z-index: 3;
   width: 38px; height: 38px; color: var(--band-fg); background: var(--band); border: var(--ow) solid var(--line); box-shadow: var(--shadow);
   border-radius: 50%; padding: 0; cursor: pointer; display: grid; place-items: center; }
-button.flip[aria-pressed="true"] { background: var(--fg); color: var(--surface); border-color: var(--fg); }
-button.flip:hover { border-color: var(--fg); }
-button.flip svg { width: 18px; height: 18px; }
+button.corner[aria-pressed="true"], button.corner[aria-expanded="true"] { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+button.corner:hover { border-color: var(--fg); }
+button.corner svg { width: 18px; height: 18px; display: none; }
+button.flip { right: 0; transform: translate(35%, -35%); }
+button.words-layout { left: 0; transform: translate(-35%, -35%); }
+button.words-toggle { left: 34px; transform: translateY(-35%); }
+button.flip svg,
+.play[data-words="bottom"] .icon-bottom, .play[data-words="right"] .icon-right, .play[data-words="overlay"] .icon-overlay,
+.play[data-list="false"] .icon-expand, .play[data-list="true"] .icon-collapse { display: block; }
+/* Show/hide words is Overlay's alone, and never over the solution; flip waits while the list is up. */
+.play:not([data-words="overlay"]) .words-toggle, .stage:has(.card.flipped) .words-toggle { display: none; }
+.play[data-list="true"] .flip { display: none; }
 
 /* The word list */
 aside { min-width: 0; }

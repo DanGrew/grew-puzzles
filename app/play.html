@@ -13,23 +13,21 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="wordsearches"></header>
+  <header class="site" data-site-bar data-home="index.html">
+    <button type="button" data-menu-entry popovertarget="help">How to play</button>
+  </header>
 
   <header class="play-head">
-    <a class="back" href="index.html">All puzzles</a>
-    <div class="title-block">
-      <h1 id="title"></h1>
-      <p class="created" id="created"></p>
-    </div>
-    <button class="help-button" id="help-button" type="button" popovertarget="help" aria-label="How to play" title="How to play">?</button>
+    <h1 id="title"></h1>
+    <p class="created" id="created"></p>
   </header>
   <div class="help" id="help" popover>Tap a letter, then another in line with it. A red line means no match yet: keep tapping further along to extend it. Tap the last letter again to deselect.</div>
 
   <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
 
   <main class="play" id="play" hidden>
-    <div>
-      <div class="stage">
+    <div class="col">
+      <div class="stage" id="stage">
         <div class="card" id="card">
           <div class="face front-face" id="front">
             <div class="band" id="label"></div>
@@ -46,14 +44,23 @@
             </div>
           </div>
         </div>
-        <button class="flip" id="flip" type="button" aria-pressed="false" aria-label="Show solution" title="Show solution">
+        <button class="corner flip" id="flip" type="button" aria-pressed="false" aria-label="Show solution" title="Show solution">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
+        </button>
+        <button class="corner words-layout" id="words-layout" type="button">
+          <svg class="icon-bottom" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="1.8" width="11" height="7.4" rx="1"/><path d="M3 12h10M3 14.4h7"/></svg>
+          <svg class="icon-right" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.8" y="2.5" width="7.4" height="11" rx="1"/><path d="M12 4.5h2.4M12 8h2.4M12 11.5h2.4"/></svg>
+          <svg class="icon-overlay" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 5.8h6M5 8.3h6M5 10.8h3.6"/></svg>
+        </button>
+        <button class="corner words-toggle" id="words-toggle" type="button" aria-controls="words-list">
+          <svg class="icon-expand" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5 9.2 6.8M2.5 13.5l4.3-4.3"/></svg>
+          <svg class="icon-collapse" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 6.5h-4v-4M2.5 9.5h4v4M9.5 6.5l4-4M6.5 9.5l-4 4"/></svg>
         </button>
       </div>
       <div class="complete" id="complete" hidden>Puzzle complete</div>
     </div>
 
-    <aside>
+    <aside id="words-list">
       <div class="words-box">
         <div class="list-head">
           <h2>Words</h2>
