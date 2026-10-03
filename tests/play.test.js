@@ -463,7 +463,7 @@ for (const layout of ['bottom', 'right', 'overlay']) {
   });
 }
 
-test('the printout is black on white with no site bar, menu, corner buttons, bands, shadows or count', async ({ page }) => {
+test('the printout is the site\'s cards in black and white, with no site bar, menu, corner buttons or count', async ({ page }) => {
   await open(page);
   await page.emulateMedia({ media: 'print' });
   for (const selector of ['.site', '.burger', '#flip', '#words-layout', '#words-toggle', '#count', '#back']) {
@@ -472,12 +472,31 @@ test('the printout is black on white with no site bar, menu, corner buttons, ban
   await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(cell(page, 0, 0)).toHaveCSS('color', 'rgb(0, 0, 0)');
   await expect(page.locator('#title')).toHaveCSS('color', 'rgb(0, 0, 0)');
-  for (const selector of ['#label', '.list-head', '#front', '.words-box']) {
-    await expect(page.locator(selector)).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(page.locator(selector)).toHaveCSS('box-shadow', 'none');
+  for (const selector of ['#front', '.words-box']) {
+    await expect(page.locator(selector)).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(page.locator(selector)).toHaveCSS('border-top', '2px solid rgb(0, 0, 0)');
+    await expect(page.locator(selector)).toHaveCSS('border-radius', '14px');
+    await expect(page.locator(selector)).toHaveCSS('box-shadow', 'rgb(0, 0, 0) 4px 4px 0px 0px');
   }
-  await expect(page.locator('#board')).toHaveCSS('border-top-width', '1px');
-  await expect(page.locator('#board')).toHaveCSS('border-top-color', 'rgb(0, 0, 0)');
+  for (const selector of ['#label', '.list-head']) {
+    await expect(page.locator(selector)).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  }
+  await expect(page.locator('#label')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(page.locator('.list-head h2')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(page.locator('html')).toHaveCSS('print-color-adjust', 'exact');
+});
+
+test('the printed words read down each column, then on to the next', async ({ page }) => {
+  await open(page);
+  await page.emulateMedia({ media: 'print' });
+  // Each word is centred in its column, so a column shares a centre line.
+  const boxes = await page.locator('#words li').evaluateAll(lis => lis.map(li => {
+    const r = li.getBoundingClientRect();
+    return { centre: r.left + r.width / 2, top: r.top };
+  }));
+  expect(Math.abs(boxes[1].centre - boxes[0].centre)).toBeLessThan(1);
+  expect(boxes[1].top).toBeGreaterThan(boxes[0].top);
+  expect(boxes[boxes.length - 1].centre).toBeGreaterThan(boxes[0].centre + 20);
 });
 
 test('the printout is the clean puzzle whatever was found, selected or flipped on screen', async ({ page }) => {
