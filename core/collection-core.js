@@ -21,7 +21,8 @@ function found(collection, puzzles) {
   const tiles = [...collection.puzzles]
     .sort((a, b) => a.number - b.number)
     .map(({ id, number }) => ({
-      number: String(number), title: byId.get(id).title, lines: tileDetail(byId.get(id)), href: playHref(id),
+      number: String(number), title: byId.get(id).title, type: byId.get(id).type, lines: tileDetail(byId.get(id)),
+      href: playHref(id),
     }));
   // Print book opens the whole collection as one printout (app/book.html).
   const book = `book.html?slug=${encodeURIComponent(collection.slug)}`;
