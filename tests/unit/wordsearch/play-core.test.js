@@ -110,41 +110,55 @@ describe('tapping', () => {
     expect(taps([[0, 0], [0, 3]])).toEqual({ picked: [[0, 0], [0, 3]], found: [], events: [] });
   });
 
-  it('extends an open selection further along its line until it spells a word', () => {
-    const open = taps([[0, 0], [0, 3]]);
-    expect(taps([[0, 5]], open)).toEqual({ picked: [[0, 0], [0, 5]], found: [], events: [] });
-    expect(taps([[0, 5], [0, 7]], open).found).toEqual([at('Ice cream')]);
+  it('points an open red line at any other in-line letter: nearer, further, or another way', () => {
+    const open = taps([[0, 2], [0, 5]]);
+    expect(taps([[0, 3]], open)).toEqual({ picked: [[0, 2], [0, 3]], found: [], events: [] });
+    expect(taps([[0, 6]], open)).toEqual({ picked: [[0, 2], [0, 6]], found: [], events: [] });
+    expect(taps([[0, 0]], open)).toEqual({ picked: [[0, 2], [0, 0]], found: [], events: [] });
+    expect(taps([[3, 2]], open)).toEqual({ picked: [[0, 2], [3, 2]], found: [], events: [] });
+    expect(taps([[2, 4]], open)).toEqual({ picked: [[0, 2], [2, 4]], found: [], events: [] });
+    expect(taps([[2, 0]], open)).toEqual({ picked: [[0, 2], [2, 0]], found: [], events: [] });
   });
 
-  it('extends along a column and a diagonal too', () => {
-    expect(taps([[1, 0], [3, 0], [6, 0]]).found).toEqual([at('Piglet')]);
-    expect(taps([[3, 4], [2, 3], [1, 2]]).found).toEqual([at('Cow')]);
+  it('crosses a word off when a redrawn line spans it, from either end', () => {
+    expect(taps([[0, 0], [0, 3], [0, 7]]).found).toEqual([at('Ice cream')]);
+    expect(taps([[0, 7], [0, 5], [0, 0]]).found).toEqual([at('Ice cream')]);
+    expect(taps([[4, 2], [4, 4], [2, 2]])).toEqual({ picked: [], found: [at('Cat')], events: [] });
+    expect(taps([[3, 4], [3, 2], [1, 2]]).found).toEqual([at('Cow')]);
   });
 
   it('ignores a tap that is not in line with the start', () => {
     expect(taps([[0, 0], [2, 1]])).toEqual({ picked: [[0, 0]], found: [], events: [] });
   });
 
-  it('ignores a tap off the open line, behind the start, or back between the ends', () => {
+  it('ignores a tap off every line through the start while a red line shows', () => {
     const open = taps([[0, 1], [0, 3]]);
     expect(taps([[1, 4]], open)).toEqual(open);
-    expect(taps([[0, 0]], open)).toEqual(open);
-    expect(taps([[0, 2]], open)).toEqual(open);
-    expect(taps([[0, 1]], open)).toEqual(open);
+    expect(taps([[2, 2]], open)).toEqual(open);
   });
 
-  it('ignores a tap off a diagonal line that only matches one axis', () => {
+  it('ignores a tap that only matches the start on one axis of a diagonal', () => {
     const open = taps([[1, 2], [2, 3]]);
     expect(taps([[3, 3]], open)).toEqual(open);
     expect(taps([[2, 4]], open)).toEqual(open);
   });
 
-  it('clears the selection when the only letter is tapped again', () => {
+  it("changes nothing when the red line's end is tapped", () => {
+    const open = taps([[0, 0], [0, 3]]);
+    expect(taps([[0, 3]], open)).toEqual(open);
+    expect(taps([[0, 3], [0, 3]], open)).toEqual(open);
+  });
+
+  it('clears the circle when the circled letter is tapped again', () => {
     expect(taps([[0, 0], [0, 0]])).toEqual(newPlay());
   });
 
-  it('clears the selection when the last letter is tapped again', () => {
-    expect(taps([[0, 0], [0, 3], [0, 3]])).toEqual(newPlay());
+  it('clears the circle and the red line when the circled letter is tapped', () => {
+    expect(taps([[0, 0], [0, 3], [0, 0]])).toEqual(newPlay());
+  });
+
+  it('crosses off PIGLET when its T is tapped after the red P-to-G line', () => {
+    expect(taps([[1, 0], [3, 0], [6, 0]])).toEqual({ picked: [], found: [at('Piglet')], events: [] });
   });
 
   it('does not find a word from a selection sharing only one of its ends', () => {
