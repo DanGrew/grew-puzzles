@@ -48,6 +48,19 @@ test('each number sits plain on its tile\'s band, above the title', async ({ pag
   await expect(first.locator('.number')).toHaveText(/^1$/);
 });
 
+test('each number band is its type\'s colour, the same as that puzzle\'s strip on the landing page', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/');
+  const strip = id => page.locator(`.tiles .tile[href="play.html?id=${id}"]`)
+    .evaluate(el => getComputedStyle(el, '::before').backgroundColor);
+  const onLanding = [await strip('WSCH-0002'), await strip('WSCH-0003'), await strip('WSCH-0001')];
+  expect(onLanding).toEqual(['rgb(246, 180, 122)', 'rgb(159, 216, 174)', 'rgb(159, 216, 174)']);
+  await page.goto('/app/collection.html?slug=issue-1');
+  const bands = await tiles(page).locator('.number').evaluateAll(els => els.map(el => getComputedStyle(el).backgroundColor));
+  expect(bands).toEqual(onLanding);
+  await expect(tiles(page).first().locator('.number')).toHaveCSS('color', 'rgb(15, 42, 36)');
+});
+
 test('the collection page has no filter, no sort and no pager', async ({ page }) => {
   await serve(page);
   await page.goto('/app/collection.html?slug=issue-1');
