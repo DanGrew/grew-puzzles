@@ -1,0 +1,456 @@
+{
+  "hiddenId": "WSCH-0010",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Trees",
+  "wordGroups": [
+    "trees"
+  ],
+  "words": [
+    {
+      "word": "Acacia",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Apple",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Apricot",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Ash",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Banyan",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Baobab",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Birch",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Chestnut",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Dogwood",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Ebony",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Elder",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Elm",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Fig",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Fir",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Hawthorn",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Hazel",
+      "missing": true
+    },
+    {
+      "word": "Hemlock",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Hornbeam",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Jacaranda",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Juniper",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Larch",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Lemon",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Lime",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Magnolia",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Maple",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Mulberry",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Oak",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Olive",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Palm",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Papaya",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Pear",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Pine",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Plane",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Plum",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Poplar",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Redbud",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Redwood",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Rowan",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Spruce",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Teak",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Walnut",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Willow",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Yew",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 3
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "LJWYELMHREDWOOD",
+        "JUKAETAMULBERRY",
+        "ANFIRWTUNTSEHCN",
+        "CIWOTKCOLMEHKMA",
+        "APDHAICACAPAAAY",
+        "REOTUNLAWIPLOEN",
+        "ARGREDLEKPRRABA",
+        "NRWAMEPLLWOPHNB",
+        "DAOLGANEEWOLARE",
+        "AEOPIHGIAMYLCOM",
+        "FPDOFWCNPNOPLHI",
+        "AYAPAPEROLANEIL",
+        "NELPAMUBILARCHW",
+        "DUBDEREVMBINCSI",
+        "MSPRUCEBAOBABAC"
+      ]
+    }
+  ]
+}

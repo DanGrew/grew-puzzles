@@ -1,0 +1,316 @@
+{
+  "hiddenId": "WSCH-0012",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Ice Cream Flavours",
+  "wordGroups": [
+    "ice-cream-flavours"
+  ],
+  "words": [
+    {
+      "word": "Almond",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Apple",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Banana",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Banoffee",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Blueberry",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Brownie",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Butterscotch",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Caramel",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Cherry",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Coffee",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Fudge",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Hazelnut",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Honey",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Lemon",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Mango",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Maple",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Marshmallow",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Mint",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Neapolitan",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Orange",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Peach",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Pineapple",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Raspberry ripple",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 15
+    },
+    {
+      "word": "Rocky road",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Rum raisin",
+      "missing": true
+    },
+    {
+      "word": "Stracciatella",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Toffee",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Vanilla",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Walnut",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "PALLETAICCARTSP",
+        "RASPBERRYRIPPLE",
+        "WALNUTUNLEZAHOO",
+        "FGSMARSHMALLOWB",
+        "BUTTERSCOTCHENL",
+        "ANANABHBIYPAGHU",
+        "WAELAELORIILDCE",
+        "BTYGRLEENORLUAB",
+        "AIFRNMMEMEWIFEE",
+        "NLYIEAAOEOYNFPR",
+        "OOGNLPRRNFNAIZR",
+        "FPWUPLAOGDFVYEY",
+        "FAPLPECEEFFOCVC",
+        "EEEMANGOTNIMTFP",
+        "ENFYUROCKYROADG"
+      ]
+    }
+  ]
+}

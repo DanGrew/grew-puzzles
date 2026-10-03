@@ -1,0 +1,346 @@
+{
+  "hiddenId": "WSCH-0016",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Laptops",
+  "wordGroups": [
+    "laptops"
+  ],
+  "words": [
+    {
+      "word": "Backspace",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Browser",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Cooling fan",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "CPU",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Desktop",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Escape",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "File",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Hard drive",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "HDMI",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Hinge",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Keyboard",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Laptop",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Laptop bag",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Lid",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Login",
+      "missing": true
+    },
+    {
+      "word": "Mouse",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Notepad",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "OS",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 2
+      },
+      "direction": "SW",
+      "length": 2
+    },
+    {
+      "word": "Password",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Power button",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "RAM",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Recycle bin",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Screen",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Shut down",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Sleep mode",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "SSD",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Taskbar",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Toolbar",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Touchpad",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Update",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "USB port",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wi-Fi",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 11
+      },
+      "direction": "SE",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "NMIDDLAPTOPBAGN",
+        "AUELSAAMPOTKSED",
+        "FMUCISPPHDMIDDD",
+        "GUBTADRHTUPCAOR",
+        "NPPOWPHACOOBPMA",
+        "IDROLHSNNUPBEPO",
+        "LAALWKAKWEOKTEB",
+        "OTMBBEBRCOETOEY",
+        "OEPABDRRDADRNLE",
+        "CVRRCVMBEDBTCSK",
+        "USBPORTOUSRWUSR",
+        "KEGNIHKUUTWIIHC",
+        "DROWSSAPPSTOVFS",
+        "ESCAPEMFILEOREI",
+        "CNIBELCYCERKNBS"
+      ]
+    }
+  ]
+}

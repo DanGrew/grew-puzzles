@@ -1,0 +1,416 @@
+{
+  "hiddenId": "WSCH-0014",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Card Games",
+  "wordGroups": [
+    "card-games"
+  ],
+  "words": [
+    {
+      "word": "Baccarat",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Brag",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Bridge",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Canasta",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Cheat",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Clock",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Durak",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Euchre",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Fan tan",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Go fish",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Golf",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hearts",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Nap",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 2
+      },
+      "direction": "NW",
+      "length": 3
+    },
+    {
+      "word": "Newmarket",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Old maid",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pairs",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Palace",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Patience",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Pig",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Pinochle",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Poker",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Pontoon",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Red dog",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Rummy",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Scopa",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Sevens",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Skat",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Snap",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Solitaire",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Spades",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Speed",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Spit",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Spoons",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Tichu",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Tonk",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Top Trumps",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Uno",
+      "missing": true
+    },
+    {
+      "word": "War",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Whist",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "ECNEITAPOLDMAID",
+        "RTMPSNHPSNAPNGV",
+        "IOSTRAEHOGHAOOH",
+        "ANCTSIHWICYLOFR",
+        "TKTDTALPMDSATIA",
+        "IYMMURTWSAECNSW",
+        "LBBTERSSGEREOHT",
+        "OKRDUNAEAEDKPRO",
+        "SPDIEHLKRNTAESP",
+        "POAVDHCHBYAKPTT",
+        "GAEICGCICLOCKSR",
+        "OSNORUENTPTIPSU",
+        "LWNGESBACCARATM",
+        "FICHEATSNOOPSVP",
+        "PCDUNATNAFETAKS"
+      ]
+    }
+  ]
+}

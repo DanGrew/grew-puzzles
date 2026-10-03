@@ -1,0 +1,466 @@
+{
+  "hiddenId": "WSCH-0015",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Anniversaries",
+  "wordGroups": [
+    "anniversaries"
+  ],
+  "words": [
+    {
+      "word": "Cake",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Candle",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Card",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Champagne",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "China",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Commitment",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Copper",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Cotton",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Dance",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Date",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Diamond",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Dinner",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Flowers",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Forever",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Gift",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Gold",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Hold hands",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Hug",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Husband",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Kiss",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lace",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Laughter",
+      "missing": true
+    },
+    {
+      "word": "Leather",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Love",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Marriage",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Music",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Paper",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Partner",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Perfume",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Photo",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Picnic",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Poem",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Rose",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Ruby",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Spa",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Sweetheart",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Tin",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 11
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Toast",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Together",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Trip",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Vow",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 3
+    },
+    {
+      "word": "Wine",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Wood",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wool",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "AFHOLDHANDSLOVE",
+        "PWLTDRERENNIDLV",
+        "SIEOLEGDOYYGDOC",
+        "TNAAWVANTIBNWIT",
+        "RETSPEIAOOAUNCD",
+        "ACHTERRBHCICRHC",
+        "EAEFRORSPKISSIH",
+        "HLRIFFAUNPIRTNA",
+        "TUPGUHMHWOODDAM",
+        "EDNOMAIDLRTRLNP",
+        "EACREPAPOOATIOA",
+        "WTAGAMUSICOTOTG",
+        "SEKTOGETHERWCCN",
+        "TNEMTIMMOCDANCE",
+        "RENTRAPYHCOPPER"
+      ]
+    }
+  ]
+}

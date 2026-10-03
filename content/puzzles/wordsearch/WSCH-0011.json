@@ -1,0 +1,376 @@
+{
+  "hiddenId": "WSCH-0011",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Trains",
+  "wordGroups": [
+    "trains"
+  ],
+  "words": [
+    {
+      "word": "Boiler",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Brake",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Buffer",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Caboose",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Carriage",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Cowcatcher",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Crossing",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Depot",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Diesel",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Dining car",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Driver",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Express",
+      "missing": true
+    },
+    {
+      "word": "Freight",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Gauge",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Guard",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Horn",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Junction",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Loco",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Metro",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Monorail",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Passenger",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Points",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Porter",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Rail",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Shunter",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Signal",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Signal box",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Station",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Steam",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Tender",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Track",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Tunnel",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Wagon",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Whistle",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Yard",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "SW",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "WFTENDERCSWTYAD",
+        "JRDVMCSAEATAMEM",
+        "UEILPORHGLREPAR",
+        "NINTARNOUDIOARE",
+        "CGIGINNOSNTOEMG",
+        "THNAONGLRSTVBSN",
+        "ITGUARDIKAIETSE",
+        "OECGMOGCSRINRIS",
+        "NJAEYHAJDEILGGS",
+        "ORRETROPSODNPNA",
+        "IEABTRBOPIEWCAP",
+        "TKIITHOLENNUTLK",
+        "AAIELBKSREFFUBE",
+        "TRMHAREHCTACWOC",
+        "SBOCOLELTSIHWXF"
+      ]
+    }
+  ]
+}

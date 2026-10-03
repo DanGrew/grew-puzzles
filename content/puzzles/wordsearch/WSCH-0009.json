@@ -1,0 +1,376 @@
+{
+  "hiddenId": "WSCH-0009",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Safari Animals",
+  "wordGroups": [
+    "safari-animals"
+  ],
+  "words": [
+    {
+      "word": "Aardvark",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Aardwolf",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Antelope",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Baboon",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Buffalo",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cobra",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Crocodile",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Dik-dik",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Eland",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Elephant",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Flamingo",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Gazelle",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Giraffe",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Gorilla",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Hornbill",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Hyena",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Impala",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Jackal",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Kudu",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Leopard",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Lion",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Lioness",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Mamba",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Mongoose",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Monkey",
+      "missing": true
+    },
+    {
+      "word": "Oryx",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Ostrich",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Python",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Rhino",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Rhinoceros",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Serval",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Snake",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Vulture",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Wildcat",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Zebra",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 5
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "IMPALAHOGAZELLE",
+        "TNOHTYPHORNBILL",
+        "VGLZERHINOCEROS",
+        "KIDNALEAARDWOLF",
+        "DRAPOELWOSTRICH",
+        "FAAARBOCRHINOTI",
+        "LFEVFWOERUTLUVA",
+        "AFPADDIKSNAKETR",
+        "MEOLIRULNOOBABB",
+        "IOLLHDAMDLOXMTE",
+        "NNEIUUGAACAGYAZ",
+        "GOTRLAKCAJAVNRM",
+        "OINOELEPHANTROO",
+        "WLAGDTBUFFALOEM",
+        "SLIONESSKIDKIDS"
+      ]
+    }
+  ]
+}

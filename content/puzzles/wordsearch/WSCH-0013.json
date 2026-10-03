@@ -1,0 +1,396 @@
+{
+  "hiddenId": "WSCH-0013",
+  "type": "Missing",
+  "created": "2026-10-03",
+  "title": "Basketball",
+  "wordGroups": [
+    "basketball"
+  ],
+  "words": [
+    {
+      "word": "Air ball",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Backboard",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Ball",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Basket",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Block",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Buzzer",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Centre",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Coach",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Court",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Crossover",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Defence",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Double dribble",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 13
+    },
+    {
+      "word": "Drill",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Dunk",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Fast break",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Forward",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Foul",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Guard",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Hook shot",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Hoop",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Jersey",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Net",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Paint",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Pivot",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Playoffs",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Rebound",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Referee",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Rim",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Shot clock",
+      "missing": true
+    },
+    {
+      "word": "Steal",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Swish",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Team",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Timeout",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Tip-off",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Travel",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Turnover",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Zone",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "EOLRVCROSSOVERG",
+        "LRLITIMEOUTNETL",
+        "BKIMFORWARDFKNL",
+        "BARCSDFPCOURTIA",
+        "IEDEEWDRAOBKCAB",
+        "RRBWFNIEKNUDPPR",
+        "DBPAOETSFJERSEY",
+        "ETMLSMRRHEMEBTA",
+        "LSIJAKBEEANOHOI",
+        "BAFPCYEUEOUCHHR",
+        "UFEOOGOTZNPCESB",
+        "OMLTUFEFDZAIRKA",
+        "DBKASLFSFOECVOL",
+        "TURNOVERCSKRJOL",
+        "DDZLEVARTPOOHHT"
+      ]
+    }
+  ]
+}
