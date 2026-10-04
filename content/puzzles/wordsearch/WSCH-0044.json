@@ -1,0 +1,1337 @@
+{
+  "hiddenId": "WSCH-0044",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Clothes",
+  "wordGroups": [
+    "clothes"
+  ],
+  "words": [
+    {
+      "word": "Anorak",
+      "missing": true
+    },
+    {
+      "word": "Apron",
+      "missing": true
+    },
+    {
+      "word": "Balaclava",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Ballgown",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 16
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Bandana",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Bathrobe",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Beanie",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Belt",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Beret",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Bikini",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Blazer",
+      "missing": true
+    },
+    {
+      "word": "Blouse",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Bobble hat",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Bodysuit",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Bodysuit",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Bodysuit",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Bodysuit",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Bodysuit",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bolero",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Boots",
+      "missing": true
+    },
+    {
+      "word": "Bow tie",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Boxers",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Bra",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 19
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Braces",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Briefs",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Cagoule",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cap",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Capris",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Cardigan",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Cargo trousers",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Chef whites",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Chinos",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Cloak",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Clogs",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Coat",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Crop top",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Dress",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Dressing gown",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Duffel coat",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Dungarees",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Flannel",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Fleece",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Flip flops",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Gilet",
+      "missing": true
+    },
+    {
+      "word": "Gloves",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Gown",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hat",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Headband",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Heels",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Hoodie",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Jacket",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Jeans",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Joggers",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 21
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Jumper",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Jumpsuit",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Kaftan",
+      "missing": true
+    },
+    {
+      "word": "Kilt",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Kimono",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Knickers",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Lab coat",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Leggings",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Leotard",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Lingerie",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Loafers",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Mittens",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Mules",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 6
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Nightgown",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Onesie",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Overalls",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Oxfords",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Parka",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Peacoat",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pinafore",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Plimsolls",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Polo",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 20
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Polo neck",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Poncho",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Pyjamas",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Raincoat",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Romper",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Sandals",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Sari",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Sarong",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 18
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Scarf",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 16
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Scrubs",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Shawl",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Shirt",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Shoes",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Shorts",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Shrug",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 19
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Skirt",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Slippers",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Socks",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Stockings",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Suit",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Sundress",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 15
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Sunhat",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Sweatshirt",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Swim trunks",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Swimsuit",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "T-shirt",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Tank top",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Thermals",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Tie",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 3
+    },
+    {
+      "word": "Tights",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Toga",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 21
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Top hat",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Tracksuit",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Trainers",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Trench coat",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Trousers",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Tube top",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Tunic",
+      "missing": true
+    },
+    {
+      "word": "Tuxedo",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Uniform",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Unitard",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 17
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Vest",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Visor",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 5
+    },
+    {
+      "word": "Waistcoat",
+      "missing": true
+    },
+    {
+      "word": "Wellies",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Wetsuit",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 7
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "WJNMGTRDHSWIMSUITUJBWETPR",
+        "RNKBMTAJEWMUTXVRXNRXPSSPT",
+        "SKIRTOSWUFHHITFFGNHOOJCPA",
+        "RBMEAPGLEIGXUCBLGFWNNHFPK",
+        "EBFTLHHELIEKSERYRLIAWOWEM",
+        "SUEOFAKBTODKSNCFUHURLHMEY",
+        "UXWLUTSDKRSOUEYGCINBFDPIU",
+        "OAXDTIKXEAJMONOBMJTRGFXEK",
+        "RNSKNURTMIWSIHHOSIDLDJGKC",
+        "TASYSMEBUBCRCLGDUBPNLIHKS",
+        "JEBMTBLPOTKNATPSFYUDDWFBP",
+        "UAPDTBUOXFORDSYMAPYOBLRRO",
+        "MIKSRLGRXPPEHDLSECARBRSFL",
+        "PITMGVMECVFVOOKEWSUAOJTJF",
+        "SYTLHFERMSJBDHBHDGWROIICP",
+        "UDICJOVOJKVGHOCMWTEGUFNFI",
+        "IEUKTMPFFCKIRIIJELGSUYCJL",
+        "TSSWXIOAMOKHHUIGOEYIVTAHF",
+        "AEYSNWXNTSTMNVSBRDVHEDTGS",
+        "HIDRIFIIFAKIAKCSOJTYRIFUE",
+        "ELOSYIAPBJFMRWFBDPJFDDPCI",
+        "LLBUOGLSHORTSTHERMALSMLDR",
+        "BEINIKIBRDTSISPHHSTKRSYSE",
+        "BWVOCEOMUGSUROMPERYIEAXFG",
+        "OLTECEELFRSIOUXFWNSLNMHEN",
+        "BYGAJUMTEKASNPTWTFATIAOII",
+        "UMOWTUSPCFMEMHFLEAVRAJGRL",
+        "FUONLFPAXGIXJPFUFLMCRYRBB",
+        "NPFEXIRBOWTIEISENOSHTPABO",
+        "JDSBLTVJHEELSVSUGIRVCBIBD",
+        "UROSEVDVRMFROIXFNSHBNMDTY",
+        "SETIHWFEHCKNEXDDIHJDHIOXS",
+        "SJTBODYSUITEKCAJJWAPUNRGU",
+        "HRPCARGOTROUSERSWSJTWOVJI",
+        "GDUNGAREESOATSTIUSTEWYJUT"
+      ],
+      "wildcards": [
+        {
+          "row": 4,
+          "col": 9
+        },
+        {
+          "row": 6,
+          "col": 18
+        },
+        {
+          "row": 9,
+          "col": 14
+        },
+        {
+          "row": 14,
+          "col": 7
+        },
+        {
+          "row": 17,
+          "col": 8
+        },
+        {
+          "row": 18,
+          "col": 5
+        },
+        {
+          "row": 21,
+          "col": 22
+        },
+        {
+          "row": 22,
+          "col": 5
+        },
+        {
+          "row": 22,
+          "col": 14
+        },
+        {
+          "row": 29,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "rows": [
+        "TULBBDRJSCYRVSTJELLIGBJGC",
+        "SEVOLGATGSJUSNMBINPYSJNTF",
+        "HCHFLKNICKERSCOWHOSHLOGRK",
+        "EPARKARGFKLRNWOATLVPRXVEM",
+        "PEACOATEHGMGDFEEDIJASJYNY",
+        "SLVYOTISPRSPGNBRBMSAPEOCV",
+        "GASSERDGOMGDIUUEEAPGWOCHR",
+        "NYFFIHUNRPUKTLRSRDLCXKLCR",
+        "IXWFNFOIXVDJJTBMFESLCVBOW",
+        "KSULXTTGPSWEATSHIRTOGMTAC",
+        "CNSCWRXGSOEDSKUUGYSADOATX",
+        "OHXORAKEJDGWDXKJEWSKIUWPX",
+        "TEXBERHLVTHBXJEANSGAFCOND",
+        "SAICULJSGBFJUXRUKYSCOATDC",
+        "VDKPRWOTAIPOLONECKLRUPATP",
+        "BBIXEWDRTIWGWVAYXUNBRRNOR",
+        "NABJIENAGIDRACUFSVKIGILVW",
+        "WNSRSFPURLCAGOULECHRESDEJ",
+        "ODAFTADYBCFJOHEUEIACMOJRA",
+        "GSGOTJCROPTOPNDLBFORLJPAG",
+        "GXUIAWBLDSUMITTENSTNFFCLE",
+        "NXKXODWMTBEANIETIDSEOHSLC",
+        "IBDSCUKODEXUTTSHIRTGASUSI",
+        "SLXFNFPTHSLYTHLTPAOWOEYHC",
+        "SADVIFKRHPAPPBMMWTCAPLKJG",
+        "EBGKAECLENCNHVESTIDNLOCLB",
+        "RCOORLLLAEWFDVGDWNWXBWBHR",
+        "DOWCLCSDMBXRLAVMOURCDDPXS",
+        "TANDGONWWXONUTLLJRLAVOBHU",
+        "ATVIBAACJSBOXERSDRATOELXP",
+        "XDJYBTBFIEIRSRWWGIRRBBYGI",
+        "CBRGTCBVEAVALCALABGBLOUSE",
+        "GGGKJXIFPRMLATRIHSFEGRXTR",
+        "NIGHTGOWNYSMYCYBTFMMHNSIF",
+        "UMSHYIFLANNELYBKOSGSOTOGA"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 23
+        },
+        {
+          "row": 1,
+          "col": 7
+        },
+        {
+          "row": 2,
+          "col": 17
+        },
+        {
+          "row": 6,
+          "col": 18
+        },
+        {
+          "row": 9,
+          "col": 8
+        },
+        {
+          "row": 12,
+          "col": 8
+        },
+        {
+          "row": 15,
+          "col": 12
+        },
+        {
+          "row": 16,
+          "col": 14
+        },
+        {
+          "row": 18,
+          "col": 10
+        },
+        {
+          "row": 33,
+          "col": 8
+        }
+      ]
+    }
+  ]
+}

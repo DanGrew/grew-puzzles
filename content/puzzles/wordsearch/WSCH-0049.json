@@ -1,0 +1,1407 @@
+{
+  "hiddenId": "WSCH-0049",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Mythical Creatures",
+  "wordGroups": [
+    "mythical-creatures"
+  ],
+  "words": [
+    {
+      "word": "Abarimon",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Ahuizotl",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 9
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Alp",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 11
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Amphiptere",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Ankou",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Aswang",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Baku",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Banshee",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Barghest",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 18
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Barghest",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Barghest",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Barghest",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 21
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Barghest",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Basilisk",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Bigfoot",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Bogeyman",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Boggart",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Brollachan",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 18
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Brownie",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bugbear",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bunyip",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Camazotz",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Carbuncle",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Centaur",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Cerberus",
+      "missing": true
+    },
+    {
+      "word": "Chaneque",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Changeling",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Chimera",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Chupacabra",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Cockatrice",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Cyclops",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Djinn",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 23
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Doppelganger",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Dragon",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Dryad",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Duende",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Dullahan",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Dwarf",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Echidna",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 23
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Elf",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 20
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Encantado",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 10
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Fairy",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Faun",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 19
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Fenrir",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Firebird",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Fomorian",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Gargoyle",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Genie",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Ghost",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Ghoul",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 20
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Giant",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Gnome",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Goblin",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Golem",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Gorgon",
+      "missing": true
+    },
+    {
+      "word": "Gremlin",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Griffin",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Harpy",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Hellhound",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Hippogriff",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Hobgoblin",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Homunculus",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Huldra",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Hydra",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Imp",
+      "missing": true
+    },
+    {
+      "word": "Jackalope",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Kappa",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Kelpie",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Kitsune",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Kobold",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Kraken",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 18
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Lamassu",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Leprechaun",
+      "missing": true
+    },
+    {
+      "word": "Leviathan",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Loch Ness Monster",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 15
+    },
+    {
+      "word": "Makara",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Mandrake",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Manticore",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Medusa",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Mermaid",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Merman",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Minotaur",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Naga",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 21
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Nymph",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Obake",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 23
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Ogre",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Oni",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Pegasus",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Peryton",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Phantom",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Phoenix",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pixie",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 6
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Poltergeist",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Pontianak",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Qilin",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Rakshasa",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 20
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Revenant",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 10
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Roc",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Sasquatch",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Satyr",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Scylla",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Sea serpent",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Selkie",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Shade",
+      "missing": true
+    },
+    {
+      "word": "Siren",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Skinwalker",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Spectre",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 19
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Sphinx",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Sprite",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Strigoi",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Tengu",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 5
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Thunderbird",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Tiamat",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Tikbalang",
+      "missing": true
+    },
+    {
+      "word": "Troll",
+      "missing": true
+    },
+    {
+      "word": "Typhon",
+      "missing": true
+    },
+    {
+      "word": "Unicorn",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Valkyrie",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Vampire",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 19
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Wendigo",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Werewolf",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Witch",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 23
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Wizard",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Wraith",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Wyvern",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Yeti",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 3
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Yokai",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Zombie",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 6
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "VFMMTOKNWSKTHLAGNAMYEGOBR",
+        "TFKWEBMJAGBNSWEREWOLFFGUI",
+        "MCMRLRAZZSRATEDONEAYTYLSS",
+        "MEEIYSMNAOJIIUHRSIKNILIQR",
+        "AASWANGASUMGGYCGAXFOTHODV",
+        "IJZOXTKCNHLBWUFERGBFAGJPS",
+        "PBUAUJOXAWEAIOSLXAOWIIFJB",
+        "KWQNHPMYNRMETEVTYXBNNRMOU",
+        "TASBLORFDKBSXSVVBAFNDEGJM",
+        "WIEIPLEKIIQUHARPYWNFGXRZJ",
+        "KOXMVMANAODBNTTRASADNHBIJ",
+        "VUNOCTJGMFNUNCDZGUUZIVOAS",
+        "ONGTZRFRRKFGNZLPNDGBXHNUI",
+        "KAANKOUUEAEBNYKELWWHTUCKL",
+        "NZOAEVKAMPTEHEAOCVPSCWREK",
+        "GWKHITTTDPNAIUBKYWILKTASX",
+        "UWSPNUKOLAERDOKXRRKQZVIHA",
+        "STIQEMONGLPDKPJARKIAPGMWY",
+        "SBLXGQGIKWROJKIJBGAPJVONI",
+        "ARIGYNYMCIEVQTNAHTAIVELHG",
+        "MESDOMRMBHSPHOENIXMLELFFM",
+        "AKANKQHEAQAWVBARGHESTWYSY",
+        "LLBUAJRVVWERNASAHSKARBWPW",
+        "LADMIIZBSBSNXEFBEKQRAKDHL",
+        "DWYKFUGBUMUACFRFLCGRAQXIT",
+        "INNQMUZMDZGKYAMIEPGURBANS",
+        "PIWPCMEDUSAJKTNNPHPSBLMXE",
+        "UKBUICYEMKFYDSTTEMPYAVKXH",
+        "VSAAMPHIPTEREAASAEARCBZIG",
+        "AXRMNYXMVRKMUTTLCDRVAXUBR",
+        "IXGHFIWOVQQRGYVTWNOSPRQGA",
+        "VTHMSRASGYMSKRRFALUHUMZLB",
+        "NVEWVNZVAJWENEOZJIVMHEAAM",
+        "XWSYFFIRGOPPIHUECKRSCDPDM",
+        "PGTGGHOSTJRCQENBHFNKAVEWG"
+      ],
+      "wildcards": [
+        {
+          "row": 1,
+          "col": 6
+        },
+        {
+          "row": 4,
+          "col": 13
+        },
+        {
+          "row": 10,
+          "col": 4
+        },
+        {
+          "row": 11,
+          "col": 18
+        },
+        {
+          "row": 12,
+          "col": 6
+        },
+        {
+          "row": 16,
+          "col": 13
+        },
+        {
+          "row": 19,
+          "col": 7
+        },
+        {
+          "row": 30,
+          "col": 8
+        },
+        {
+          "row": 31,
+          "col": 11
+        },
+        {
+          "row": 34,
+          "col": 0
+        }
+      ]
+    },
+    {
+      "rows": [
+        "ARAODIUOTWYVERNOTYREPSCMO",
+        "CHANGELINGANFRWVLPEGASUSU",
+        "LSMYYVWENDIGONCAROCZPYXKE",
+        "JRLTIGWYTENAFOJLDTJZVZEEH",
+        "KEOHNXRMXOBBLTKKMAAZNYTLP",
+        "HWCOGAULGIOUHPSYAWCGNJKYT",
+        "ONHPVFNFCCHFZVIRKVKNANSOV",
+        "MRNDOPPELGANGERIAGALONQGX",
+        "UOEMMNVMVUIKTILERLLHHMNRJ",
+        "NCSDPJTCAEPLLIBHAOOSXOQAD",
+        "CISBYEDIBNROOWWHJRPHHCGGN",
+        "UNMFCTUTAVDGASQTNSELKIEAU",
+        "LUOTPCYAHNIRTHDUENDEHWPEO",
+        "UANQIACHARAMANEKARKRTSCSH",
+        "SRSGYWYSTNJKKKLQASEVIVDVL",
+        "QDTRNRCSNWYVRGENBVHAHRTEL",
+        "XLEEUALNBWSYRIAFKSAASFNOE",
+        "XURMBGOWBEQOGXENUSTIKRBEH",
+        "OHRLYCPCZNILBOGPVAYREAEAF",
+        "WSAIMHSILPOLTERGEISTKWHFN",
+        "KTLNEIEJXNAHCALLORBEGDLOU",
+        "NZWDOMVETIRPSQKSGEUNSLNMY",
+        "ZTBESEODAPEFCKCNFRMBAAAOS",
+        "LPHFDRZBNAOYIEKBCUMSSBHRC",
+        "BMCUQAALHNRRPUERJDMNQIAIA",
+        "DVQBNRAURMNQBQROHOMTUMLAM",
+        "RHNCIDIRHEVOEEGWOLFAAJLNA",
+        "QLRMCZETSLRIRNONBNDDTBULZ",
+        "RNOSONYRBOZEOAEIGQOTCDDKO",
+        "RNZTAMIJBGKGCHHEOKZIHJCPT",
+        "PBLSTRBXLIDLICSTBQNAJNXHZ",
+        "ALLYCSDNFMRMTQRBLJMMDGXVE",
+        "ASXKWIQYOHYDNBECIRTAKCOCI",
+        "QMTEKPNMHJAAAAAONAJTYPUBC",
+        "UPAWIZARDYDWMEACRTRAGGOBR"
+      ],
+      "wildcards": [
+        {
+          "row": 1,
+          "col": 3
+        },
+        {
+          "row": 4,
+          "col": 13
+        },
+        {
+          "row": 7,
+          "col": 12
+        },
+        {
+          "row": 13,
+          "col": 6
+        },
+        {
+          "row": 15,
+          "col": 10
+        },
+        {
+          "row": 15,
+          "col": 17
+        },
+        {
+          "row": 21,
+          "col": 13
+        },
+        {
+          "row": 22,
+          "col": 19
+        },
+        {
+          "row": 28,
+          "col": 4
+        },
+        {
+          "row": 33,
+          "col": 8
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1267 @@
+{
+  "hiddenId": "WSCH-0043",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Occupations",
+  "wordGroups": [
+    "occupations"
+  ],
+  "words": [
+    {
+      "word": "Accountant",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Actor",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Archaeologist",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 13
+    },
+    {
+      "word": "Architect",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Artist",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Astronaut",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Astronomer",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Athlete",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Baker",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 9
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Banker",
+      "missing": true
+    },
+    {
+      "word": "Barber",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Bartender",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 16
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Biologist",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Builder",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bus driver",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 8
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Butcher",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Caretaker",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 16
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Carpenter",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Cashier",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 18
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Chef",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Chemist",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Chiropractor",
+      "missing": true
+    },
+    {
+      "word": "Cleaner",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Coach",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Comedian",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Consultant",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Courier",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Dancer",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Data analyst",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Delivery driver",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 14
+    },
+    {
+      "word": "Dentist",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Designer",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Detective",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Developer",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Doctor",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Editor",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Electrician",
+      "missing": true
+    },
+    {
+      "word": "Engineer",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Estate agent",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 17
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Factory worker",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 23
+      },
+      "direction": "NW",
+      "length": 13
+    },
+    {
+      "word": "Farmer",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 5
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Firefighter",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Fisherman",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Flight attendant",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 15
+    },
+    {
+      "word": "Florist",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Gardener",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Geologist",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 11
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Hairdresser",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Jockey",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Journalist",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Judge",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Lawyer",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 20
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Librarian",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Lifeguard",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Locksmith",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Mason",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Mechanic",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Midwife",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Miner",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 10
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Model",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Musician",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 19
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Nanny",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 18
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Nurse",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 17
+      },
+      "direction": "NW",
+      "length": 5
+    },
+    {
+      "word": "Nutritionist",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Optician",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Optometrist",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Painter",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Paramedic",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 19
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Pharmacist",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Photographer",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Physicist",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Pilot",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Plasterer",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 23
+      },
+      "direction": "SW",
+      "length": 9
+    },
+    {
+      "word": "Plumber",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Police officer",
+      "missing": true
+    },
+    {
+      "word": "Politician",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Postman",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Priest",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Psychologist",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 12
+    },
+    {
+      "word": "Radiologist",
+      "missing": true
+    },
+    {
+      "word": "Receptionist",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Recruiter",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Referee",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Roofer",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Sailor",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "Scientist",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Secretary",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Security guard",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Shepherd",
+      "missing": true
+    },
+    {
+      "word": "Shopkeeper",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Singer",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 18
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Social worker",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 12
+    },
+    {
+      "word": "Social worker",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Social worker",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 13
+      },
+      "direction": "NE",
+      "length": 12
+    },
+    {
+      "word": "Social worker",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 16
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Social worker",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Soldier",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 15
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Solicitor",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Surgeon",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 10
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Tailor",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Taxi driver",
+      "missing": true
+    },
+    {
+      "word": "Teacher",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Therapist",
+      "missing": true
+    },
+    {
+      "word": "Tour guide",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Train driver",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Trainer",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 14
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Translator",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Umpire",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Vet",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Waiter",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 20
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Welder",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Window cleaner",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 13
+    },
+    {
+      "word": "Writer",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Zookeeper",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "NW",
+      "length": 9
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "RTRANSLATOREKROWLAICOSLDC",
+        "HAEVUTSIRTEMOTPOWUMDIIJJS",
+        "HJOFTNATLUSNOCESODEERGNUZ",
+        "ATKSOCIALWORKERIOBWELVVHU",
+        "CZDATAANALYSTUYRJLFMDECTN",
+        "KFLIGHTATTENDANTFODHIORTT",
+        "GBJYPOSTMANVSSUROYTIUTESS",
+        "RMCHEFVBZROYUVHREGUREFTKI",
+        "EIVPRESSERDRIAHROYIGTRILC",
+        "KBGADREKROWLAICOSEWZSNRHA",
+        "RUTSETFHPRGBYEAPREKARRWCM",
+        "OIUTTTEHDZKPDRJBEAJJLESAR",
+        "WLARERWTKICIDEPCKFNODTEOA",
+        "LDNOCEHMPFUKCVSZALISCNCCH",
+        "AEONTCKZBGLNZIYMTTOONIUNP",
+        "IRROIRUHRBACURCFENWLAARTH",
+        "CWTMVUZUDLNZADHDREKIIPIYJ",
+        "OGSEEIOWDBORTYOAAGHCCYTLB",
+        "SWARYTLIGZEDSRLICARIINYDN",
+        "GMATWETYWHGUIEOTHEETTHGGB",
+        "SFJIFRSPCYRYRVGDPTIOIPUKZ",
+        "UBMHJYILRGUNOIIMEAHRLTAHK",
+        "OKJVWULRAISCLLSFTTSSOVRLN",
+        "HUDLFJAPEZERFETSJSAAPGDRR",
+        "REMRAFNSLNKSWDIAYECENDEER",
+        "NGVHTARAPLETTCSCCHPVPGKBE",
+        "ATJRSEUAAESDILLUOPOCNRDAH",
+        "EKVEIZOZYIMSRZYNNANIOFARC",
+        "BHGFGHJJTIYTWAZLBYSWOYNCA",
+        "ZASEOGKRNHBWCTGRJALCLLCHE",
+        "HMTRLKAEPOMKYZNYEADKUHEIT",
+        "TFKEOURIBWPNGZAOITHLKSRTI",
+        "TFLEIDZMBIZKPCOCKSIMSVHEU",
+        "CLPDBIVDUGIFEJOVMANASATCT",
+        "TSINOITPECERESWAJLNFWVHTG"
+      ],
+      "wildcards": [
+        {
+          "row": 3,
+          "col": 10
+        },
+        {
+          "row": 5,
+          "col": 3
+        },
+        {
+          "row": 7,
+          "col": 24
+        },
+        {
+          "row": 8,
+          "col": 5
+        },
+        {
+          "row": 12,
+          "col": 17
+        },
+        {
+          "row": 18,
+          "col": 16
+        },
+        {
+          "row": 21,
+          "col": 13
+        },
+        {
+          "row": 21,
+          "col": 18
+        },
+        {
+          "row": 24,
+          "col": 13
+        },
+        {
+          "row": 28,
+          "col": 1
+        }
+      ]
+    },
+    {
+      "rows": [
+        "RRTNATNUOCCAREPEEKPOHSYIM",
+        "AEHFOPTICIANEUKZMVOTPROPA",
+        "BHPYITELGRJRJNRFAGSMARLPA",
+        "VGREMEYHWEOJEZGWUIBTEAZLK",
+        "KNFOELEINKODLKDIGTEDSPVCF",
+        "LGRGTKODKARLNYRONRLTLPUAA",
+        "RNVHDIOVZBMPOLLOCEEWGYWMO",
+        "ERBHWPDOEEPDWOYEWREWSTTET",
+        "VISHLGAEZTCPEYSFEYERDCAHR",
+        "INIAKAYBGDAGLECRDARUMPIRE",
+        "RBUBFDBVDSRADESPRVZOMILHN",
+        "DAITRELTDPPAZEARREHYTVOFA",
+        "NTRPRAUCOMEDIANBUKNGLCRNE",
+        "IBKHWINCEHNJAATDCNDASJAYL",
+        "AJBOUFTATFTITATHLETEERUFC",
+        "RULTROLIASEIDHTIMSKCOLIGW",
+        "TDCOHCUVOVRUYHDREHCTUBCNO",
+        "HGWGRSIPMNTKFVPEKLCKRRPYD",
+        "FESRESRNAIISLITAVYNNNEZEN",
+        "SKHABWFIAZDSIMSRGEIJFNZSI",
+        "HYCPRUULJHRWTGTHAFLRZGWNW",
+        "CORHACHAENCCISOYEIROMILYW",
+        "YASEBRREEDYEIFELLRNUPSGNF",
+        "VVCROSODYSOMMDEAONMEOEOKI",
+        "PLUMBERWLFEMZWEHTEEARDRDR",
+        "UIHYULSIJHKJNUMMJAAZNMNOE",
+        "MDENTISTCSTKDGIMADZHZCNCF",
+        "OHIEDSLIFEGUARDKDROTCAZTI",
+        "MTIKSMLYAUCTUMCZEGAMZREOG",
+        "NIFIROTIREDNETRABGPPZMARH",
+        "REVIRDSUBVNIPRMASONWFTBIT",
+        "TLIBSCIENTISTREOZLRCDBCAE",
+        "HPYHLIBRARIANAICISUMRAUFR",
+        "LAJBYFATZMICADIKDGJJTMWDE",
+        "UNNAVJEEOPILOTZSJOCKEYLMO"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 8
+        },
+        {
+          "row": 11,
+          "col": 15
+        },
+        {
+          "row": 12,
+          "col": 10
+        },
+        {
+          "row": 17,
+          "col": 7
+        },
+        {
+          "row": 22,
+          "col": 15
+        },
+        {
+          "row": 25,
+          "col": 0
+        },
+        {
+          "row": 27,
+          "col": 8
+        },
+        {
+          "row": 29,
+          "col": 17
+        },
+        {
+          "row": 30,
+          "col": 24
+        },
+        {
+          "row": 33,
+          "col": 17
+        }
+      ]
+    }
+  ]
+}

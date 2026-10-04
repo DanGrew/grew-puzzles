@@ -1,0 +1,1377 @@
+{
+  "hiddenId": "WSCH-0047",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Colours",
+  "wordGroups": [
+    "colours"
+  ],
+  "words": [
+    {
+      "word": "Almond",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Amber",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Amethyst",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Apricot",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 18
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Aqua",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 21
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Aquamarine",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Ash",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 3
+    },
+    {
+      "word": "Aubergine",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Azure",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Baby blue",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 9
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Bamboo",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Beige",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Black",
+      "missing": true
+    },
+    {
+      "word": "Blue",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 18
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Blush",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Bottle green",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Brick",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Bronze",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Brown",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 6
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Bubblegum",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Burgundy",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Burnt orange",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Canary",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Cerise",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 19
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Champagne",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Charcoal",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Chartreuse",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Chestnut",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 7
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Cinnamon",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Clay",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Cobalt",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Cocoa",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Copper",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Coral",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 13
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Coral pink",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Cream",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Crimson",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Cyan",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 19
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Denim",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Emerald",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 15
+      },
+      "direction": "NW",
+      "length": 7
+    },
+    {
+      "word": "Espresso",
+      "missing": true
+    },
+    {
+      "word": "Flamingo",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 16
+      },
+      "direction": "N",
+      "length": 8
+    },
+    {
+      "word": "Fuchsia",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 24
+      },
+      "direction": "SW",
+      "length": 7
+    },
+    {
+      "word": "Ginger",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Gold",
+      "missing": true
+    },
+    {
+      "word": "Graphite",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Green",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Grey",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Honey",
+      "missing": true
+    },
+    {
+      "word": "Ice blue",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Indigo",
+      "missing": true
+    },
+    {
+      "word": "Ivory",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Jade",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 16
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Khaki",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Lavender",
+      "grid": 1,
+      "start": {
+        "row": 15,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Lemon",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Lilac",
+      "missing": true
+    },
+    {
+      "word": "Lime",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Magenta",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Mahogany",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Maple",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 4
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Maroon",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Mauve",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Midnight",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Mint",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Mint green",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Mocha",
+      "grid": 0,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Moss",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Mustard",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Navy",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 3
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Ocean",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Ochre",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Olive",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 13
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Orange",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 23
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Peach",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Pearl",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Periwinkle",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Pewter",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Pine",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Pink",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 18
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Plum",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Purple",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Red",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Rose",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 20
+      },
+      "direction": "NW",
+      "length": 4
+    },
+    {
+      "word": "Rosewood",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Royal blue",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Royal blue",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Royal blue",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Royal blue",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Royal blue",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Ruby",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 5
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Russet",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Rust",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 18
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Saffron",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Sage",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 8
+      },
+      "direction": "SW",
+      "length": 4
+    },
+    {
+      "word": "Salmon",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Sand",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 19
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Sandstone",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 3
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Sapphire",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Scarlet",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 10
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Seafoam",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 19
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Seashell",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Sepia",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 8
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Silver",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Sky blue",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Slate",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 5
+    },
+    {
+      "word": "Snow",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 1
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Steel",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 23
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Stone",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 15
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Straw",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Tan",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Tangerine",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 5
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Taupe",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 5
+      },
+      "direction": "N",
+      "length": 5
+    },
+    {
+      "word": "Teal",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Terracotta",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 21
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Toffee",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 21
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Turquoise",
+      "missing": true
+    },
+    {
+      "word": "Ultramarine",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Vanilla",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Vermilion",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Violet",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Walnut",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 6
+    },
+    {
+      "word": "White",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 23
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Wine",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Yellow",
+      "missing": true
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "MGAVZLETALSHLSPIODRHOEGMI",
+        "OROYALBLUEFMIROYALBLUEENA",
+        "JBSTRAWSCSRLPLUMGLYWOVOZD",
+        "DJNJPINEESVQLZOATNEGAMYQA",
+        "SNSEUEYOGEQODHRLQLIVORYKC",
+        "DCPURPLERLSACWWDJELQUFAID",
+        "IKAJEUEZNKHGPNTYMASUJMWAA",
+        "LRGBCAUMOCHARRSMRODOIDRDE",
+        "ZHBMFTLBZDMYYEIUPJTERPWOR",
+        "GNDIPOBLVQLROEYCASOFZQHAH",
+        "CSENOTYUBNAANHBORECBGGSKC",
+        "QGAASAKSVNEIRPEACHIPDJWZO",
+        "VNIPKGSHAYRESEENYTRKHAKIL",
+        "YPOUPUWCWETLFWMULYPMRNCLC",
+        "GOGIZHICGLAETLTELZAABEGEE",
+        "BVWTLQINTMPEPLLRFBAOAKOEU",
+        "YKGETIARTWQVCHYESJLFFNPTL",
+        "TVZGDTMYEENYPJNMAZWAKYHSB",
+        "UUALMOGRAPHITEUQLRDEYIPNL",
+        "UINNNADOEETSVGTEMJDSNOQYA",
+        "EYETVOPJUVMHEUWMOSCUKBRNY",
+        "YVWVSYMLSDOLTITTNUZRGCLYO",
+        "NDPLDEBAEBBVOSASMUSTARDUR",
+        "TSNAPEHYNBABILZMKATEHSDWF",
+        "AZPUCJQCUNLBLLUALYOQUMNVF",
+        "NAQIGZGBELIIYYRQVGVYFBLMS",
+        "YNBMDROTCMNCDBEROSEWOODOS",
+        "LJHDHIUSLAIWUOLYGVJODPERF",
+        "RLICRWUBVEILLYLUUQBIOGNDL",
+        "ACSJNQAAOZBOHZAIEUGLFEFID",
+        "EYLEMONBTSYHTEMAVPCLUALLW",
+        "PGNWORBULTRAMARINENPYEQRO",
+        "HYDRUAQUAMARINEWJCGHEEJUM",
+        "PUWBGINGERHVEKSEGPILORZNA",
+        "SWYZGVEULBLAYORQKWMNGIDOP"
+      ],
+      "wildcards": [
+        {
+          "row": 3,
+          "col": 17
+        },
+        {
+          "row": 6,
+          "col": 9
+        },
+        {
+          "row": 7,
+          "col": 3
+        },
+        {
+          "row": 9,
+          "col": 21
+        },
+        {
+          "row": 15,
+          "col": 1
+        },
+        {
+          "row": 16,
+          "col": 19
+        },
+        {
+          "row": 18,
+          "col": 3
+        },
+        {
+          "row": 24,
+          "col": 8
+        },
+        {
+          "row": 26,
+          "col": 12
+        },
+        {
+          "row": 34,
+          "col": 6
+        }
+      ]
+    },
+    {
+      "rows": [
+        "BURNTORANGECAANMPQYRSCEAZ",
+        "LYQMMOSSOCMBUUOFTUFJFLMKA",
+        "LSQKPGZZLTMRYBSBRICKCAVIE",
+        "MMMEREFKSVPEJEMCOBALTYRSV",
+        "TINEUGNAGKSTPRIKKSTGNWIBK",
+        "IIENZIGLMUYWSGRBNABSSRGOF",
+        "WNWMQEJCAMBERICTHIQBECEUD",
+        "WJQQQBKPEOHPUNGVFTPCNGCSH",
+        "JUALMONDRLCQUENRMDOFWHKQY",
+        "OFYDEKIZCKARUSEVOPVJSYVWQ",
+        "RBAESEPVSPKYADOJGTWIWYHRM",
+        "JLENUQLBHANZNHOANYAYDIUOH",
+        "WJPIEQAFFUUEHTCOIMHKTGVLN",
+        "WDJMRCRANNVTAAUSMJEELFQGL",
+        "TRFMTHOZMAYCMTTYALRGTWYDO",
+        "CCPWRACKLABMIOTKLLLLNSUDN",
+        "MOUKAMBTJJVRNLGOFUIETADQE",
+        "IPCMHPRVABSETCMFCNUIHNRWE",
+        "DIVOCANKISRBGAAJBANCASJOU",
+        "NEUEAGOPPUUBRLRWTGRSZKAEJ",
+        "IMWNWNEEEZSTEAOUSBRRVLBEL",
+        "GWPOIEWRSRSGERONKOQHECAPS",
+        "HQNTISRITLEUNONAYTFNKTMWF",
+        "TSUSELRWVGTABCIFWTMAVPBJV",
+        "RLBDJDQIGCZOYOCLLLQYVTOYF",
+        "RZSNRTGNGENHSABLAESCOZOBC",
+        "IFWASWWKKKQREMHNTGKFMTJRO",
+        "PWSSBUKLMFZANUKERRFJSESOP",
+        "VRVUBCPEMFHZESLVVESUYJHNP",
+        "MEMAHOGANYTQWRCIEERJYNGZE",
+        "YNEKZZUSHOCEANQOCNLVNMPER",
+        "BVRCEVTTNHGCTGNLMYTUNLAWG",
+        "BLTEEOGCQZSHEMUEFNCPAYTEI",
+        "RAVJDWGYSAFFRONTIYTRJVSHW",
+        "TSRGAIQJBHWJCHYMFZHVPTUMK"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 21
+        },
+        {
+          "row": 3,
+          "col": 0
+        },
+        {
+          "row": 3,
+          "col": 12
+        },
+        {
+          "row": 5,
+          "col": 23
+        },
+        {
+          "row": 12,
+          "col": 1
+        },
+        {
+          "row": 13,
+          "col": 14
+        },
+        {
+          "row": 20,
+          "col": 20
+        },
+        {
+          "row": 22,
+          "col": 8
+        },
+        {
+          "row": 26,
+          "col": 8
+        },
+        {
+          "row": 27,
+          "col": 17
+        }
+      ]
+    }
+  ]
+}

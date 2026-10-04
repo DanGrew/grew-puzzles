@@ -251,6 +251,54 @@
       "type": "Saga",
       "created": "2026-10-03",
       "title": "Technology"
+    },
+    {
+      "hiddenId": "WSCH-0043",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Occupations"
+    },
+    {
+      "hiddenId": "WSCH-0044",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Clothes"
+    },
+    {
+      "hiddenId": "WSCH-0045",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Fruit & Veg"
+    },
+    {
+      "hiddenId": "WSCH-0046",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Countries"
+    },
+    {
+      "hiddenId": "WSCH-0047",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Colours"
+    },
+    {
+      "hiddenId": "WSCH-0048",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Dinosaurs"
+    },
+    {
+      "hiddenId": "WSCH-0049",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Mythical Creatures"
+    },
+    {
+      "hiddenId": "WSCH-0050",
+      "type": "Mirra?e",
+      "created": "2026-10-04",
+      "title": "Astronomy"
     }
   ]
 }

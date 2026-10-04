@@ -1,0 +1,1297 @@
+{
+  "hiddenId": "WSCH-0050",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Astronomy",
+  "wordGroups": [
+    "astronomy"
+  ],
+  "words": [
+    {
+      "word": "Albedo",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 19
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Andromeda",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Apollo",
+      "grid": 0,
+      "start": {
+        "row": 32,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Asteroid",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Asteroid belt",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Astrobiology",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 6
+      },
+      "direction": "NE",
+      "length": 12
+    },
+    {
+      "word": "Astrolabe",
+      "missing": true
+    },
+    {
+      "word": "Astrometry",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Astronaut",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 15
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Astrophysics",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Aurora",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Axis",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 17
+      },
+      "direction": "NE",
+      "length": 4
+    },
+    {
+      "word": "Big Bang",
+      "grid": 1,
+      "start": {
+        "row": 32,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Binary star",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 22
+      },
+      "direction": "NW",
+      "length": 10
+    },
+    {
+      "word": "Black hole",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 13
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Blueshift",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 9
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Celestial",
+      "grid": 1,
+      "start": {
+        "row": 12,
+        "col": 8
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Comet",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 5
+    },
+    {
+      "word": "Constellation",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 23
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Cosmic",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Cosmonaut",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Cosmos",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Countdown",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Crater",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 21
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Dark energy",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Dark matter",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Dwarf planet",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Earth",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Earthshine",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 15
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Eclipse",
+      "grid": 0,
+      "start": {
+        "row": 28,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 7
+    },
+    {
+      "word": "Elliptical",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 2
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Equinox",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "ESA",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Event horizon",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Exoplanet",
+      "grid": 1,
+      "start": {
+        "row": 30,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Exosphere",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Extraterrestrial",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 16
+    },
+    {
+      "word": "Galaxy",
+      "missing": true
+    },
+    {
+      "word": "Gas giant",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 15
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Gravity",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Heliosphere",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 11
+    },
+    {
+      "word": "Horizon",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Hubble",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Impact crater",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Infrared",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 9
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Ionosphere",
+      "grid": 1,
+      "start": {
+        "row": 27,
+        "col": 11
+      },
+      "direction": "N",
+      "length": 10
+    },
+    {
+      "word": "Jupiter",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 20
+      },
+      "direction": "N",
+      "length": 7
+    },
+    {
+      "word": "Kuiper belt",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Launch",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 6
+    },
+    {
+      "word": "Light year",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Lunar",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Mars",
+      "grid": 1,
+      "start": {
+        "row": 13,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Mass",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 19
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Mercury",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 7
+    },
+    {
+      "word": "Meteor",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 11
+      },
+      "direction": "NE",
+      "length": 6
+    },
+    {
+      "word": "Meteor trail",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Meteorite",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Milky Way",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Mission control",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 24
+      },
+      "direction": "W",
+      "length": 14
+    },
+    {
+      "word": "Moon",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 6
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Moon landing",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "NASA",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Nebula",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 21
+      },
+      "direction": "N",
+      "length": 6
+    },
+    {
+      "word": "Neptune",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Neutron star",
+      "missing": true
+    },
+    {
+      "word": "North Star",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 9
+    },
+    {
+      "word": "Northern lights",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 18
+      },
+      "direction": "W",
+      "length": 14
+    },
+    {
+      "word": "Observatory",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "SW",
+      "length": 11
+    },
+    {
+      "word": "Orbit",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 19
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Orion",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Planet",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 6
+    },
+    {
+      "word": "Planetarium",
+      "missing": true
+    },
+    {
+      "word": "Plough",
+      "missing": true
+    },
+    {
+      "word": "Pluto",
+      "grid": 0,
+      "start": {
+        "row": 30,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Probe",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Pulsar",
+      "grid": 0,
+      "start": {
+        "row": 13,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Quasar",
+      "grid": 1,
+      "start": {
+        "row": 21,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Red giant",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 10
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Redshift",
+      "grid": 0,
+      "start": {
+        "row": 27,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 8
+    },
+    {
+      "word": "Rocket",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 19
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Rover",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "SW",
+      "length": 5
+    },
+    {
+      "word": "Satellite",
+      "missing": true
+    },
+    {
+      "word": "Saturn",
+      "grid": 0,
+      "start": {
+        "row": 10,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Shooting star",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Sky",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 16
+      },
+      "direction": "N",
+      "length": 3
+    },
+    {
+      "word": "Solar",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Solar system",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Solar wind",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Solstice",
+      "grid": 0,
+      "start": {
+        "row": 11,
+        "col": 14
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Space junk",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Space station",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 12
+    },
+    {
+      "word": "Spacecraft",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 7
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Spacewalk",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Spectrograph",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Sputnik",
+      "grid": 1,
+      "start": {
+        "row": 19,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Star",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 24
+      },
+      "direction": "W",
+      "length": 4
+    },
+    {
+      "word": "Starlight",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 22
+      },
+      "direction": "N",
+      "length": 9
+    },
+    {
+      "word": "Sun",
+      "grid": 1,
+      "start": {
+        "row": 17,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Sunrise",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Sunset",
+      "missing": true
+    },
+    {
+      "word": "Sunspot",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 7
+    },
+    {
+      "word": "Supernova",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Telescope",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Telescope",
+      "grid": 0,
+      "start": {
+        "row": 9,
+        "col": 11
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Telescope",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 11
+      },
+      "direction": "NW",
+      "length": 9
+    },
+    {
+      "word": "Telescope",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 9
+    },
+    {
+      "word": "Telescope",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Thruster",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 8
+    },
+    {
+      "word": "Tide",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 7
+      },
+      "direction": "N",
+      "length": 4
+    },
+    {
+      "word": "Ultraviolet",
+      "grid": 1,
+      "start": {
+        "row": 20,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Universe",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 8
+    },
+    {
+      "word": "Uranus",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ursa Major",
+      "missing": true
+    },
+    {
+      "word": "Vacuum",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 24
+      },
+      "direction": "NW",
+      "length": 6
+    },
+    {
+      "word": "Venus",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "White dwarf",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wormhole",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 14
+      },
+      "direction": "N",
+      "length": 8
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "DLCLECVEPOCSELETLSXDGYNKN",
+        "AHVJAOGLIEPNOITALLETSNOCQ",
+        "REWCOSMONAUTSPACEJUNKIGBZ",
+        "KETOBMQQCHDBASHOOTINGSTAR",
+        "ESXLUIEETNHLORTNOCNOISSIM",
+        "NAZVGCSWCNVMPAHEDJSMVGDEB",
+        "ETTOPTSVPIALKEUJKFVOREAWI",
+        "RXHXAPWRTYTILXAYLCRMRHYRE",
+        "GBETVAEURKUSGKAITBOAUYQGR",
+        "YOIEPOCSELETLSCFIKTRKUAPZ",
+        "WOHORIZONJNTHOATCSTBZSCVE",
+        "NAMUZXIMKLKLBRSGHSSASANAV",
+        "QSDWRRREKHASCYDTYZHWDTNRV",
+        "QTUIHMVDMCEEYERHKDPDDUQDR",
+        "HEZGSCCIIRCXWOENSLUNARYQK",
+        "SRJCLFUTVARPNTHMPULLANLUX",
+        "XOHEIZPAPDNIWRALOSSYAOXIM",
+        "MILIWITSZZXFYAZGFBAJVRATS",
+        "XDXALOIXYVRETSURHTRFLJWWS",
+        "LUMLRASTROPHYSICSRZSXPXSN",
+        "DTEYFSTHGILNREHTRONKVJPOT",
+        "YKFXHBYUUHSMJEXOSPHERETEE",
+        "RPUIDTNSPPEHWRRQVROZFYHIL",
+        "AZKIHYSDTLOZMXAFOLRVIEGWE",
+        "BSCJPSFVXEIUYPFTWGIRWAIUS",
+        "YTTELEEIMWMNOBWGSAODQGLSC",
+        "WWERPSRUXJNEPTUNEYNWXNROO",
+        "RQELOOCBLOJTLEBDIORETSALP",
+        "EEZKEMCQEBLESPILCEZAAMTAE",
+        "LBDCHSESBLFLCWWQDGAXNWSRK",
+        "BPCSYACTEKTPOGNGXGIPHIBNU",
+        "BAFOHQKORLKLOPRXYUXCPTBGQ",
+        "UFQTMICHPYEUSYAGQFGURSJZL",
+        "HLRIYEFYMEXTRATERRESTRIAL",
+        "AOCYDHTTRNQOQEVENTHORIZON"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 20
+        },
+        {
+          "row": 7,
+          "col": 24
+        },
+        {
+          "row": 9,
+          "col": 2
+        },
+        {
+          "row": 9,
+          "col": 5
+        },
+        {
+          "row": 15,
+          "col": 12
+        },
+        {
+          "row": 15,
+          "col": 17
+        },
+        {
+          "row": 16,
+          "col": 6
+        },
+        {
+          "row": 16,
+          "col": 15
+        },
+        {
+          "row": 26,
+          "col": 15
+        },
+        {
+          "row": 30,
+          "col": 22
+        }
+      ]
+    },
+    {
+      "rows": [
+        "NBDTNAIGDERTCOSMOSYCRAFIP",
+        "CAAZSZAZURANUSGOEAGOELORR",
+        "FSRLRDRUPMILKYWAYEXUIUBTO",
+        "IPKDABEFDEAUTGEGUIJNRBBZB",
+        "LAMHEINHNHSIWJGEQPCTEEGKE",
+        "HCAIYKORXSVRNMAOLWHDTNJZY",
+        "NETDTFODMAYREROAFEQOINVAU",
+        "HWTWHGMSRCKKTVNWLBMWPELRW",
+        "EAEOGESGPPYHTEIIAYENUPDTO",
+        "NLRJIBZRHESITNONGXTKJVVDS",
+        "JKXSLPOISHCYISJOUDEOBSEBT",
+        "VMRUKVPQIIGTPYLARFODTBBEV",
+        "YBBNEVONCXEHROLOSERILZNCA",
+        "HBJRQPELOEEAIOEMFTTAAKFXJ",
+        "BSRIUZBNARLBSTGAIJRANSOVU",
+        "PQRSJCINEUOEEUQRSDAORWFLH",
+        "GAAECUOTKRNMSHNSAAIXNCVCH",
+        "BBNYQJLJTXSCVTOSXPLQSAGGW",
+        "DTDEGKASTCUEHWIFPMHIXLUME",
+        "UFRPXSALHJNREMEAHOXKECKTT",
+        "OSOSLPAUYMCEAHLULATETZDSI",
+        "DBMDMUQBKLJHREOLACQUASARR",
+        "WPEYFTJGFHMPTAHTBJLYFGCFO",
+        "APDTQNNVMAZSHUMRVVQUXESWE",
+        "RVAGCIJBHYPOARRASSAMRZUNT",
+        "FEYHZKJGUNBNWOOVEZDAZEPSE",
+        "PNNUCZRRHVQOMRWIEVHIWJBUM",
+        "LUIUAOUUTNDIVABOKNIHQBBPH",
+        "ASDERARFNIYVETQLEXGTZZYED",
+        "NMTFMOONLANDINGEDINOMRSRJ",
+        "EUTENALPOXEQBULTSQPEUPANS",
+        "TKUFKELOHKCALBLQCENCRBNOH",
+        "CNIIBIGBANGJKHHZNRRYFANVT",
+        "BUENHPBIMPACTCRATERSDKSAE",
+        "GVUIWHITEDWARFAYMEJBHPOVV"
+      ],
+      "wildcards": [
+        {
+          "row": 0,
+          "col": 13
+        },
+        {
+          "row": 3,
+          "col": 10
+        },
+        {
+          "row": 7,
+          "col": 6
+        },
+        {
+          "row": 8,
+          "col": 14
+        },
+        {
+          "row": 10,
+          "col": 17
+        },
+        {
+          "row": 12,
+          "col": 8
+        },
+        {
+          "row": 15,
+          "col": 16
+        },
+        {
+          "row": 18,
+          "col": 19
+        },
+        {
+          "row": 33,
+          "col": 15
+        },
+        {
+          "row": 34,
+          "col": 24
+        }
+      ]
+    }
+  ]
+}

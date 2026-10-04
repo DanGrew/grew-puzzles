@@ -1,0 +1,917 @@
+{
+  "hiddenId": "WSCH-0048",
+  "type": "Mirra?e",
+  "created": "2026-10-04",
+  "title": "Dinosaurs",
+  "wordGroups": [
+    "dinosaurs"
+  ],
+  "words": [
+    {
+      "word": "Albertosaurus",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Allosaurus",
+      "grid": 0,
+      "start": {
+        "row": 24,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Amargasaurus",
+      "grid": 0,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Ankylosaurus",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 12
+    },
+    {
+      "word": "Apatosaurus",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Archaeopteryx",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Argentinosaurus",
+      "grid": 1,
+      "start": {
+        "row": 10,
+        "col": 22
+      },
+      "direction": "SW",
+      "length": 15
+    },
+    {
+      "word": "Baryonyx",
+      "grid": 1,
+      "start": {
+        "row": 26,
+        "col": 16
+      },
+      "direction": "NE",
+      "length": 8
+    },
+    {
+      "word": "Brachiosaurus",
+      "missing": true
+    },
+    {
+      "word": "Brontosaurus",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Camarasaurus",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 12
+      },
+      "direction": "NW",
+      "length": 12
+    },
+    {
+      "word": "Carcharodontosaurus",
+      "grid": 0,
+      "start": {
+        "row": 34,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 19
+    },
+    {
+      "word": "Carnotaurus",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 11
+    },
+    {
+      "word": "Centrosaurus",
+      "grid": 1,
+      "start": {
+        "row": 9,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 12
+    },
+    {
+      "word": "Ceratosaurus",
+      "grid": 0,
+      "start": {
+        "row": 29,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Chasmosaurus",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Coelophysis",
+      "grid": 1,
+      "start": {
+        "row": 25,
+        "col": 13
+      },
+      "direction": "NE",
+      "length": 11
+    },
+    {
+      "word": "Compsognathus",
+      "grid": 0,
+      "start": {
+        "row": 18,
+        "col": 22
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Corythosaurus",
+      "grid": 0,
+      "start": {
+        "row": 33,
+        "col": 15
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Daspletosaurus",
+      "grid": 0,
+      "start": {
+        "row": 4,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 14
+    },
+    {
+      "word": "Deinocheirus",
+      "grid": 1,
+      "start": {
+        "row": 2,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Deinonychus",
+      "grid": 1,
+      "start": {
+        "row": 4,
+        "col": 16
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Dilophosaurus",
+      "grid": 1,
+      "start": {
+        "row": 3,
+        "col": 16
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Diplodocus",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Dreadnoughtus",
+      "grid": 1,
+      "start": {
+        "row": 6,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Dromaeosaurus",
+      "grid": 1,
+      "start": {
+        "row": 28,
+        "col": 3
+      },
+      "direction": "NE",
+      "length": 13
+    },
+    {
+      "word": "Dryosaurus",
+      "grid": 1,
+      "start": {
+        "row": 14,
+        "col": 15
+      },
+      "direction": "NE",
+      "length": 10
+    },
+    {
+      "word": "Edmontosaurus",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 24
+      },
+      "direction": "N",
+      "length": 13
+    },
+    {
+      "word": "Eoraptor",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 11
+      },
+      "direction": "SW",
+      "length": 8
+    },
+    {
+      "word": "Euoplocephalus",
+      "missing": true
+    },
+    {
+      "word": "Gallimimus",
+      "grid": 1,
+      "start": {
+        "row": 0,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Giganotosaurus",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 14
+    },
+    {
+      "word": "Gigantoraptor",
+      "grid": 1,
+      "start": {
+        "row": 16,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 13
+    },
+    {
+      "word": "Hadrosaurus",
+      "grid": 1,
+      "start": {
+        "row": 33,
+        "col": 4
+      },
+      "direction": "NE",
+      "length": 11
+    },
+    {
+      "word": "Herrerasaurus",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Hypsilophodon",
+      "missing": true
+    },
+    {
+      "word": "Iguanodon",
+      "missing": true
+    },
+    {
+      "word": "Kentrosaurus",
+      "missing": true
+    },
+    {
+      "word": "Lambeosaurus",
+      "grid": 1,
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 12
+    },
+    {
+      "word": "Lesothosaurus",
+      "grid": 1,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Maiasaura",
+      "grid": 1,
+      "start": {
+        "row": 29,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Majungasaurus",
+      "grid": 1,
+      "start": {
+        "row": 8,
+        "col": 17
+      },
+      "direction": "SW",
+      "length": 13
+    },
+    {
+      "word": "Mamenchisaurus",
+      "grid": 1,
+      "start": {
+        "row": 11,
+        "col": 19
+      },
+      "direction": "SW",
+      "length": 14
+    },
+    {
+      "word": "Megalosaurus",
+      "grid": 0,
+      "start": {
+        "row": 14,
+        "col": 16
+      },
+      "direction": "NW",
+      "length": 12
+    },
+    {
+      "word": "Microraptor",
+      "missing": true
+    },
+    {
+      "word": "Minmi",
+      "grid": 0,
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Monolophosaurus",
+      "missing": true
+    },
+    {
+      "word": "Nodosaurus",
+      "grid": 0,
+      "start": {
+        "row": 25,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Ornitholestes",
+      "grid": 1,
+      "start": {
+        "row": 31,
+        "col": 24
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Oviraptor",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 3
+      },
+      "direction": "SE",
+      "length": 9
+    },
+    {
+      "word": "Pachycephalosaurus",
+      "grid": 1,
+      "start": {
+        "row": 24,
+        "col": 2
+      },
+      "direction": "N",
+      "length": 18
+    },
+    {
+      "word": "Parasaurolophus",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 15
+    },
+    {
+      "word": "Parasaurolophus",
+      "grid": 0,
+      "start": {
+        "row": 19,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 15
+    },
+    {
+      "word": "Parasaurolophus",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 15
+    },
+    {
+      "word": "Parasaurolophus",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 15
+    },
+    {
+      "word": "Parasaurolophus",
+      "grid": 0,
+      "start": {
+        "row": 16,
+        "col": 20
+      },
+      "direction": "NW",
+      "length": 15
+    },
+    {
+      "word": "Pentaceratops",
+      "grid": 0,
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Plateosaurus",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 5
+      },
+      "direction": "SE",
+      "length": 12
+    },
+    {
+      "word": "Polacanthus",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Protoceratops",
+      "grid": 0,
+      "start": {
+        "row": 20,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 13
+    },
+    {
+      "word": "Psittacosaurus",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 14
+    },
+    {
+      "word": "Saurolophus",
+      "grid": 0,
+      "start": {
+        "row": 15,
+        "col": 13
+      },
+      "direction": "NW",
+      "length": 11
+    },
+    {
+      "word": "Scelidosaurus",
+      "grid": 0,
+      "start": {
+        "row": 26,
+        "col": 0
+      },
+      "direction": "N",
+      "length": 13
+    },
+    {
+      "word": "Spinosaurus",
+      "missing": true
+    },
+    {
+      "word": "Stegosaurus",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 4
+      },
+      "direction": "N",
+      "length": 11
+    },
+    {
+      "word": "Struthiomimus",
+      "grid": 1,
+      "start": {
+        "row": 34,
+        "col": 16
+      },
+      "direction": "W",
+      "length": 13
+    },
+    {
+      "word": "Styracosaurus",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 12
+      },
+      "direction": "NE",
+      "length": 13
+    },
+    {
+      "word": "Suchomimus",
+      "grid": 0,
+      "start": {
+        "row": 6,
+        "col": 12
+      },
+      "direction": "SE",
+      "length": 10
+    },
+    {
+      "word": "Tarbosaurus",
+      "grid": 0,
+      "start": {
+        "row": 31,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Therizinosaurus",
+      "grid": 1,
+      "start": {
+        "row": 18,
+        "col": 8
+      },
+      "direction": "NE",
+      "length": 15
+    },
+    {
+      "word": "Torosaurus",
+      "grid": 1,
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "W",
+      "length": 10
+    },
+    {
+      "word": "Triceratops",
+      "grid": 0,
+      "start": {
+        "row": 21,
+        "col": 21
+      },
+      "direction": "W",
+      "length": 11
+    },
+    {
+      "word": "Troodon",
+      "grid": 0,
+      "start": {
+        "row": 22,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Tyrannosaurus",
+      "grid": 0,
+      "start": {
+        "row": 17,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 13
+    },
+    {
+      "word": "Utahraptor",
+      "grid": 1,
+      "start": {
+        "row": 23,
+        "col": 18
+      },
+      "direction": "SW",
+      "length": 10
+    },
+    {
+      "word": "Velociraptor",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 17
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Xenoceratops",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "W",
+      "length": 12
+    },
+    {
+      "word": "Yutyrannus",
+      "grid": 1,
+      "start": {
+        "row": 22,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Zuniceratops",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 12
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "PSPOTARECONEXEDIPLODOCUSU",
+        "OPJPIVROTPARICOLEVNPXBJTA",
+        "VPCOEDSBRONTOSAURUSJAYHUC",
+        "GSASVSBUOLBSSJOTIEMLNPARL",
+        "USLRUIUYHUADASPLETOSAURUS",
+        "BZUSARRRDPHZIZUNICERATOPS",
+        "ONIRUSUAUHOKSIPRISJAJCSJP",
+        "KHOKUHAAPAZLSUXLILOPBPGGO",
+        "MINMIAPUSTSZOLCMZXEHHPARL",
+        "NVPLJKSOROOOZRCHOGRXLTBUA",
+        "SZHZICHALOTRLCUHOHGMSHNLC",
+        "HZHXLYVRROLOIATAHMKYODHYA",
+        "BPHDRIDKRARONIGJSDIEJXIGN",
+        "IEBNZSLTBEMUPAHEXAJMRPDST",
+        "SNTCIVOMCLKAAHGTMCROURHYH",
+        "UTZPHCRAJTYJCSUIZJTASSIBU",
+        "RASURUASARERREHSGNZTPZTMS",
+        "UCPKSOTRMEBBTYRANNOSAURUS",
+        "AEMAGROZDBSUHTANGOSPMOCPO",
+        "SRAPRERDKPARASAUROLOPHUSY",
+        "OAPARASAUROLOPHUSNNAVCVDP",
+        "DTTTDPSOJIOSPOTARECIRTMER",
+        "IOPOEJLATROODONRSGEBRZJYO",
+        "LPKSMETAUPGYAMARGASAURUST",
+        "ESIABHIMTRNRALLOSAURUSXDO",
+        "CODUZSLCTEOXSURUASODONLLC",
+        "SPDRAVBXXIOLIDIUPZSGISOME",
+        "LCVUPBHRJJISOUMXLXGGHEJER",
+        "XEESXKRKHJHGAPZKKLXMTSJLA",
+        "OCERATOSAURUSUHLJHUOTCOET",
+        "ZZRCEDZETPGPNARUCURGNRZIO",
+        "OITARBOSAURUSVDUSLZONUCYP",
+        "SGZHUMELGHXGIYGISICCAERCS",
+        "BRASURUASOHTYROCVTDASILHG",
+        "EEKTSURUASOTNODORAHCRACNM"
+      ],
+      "wildcards": [
+        {
+          "row": 6,
+          "col": 14
+        },
+        {
+          "row": 7,
+          "col": 22
+        },
+        {
+          "row": 10,
+          "col": 6
+        },
+        {
+          "row": 10,
+          "col": 14
+        },
+        {
+          "row": 12,
+          "col": 19
+        },
+        {
+          "row": 19,
+          "col": 10
+        },
+        {
+          "row": 19,
+          "col": 15
+        },
+        {
+          "row": 21,
+          "col": 5
+        },
+        {
+          "row": 34,
+          "col": 2
+        },
+        {
+          "row": 34,
+          "col": 15
+        }
+      ]
+    },
+    {
+      "rows": [
+        "EKIVZEHVSUMIMILLAGYHXLUHS",
+        "LSSLZBCHASMOSAURUSYJSRZIP",
+        "EVEMGYYMABLTTDEINOCHEIRUS",
+        "STMPSURUASOHPOLIDBVPEXDLJ",
+        "ONXLIGSUHCYNONIEDEBAYISEE",
+        "TECGSSURUASOROTSTVIJGUYBS",
+        "HDREADNOUGHTUSAMUKRARCMUS",
+        "OASLAMBEOSAURUSJLINUNXREU",
+        "SRUALBERTOSAURUSVMAJJUYMR",
+        "ACRDCLIESJXHIZNGASCMAMNMU",
+        "UHUSXRVPNJXSZCUJOEOSSBAGA",
+        "RAAYBEPIJJLSKZUNNBOMIRKLS",
+        "UESPCPCSDCGNKNITJYAJGJUUO",
+        "SOOLSONHGBKGGZRSRMZEVHRUT",
+        "EPLHUCXPBTCAIOMDEPNSLUVVN",
+        "DTATRARTGZSRSYTNRTEPAZESO",
+        "CEHOUBLLDAEAZKCSIGDSCTIZM",
+        "IRPHAKXHUHUCUHUNIXOUESIBD",
+        "PYEBSGMRTRRAIROGUCADYUIRE",
+        "SXCYOGUJUOISUSAIAVTHKSNXN",
+        "IIYUGSSSNVAAANORAJPPODYTE",
+        "THHMEAZGOUSUTUYHVOCXANSGV",
+        "TYCUTNVOROROYTVPLAXLOLGDK",
+        "AUACSUYUEURBSDSENIUYZUXBE",
+        "CTPAABSASAUEEUOKLTRVTKDDH",
+        "OYLACRMAPBOIRCYAAASBXYYDI",
+        "SRZVTONTERXUGLYHBNPYHZGKL",
+        "AACMRIOOARABOIRDAGMAREKYV",
+        "UNTDDRJPTSCSUAIJGURMVPTHS",
+        "RNKSLKTDOAAKPYMAIASAURARU",
+        "UUNGMOTRXUUTTGKCMMBBYRTXP",
+        "SSVCRYDKRVORSETSELOHTINRO",
+        "XXJSYAOUPRHDUUVEZVVJEJTJA",
+        "EZEDHGSLOBCPESDIMPNJGXTMH",
+        "ODXXSUMIMOIHTURTSXCNXVKBK"
+      ],
+      "wildcards": [
+        {
+          "row": 6,
+          "col": 3
+        },
+        {
+          "row": 8,
+          "col": 10
+        },
+        {
+          "row": 15,
+          "col": 0
+        },
+        {
+          "row": 16,
+          "col": 13
+        },
+        {
+          "row": 16,
+          "col": 15
+        },
+        {
+          "row": 25,
+          "col": 16
+        },
+        {
+          "row": 28,
+          "col": 8
+        },
+        {
+          "row": 28,
+          "col": 23
+        },
+        {
+          "row": 30,
+          "col": 21
+        },
+        {
+          "row": 33,
+          "col": 10
+        }
+      ]
+    }
+  ]
+}
