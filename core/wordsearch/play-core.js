@@ -30,10 +30,15 @@ export function wordCells(word) {
   });
 }
 
-// A missing word is listed but sits in no grid, so it has no cells; a placed word sits in the
-// grid its own grid names.
+// A missing word is listed but sits in no grid, so it has no cells and no line; a placed word sits
+// in the grid its own grid names, and its line — page, start cell and direction — is what a find
+// of it saves (core/progress-core.js).
 function boardWord(w) {
-  return { text: w.word, missing: Boolean(w.missing), grid: w.grid, cells: w.missing ? [] : wordCells(w) };
+  return {
+    text: w.word, missing: Boolean(w.missing), grid: w.grid,
+    cells: w.missing ? [] : wordCells(w),
+    line: w.missing ? null : { page: w.grid, row: w.start.row, col: w.start.col, direction: w.direction }
+  };
 }
 
 // A wildcard cell shows ? on the puzzle side only: the grid keeps its real letter, and the
@@ -108,7 +113,23 @@ function solved(found, words) {
 // The start stays put: each later tap in line with it only points the line at that letter.
 
 export function newPlay() {
-  return { picked: [], found: [], events: [], page: 0 };
+  return restoredPlay([]);
+}
+
+// A puzzle reopened with its saved finds: each one found again, on Page 1, and nothing set off — a
+// puzzle already finished doesn't celebrate again.
+export function restoredPlay(found) {
+  return { picked: [], found: found, events: [], page: 0 };
+}
+
+// The finds this tap made: the indices in after's found that before's didn't have.
+export function newFinds(before, after) {
+  return after.found.filter(function (i) { return !before.found.includes(i); });
+}
+
+// Finished is every placed word found, however the play got there — found now or found before.
+export function finished(play, words) {
+  return solved(play.found, words);
 }
 
 // The solution side of one page: every placed word found.

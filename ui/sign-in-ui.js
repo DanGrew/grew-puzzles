@@ -4,7 +4,9 @@
 // Sign out. Supabase's library is vendored (vendor/supabase.js); Google's script is the one thing
 // loaded from another site, and only once Sign in is tapped. Supabase's address and public key, and
 // Google's client ID, are the only values the site holds — the database's own rules keep every
-// player's progress theirs. Its rules are core/auth-core.js's.
+// player's progress theirs. Its rules are core/auth-core.js's. Its client is the page's one way to
+// Supabase: the play page saves a signed-in player's finds through it, and its line under the words
+// opens the card (ui/wordsearch/progress-ui.js).
 import { hexOf, accountView } from '../core/auth-core.js';
 
 var SUPABASE_URL = 'https://vxschtygvtilsadgixec.supabase.co';
@@ -12,7 +14,7 @@ var SUPABASE_PUBLIC_KEY = 'sb_publishable_9q2ENh35OE6EbJvaZ4opsQ_ABWcyMW0';
 var GOOGLE_CLIENT_ID = '802523799766-q1aeup0ahrm6ajbmd1v6u1qmjfqk248u.apps.googleusercontent.com';
 var GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 
-var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
+export var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
 
 var account = document.createElement('div');
 account.className = 'account';
@@ -115,6 +117,14 @@ async function drawGoogleButton() {
 
 function showUnavailable() {
   card.querySelector('.unavailable').hidden = false;
+}
+
+// The card opened from elsewhere on the page — the play page's line under the words — and brought
+// into view, as Sign in itself would.
+export function openSignIn() {
+  setCard(true);
+  loadGoogle();
+  card.scrollIntoView({ block: 'nearest' });
 }
 
 signIn.addEventListener('click', function () {

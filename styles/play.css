@@ -170,10 +170,31 @@ ul.words li .progress:empty { display: none; }
   100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(180deg); }
 }
 .complete { text-align: center; font-family: var(--font-display); font-weight: 600; font-size: 16px; margin-top: 12px; }
+
+/* Saved progress: one quiet slip under the words card — signed out, the invitation to sign in, its
+   Sign in opening the site bar's card; signed in, a note while a find isn't saved, its dot pulsing
+   while it reconnects. A soft-outlined pill, quieter than the cards: no shadow, the rule's green-grey
+   outline. Under and beside, it hangs from the card, so the card keeps the size the page gave it;
+   in Overlay it is the page's own line under the grid card. */
+.save-line { display: flex; justify-content: center; }
+.save-line[hidden], .save-line .slip[hidden] { display: none; }
+.words-home > aside { position: relative; }
+.words-home > aside > .save-line { position: absolute; top: 100%; left: 0; right: 0; margin-top: 14px; }
+.save-line .slip { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 7px 14px 7px 11px; max-width: 100%; box-sizing: border-box;
+  font: 400 13px/1.35 var(--font-body); color: var(--muted); background: var(--surface);
+  border: 1.5px solid var(--rule); border-radius: 999px; text-wrap: balance; }
+.save-line .slip svg { width: 18px; height: 18px; flex: none; color: var(--accent); }
+.save-line .sign-in-link { font: 600 13px var(--font-body); color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.save-line .sign-in-link:hover { color: var(--fg); }
+.save-line .slip-note { color: var(--fg); border-color: color-mix(in srgb, var(--spark) 70%, var(--rule)); }
+.save-line .dot { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--spark); animation: reconnecting 1.4s ease-in-out infinite; }
+@keyframes reconnecting { 50% { opacity: .35; transform: scale(.75); } }
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; }
   .board.pop { animation: none; }
   .spark { display: none; }
+  .save-line .dot { animation: none; }
 }
 
 /* Print — Print in the menu, or the browser's own: one clean page, A4 or Letter, in the site's
@@ -187,7 +208,7 @@ ul.words li .progress:empty { display: none; }
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .help, .text-size-menu, button.corner, .complete, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
+  .site, .help, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
 
   .play-head { margin: 0 0 16px; }
   .play-head h1 { font-size: 26px; }
