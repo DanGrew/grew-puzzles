@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { hexOf, accountView } from '../../core/auth-core.js';
+import { hexOf, accountView, deletedAnswer } from '../../core/auth-core.js';
 
 const player = (metadata) => ({ user: { email: 'pat@example.com', user_metadata: metadata } });
 
@@ -34,5 +34,14 @@ describe('auth-core.js', () => {
   test('with no name from Google either, the initial is their email\'s', () => {
     expect(accountView(player({})).initial).toBe('P');
     expect(accountView({ user: { email: 'zed@example.com', user_metadata: { full_name: '' } } }).initial).toBe('Z');
+  });
+
+  test('an account is deleted when the database answers without an error', () => {
+    expect(deletedAnswer({ data: null, error: null, status: 204 })).toBe(true);
+  });
+
+  test('any refusal leaves the account where it was', () => {
+    expect(deletedAnswer({ data: null, error: { message: 'Failed to fetch' }, status: 0 })).toBe(false);
+    expect(deletedAnswer({ data: null, error: { code: '42501', message: 'permission denied' }, status: 403 })).toBe(false);
   });
 });
