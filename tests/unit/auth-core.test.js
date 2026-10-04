@@ -1,30 +1,18 @@
-import { returnAddress, accountView } from '../../core/auth-core.js';
+import { createHash } from 'node:crypto';
+import { hexOf, accountView } from '../../core/auth-core.js';
 
 const player = (metadata) => ({ user: { email: 'pat@example.com', user_metadata: metadata } });
 
 describe('auth-core.js', () => {
-  test('a player comes back to the page they started on, its own address untouched', () => {
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/play.html?id=WSCH-0042'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/play.html?id=WSCH-0042');
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/?type=Collections&sort=title&dir=asc'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/?type=Collections&sort=title&dir=asc');
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/');
+  test('a fingerprint is its bytes as lower-case hex, two digits each, small bytes zero-padded', () => {
+    expect(hexOf(new Uint8Array([0, 1, 15, 16, 171, 255]).buffer)).toBe('00010f10abff');
+    expect(hexOf(new ArrayBuffer(0))).toBe('');
   });
 
-  test('the one-time code a sign-in brings back leaves the address', () => {
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/play.html?id=WSCH-0042&code=abc'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/play.html?id=WSCH-0042');
-  });
-
-  test('a cancelled sign-in leaves no trace on the address', () => {
-    const back = 'https://dangrew.github.io/grew-puzzles/app/collection.html?slug=issue-1'
-      + '&error=access_denied&error_code=422&error_description=The+user+denied+access';
-    expect(returnAddress(back)).toBe('https://dangrew.github.io/grew-puzzles/app/collection.html?slug=issue-1');
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/?error=access_denied'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/');
-    expect(returnAddress('https://dangrew.github.io/grew-puzzles/app/#error=access_denied&error_description=x'))
-      .toBe('https://dangrew.github.io/grew-puzzles/app/');
+  test('a one-time word\'s fingerprint is the one Supabase checks: SHA-256 in hex', async () => {
+    const word = 'one-time-word';
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(word));
+    expect(hexOf(digest)).toBe(createHash('sha256').update(word).digest('hex'));
   });
 
   test('signed out, the site bar shows Sign in and no one', () => {

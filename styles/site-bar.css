@@ -15,7 +15,7 @@
 .menu-panel > *:hover, .account-panel > button:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .menu-panel a[aria-current] { font-weight: 700; }
 
-/* Sign-in, left of the burger: the Sign in button, or the player's picture — their initial in a
+/* Sign-in, left of the burger: the Sign in button, opening a card with Google's, or the player's picture — their initial in a
    circle when there's none — opening a menu with their email and Sign out. */
 .account { position: relative; margin-left: auto; margin-right: -8px; }
 .sign-in { height: 44px; padding: 0 16px; font: 600 15px var(--font-body); color: var(--fg); background: var(--surface);
@@ -28,6 +28,14 @@
   .sign-in svg { display: block; }
   .sign-in span { display: none; }
 }
+/* Sign in's card: Google's own button, which keeps Google's look, or word that it can't be reached. */
+/* As tall as Google's button from the moment it opens, so it doesn't jump when the button lands. */
+.sign-in-card { position: absolute; right: 0; top: calc(100% + 10px); z-index: 10; padding: 16px; min-height: 44px;
+  display: grid; align-items: center;
+  background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+.sign-in-card[hidden], .sign-in-card .unavailable[hidden] { display: none; }
+.sign-in-card .unavailable { margin: 0; width: max-content; max-width: calc(100vw - 64px); color: var(--muted);
+  font: 15px var(--font-body); }
 .avatar { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; overflow: hidden; cursor: pointer;
   color: var(--band-fg); background: var(--accent); border: var(--ow) solid var(--line); border-radius: 50%;
   box-shadow: var(--shadow); font: var(--dw) 18px var(--font-display); }
