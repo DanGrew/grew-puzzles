@@ -1,0 +1,75 @@
+/* Themed — the owner's characters and their backgrounds, on screen only (printing themed is
+   TASK-46's). Every rule waits on :root[data-look="themed"], so Plain is the site exactly as it was,
+   and an image here loads only while Themed is on. A page's parts carry their character as CSS
+   images, set by ui/theme-ui.js: --scene, the page's background, and --figure, a character. The
+   placements are the owner's, from the product's docs/MOCKUP-THEMED.html (the play page, placed by
+   ui/wordsearch/play-ui.js) and MOCKUP-THEMED-PAGES.html (the landing tiles and the text pages). */
+.theme-figure, .name-tag { display: none; }
+
+@media screen {
+  /* The background fills the window behind everything, whatever the page's length. A character
+     standing past the page's edge never scrolls it sideways. */
+  :root[data-look="themed"], :root[data-look="themed"] body { overflow-x: clip; }
+  :root[data-look="themed"] body::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: var(--bg) var(--scene, none) center 70% / cover no-repeat; }
+
+  /* Anything that sat straight on the page sits on a white tag, so it reads over the background. */
+  :root[data-look="themed"] .site .brand,
+  :root[data-look="themed"] .play-head,
+  :root[data-look="themed"] .page h1,
+  :root[data-look="themed"] .sort,
+  :root[data-look="themed"] .collection-description,
+  :root[data-look="themed"] .collection-missing,
+  :root[data-look="themed"] .missing,
+  :root[data-look="themed"] .complete {
+    background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+  :root[data-look="themed"] .site .brand { padding: 4px 14px; }
+  :root[data-look="themed"] .play-head,
+  :root[data-look="themed"] .page h1 { width: fit-content; max-width: calc(100% - 48px); margin-inline: auto; padding: 10px 24px; box-sizing: border-box; text-align: center; }
+  :root[data-look="themed"] .collection-description,
+  :root[data-look="themed"] .collection-missing,
+  :root[data-look="themed"] .missing,
+  :root[data-look="themed"] .complete { width: fit-content; max-width: min(60ch, calc(100% - 48px)); box-sizing: border-box; margin-inline: auto; padding: 8px 18px; }
+  :root[data-look="themed"] .sort { padding: 3px 3px 3px 14px; border-radius: 999px; box-shadow: none; color: var(--fg); }
+  :root[data-look="themed"] .sort select { height: 30px; }
+
+  /* A character: its figure, centred on its spot, and its name label — a quiet frosted pill, the
+     owner's pick (2026-10-04), so it captions the character rather than reading as a button. */
+  :root[data-look="themed"] .theme-figure { display: block; position: absolute; aspect-ratio: 1585 / 2000; transform: translate(-50%, -50%);
+    background: var(--figure, none) center / contain no-repeat; pointer-events: none; filter: drop-shadow(0 6px 8px rgba(15, 42, 36, .22)); }
+  :root[data-look="themed"] .name-tag { display: block; position: absolute; z-index: 2; transform: translate(-50%, -50%); pointer-events: none;
+    font: 600 13px/1 var(--font-display); color: var(--fg); background: rgba(255, 255, 255, .72); border: 0;
+    border-radius: 999px; padding: 7px 13px; white-space: nowrap; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  :root[data-look="themed"] .name-tag:empty, :root[data-look="themed"] .name-tag[hidden] { display: none; }
+
+  /* The landing and collection tiles: the puzzle's character, small, in the bottom-right corner —
+     centred 88% across and 84% down, 29% of the tile's height — behind the words. No name label. */
+  :root[data-look="themed"] .tile .theme-figure { left: 88%; top: 84%; height: 29%; filter: drop-shadow(0 3px 4px rgba(15, 42, 36, .2)); }
+  :root[data-look="themed"] .tile > :not(.theme-figure) { position: relative; z-index: 1; }
+
+  /* The play page: the character's spot is measured from the grid card (ui/wordsearch/play-ui.js),
+     in front of the cards or behind them. Under the grid, templates beside and mirror narrow the
+     words card to leave the character room — on the right, or on the left in the mirror. */
+  :root[data-look="themed"] .play { position: relative; }
+  :root[data-look="themed"] .play > .theme-figure { z-index: -1; }
+  :root[data-look="themed"] .play > .theme-figure[data-layer="front"] { z-index: 2; }
+  :root[data-look="themed"] .play[data-sits="bottom"]:is([data-template="beside"], [data-template="mirror"]) aside {
+    width: calc(min(var(--card-w), 100%) - var(--words-room)); }
+  :root[data-look="themed"] .play[data-sits="bottom"][data-template="beside"] aside { margin-right: var(--words-room); }
+  :root[data-look="themed"] .play[data-sits="bottom"][data-template="mirror"] aside { margin-left: var(--words-room); }
+
+  /* A text page: the words on a card at a reading width, mid-page, and the character beside the
+     card, behind it, its name label under its feet — or, on a window too narrow for that, smaller,
+     standing over the card's top edge in front of it. Spots from the card's top-left. */
+  :root[data-look="themed"] .page { max-width: 732px; margin-inline: auto; }
+  :root[data-look="themed"] .page h1 { margin-bottom: 32px; }
+  :root[data-look="themed"] .page-card { position: relative; padding: 24px; background: var(--surface); border: var(--ow) solid var(--line);
+    border-radius: var(--r); box-shadow: var(--shadow); }
+  :root[data-look="themed"] .page-card .theme-figure { left: 818px; top: 362px; height: 230px; z-index: -1; }
+  :root[data-look="themed"] .page-card .name-tag { left: calc(818px - .01 * 230px); top: calc(362px + .56 * 230px); }
+}
+
+@media screen and (max-width: 1099px) {
+  :root[data-look="themed"] .page-card .theme-figure { left: 300px; top: -70px; height: 120px; z-index: 2; }
+  :root[data-look="themed"] .page-card .name-tag { left: 300px; top: calc(-70px + .52 * 120px); z-index: 3; }
+}

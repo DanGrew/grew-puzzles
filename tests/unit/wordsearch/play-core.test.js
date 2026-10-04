@@ -624,7 +624,7 @@ describe('how the words fill their card', () => {
   const page = ({ cardWidth = 400, cardHeight = 300, ...over } = {}) => ({
     count: 10, wordWidths: [80, 99.2, 60], wordSize: 16, rowHeight: 20, colGap: 16, rowGap: 7,
     gridCols: 8, gridRows: 6, naturalCell: 40, cardChromeWidth: cardWidth - 320, cardChromeHeight: cardHeight - 240,
-    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, scale: 1, ...over
+    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, scale: 1, room: 0, ...over
   });
   const columnsOf = fit => fit.places.reduce((lengths, [, c]) => ({ ...lengths, [c]: (lengths[c] || 0) + 1 }), {});
 
@@ -642,6 +642,20 @@ describe('how the words fill their card', () => {
   it('in Bottom is never wider than the page, when the grid card is', () => {
     expect(wordsFit('bottom', page({ cardWidth: 484, pageWidth: 483 })).columns).toBe(3);
     expect(wordsFit('bottom', page({ cardWidth: 484, pageWidth: 484 })).columns).toBe(4);
+  });
+
+  it('in Bottom leaves the character its room beside the words, shrunk with a grid card under 691px', () => {
+    // A 400px card is 400/691 of full size: 254px of room shrinks to 147.03px, leaving 252.97px —
+    // two columns of 116px with the words card's 36px edges, where 400px held three.
+    expect(wordsFit('bottom', page({ room: 254 }))).toMatchObject({ columns: 2, room: 254 * 400 / 691 });
+    // At full size or wider the room is all of it: 1000 - 254 = 746 holds six columns, 1000 eight.
+    expect(wordsFit('bottom', page({ cardWidth: 1000, pageWidth: 2000, room: 254 }))).toMatchObject({ columns: 6, room: 254 });
+    expect(wordsFit('bottom', page({ cardWidth: 1000, pageWidth: 2000 })).columns).toBe(8);
+  });
+
+  it('leaves no room beside the words in Right or Overlay, where the words card keeps its own size', () => {
+    expect(wordsFit('right', page({ room: 254 })).columns).toBe(wordsFit('right', page()).columns);
+    expect(wordsFit('overlay', page({ room: 254 })).columns).toBe(wordsFit('overlay', page()).columns);
   });
 
   it('in Overlay fills the grid card\'s height before adding a column', () => {

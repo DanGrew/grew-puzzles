@@ -34,10 +34,12 @@ function findFiles(dir, predicate) {
   return results;
 }
 
-// One entry per content type: { label, schema, searchDir, match }. Empty: a puzzle's
-// shape and rules live in the private grew-puzzles-tooling repo, run against content/ by
-// scripts/check-puzzles.sh. The gate stays for any future site-only JSON and passes on none.
-const MAPPINGS = [];
+// One entry per content type: { label, schema, searchDir, match }. A puzzle's shape and rules
+// live in the private grew-puzzles-tooling repo, run against content/ by scripts/check-puzzles.sh;
+// only the site's own JSON is checked here.
+const MAPPINGS = [
+  { label: 'characters', schema: 'content/schemas/characters.schema.json', searchDir: 'content/characters', match: name => name === 'index.json' },
+];
 
 let totalErrors = 0;
 let totalChecked = 0;

@@ -7,6 +7,13 @@ const FOUND_INK = 'rgb(15, 42, 36)';
 const WRONG_RED = 'rgb(224, 71, 59)';
 
 const LAYOUT_KEY = 'grew-puzzles.words-layout';
+const LOOK_KEY = 'grew-puzzles.look';
+
+// Plain, the site as it always was: a test of the cards' own arrangement holds it, since Themed
+// may leave the character room beside the words (tests/theme.test.js).
+async function plain(page) {
+  await page.addInitScript(key => localStorage.setItem(key, 'plain'), LOOK_KEY);
+}
 // The fixture with each row written twice: a grid wider than a phone, or than 600px beside a list.
 const WIDE_PUZZLE = { ...PUZZLE, grids: [{ rows: PUZZLE.grids[0].rows.map(row => row.repeat(2)) }] };
 
@@ -212,7 +219,7 @@ test('the menu holds How to play, which opens the instructions and closes the me
 
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['How to play', 'Print', 'Privacy']);
+  await expect(entries).toHaveText(['How to play', 'Print', /^Look/, 'Privacy']);
   await entries.first().click();
   await expect(help).toBeVisible();
   await expect(help).toContainText('Tap a letter to circle it, then tap another in line with it.');
@@ -739,6 +746,7 @@ for (const layout of ['bottom', 'right', 'overlay']) {
 for (const width of [1400, 900, 600]) {
   test(`in Bottom the words card is never wider than the grid card, and a longer list makes it taller (${width}px window)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
+    await plain(page);
     await openWords(page, 'bottom', PUZZLE);
     const stage = await box(page, '.stage');
     const short = await box(page, 'aside');
@@ -1232,6 +1240,7 @@ test('switching tabs changes the grid and leaves the word list exactly as it was
 
 test('the words card takes its size from the grid card with its tabs, and switching tabs never resizes it', async ({ page }) => {
   await page.setViewportSize({ width: 1400, height: 900 });
+  await plain(page);
   await openSaga(page, 'bottom');
   await expect(tabs(page)).toHaveCount(3);
   await page.evaluate(() => document.fonts.ready);
@@ -1574,6 +1583,7 @@ test('the words scale by the letters\' ratio, never under 11px', async ({ page }
 
 for (const layout of ['bottom', 'right', 'overlay']) {
   test(`in ${layout}, the words card follows the grid card at every size`, async ({ page }) => {
+    await plain(page);
     await openSized(page, layout);
     const follows = {
       bottom: (stage, aside) => {
