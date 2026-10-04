@@ -1,16 +1,38 @@
-/* The site bar every page shares — the name, and a burger opening the site menu. */
+/* The site bar every page shares — the name, sign-in, and a burger opening the site menu. */
 .site { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 36px; }
 .brand { font: var(--dw) 22px var(--font-display); color: var(--fg); text-decoration: none; letter-spacing: -.01em; }
 .menu { position: relative; }
 .burger { width: 44px; height: 44px; display: grid; place-items: center; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); cursor: pointer; padding: 0; }
 .burger svg { width: 20px; height: 20px; }
-.menu-panel { position: absolute; right: 0; top: calc(100% + 10px); z-index: 10; min-width: 200px; display: grid;
+.menu-panel, .account-panel { position: absolute; right: 0; top: calc(100% + 10px); z-index: 10; min-width: 200px; display: grid;
   background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
-.menu-panel[hidden] { display: none; }
+.menu-panel[hidden], .account-panel[hidden] { display: none; }
 /* An entry is a link to a section, or a button a page supplies (How to play). */
-.menu-panel > * { color: var(--fg); text-decoration: none; padding: 12px 18px; font: 15px var(--font-body);
+.menu-panel > *, .account-panel > * { color: var(--fg); text-decoration: none; padding: 12px 18px; font: 15px var(--font-body);
   text-align: left; background: none; border: 0; border-radius: 0; cursor: pointer; }
-.menu-panel > * + * { border-top: 1px solid var(--rule); }
-.menu-panel > *:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.menu-panel > * + *, .account-panel > * + * { border-top: 1px solid var(--rule); }
+.menu-panel > *:hover, .account-panel > button:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .menu-panel a[aria-current] { font-weight: 700; }
+
+/* Sign-in, left of the burger: the Sign in button, or the player's picture — their initial in a
+   circle when there's none — opening a menu with their email and Sign out. */
+.account { position: relative; margin-left: auto; margin-right: -8px; }
+.sign-in { height: 44px; padding: 0 16px; font: 600 15px var(--font-body); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); cursor: pointer; }
+.sign-in svg { display: none; width: 20px; height: 20px; }
+/* Too narrow for the words beside the name and burger: Sign in becomes a figure, the burger's size. */
+@media (max-width: 359px) {
+  .sign-in { width: 44px; padding: 0; display: grid; place-items: center; }
+  .sign-in[hidden] { display: none; }
+  .sign-in svg { display: block; }
+  .sign-in span { display: none; }
+}
+.avatar { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; overflow: hidden; cursor: pointer;
+  color: var(--band-fg); background: var(--accent); border: var(--ow) solid var(--line); border-radius: 50%;
+  box-shadow: var(--shadow); font: var(--dw) 18px var(--font-display); }
+.avatar[hidden] { display: none; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.account-panel { min-width: 240px; }
+.account-panel .signed-in-as { margin: 0; cursor: default; color: var(--muted); font-size: 13px; }
+.signed-in-as strong { display: block; margin-top: 2px; color: var(--fg); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }

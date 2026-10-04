@@ -1,6 +1,7 @@
 # grew-puzzles — root index
 
-The **public** site: Grew Puzzles, free puzzles with no ads, no paywalls and no accounts. Served
+The **public** site: Grew Puzzles, free puzzles with no ads and no paywalls; signing in, with
+Google through Supabase, is optional and exists only to save progress. Served
 as a static site from GitHub Pages at `https://dangrew.github.io/grew-puzzles/` — **no build
 step**. Every generator and construction rule lives in the private `grew-puzzles-tooling` repo,
 not here.
@@ -9,10 +10,11 @@ not here.
 
 | repo | visibility | holds |
 |---|---|---|
-| `grew-puzzles` (this one) | **public** | the pages, and every puzzle file — each one already generated and validated |
-| `grew-puzzles-tooling` | **private** | the generator, the word groups, every placement and construction rule, and the puzzle format and its checks |
+| `grew-puzzles` (this one) | **public** | the pages, every puzzle file — each one already generated and validated — and the sign-in code with Supabase's public key |
+| `grew-puzzles-tooling` | **private** | the generator, the word groups, every placement and construction rule, the puzzle format and its checks, and the Supabase database setup and its rules (its `docs/DATABASE.md`) |
 
 - ⛔ This repo holds **puzzles and pages, nothing else**. No generation, word-group or placement logic ever ships here, not even as page code — a page only plays a puzzle that already exists.
+- ⛔ Supabase's secret key never comes here — only its address and public (publishable) key, in `ui/sign-in-ui.js`. The database's own rules are what keep each player's progress theirs.
 - No puzzle format, schema or check lives here either: they're all in tooling. This repo's local checks run tooling's `origin/main` checks over `content/` (`scripts/check-puzzles.sh`); the format is tooling's `docs/PUZZLE-FORMAT.md`.
 
 ## Before you implement
@@ -43,9 +45,10 @@ GitHub Pages serves `main` root as-is — a merge to `main` is the deploy.
 | `app/collection.html` | a collection page — `collection.html?slug=<slug>`: its name and description, Print book, then its puzzles as tiles in number order, each marked with its number; no filter or sort |
 | `app/book.html` | a collection's book — `book.html?slug=<slug>`, opened by Print book: a title page (name, description, the site's address, where the answers are), then each puzzle's own printout in number order, each of its pages headed Puzzle 1, Puzzle 2… — one page, or for a puzzle of several grids its words then a page per grid — and each puzzle starting a fresh page; the print dialog opens once every page is drawn. Each page is a copy of `play.html`'s own markup drawn by its `drawSheet`, so the printout and the book are one layout |
 | `app/play.html` | the play page — `play.html?id=<hidden ID>`, which opens `content/puzzles/wordsearch/<hidden ID>.json`; the play URL in tooling's `docs/PUZZLE-FORMAT.md`. A puzzle of several grids (a Saga) shows them under tabs over its one word list, and prints its words on a sheet of their own, then each grid on its own. Where the words sit and the text size (Tiny to Huge, scaling the grid's letters and the words together, on screen only) are the player's, kept on the device |
-| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules and each type's difficulty, the one place it is written, `core/collection-core.js` the collection page's, `core/book-core.js` the collection book's, `core/wordsearch/play-core.js` the play page's, `core/day-core.js` how every page shows a created date |
-| `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page, `ui/book-ui.js` puts the collection book together |
+| `core/` | pure page logic, `*-core.js` ES modules, under the unit and mutation gates — `core/browse-core.js` is the browse grid's rules and each type's difficulty, the one place it is written, `core/collection-core.js` the collection page's, `core/book-core.js` the collection book's, `core/wordsearch/play-core.js` the play page's, `core/day-core.js` how every page shows a created date, `core/auth-core.js` sign-in's — the page Google sends a player back to, and what the bar shows for them |
+| `ui/` | each page's DOM code, ES modules importing `core/` — `ui/wordsearch/play-ui.js` draws and wires the play page, `ui/book-ui.js` puts the collection book together, `ui/sign-in-ui.js` is sign-in in every page's site bar: Sign in beside the burger (a figure, below 360px wide), signed in the player's Google picture — their initial in a circle without one — opening a menu with their email and Sign out; it holds Supabase's address and public key |
+| `vendor/supabase.js` | Supabase's library, supabase-js 2.117.2's browser build (`dist/umd/supabase.js`), copied in whole with its MIT licence (`vendor/supabase-js-MIT-LICENSE`, which MIT requires travel with the copy — it covers that file alone; the site itself is all rights reserved, `README.md`) — no page loads code from another site. Every page loads it, then `ui/sign-in-ui.js`. To update it, copy a newer release's same file over it; the arch checks pass over `vendor/` |
 | `content/` | the site's data, apart from its code — the only place JSON lives (`no-json-in-repo`). The puzzles, by kind: `content/puzzles/<kind>/` holds `index.json` (every puzzle's hidden ID, type, created date and title) and one `<hidden ID>.json` per puzzle. `content/collections/index.json` holds every collection, written by tooling's publish, never by hand here. The layout is tooling's `docs/PUZZLE-FORMAT.md` |
 | `components/site-bar.js` | the site bar every page shares — fills `<header class="site" data-site-bar data-home data-current>`; a page's own `[data-menu-entry]` children become its menu in place of the site's sections (the play page's How to play and Print). Its Collections entry starts hidden; a page that finds a collection shows it |
-| `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` · `styles/play.css` · `styles/book.css` | the Banded tokens (light only), the site bar's look, the browse grid's, its filter popup's and the collection page's — with each difficulty's colour, a line per difficulty, that tile strips and filter rows both read — the play page's — its `@media print` block is the printout, the one print layout — and the book's title page and number headings |
+| `styles/theme.css` · `styles/site-bar.css` · `styles/browse.css` · `styles/play.css` · `styles/book.css` | the Banded tokens (light only), the site bar's look and its sign-in's, the browse grid's, its filter popup's and the collection page's — with each difficulty's colour, a line per difficulty, that tile strips and filter rows both read — the play page's — its `@media print` block is the printout, the one print layout — and the book's title page and number headings |
 | `tests/fixtures/` | a test puzzle the e2e suite serves in place of a real one — never on the site |
