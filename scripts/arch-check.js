@@ -150,7 +150,8 @@ if (rule === 'no-ui-imports') {
 }
 
 if (rule === 'no-stray-files') {
-  const EXCLUDED = new Set(['scripts', 'tests', '.github', 'node_modules', 'coverage', 'reports', '.claude', 'assets', 'content']);
+  // vendor/ is other people's code, copied in whole (Supabase's library) — not a layer of ours.
+  const EXCLUDED = new Set(['scripts', 'tests', '.github', 'node_modules', 'coverage', 'reports', '.claude', 'assets', 'content', 'vendor']);
   const LAYERS = new Set(['core', 'ui', 'app', 'components', 'styles']);
   const allFiles = getAllFiles(ROOT);
   allFiles.forEach(file => {
