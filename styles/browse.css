@@ -54,6 +54,12 @@
 .tile.numbered::before { display: none; }
 .tile .number { font: 700 16px/1 var(--font-display); background: var(--tone); color: var(--fg); text-align: center;
   padding: 6px 0; border-bottom: var(--ow) solid var(--line); font-variant-numeric: tabular-nums; }
+/* A finished tile's ✓: top-right, in the ink the band's number is drawn in, on a white disc over
+   the strip, so it reads on every difficulty's colour and on a numbered band alike. */
+.tile { position: relative; }
+.tile[data-done="true"]::after { content: '✓' / 'Finished'; position: absolute; top: 3px; right: 6px; width: 22px; height: 22px;
+  display: grid; place-items: center; font: 700 14px/1 var(--font-display); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 50%; }
 main [hidden] { display: none; }
 .pager { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }
 .pager button { font: 600 14px var(--font-body); min-width: 40px; height: 40px; padding: 0 12px; color: var(--fg); background: var(--surface);

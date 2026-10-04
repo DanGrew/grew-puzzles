@@ -293,15 +293,15 @@ describe('browse-core.js', () => {
     expect(items).toEqual([
       {
         ...index[0], kind: 'puzzle', filter: 'Vanilla', tone: 'Easy', rank: 1, href: 'play.html?id=WSCH-0001',
-        lines: ['Vanilla', '1 Oct 2026'],
+        lines: ['Vanilla', '1 Oct 2026'], ids: [id(1)],
       },
       {
         ...index[1], kind: 'puzzle', filter: 'Vanilla', tone: 'Easy', rank: 2, href: 'play.html?id=WSCH-0002',
-        lines: ['Vanilla', '2 Oct 2026'],
+        lines: ['Vanilla', '2 Oct 2026'], ids: [id(2)],
       },
       {
         kind: 'collection', title: 'Issue', type: 'Collection', filter: 'Collections', tone: 'Collection', created: '2026-10-05',
-        rank: 0, href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'],
+        rank: 0, href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'], ids: [id(2), id(1)],
       },
     ]);
     expect(COLLECTION_TYPE).toBe('Collection');

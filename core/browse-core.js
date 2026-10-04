@@ -88,16 +88,17 @@ export function collectionHref(slug) {
 // Every tile browse can show, as one list: a puzzle by its own title, type and date, in its
 // difficulty's tone, and a collection by its name, as the type Collection, in the collections'
 // tone, and its created date. A collection's puzzles are never tiles here — each puzzle shows
-// once, however many collections hold it.
+// once, however many collections hold it. ids are the puzzles a tile stands for — finished, all of
+// them, it's ticked (core/wordsearch/done-core.js).
 export function browseItems(puzzles, collections) {
   return [
     ...puzzles.map(p => ({
       ...p, kind: 'puzzle', filter: p.type, tone: difficultyOf(p.type), rank: idNumber(p.hiddenId), href: playHref(p.hiddenId),
-      lines: tileDetail(p),
+      lines: tileDetail(p), ids: [p.hiddenId],
     })),
     ...collections.map(c => ({
       kind: 'collection', title: c.name, type: COLLECTION_TYPE, filter: COLLECTIONS, tone: COLLECTION_TYPE, created: c.created,
-      rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)],
+      rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)], ids: c.puzzles.map(({ id }) => id),
     })),
   ];
 }

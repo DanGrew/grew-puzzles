@@ -26,15 +26,15 @@ describe('collection-core.js', () => {
       tiles: [
         {
           number: '1', title: 'Flowers', type: 'Missing', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
-          href: 'play.html?id=WSCH-0002',
+          href: 'play.html?id=WSCH-0002', ids: ['WSCH-0002'],
         },
         {
           number: '2', title: 'Birds', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '3 Oct 2026'],
-          href: 'play.html?id=WSCH-0003',
+          href: 'play.html?id=WSCH-0003', ids: ['WSCH-0003'],
         },
         {
           number: '10', title: 'Farm Animals', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '1 Oct 2026'],
-          href: 'play.html?id=WSCH-0001',
+          href: 'play.html?id=WSCH-0001', ids: ['WSCH-0001'],
         },
       ],
     });
