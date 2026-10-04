@@ -203,9 +203,10 @@ export function totalLabel(items) {
 }
 
 // The Continue playing rail's tiles: each puzzle in play's own browse tile, in the order given —
-// a puzzle reached only through a collection still has one, opening it directly.
+// a puzzle reached only through a collection still has one, opening it directly. Only a puzzle's
+// tile carries a hidden ID, so a collection's is never picked.
 export function railItems(items, playing) {
-  const byId = new Map(items.filter(i => i.kind === 'puzzle').map(i => [i.hiddenId, i]));
+  const byId = new Map(items.map(i => [i.hiddenId, i]));
   return playing.map(id => byId.get(id));
 }
 
