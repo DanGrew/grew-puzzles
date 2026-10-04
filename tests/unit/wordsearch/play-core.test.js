@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit
+  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -573,6 +573,49 @@ describe('where the words sit', () => {
   });
 });
 
+describe('how big the grid and its words are', () => {
+  it('scales each size by its letters against Normal\'s 22px', () => {
+    expect(textScale('tiny')).toBe(10 / 22);
+    expect(textScale('small')).toBe(15 / 22);
+    expect(textScale('normal')).toBe(1);
+    expect(textScale('large')).toBe(27 / 22);
+    expect(textScale('huge')).toBe(32 / 22);
+  });
+
+  it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
+    expect(textSizeMenu('large')).toEqual([
+      { size: 'tiny', label: 'Tiny', scale: 10 / 22, picked: false },
+      { size: 'small', label: 'Small', scale: 15 / 22, picked: false },
+      { size: 'normal', label: 'Normal', scale: 1, picked: false },
+      { size: 'large', label: 'Large', scale: 27 / 22, picked: true },
+      { size: 'huge', label: 'Huge', scale: 32 / 22, picked: false }
+    ]);
+  });
+
+  it('uses the size last stored on this device', () => {
+    ['tiny', 'small', 'normal', 'large', 'huge'].forEach(size => {
+      expect(savedTextSize(() => size)).toBe(size);
+    });
+  });
+
+  it('starts at Normal on a first visit, or when the stored size is unknown', () => {
+    [null, '', 'medium', 'Tiny', 'toString'].forEach(saved => {
+      expect(savedTextSize(() => saved)).toBe('normal');
+    });
+  });
+
+  it('falls back to Normal when the page cannot read the stored size', () => {
+    expect(savedTextSize(() => { throw new Error('blocked'); })).toBe('normal');
+  });
+
+  it('stores the size, and carries on when the page cannot', () => {
+    const stored = [];
+    expect(saveTextSize(size => stored.push(size), 'huge')).toBe(true);
+    expect(stored).toEqual(['huge']);
+    expect(saveTextSize(() => { throw new Error('blocked'); }, 'huge')).toBe(false);
+  });
+});
+
 describe('how the words fill their card', () => {
   // Ten words in 16px text, the widest 99.2px wide (a column of 100px), 20px rows; 116px a column with its gap,
   // 27px a row with its. The grid is 8 × 6 letters at 40px, its card 400 × 300 with its band and
@@ -581,7 +624,7 @@ describe('how the words fill their card', () => {
   const page = ({ cardWidth = 400, cardHeight = 300, ...over } = {}) => ({
     count: 10, wordWidths: [80, 99.2, 60], wordSize: 16, rowHeight: 20, colGap: 16, rowGap: 7,
     gridCols: 8, gridRows: 6, naturalCell: 40, cardChromeWidth: cardWidth - 320, cardChromeHeight: cardHeight - 240,
-    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, ...over
+    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, scale: 1, ...over
   });
   const columnsOf = fit => fit.places.reduce((lengths, [, c]) => ({ ...lengths, [c]: (lengths[c] || 0) + 1 }), {});
 
@@ -666,6 +709,25 @@ describe('how the words fill their card', () => {
     expect(wordsFit('right', page({ count: 1, naturalCell: 26, pageWidth: 433 }))).toMatchObject({ sits: 'right', cell: 26, wordSize: 13 });
     expect(wordsFit('right', page({ count: 1, naturalCell: 26, pageWidth: 432 }))).toMatchObject({ sits: 'bottom', cell: 26 });
     expect(wordsFit('right', page({ naturalCell: 26.5, pageWidth: 10000 })).cell).toBe(26.5);
+  });
+
+  it('in Right at a smaller text size shrinks the words to 11px and the letters to 20px, no smaller', () => {
+    // At half size the floors would be 6.5px and 13px. One word: at 11px it is 69px wide, 533 end
+    // to end beside the 40px grid; at 20px letters the grid card is 240 wide, 373 end to end.
+    expect(wordsFit('right', page({ scale: 0.5, count: 1, pageWidth: 533 }))).toMatchObject({ sits: 'right', cell: 40, wordSize: 11 });
+    expect(wordsFit('right', page({ scale: 0.5, count: 1, pageWidth: 532 }))).toMatchObject({ sits: 'right', cell: 39, wordSize: 11 });
+    expect(wordsFit('right', page({ scale: 0.5, count: 1, pageWidth: 373 }))).toMatchObject({ sits: 'right', cell: 20, wordSize: 11 });
+    expect(wordsFit('right', page({ scale: 0.5, count: 1, pageWidth: 372 }))).toMatchObject({ sits: 'bottom', cell: 40, wordSize: 16 });
+  });
+
+  it('in Right at a bigger text size scales both floors with it, and never grows the words past their own size', () => {
+    // At 1.5× the floors are 19.5px words — above the page's own 16px, so the words keep it — and
+    // 39px letters. One 100px word beside a 39px grid card of 392 is 556 end to end.
+    expect(wordsFit('right', page({ scale: 1.5, count: 1, pageWidth: 564 }))).toMatchObject({ sits: 'right', cell: 40, wordSize: 16 });
+    expect(wordsFit('right', page({ scale: 1.5, count: 1, pageWidth: 556 }))).toMatchObject({ sits: 'right', cell: 39, wordSize: 16 });
+    expect(wordsFit('right', page({ scale: 1.5, count: 1, pageWidth: 555 }))).toMatchObject({ sits: 'bottom', cell: 40, wordSize: 16 });
+    // At 1.2× the words' floor is 15.6px: no whole pixel smaller fits it, so the letters shrink first.
+    expect(wordsFit('right', page({ scale: 1.2, pageWidth: 679 }))).toMatchObject({ sits: 'right', cell: 39, wordSize: 16 });
   });
 
   it('reads down each column, then on to the next, the longer columns first', () => {
