@@ -20,8 +20,11 @@
       <span id="total"></span>
     </div>
     <div class="controls">
-      <div class="filters" id="filters" role="group" aria-label="Filter by type"></div>
-      <button type="button" class="clear" id="clear" hidden>Clear filters</button>
+      <button type="button" class="filter-button" id="filter-button" aria-expanded="false" aria-controls="filters">Filters</button>
+      <div class="filter-popup" id="filters" role="group" aria-label="Filter by type" hidden>
+        <div class="filter-rows" id="filter-rows"></div>
+        <button type="button" class="clear" id="clear" hidden>Clear filters</button>
+      </div>
       <label class="sort">Sort by
         <select id="sort">
           <option value="date">Date</option>
@@ -38,19 +41,24 @@
 <script src="../components/site-bar.js"></script>
 <script type="module">
 import {
-  filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterChips, toggleType,
-  clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons,
+  filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
+  toggleRow, filtersLabel, clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons,
 } from '../core/browse-core.js';
 
 const tiles = document.getElementById('tiles');
 const pager = document.getElementById('pager');
+const filterButton = document.getElementById('filter-button');
 const filters = document.getElementById('filters');
+const rows = document.getElementById('filter-rows');
 const clear = document.getElementById('clear');
 const sort = document.getElementById('sort');
 const dir = document.getElementById('dir');
 let items = [];
 let types = [];
 let state;
+// Each filter in the popup repaints itself pressed or not as the picks change — the popup is
+// drawn once, so a press never loses keyboard focus.
+const painters = [];
 
 function part(className, text) {
   const span = document.createElement('span');
@@ -63,6 +71,7 @@ function tile(item) {
   const a = document.createElement('a');
   a.className = `tile ${item.kind}`;
   a.dataset.type = item.type;
+  a.dataset.tone = item.tone;
   a.href = item.href;
   const detail = part('detail', '');
   detail.append(...item.lines.map(text => part('line', text)));
@@ -83,20 +92,36 @@ function pagerButton(spec) {
   return b;
 }
 
-function chip(spec) {
+// A button that picks the types it stands for, pressed while all of them are picked.
+function filter(className, label, stands, pick) {
   const b = document.createElement('button');
   b.type = 'button';
-  b.className = 'chip';
-  b.textContent = spec.label;
-  b.setAttribute('aria-pressed', spec.pressed);
-  b.addEventListener('click', () => update(toggleType(state, spec.label)));
+  b.className = className;
+  b.textContent = label;
+  b.addEventListener('click', () => update(pick(state)));
+  painters.push(() => b.setAttribute('aria-pressed', picked(state, stands)));
   return b;
+}
+
+// A row is two cells: the difficulty's name — none for Collections — and a chip per type.
+function row(spec) {
+  const name = document.createElement('div');
+  name.dataset.tone = spec.tone;
+  const level = filter('level', spec.name, spec.types, s => toggleRow(s, spec.types));
+  level.hidden = !spec.name;
+  name.append(level);
+  const chips = document.createElement('div');
+  chips.className = 'types';
+  chips.dataset.tone = spec.tone;
+  chips.append(...spec.types.map(type => filter('chip', type, [type], s => toggleType(s, type))));
+  return [name, chips];
 }
 
 function show(page) {
   const list = browseList(items, state);
   document.getElementById('total').textContent = totalLabel(list);
-  filters.replaceChildren(...filterChips(types, state).map(chip));
+  painters.forEach(paint => paint());
+  filterButton.textContent = filtersLabel(state);
   clear.hidden = noTypesPicked(state);
   sort.value = state.sort;
   dir.textContent = dirLabel(state);
@@ -112,9 +137,40 @@ function update(next) {
   show(1);
 }
 
-clear.addEventListener('click', () => update(clearTypes(state)));
+// Clearing hides Clear filters, so the keyboard goes back to the Filters button.
+clear.addEventListener('click', () => {
+  update(clearTypes(state));
+  filterButton.focus();
+});
 sort.addEventListener('change', () => update(withSort(state, sort.value)));
 dir.addEventListener('click', () => update(flipDir(state)));
+
+// The popup opens and closes the way the site bar's menu does: its button, a press outside it or
+// Escape closes it, and the keyboard goes back to the button — unless the press outside landed
+// on something that takes the keyboard itself, like the sort.
+function setFilters(open) {
+  filters.hidden = !open;
+  filterButton.setAttribute('aria-expanded', String(open));
+}
+
+function closeFilters() {
+  const adrift = [document.activeElement === document.body, filters.contains(document.activeElement)];
+  setFilters(false);
+  [() => filterButton.focus()].filter(() => adrift.some(Boolean)).forEach(focus => focus());
+}
+
+function closeOpenFilters(...also) {
+  [closeFilters].filter(() => [!filters.hidden, ...also].every(Boolean)).forEach(close => close());
+}
+
+filterButton.addEventListener('click', e => {
+  e.stopPropagation();
+  setFilters(filters.hidden);
+  filterButton.focus();
+});
+filters.addEventListener('click', e => e.stopPropagation());
+document.addEventListener('click', () => closeOpenFilters());
+document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 
 // The site bar's Collections entry shows only while a collection exists.
 function load([index, published]) {
@@ -122,6 +178,7 @@ function load([index, published]) {
   types = filterOptions(index.puzzles, published.collections);
   document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   state = browseState(location.search, types);
+  rows.replaceChildren(...filterRows(types).flatMap(row));
   show(1);
 }
 

@@ -24,9 +24,18 @@ describe('collection-core.js', () => {
     expect(collectionView(collections(), index(), 'issue-1')).toEqual({
       found: true, name: 'Issue #1', description: 'The first book.', book: 'book.html?slug=issue-1',
       tiles: [
-        { number: '1', title: 'Flowers', type: 'Missing', lines: ['Missing', '2 Oct 2026'], href: 'play.html?id=WSCH-0002' },
-        { number: '2', title: 'Birds', type: 'Vanilla', lines: ['Vanilla', '3 Oct 2026'], href: 'play.html?id=WSCH-0003' },
-        { number: '10', title: 'Farm Animals', type: 'Vanilla', lines: ['Vanilla', '1 Oct 2026'], href: 'play.html?id=WSCH-0001' },
+        {
+          number: '1', title: 'Flowers', type: 'Missing', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
+          href: 'play.html?id=WSCH-0002',
+        },
+        {
+          number: '2', title: 'Birds', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '3 Oct 2026'],
+          href: 'play.html?id=WSCH-0003',
+        },
+        {
+          number: '10', title: 'Farm Animals', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '1 Oct 2026'],
+          href: 'play.html?id=WSCH-0001',
+        },
       ],
     });
   });

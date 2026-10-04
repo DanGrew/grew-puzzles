@@ -2,7 +2,7 @@
 // name and description, Print book, then its puzzles as tiles in number order, each marked with
 // its number.
 // Reads only the indexes' entries — never a puzzle file.
-import { tileDetail, playHref } from './browse-core.js';
+import { tileDetail, playHref, difficultyOf } from './browse-core.js';
 
 export function slugOf(search) {
   return new URLSearchParams(search).get('slug');
@@ -21,8 +21,8 @@ function found(collection, puzzles) {
   const tiles = [...collection.puzzles]
     .sort((a, b) => a.number - b.number)
     .map(({ id, number }) => ({
-      number: String(number), title: byId.get(id).title, type: byId.get(id).type, lines: tileDetail(byId.get(id)),
-      href: playHref(id),
+      number: String(number), title: byId.get(id).title, type: byId.get(id).type, tone: difficultyOf(byId.get(id).type),
+      lines: tileDetail(byId.get(id)), href: playHref(id),
     }));
   // Print book opens the whole collection as one printout (app/book.html).
   const book = `book.html?slug=${encodeURIComponent(collection.slug)}`;
