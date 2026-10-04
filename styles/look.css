@@ -18,12 +18,14 @@
   :root[data-look="themed"] .play-head,
   :root[data-look="themed"] .page h1,
   :root[data-look="themed"] .sort,
+  :root[data-look="themed"] .rail-head h2,
   :root[data-look="themed"] .collection-description,
   :root[data-look="themed"] .collection-missing,
   :root[data-look="themed"] .missing,
   :root[data-look="themed"] .complete {
     background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
   :root[data-look="themed"] .site .brand { padding: 4px 14px; }
+  :root[data-look="themed"] .rail-head h2 { padding: 6px 14px; }
   :root[data-look="themed"] .play-head,
   :root[data-look="themed"] .page h1 { width: fit-content; max-width: calc(100% - 48px); margin-inline: auto; padding: 10px 24px; box-sizing: border-box; text-align: center; }
   :root[data-look="themed"] .collection-description,

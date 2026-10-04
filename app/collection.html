@@ -87,8 +87,9 @@ function show([index, published, owned]) {
   wireDone(tiles, tick);
 }
 
-function tick(finished) {
-  done = finished;
+// The collection page has no rail: only the finished puzzles are its.
+function tick(progress) {
+  done = progress.done;
   ticks.forEach(paint => paint());
 }
 

@@ -1,8 +1,9 @@
 // Done ticks: which puzzles a signed-in player has finished, and which tiles wear a ✓. Finished is
 // never saved — it is worked out as the play page works it out, every placed word's line saved
 // (core/wordsearch/play-core.js, core/wordsearch/progress-core.js). Only the files of puzzles the
-// player has saved a find in are ever opened, never every puzzle on the page. Pure — the reading
-// is ui/wordsearch/done-ui.js.
+// player has saved a find in are ever opened, never every puzzle on the page. The same read says
+// which started puzzles are still in play, for the landing page's Continue playing rail. Pure — the
+// reading is ui/wordsearch/done-ui.js.
 import { playBoard, restoredPlay, finished } from './play-core.js';
 import { restoredFinds } from './progress-core.js';
 
@@ -36,6 +37,18 @@ export function donePuzzles(rows, started, opened) {
   return started.filter(function (id, i) {
     return opened[i].status === 'fulfilled' && puzzleDone(rows, id, opened[i].value);
   });
+}
+
+// The started puzzles still being played — the Continue playing rail's — the one found in most
+// recently first: its file opened, and not finished. When a puzzle was last played is the latest
+// found time among its saved lines. A file that couldn't be opened is never in play: no rail beats
+// a wrong one.
+export function playingPuzzles(rows, started, opened, done) {
+  var last = new Map(rows.map(function (row) { return [row.puzzle, '']; }));
+  rows.forEach(function (row) { last.set(row.puzzle, [last.get(row.puzzle), row.found_at].sort()[1]); });
+  return started
+    .filter(function (id, i) { return opened[i].status === 'fulfilled' && !done.includes(id); })
+    .sort(function (a, b) { return last.get(b).localeCompare(last.get(a)); });
 }
 
 function puzzleDone(rows, hiddenId, puzzle) {

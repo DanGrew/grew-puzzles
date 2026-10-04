@@ -20,6 +20,14 @@
       <h1 id="browse-title">Wordsearches</h1>
       <span id="total"></span>
     </div>
+    <section class="rail" id="rail" aria-labelledby="rail-title" hidden>
+      <div class="rail-head">
+        <h2 id="rail-title">Continue playing</h2>
+        <button type="button" id="rail-prev" aria-label="Previous puzzles in play">‹</button>
+        <button type="button" id="rail-next" aria-label="More puzzles in play">›</button>
+      </div>
+      <ul class="tiles" id="rail-tiles"></ul>
+    </section>
     <div class="controls">
       <button type="button" class="filter-button" id="filter-button" aria-expanded="false" aria-controls="filters">Filters</button>
       <div class="filter-popup" id="filters" role="group" aria-label="Filter by type" hidden>
@@ -45,7 +53,8 @@
 <script type="module">
 import {
   filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
-  toggleRow, filtersLabel, clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons,
+  toggleRow, filtersLabel, clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
+  columnsOf, railView,
 } from '../core/browse-core.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 import { tileCharacter, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
@@ -59,6 +68,10 @@ const rows = document.getElementById('filter-rows');
 const clear = document.getElementById('clear');
 const sort = document.getElementById('sort');
 const dir = document.getElementById('dir');
+const rail = document.getElementById('rail');
+const railTiles = document.getElementById('rail-tiles');
+const railPrev = document.getElementById('rail-prev');
+const railNext = document.getElementById('rail-next');
 let items = [];
 let types = [];
 // The owner's characters: each tile wears its puzzle's, shown only while Themed is on.
@@ -68,6 +81,9 @@ let state;
 // each tile on show's ✓, repainted as they arrive.
 let done = [];
 let ticks = [];
+// The puzzles still in play, most recently played first, and which set of them the rail shows.
+let playing = [];
+let railSet = 0;
 // Each filter in the popup repaints itself pressed or not as the picks change — the popup is
 // drawn once, so a press never loses keyboard focus.
 const painters = [];
@@ -79,7 +95,7 @@ function part(className, text) {
   return span;
 }
 
-function tile(item) {
+function card(item) {
   const a = document.createElement('a');
   a.className = `tile ${item.kind}`;
   a.dataset.type = item.type;
@@ -91,12 +107,39 @@ function tile(item) {
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, tileCharacter(characters, item));
   a.append(figure, part('name', item.title), detail);
+  return a;
+}
+
+function tile(item) {
+  const a = card(item);
   ticks.push(() => paintDone(a, item, done));
   paintDone(a, item, done);
   const li = document.createElement('li');
   li.append(a);
   return li;
 }
+
+// A rail tile is a browse tile — never finished, so never ticked.
+function railTile(item) {
+  const li = document.createElement('li');
+  li.append(card(item));
+  return li;
+}
+
+// The rail shows before it is measured: as many tiles fit across as the browser lays out columns
+// for, so a narrower window shows fewer. Nothing in play shows no rail at all.
+function showRail(set) {
+  rail.hidden = playing.length === 0;
+  const view = railView(playing, set, columnsOf(getComputedStyle(railTiles).gridTemplateColumns));
+  railSet = view.set;
+  railTiles.replaceChildren(...view.tiles.map(railTile));
+  railPrev.hidden = !view.prev;
+  railNext.hidden = !view.next;
+}
+
+railPrev.addEventListener('click', () => showRail(railSet - 1));
+railNext.addEventListener('click', () => showRail(railSet + 1));
+window.addEventListener('resize', () => showRail(railSet));
 
 function pagerButton(spec) {
   const b = document.createElement('button');
@@ -190,12 +233,16 @@ filters.addEventListener('click', e => e.stopPropagation());
 document.addEventListener('click', () => closeOpenFilters());
 document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 
-function tick(finished) {
-  done = finished;
+// The ticks and the rail come from one read of the player's progress. The filters, sort and search
+// never touch the rail.
+function tick(progress) {
+  done = progress.done;
   ticks.forEach(paint => paint());
+  playing = railItems(items, progress.playing);
+  showRail(0);
 }
 
-// The tiles never wait for the ticks, which follow whoever is signed in. A page brought back from
+// The tiles never wait for the ticks or the rail, which follow whoever is signed in. A page brought back from
 // the browser's cache — back, after finishing a puzzle — looks them up again.
 const RETURNS = { true: () => withDone(items, tick), false: () => {} };
 window.addEventListener('pageshow', e => RETURNS[e.persisted]());
