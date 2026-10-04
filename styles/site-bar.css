@@ -14,6 +14,13 @@
 .menu-panel > * + *, .account-panel > * + * { border-top: 1px solid var(--rule); }
 .menu-panel > *:hover, .account-panel > button:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .menu-panel a[aria-current] { font-weight: 700; }
+/* The look, above Privacy: Themed or Plain as two pills, the one on filled in the band's green. */
+.menu-panel > .look { display: flex; align-items: center; gap: 8px; cursor: default; }
+.menu-panel > .look:hover { background: none; }
+.look-name { margin-right: auto; padding-right: 8px; }
+.look button { height: 32px; padding: 0 12px; font: 600 14px var(--font-display); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
+.look button[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
 
 /* Sign-in, left of the burger: the Sign in button, opening a card with Google's, or the player's picture — their initial in a
    circle when there's none — opening a menu with their email and Sign out. */

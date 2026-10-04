@@ -1,0 +1,22 @@
+{
+  "$comment": "content/characters/index.json — the owner's characters in their order, each its name, its cut-out figure and its background, both beside the list. New characters are added at the end, never reordered.",
+  "type": "object",
+  "required": ["characters"],
+  "additionalProperties": false,
+  "properties": {
+    "characters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "figure", "scene"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "figure": { "type": "string", "pattern": "^[a-z0-9-]+\\.webp$" },
+          "scene": { "type": "string", "pattern": "^[a-z0-9-]+-bg\\.webp$" }
+        }
+      }
+    }
+  }
+}

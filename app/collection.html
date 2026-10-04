@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="../styles/theme.css">
 <link rel="stylesheet" href="../styles/site-bar.css">
 <link rel="stylesheet" href="../styles/browse.css">
+<link rel="stylesheet" href="../styles/look.css">
 </head>
 <body>
 <div class="wrap">
@@ -30,12 +31,16 @@
 <script type="module">
 import { slugOf, collectionView } from '../core/collection-core.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
+import { characterAt, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
+import { dressScene, dressFigure } from '../ui/theme-ui.js';
 
 // The puzzles the player has finished — none until they're looked up, and never signed out — and
 // each tile's ✓, repainted as they arrive.
 let done = [];
 let ticks = [];
 let tiles = [];
+// The owner's characters, in order: puzzle 1 wears the first, round again after the last.
+let characters = [];
 
 function part(className, text) {
   const span = document.createElement('span');
@@ -54,7 +59,10 @@ function tile(spec) {
   a.href = spec.href;
   const detail = part('detail', '');
   detail.append(...spec.lines.map(text => part('line', text)));
-  a.append(part('number', spec.number), part('name', spec.title), detail);
+  const figure = part('theme-figure', '');
+  figure.setAttribute('aria-hidden', 'true');
+  dressFigure(figure, characterAt(characters, Number(spec.number)));
+  a.append(figure, part('number', spec.number), part('name', spec.title), detail);
   ticks.push(() => paintDone(a, spec, done));
   paintDone(a, spec, done);
   const li = document.createElement('li');
@@ -62,7 +70,9 @@ function tile(spec) {
   return li;
 }
 
-function show([index, published]) {
+function show([index, published, owned]) {
+  characters = owned;
+  dressScene(randomCharacter(characters, Math.random));
   const view = collectionView(published.collections, index.puzzles, slugOf(location.search));
   document.title = `${view.name} · Grew Puzzles`;
   document.getElementById('collection-title').textContent = view.name;
@@ -91,6 +101,7 @@ window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 Promise.all([
   fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
   fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
+  fetch(charactersFile()).then(r => r.json()).then(charactersOf).catch(() => []),
 ]).then(show);
 </script>
 </body>

@@ -1,0 +1,16 @@
+{
+  "characters": [
+    { "name": "Bunnosaur", "figure": "bunnosaur.webp", "scene": "bunnosaur-bg.webp" },
+    { "name": "Catosaur", "figure": "catosaur.webp", "scene": "catosaur-bg.webp" },
+    { "name": "Chickosaur", "figure": "chickosaur.webp", "scene": "chickosaur-bg.webp" },
+    { "name": "Dogosaur", "figure": "dogosaur.webp", "scene": "dogosaur-bg.webp" },
+    { "name": "Donkosaur", "figure": "donkosaur.webp", "scene": "donkosaur-bg.webp" },
+    { "name": "Duckosaur", "figure": "duckosaur.webp", "scene": "duckosaur-bg.webp" },
+    { "name": "Goatosaur", "figure": "goatosaur.webp", "scene": "goatosaur-bg.webp" },
+    { "name": "Goososaur", "figure": "goososaur.webp", "scene": "goososaur-bg.webp" },
+    { "name": "Horsosaur", "figure": "horsosaur.webp", "scene": "horsosaur-bg.webp" },
+    { "name": "Pigosaur", "figure": "pigosaur.webp", "scene": "pigosaur-bg.webp" },
+    { "name": "Roostersaur", "figure": "roostersaur.webp", "scene": "roostersaur-bg.webp" },
+    { "name": "Sheeposaur", "figure": "sheeposaur.webp", "scene": "sheeposaur-bg.webp" }
+  ]
+}

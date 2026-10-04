@@ -4,10 +4,20 @@
 // inside the header gets those as its menu, in place of the site's sections. Collections — the
 // landing page filtered to collections — starts hidden: a page that knows a collection exists
 // shows it. Privacy ends every menu, a page's own included — every page sits in app/, beside it.
+// Above Privacy, on every menu, the look: Themed or Plain, Themed until the player picks Plain,
+// kept in this browser. It sits on the page as <html data-look>, set here before any page script
+// runs; picking one tells the page with a grew-look event (styles/look.css, ui/theme-ui.js).
 (function () {
+  var LOOK_KEY = 'grew-puzzles.look';
+  var root = document.documentElement;
   var bar = document.querySelector('[data-site-bar]');
   var home = bar.dataset.home;
   var own = Array.from(bar.querySelectorAll('[data-menu-entry]'));
+
+  function storedLook() {
+    try { return localStorage.getItem(LOOK_KEY); } catch (e) { return null; }
+  }
+  root.dataset.look = { plain: 'plain' }[storedLook()] || 'themed';
 
   bar.innerHTML =
     '<a class="brand" data-query="">Grew Puzzles</a>' +
@@ -27,12 +37,33 @@
   privacy.dataset.entry = 'privacy';
   privacy.href = 'privacy.html';
   privacy.textContent = 'Privacy';
+  var look = document.createElement('div');
+  look.className = 'look';
+  look.setAttribute('role', 'group');
+  look.setAttribute('aria-label', 'Look');
+  look.innerHTML = '<span class="look-name">Look</span>' +
+    '<button type="button" data-look="themed">Themed</button>' +
+    '<button type="button" data-look="plain">Plain</button>';
 
   own.forEach(function (entry) {
     entry.addEventListener('click', function () { setMenu(false); });
   });
   if (own.length) panel.replaceChildren.apply(panel, own);
-  panel.append(privacy);
+  panel.append(look, privacy);
+
+  // The menu stays open on a pick, so the player sees the page change under it.
+  function showLook() {
+    look.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.look === root.dataset.look)); });
+  }
+  look.querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      root.dataset.look = b.dataset.look;
+      try { localStorage.setItem(LOOK_KEY, b.dataset.look); } catch (e) { /* kept until the page closes */ }
+      showLook();
+      document.dispatchEvent(new Event('grew-look'));
+    });
+  });
+  showLook();
 
   bar.querySelectorAll('.brand, [data-query]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
   bar.querySelectorAll('[data-entry="' + bar.dataset.current + '"]').forEach(function (a) {

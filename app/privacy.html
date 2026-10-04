@@ -10,12 +10,17 @@
 <link rel="stylesheet" href="../styles/theme.css">
 <link rel="stylesheet" href="../styles/site-bar.css">
 <link rel="stylesheet" href="../styles/page.css">
+<link rel="stylesheet" href="../styles/look.css">
 </head>
 <body>
 <div class="wrap">
   <header class="site" data-site-bar data-home="index.html" data-current="privacy"></header>
   <main class="page" aria-labelledby="page-title">
     <h1 id="page-title">Your privacy</h1>
+    <!-- Themed, the words sit on a card with a character beside it (styles/look.css). -->
+    <div class="page-card">
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
     <p>You don't need an account to play — every puzzle is free and open to everyone. If you'd like your progress saved, you can sign in with Google.</p>
 
     <h2>No tricks</h2>
@@ -29,10 +34,15 @@
 
     <h2>Deleting it</h2>
     <p>Tap your picture, then Delete my account. Everything we keep about you is removed for good.</p>
+    </div>
   </main>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module">
+import { dressTextPage } from '../ui/theme-ui.js';
+dressTextPage(Math.random);
+</script>
 </body>
 </html>

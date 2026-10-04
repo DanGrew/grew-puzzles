@@ -7,7 +7,9 @@ import {
   countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
+import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement } from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook } from '../theme-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
@@ -125,6 +127,7 @@ function showPuzzle(opened, found) {
   var play = restoredPlay(found);
   document.title = board.title + ' · Grew Puzzles';
   drawSheet(playEl, board, onTap);
+  dressPuzzle(opened.id);
   playEl('solution-label').textContent = board.solutionLabel;
   // The tabs sit on both sides of the card, so a page can be picked whichever way it faces.
   drawTabs(playEl('tabs'), board.tabs, showPage);
@@ -175,6 +178,18 @@ function showPuzzle(opened, found) {
   }
 
   var PLAY_EVENTS = { complete: celebrate };
+}
+
+// Themed: the puzzle wears its own character, its background behind the page, in its own
+// template — the same every visit. Plain shows none of it (styles/look.css).
+function dressPuzzle(hiddenId) {
+  playEl('play').dataset.template = templateFor(hiddenId);
+  withCharacters(function (characters) {
+    var character = characterFor(characters, hiddenId);
+    dressScene(character);
+    dressFigure(playEl('theme-figure'), character);
+    dressName(playEl('name-tag'), character);
+  });
 }
 
 // One tab per page; a puzzle of one grid has none, and its empty tab row doesn't show.
@@ -336,12 +351,14 @@ function placeTextSizeMenu() {
   menu.style.left = button.left + 'px';
 }
 
-// The list is laid out again whenever the page or the grid card changes size, and once the
-// page's font has loaded and the words are their true width.
+// The list is laid out again whenever the page or the grid card changes size, once the page's
+// font has loaded and the words are their true width, and when the player switches the look —
+// Themed may leave the character room beside the words.
 function wireWordsFit() {
   new ResizeObserver(layoutWords).observe(playEl('stage'));
   window.addEventListener('resize', layoutWords);
   document.fonts.ready.then(layoutWords);
+  onLook(layoutWords);
 }
 
 // The page measured for play-core's wordsFit, and its answer drawn: where the list sits, the grid
@@ -365,16 +382,37 @@ function layoutWords() {
     cardChromeWidth: card.width - cols * cell, cardChromeHeight: card.height - rows * cell,
     chromeWidth: box.getBoundingClientRect().width - list.clientWidth,
     chromeHeight: box.getBoundingClientRect().height - list.getBoundingClientRect().height,
-    pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap), scale: textScale(play.dataset.size)
+    pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap), scale: textScale(play.dataset.size),
+    room: wordsRoom(lookNow(), play.dataset.template, isPhone(document.documentElement.clientWidth))
   });
   play.dataset.sits = fit.sits;
   play.style.setProperty('--fit-cell', fit.cell + 'px');
   play.style.setProperty('--card-w', fit.cardWidth + 'px');
   play.style.setProperty('--card-h', fit.cardHeight + 'px');
+  play.style.setProperty('--words-room', fit.room + 'px');
   list.style.setProperty('--word-cols', fit.columns);
   list.style.setProperty('--word-w', fit.wordWidth + 'px');
   list.style.setProperty('--word-size', fit.wordSize + 'px');
   fit.places.forEach(function (place, i) { list.children[i].style.gridArea = place[0] + ' / ' + place[1]; });
+  placeFigure(fit);
+}
+
+// The character on its template's spot for where the words ended up, measured from the grid
+// card as it now stands on the page, and its name label beside it — on a phone, its one spot
+// and no label.
+function placeFigure(fit) {
+  var page = playEl('play').getBoundingClientRect(), card = playEl('stage').getBoundingClientRect();
+  var spot = figurePlacement(playEl('play').dataset.template, fit.sits, { width: fit.cardWidth, left: card.left - page.left, top: card.top - page.top },
+    isPhone(document.documentElement.clientWidth));
+  var figure = playEl('theme-figure'), tag = playEl('name-tag');
+  figure.style.left = spot.left + 'px';
+  figure.style.top = spot.top + 'px';
+  figure.style.height = spot.height + 'px';
+  figure.style.transform = 'translate(-50%, -50%) rotate(' + spot.turn + 'deg)';
+  figure.dataset.layer = spot.layer;
+  tag.hidden = !spot.label;
+  tag.style.left = spot.labelLeft + 'px';
+  tag.style.top = spot.labelTop + 'px';
 }
 
 function celebrate() {
