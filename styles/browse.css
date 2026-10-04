@@ -4,6 +4,11 @@
   box-shadow: var(--shadow); padding: 10px 20px; }
 .browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
 .browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
+/* The Continue playing rail, signed in, above the filters: one row of the browse grid's own tiles,
+   column for column, its heading on the left and ‹ › on the right, drawn as the pager's. */
+.rail { margin: 0 0 28px; }
+.rail-head { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; }
+.rail-head h2 { font: 600 18px var(--font-display); margin: 0 auto 0 0; }
 /* The filter and sort row: the Filters button, then the sort. */
 .controls { position: relative; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 14px; margin: 0 0 24px; }
 .controls button, .controls select { font: 600 14px var(--font-body); height: 36px; padding: 0 14px; color: var(--fg); background: var(--surface);
@@ -62,7 +67,7 @@
   border: var(--ow) solid var(--line); border-radius: 50%; }
 main [hidden] { display: none; }
 .pager { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 32px; }
-.pager button { font: 600 14px var(--font-body); min-width: 40px; height: 40px; padding: 0 12px; color: var(--fg); background: var(--surface);
+.pager button, .rail-head button { font: 600 14px var(--font-body); min-width: 40px; height: 40px; padding: 0 12px; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); cursor: pointer; font-variant-numeric: tabular-nums; }
 .pager button[aria-current="page"] { background: var(--band); color: var(--band-fg); }
 .pager button:disabled { opacity: .35; cursor: default; }

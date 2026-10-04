@@ -2,7 +2,7 @@ import {
   PER_PAGE, COLLECTIONS, COLLECTION_TYPE, typesOf, filterOptions, typeBreakdown, collectionHref, browseItems,
   browseState, browseSearch, browseList, pageCount, pageOf, toggleType, clearTypes, noTypesPicked,
   withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons, difficultyOf, filterRows, picked, toggleRow,
-  filtersLabel,
+  filtersLabel, railItems, columnsOf, railView,
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
@@ -350,5 +350,39 @@ describe('browse-core.js', () => {
     expect(shown(index, { types: [], sort: 'date', dir: 'desc' }, held)).toEqual([id(1), 'Alpha', 'Bravo']);
     expect(shown(index, { types: [], sort: 'date', dir: 'asc' }, held)).toEqual([id(1), 'Alpha', 'Bravo']);
     expect(shown(index, { types: [], sort: 'type', dir: 'asc' }, held)).toEqual(['Alpha', 'Bravo', id(1)]);
+  });
+
+  test('the rail holds each puzzle in play\'s own browse tile, in the order given, a collection\'s puzzle too', () => {
+    const items = browseItems(puzzles(3), [collection('Farm', '2026-10-09', [id(2)])]);
+    const rail = railItems(items, [id(2), id(3)]);
+    expect(rail.map(i => i.hiddenId)).toEqual([id(2), id(3)]);
+    expect(rail[0]).toBe(items.find(i => i.hiddenId === id(2)));
+    expect(rail[0]).toMatchObject({ kind: 'puzzle', href: playHref(id(2)) });
+    expect(railItems(items, [])).toEqual([]);
+  });
+
+  test('as many rail tiles fit as the grid has columns', () => {
+    expect(columnsOf('180px')).toBe(1);
+    expect(columnsOf('172.5px 172.5px 172.5px 172.5px')).toBe(4);
+  });
+
+  test('the rail shows a set of as many as fit, with ‹ only after the first and › only before the last', () => {
+    const list = [1, 2, 3, 4, 5, 6, 7];
+    expect(railView(list, 0, 3)).toEqual({ set: 0, tiles: [1, 2, 3], prev: false, next: true });
+    expect(railView(list, 1, 3)).toEqual({ set: 1, tiles: [4, 5, 6], prev: true, next: true });
+    expect(railView(list, 2, 3)).toEqual({ set: 2, tiles: [7], prev: true, next: false });
+    expect(railView([1, 2, 3, 4, 5, 6], 1, 3)).toEqual({ set: 1, tiles: [4, 5, 6], prev: true, next: false });
+  });
+
+  test('everything fitting, the rail is one set with neither ‹ nor ›', () => {
+    expect(railView([1, 2, 3], 0, 3)).toEqual({ set: 0, tiles: [1, 2, 3], prev: false, next: false });
+    expect(railView([1], 0, 6)).toEqual({ set: 0, tiles: [1], prev: false, next: false });
+    expect(railView([], 0, 6)).toEqual({ set: 0, tiles: [], prev: false, next: false });
+  });
+
+  test('a set past the last — more fit now, or fewer are in play — shows the last', () => {
+    expect(railView([1, 2, 3, 4, 5], 2, 2)).toEqual({ set: 2, tiles: [5], prev: true, next: false });
+    expect(railView([1, 2, 3, 4, 5], 2, 4)).toEqual({ set: 1, tiles: [5], prev: true, next: false });
+    expect(railView([1, 2, 3, 4, 5], 4, 5)).toEqual({ set: 0, tiles: [1, 2, 3, 4, 5], prev: false, next: false });
   });
 });
