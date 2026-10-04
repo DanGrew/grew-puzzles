@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
+  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
@@ -267,9 +267,9 @@ describe('a puzzle with a missing word', () => {
   const placed = () => MISSING.map((_, i) => i).filter(i => i !== goat());
   const allBut = last => ({ picked: [], found: placed().filter(i => i !== last), events: [], page: 0 });
 
-  it('lists the missing word among the rest, with no cells', () => {
+  it('lists the missing word among the rest, with no cells and no line to save', () => {
     expect(MISSING.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
-    expect(MISSING[goat()]).toEqual({ text: 'Goat', missing: true, cells: [] });
+    expect(MISSING[goat()]).toEqual({ text: 'Goat', missing: true, cells: [], line: null });
     expect(MISSING[0].missing).toBe(false);
   });
 
@@ -769,5 +769,45 @@ describe('completion sparkles', () => {
     const [s] = sparkles(1, 10, 10, () => 0);
     expect(s.dx).toBeCloseTo(30);
     expect(s.dy).toBeCloseTo(0);
+  });
+});
+
+describe('a puzzle reopened with saved finds', () => {
+  const placed = () => WORDS.map((_, i) => i);
+
+  it('gives each placed word its line — page, start cell and direction — as the file places it', () => {
+    expect(WORDS[0].line).toEqual({ page: 0, row: 4, col: 2, direction: 'N' });
+    WORDS.forEach((w, i) => expect(w.line).toEqual({
+      page: PUZZLE.words[i].grid, row: PUZZLE.words[i].start.row, col: PUZZLE.words[i].start.col, direction: PUZZLE.words[i].direction
+    }));
+  });
+
+  it('opens on Page 1 with the saved words found, nothing selected and nothing set off', () => {
+    expect(restoredPlay([2, 0])).toEqual({ picked: [], found: [2, 0], events: [], page: 0 });
+    expect(newPlay()).toEqual(restoredPlay([]));
+  });
+
+  it('plays on from the saved finds: another word is found beside them', () => {
+    const play = taps([[4, 2], [2, 2]], restoredPlay([at('Hen')]));
+    expect(play.found).toEqual([at('Hen'), at('Cat')]);
+  });
+
+  it('opens a finished puzzle finished, without celebrating again', () => {
+    const all = restoredPlay(placed());
+    expect(finished(all, WORDS)).toBe(true);
+    expect(all.events).toEqual([]);
+    expect(countLabel(all, WORDS)).toBe(WORDS.length + '/' + WORDS.length);
+  });
+
+  it('is finished only once every placed word is found', () => {
+    expect(finished(newPlay(), WORDS)).toBe(false);
+    expect(finished(restoredPlay(placed().slice(1)), WORDS)).toBe(false);
+  });
+
+  it('names the finds a tap made: the new one, never one found before', () => {
+    const before = restoredPlay([at('Hen')]);
+    expect(newFinds(before, taps([[4, 2], [2, 2]], before))).toEqual([at('Cat')]);
+    expect(newFinds(before, taps([[4, 2]], before))).toEqual([]);
+    expect(newFinds(before, before)).toEqual([]);
   });
 });

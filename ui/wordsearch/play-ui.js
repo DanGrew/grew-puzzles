@@ -1,10 +1,12 @@
-// The play page's DOM: loads the puzzle a play URL names, draws it from play-core's view,
-// and wires the taps, the flip, where the words sit and the completion pop. Every rule lives
-// in core/wordsearch/play-core.js; nothing here decides anything.
+// The play page's DOM: loads the puzzle a play URL names, with a signed-in player's saved finds,
+// draws it from play-core's view, and wires the taps, the flip, where the words sit and the
+// completion pop. Every rule lives in core/wordsearch/play-core.js; nothing here decides anything.
+// Saving the finds is ui/wordsearch/progress-ui.js.
 import {
-  puzzleUrl, playJson, playBoard, newPlay, solvedPlay, turnPage, tap, playMarks, listedWords, wordList, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
+  puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
+  countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
+import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
@@ -13,6 +15,9 @@ var PLAY_LAYOUT_LABELS = { bottom: 'Words: under the grid', right: 'Words: besid
 // Under and beside, the list is the page's, in its own slot ahead of the printed grids; in
 // Overlay it sits in the stage, over the card.
 var PLAY_LAYOUT_HOMES = { bottom: 'words-home', right: 'words-home', overlay: 'stage' };
+// The save line sits under the words card: hung from it under and beside, so the card keeps its
+// size; in Overlay, where the card lies over the grid, under the grid card.
+var PLAY_SAVE_LINE_HOMES = { bottom: 'words-list', right: 'words-list', overlay: 'words-home' };
 var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
 var PLAY_SIZE_KEY = 'grew-puzzles.text-size';
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
@@ -31,8 +36,10 @@ export function openPlayPage(search) {
     .then(function (url) { return fetch(url); })
     .then(playJson)
     .then(function (puzzle) { return markPrintout(playEl, puzzle); })
-    .then(playBoard)
-    .then(showPuzzle, showMissing);
+    .then(function (puzzle) { return { id: puzzle.hiddenId, board: playBoard(puzzle) }; })
+    .then(function (opened) {
+      withSavedFinds(opened.id, opened.board.words, function (found) { showPuzzle(opened, found); });
+    }, showMissing);
 }
 
 // The hidden ID never reaches the board on screen: only the printout carries it, small under the
@@ -109,8 +116,12 @@ function showMissing() {
   playEl('missing').hidden = false;
 }
 
-function showPuzzle(board) {
-  var play = newPlay();
+// The puzzle, its saved finds already in place: the grid first draws with them, so none pops in,
+// and a puzzle finished before doesn't celebrate again. Its hidden ID is for saving alone — the
+// board on screen never carries it.
+function showPuzzle(opened, found) {
+  var board = opened.board;
+  var play = restoredPlay(found);
   document.title = board.title + ' · Grew Puzzles';
   drawSheet(playEl, board, onTap);
   playEl('solution-label').textContent = board.solutionLabel;
@@ -121,6 +132,7 @@ function showPuzzle(board) {
   wireTextSize();
   wireWords();
   wireWordsFit();
+  wireProgress(playEl('save-line'));
   showPage(0);
 
   // A page's grid on both sides — the solution side, on screen only, shows every real letter —
@@ -137,7 +149,9 @@ function showPuzzle(board) {
   }
 
   function onTap(cell) {
+    var before = play;
     play = tap(play, cell, board.words);
+    saveFinds(opened.id, board.words, newFinds(before, play));
     render();
     play.events.forEach(function (e) { PLAY_EVENTS[e](); });
   }
@@ -150,6 +164,7 @@ function showPuzzle(board) {
       playEl('words').children[i].querySelector('.progress').textContent = item.progress;
     });
     playEl('count').textContent = countLabel(play, board.words);
+    playEl('complete').hidden = !finished(play, board.words);
   }
 
   var PLAY_EVENTS = { complete: celebrate };
@@ -249,6 +264,7 @@ function showLayout(layout) {
   button.setAttribute('aria-label', PLAY_LAYOUT_LABELS[layout]);
   button.title = PLAY_LAYOUT_LABELS[layout];
   playEl(PLAY_LAYOUT_HOMES[layout]).appendChild(playEl('words-list'));
+  playEl(PLAY_SAVE_LINE_HOMES[layout]).appendChild(playEl('save-line'));
   showList(false);
 }
 
@@ -356,7 +372,6 @@ function layoutWords() {
 
 function celebrate() {
   var board = playEl('board');
-  playEl('complete').hidden = false;
   board.classList.remove('pop');
   void board.offsetWidth;
   board.classList.add('pop');
