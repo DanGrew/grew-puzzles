@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { playBoard } from '../../../core/wordsearch/play-core.js';
 import { findRow } from '../../../core/wordsearch/progress-core.js';
 import {
-  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, tileDone
+  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, tileDone
 } from '../../../core/wordsearch/done-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -74,6 +74,40 @@ describe('which puzzles are finished', () => {
   it('a puzzle whose file couldn\'t be opened is never finished, and the rest still are', () => {
     const rows = [...allLines('WSCH-0001', PUZZLE), ...allLines('WSCH-0002', PUZZLE)];
     expect(donePuzzles(rows, ['WSCH-0001', 'WSCH-0002'], [failed(), opened(PUZZLE)])).toEqual(['WSCH-0002']);
+  });
+});
+
+describe('which puzzles are still in play', () => {
+  const at = (rows, foundAt) => rows.map(row => ({ ...row, found_at: foundAt }));
+
+  it('a started puzzle not finished is in play; a finished one is not', () => {
+    const rows = [...at(allLines('WSCH-0001', PUZZLE), '2026-10-04T10:00:00+00:00'), ...at(linesOf('WSCH-0002', PUZZLE, ['Cat']), '2026-10-04T09:00:00+00:00')];
+    const started = ['WSCH-0001', 'WSCH-0002'];
+    const files = [opened(PUZZLE), opened(PUZZLE)];
+    expect(playingPuzzles(rows, started, files, donePuzzles(rows, started, files))).toEqual(['WSCH-0002']);
+  });
+
+  it('the one found in most recently comes first, by its latest line, whatever order the lines are read in', () => {
+    const rows = [
+      { puzzle: 'WSCH-0001', found_at: '2026-10-01T08:00:00+00:00' },
+      { puzzle: 'WSCH-0001', found_at: '2026-10-03T08:00:00+00:00' },
+      { puzzle: 'WSCH-0001', found_at: '2026-10-02T08:00:00+00:00' },
+      { puzzle: 'WSCH-0002', found_at: '2026-10-02T09:00:00+00:00' },
+      { puzzle: 'WSCH-0003', found_at: '2026-10-04T08:00:00+00:00' },
+      { puzzle: 'WSCH-0003', found_at: '2026-09-30T08:00:00+00:00' },
+    ];
+    const started = ['WSCH-0002', 'WSCH-0001', 'WSCH-0003'];
+    const files = started.map(() => opened(PUZZLE));
+    expect(playingPuzzles(rows, started, files, [])).toEqual(['WSCH-0003', 'WSCH-0001', 'WSCH-0002']);
+  });
+
+  it('a puzzle whose file couldn\'t be opened is never in play, and the rest still are', () => {
+    const rows = [{ puzzle: 'WSCH-0001', found_at: '2026-10-01T08:00:00+00:00' }, { puzzle: 'WSCH-0002', found_at: '2026-10-01T09:00:00+00:00' }];
+    expect(playingPuzzles(rows, ['WSCH-0001', 'WSCH-0002'], [opened(PUZZLE), failed()], [])).toEqual(['WSCH-0001']);
+  });
+
+  it('none with nothing started', () => {
+    expect(playingPuzzles([], [], [], [])).toEqual([]);
   });
 });
 

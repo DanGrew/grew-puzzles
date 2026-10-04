@@ -28,8 +28,10 @@ test('the site opens straight onto the browse grid, with no intro', async ({ pag
   await expect(page.locator('#browse-title')).toHaveText('Wordsearches');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
   await expect(page.locator('.tiles .tile')).toHaveCount(3);
-  // The heading, the filter and sort row, the grid and the pager — nothing else.
-  await expect(page.locator('main > *')).toHaveCount(4);
+  // The heading, the filter and sort row, the grid and the pager — nothing else; signed out, the
+  // Continue playing rail never shows.
+  await expect(page.locator('main > :not([hidden])')).toHaveCount(4);
+  await expect(page.locator('main > #rail')).toBeHidden();
 });
 
 test('a tile shows the title, with its type and created date small beneath — no number, no hidden ID', async ({ page }) => {

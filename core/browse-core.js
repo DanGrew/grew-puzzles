@@ -1,6 +1,7 @@
 // The browse grid's rules: which tiles show — every puzzle once, and every collection as a tile of
 // its own — their order and paging, what each tile, filter and pager button says, and how the
-// filter and sort ride in the page address. Reads only the indexes' entries — never a puzzle file.
+// filter and sort ride in the page address — and the Continue playing rail above them, a set at a
+// time. Reads only the indexes' entries — never a puzzle file.
 import { dayLabel } from './day-core.js';
 
 export const PER_PAGE = 24;
@@ -199,6 +200,27 @@ export function totalLabel(items) {
   const puzzles = items.length - collections;
   const parts = [[puzzles, 'puzzle'], [collections, 'collection']].filter(([n]) => n > 0);
   return parts.map(([n, word]) => counted(n, word)).join(' · ') || counted(0, 'puzzle');
+}
+
+// The Continue playing rail's tiles: each puzzle in play's own browse tile, in the order given —
+// a puzzle reached only through a collection still has one, opening it directly.
+export function railItems(items, playing) {
+  const byId = new Map(items.filter(i => i.kind === 'puzzle').map(i => [i.hiddenId, i]));
+  return playing.map(id => byId.get(id));
+}
+
+// How many tiles fit across a grid: one per column the browser laid out for it.
+export function columnsOf(template) {
+  return template.split(' ').length;
+}
+
+// One set of the rail: as many tiles as fit across, the set asked for — or the last one, once
+// fewer puzzles are in play or more fit — with ‹ only after the first set and › only before the
+// last.
+export function railView(list, set, fits) {
+  const last = Math.max(0, Math.ceil(list.length / fits) - 1);
+  const at = Math.min(set, last);
+  return { set: at, tiles: list.slice(at * fits, (at + 1) * fits), prev: at > 0, next: at < last };
 }
 
 // One page needs no pager; more get previous, a button per page, then next.

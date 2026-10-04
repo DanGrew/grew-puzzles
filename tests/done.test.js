@@ -1,8 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const PUZZLE = require('./fixtures/WSCH-0007.json');
 
-// Done ticks on the landing and collection pages. Supabase is stood in for — nothing here reaches
-// it: the progress table keeps each player's rows and answers a read in the order asked, at most
+// Done ticks on the landing and collection pages, and the landing page's Continue playing rail —
+// both from one read of the player's progress. Supabase is stood in for — nothing here reaches
+// it: the progress table keeps each player's rows, each with when it was found, and answers a read in the order asked, at most
 // 1000 rows at a time, as Supabase does. Every puzzle file is the test puzzle; which ones are
 // opened is counted. A signed-in player is a session already in the browser, as Supabase keeps it.
 const SUPABASE = 'https://vxschtygvtilsadgixec.supabase.co';
@@ -55,8 +56,12 @@ function collection(slug, ids) {
 const finishedRows = (puzzle, user = PLAYER.id) => LINES.map(line => ({ user_id: user, puzzle, ...line }));
 const startedRows = (puzzle, n = 3) => finishedRows(puzzle).slice(0, n);
 
+// A row given no found time was found at the start of the day; one the site saves, when it lands.
+const DAY = '2026-10-04T00:00:00+00:00';
+const at = (rows, time) => rows.map(row => ({ ...row, found_at: time }));
+
 function progressTable(rows = []) {
-  return { rows, reads: [], saves: [], strays: [], readDelay: 0 };
+  return { rows: rows.map(row => ({ found_at: DAY, ...row })), reads: [], saves: [], strays: [], readDelay: 0 };
 }
 
 const ORDER = ['puzzle', 'page', 'start_row', 'start_col', 'direction'];
@@ -78,7 +83,7 @@ async function standInForSupabase(context, table) {
     }
     const player = claims(token).sub;
     if (request.method() === 'GET') return read(route, table, player, url.searchParams);
-    const row = { user_id: player, ...request.postDataJSON() };
+    const row = { user_id: player, ...request.postDataJSON(), found_at: new Date().toISOString() };
     table.saves.push(row);
     table.rows.push(row);
     return route.fulfill({ status: 201, headers: CORS, body: '' });
@@ -115,14 +120,14 @@ async function site(context, { served = index(3), collections = [], table = prog
   return { table, opened };
 }
 
-const tile = (page, title) => page.locator('.tiles .tile').filter({ has: page.locator('.name', { hasText: new RegExp(`^${title}$`) }) });
+const tile = (page, title) => page.locator('#tiles .tile').filter({ has: page.locator('.name', { hasText: new RegExp(`^${title}$`) }) });
 const tick = locator => locator.evaluate(el => getComputedStyle(el, '::after').content);
 const ticked = (page, title) => tick(tile(page, title));
 const TICK = '"✓" / "Finished"';
 
 // Every tile on show that wears a ✓, by title.
 async function tickedTitles(page) {
-  const tiles = await page.locator('.tiles .tile').all();
+  const tiles = await page.locator('#tiles .tile').all();
   const marks = await Promise.all(tiles.map(async t => [await t.locator('.name').innerText(), await tick(t)]));
   return marks.filter(([, mark]) => mark === TICK).map(([title]) => title);
 }
@@ -130,7 +135,7 @@ async function tickedTitles(page) {
 async function landing(context, path = '/app/') {
   const page = await context.newPage();
   await page.goto(path);
-  await expect(page.locator('.tiles .tile').first()).toBeVisible();
+  await expect(page.locator('#tiles .tile').first()).toBeVisible();
   return page;
 }
 
@@ -155,7 +160,7 @@ test('the ✓ sits in the tile\'s top-right corner, in the band\'s ink, on a dis
   await site(context, { served, collections: [collection('issue', [id(1)])], table: progressTable(rows) });
   const page = await landing(context);
   await expect.poll(() => tickedTitles(page)).toHaveLength(6);
-  for (const t of await page.locator('.tiles .tile').all()) {
+  for (const t of await page.locator('#tiles .tile').all()) {
     const box = await t.boundingBox();
     const mark = await t.evaluate(el => {
       const s = getComputedStyle(el, '::after');
@@ -184,7 +189,7 @@ test('the tiles draw at once, and the ticks arrive a moment after', async ({ con
   const page = await context.newPage();
   const start = Date.now();
   await page.goto('/app/');
-  await expect(page.locator('.tiles .tile')).toHaveCount(3);
+  await expect(page.locator('#tiles .tile')).toHaveCount(3);
   expect(Date.now() - start).toBeLessThan(1500);
   expect(await tickedTitles(page)).toEqual([]);
   await expect(tile(page, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
@@ -207,14 +212,14 @@ test('filtering, sorting and paging keep each ✓ on its own puzzle\'s tile', as
   await expect.poll(() => tickedTitles(page)).toEqual(['Puzzle 28']);
 
   await page.getByRole('button', { name: 'Next page' }).click();
-  await expect(page.locator('.tiles .tile .name').first()).toHaveText('Puzzle 6');
+  await expect(page.locator('#tiles .tile .name').first()).toHaveText('Puzzle 6');
   expect(await tickedTitles(page)).toEqual(['Puzzle 3']);
 
   await page.locator('#sort').selectOption('title');
-  await expect(page.locator('.tiles .tile .name').first()).toHaveText('Puzzle 9');
+  await expect(page.locator('#tiles .tile .name').first()).toHaveText('Puzzle 9');
   expect(await tickedTitles(page)).toEqual(['Puzzle 3', 'Puzzle 28']);
   await page.locator('#dir').click();
-  await expect(page.locator('.tiles .tile .name').first()).toHaveText('Puzzle 1');
+  await expect(page.locator('#tiles .tile .name').first()).toHaveText('Puzzle 1');
   expect(await tickedTitles(page)).toEqual(['Puzzle 28', 'Puzzle 3']);
 
   await page.locator('#filter-button').click();
@@ -241,7 +246,7 @@ test('signed out, no tile wears a ✓, nothing is read or opened, and the tiles 
   expect(await tickedTitles(page)).toEqual([]);
   expect(table).toMatchObject({ reads: [], strays: [] });
   expect(opened).toEqual([]);
-  const looks = await page.locator('.tiles .tile').evaluateAll(tiles => tiles.map(el => {
+  const looks = await page.locator('#tiles .tile').evaluateAll(tiles => tiles.map(el => {
     const s = getComputedStyle(el);
     return [el.getBoundingClientRect().height, s.paddingTop, s.borderTopWidth, getComputedStyle(el, '::after').content];
   }));
@@ -331,4 +336,180 @@ test('a slow read that lands after signing out ticks nothing', async ({ context 
   await signOut(page);
   await page.waitForTimeout(2000);
   expect(await tickedTitles(page)).toEqual([]);
+});
+
+// The Continue playing rail.
+const railTiles = page => page.locator('#rail .tile');
+const railTitles = page => railTiles(page).locator('.name').allInnerTexts();
+const hour = h => `2026-10-04T${String(h).padStart(2, '0')}:00:00+00:00`;
+
+// How many browse tiles sit on the grid's first row — what fits across the page.
+async function browseColumns(page) {
+  const tops = await page.locator('#tiles .tile').evaluateAll(tiles => tiles.map(t => t.getBoundingClientRect().top));
+  return tops.filter(top => top === tops[0]).length;
+}
+
+test('signed in, the rail above the filters holds exactly the puzzles in play, the one found in most recently first', async ({ context }) => {
+  const rows = [
+    ...at(startedRows(id(1)), hour(9)), ...at(finishedRows(id(2)), hour(12)), ...at(startedRows(id(3), 1), hour(11)),
+    ...at(startedRows(id(5), 2), hour(8)), ...at(startedRows(id(5), 1), hour(10)), ...finishedRows(id(6), SOMEONE_ELSE),
+  ];
+  const { table } = await site(context, { served: index(6), table: progressTable(rows) });
+  const page = await landing(context);
+  await expect(page.getByRole('heading', { name: 'Continue playing' })).toBeVisible();
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 3', 'Puzzle 5', 'Puzzle 1']);
+  const rail = await page.locator('#rail').boundingBox();
+  const head = await page.locator('.browse-head').boundingBox();
+  const filters = await page.locator('#filter-button').boundingBox();
+  expect(rail.y).toBeGreaterThan(head.y + head.height);
+  expect(rail.y + rail.height).toBeLessThan(filters.y);
+  expect(await railTiles(page).evaluateAll(tiles => tiles.map(t => getComputedStyle(t, '::after').content))).toEqual(['none', 'none', 'none']);
+  expect(table.reads).toHaveLength(1);
+  expect(table.strays).toEqual([]);
+});
+
+// The test puzzle is WSCH-0007, whatever file is asked for: the play page reads its finds under that ID.
+const FARM = { hiddenId: 'WSCH-0007', type: 'Vanilla', created: '2026-02-01', title: 'Farm' };
+
+test('a rail tile looks like its browse tile, and tapping it opens the puzzle with every word found marked', async ({ context }) => {
+  await site(context, { served: { puzzles: [...index(2).puzzles, FARM] }, table: progressTable(startedRows(FARM.hiddenId)) });
+  const page = await landing(context);
+  await expect(railTiles(page)).toHaveCount(1);
+  const looks = locator => locator.evaluate(el => {
+    const s = getComputedStyle(el);
+    return [el.className, el.dataset.tone, el.getAttribute('href'), el.innerText, el.getBoundingClientRect().width, el.getBoundingClientRect().height, s.background, s.border];
+  });
+  expect(await looks(railTiles(page).first())).toEqual(await looks(tile(page, 'Farm')));
+  await railTiles(page).first().click();
+  await expect(page).toHaveURL(/play\.html\?id=WSCH-0007$/);
+  await expect(page.locator('#overlay line.mark-found')).toHaveCount(3);
+  await expect(page.locator('#count')).toHaveText('3/8');
+});
+
+test('more in play than fit: a set as wide as the grid, › and ‹ between sets, and a narrower window shows fewer', async ({ context }) => {
+  const rows = Array.from({ length: 13 }, (_, i) => at(startedRows(id(i + 1), 1), hour(i + 1))).flat();
+  await site(context, { served: index(20), table: progressTable(rows) });
+  const page = await landing(context);
+  const prev = page.getByRole('button', { name: 'Previous puzzles in play' });
+  const next = page.getByRole('button', { name: 'More puzzles in play' });
+  await expect(railTiles(page).first()).toBeVisible();
+  const fits = await browseColumns(page);
+  expect(fits).toBeGreaterThan(1);
+  expect(fits).toBeLessThan(13);
+  const newest = Array.from({ length: 13 }, (_, i) => `Puzzle ${13 - i}`);
+  const sets = Math.ceil(13 / fits);
+
+  expect(await railTitles(page)).toEqual(newest.slice(0, fits));
+  const tops = await railTiles(page).evaluateAll(tiles => new Set(tiles.map(t => t.getBoundingClientRect().top)).size);
+  expect(tops).toBe(1);
+  await expect(prev).toBeHidden();
+  for (let set = 1; set < sets; set += 1) {
+    await next.click();
+    expect(await railTitles(page)).toEqual(newest.slice(set * fits, (set + 1) * fits));
+    await expect(prev).toBeVisible();
+  }
+  await expect(next).toBeHidden();
+  for (let set = sets - 2; set >= 0; set -= 1) {
+    await prev.click();
+    expect(await railTitles(page)).toEqual(newest.slice(set * fits, (set + 1) * fits));
+  }
+  await expect(prev).toBeHidden();
+  await expect(next).toBeVisible();
+
+  await page.setViewportSize({ width: 420, height: 800 });
+  const narrow = await browseColumns(page);
+  expect(narrow).toBeLessThan(fits);
+  await expect.poll(() => railTitles(page)).toEqual(newest.slice(0, narrow));
+});
+
+test('everything in play fitting, there\'s neither ‹ nor ›', async ({ context }) => {
+  await site(context, { table: progressTable([...startedRows(id(1)), ...startedRows(id(2))]) });
+  const page = await landing(context);
+  await expect(railTiles(page)).toHaveCount(2);
+  await expect(page.locator('.rail-head button')).toHaveCount(2);
+  await expect(page.locator('.rail-head button:visible')).toHaveCount(0);
+});
+
+test('finishing a puzzle from the rail, then going back, it\'s gone from the rail and wears its ✓', async ({ context }) => {
+  const rows = [...at(startedRows(FARM.hiddenId, 1), hour(10)), ...at(startedRows(id(1)), hour(9))];
+  const { table } = await site(context, { served: { puzzles: [...index(2).puzzles, FARM] }, table: progressTable(rows) });
+  const page = await landing(context);
+  await expect.poll(() => railTitles(page)).toEqual(['Farm', 'Puzzle 1']);
+  await railTiles(page).first().click();
+  await expect(page.locator('#play')).toBeVisible();
+  for (const ends of ALL_WORDS.slice(1)) for (const [r, c] of ends) await page.locator('#grid .cell').nth(r * COLS + c).click();
+  await expect(page.locator('#complete')).toBeVisible();
+  await expect.poll(() => table.rows.length).toBe(4 + 7);
+
+  await page.goBack();
+  await expect(tile(page, 'Farm')).toHaveAttribute('data-done', 'true');
+  expect(await railTitles(page)).toEqual(['Puzzle 1']);
+});
+
+test('signed out, or with nothing in play, there\'s no rail and no space for one', async ({ context, browser }) => {
+  await site(context, { signedIn: false, table: progressTable(startedRows(id(1))) });
+  const signedOut = await landing(context);
+  await signedOut.waitForTimeout(500);
+  await expect(signedOut.locator('#rail')).toBeHidden();
+  const filtersOut = await signedOut.locator('#filter-button').boundingBox();
+
+  const other = await browser.newContext();
+  await site(other, { table: progressTable(finishedRows(id(1))) });
+  const nothingInPlay = await landing(other);
+  await expect(tile(nothingInPlay, 'Puzzle 1')).toHaveAttribute('data-done', 'true');
+  await expect(nothingInPlay.locator('#rail')).toBeHidden();
+  expect(await nothingInPlay.locator('#filter-button').boundingBox()).toEqual(filtersOut);
+  const head = await nothingInPlay.locator('.browse-head').boundingBox();
+  expect(filtersOut.y).toBeLessThan(head.y + head.height + 40);
+  await other.close();
+});
+
+test('filtering, sorting and paging the tiles below never change the rail', async ({ context }) => {
+  const rows = [...at(startedRows(id(2)), hour(10)), ...at(startedRows(id(27)), hour(9))];
+  await site(context, { served: index(30), table: progressTable(rows) });
+  const page = await landing(context);
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+  await page.getByRole('button', { name: 'Next page' }).click();
+  await page.locator('#sort').selectOption('title');
+  await page.locator('#dir').click();
+  await page.locator('#filter-button').click();
+  await page.locator('.chip', { hasText: 'Vanilla' }).click();
+  await expect(page.locator('#tiles .tile .name').first()).toHaveText('Puzzle 1');
+  expect(await railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+});
+
+test('signing in on the landing page brings the rail without a reload, and signing out takes it away', async ({ context }) => {
+  const { table } = await site(context, { signedIn: false, table: progressTable(startedRows(id(2))) });
+  const page = await landing(context);
+  await page.waitForTimeout(300);
+  await expect(page.locator('#rail')).toBeHidden();
+  const tokens = session(PLAYER);
+  await page.evaluate(async t => {
+    const { client } = await import('/ui/sign-in-ui.js');
+    await client.auth.setSession(t);
+  }, { access_token: tokens.access_token, refresh_token: tokens.refresh_token });
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2']);
+  await signOut(page);
+  await expect(page.locator('#rail')).toBeHidden();
+  expect(table.strays).toEqual([]);
+});
+
+test('a collection page has no rail', async ({ context }) => {
+  await site(context, { collections: [collection('farm', [id(1), id(2)])], table: progressTable(startedRows(id(1))) });
+  const page = await landing(context, '/app/collection.html?slug=farm');
+  await page.waitForTimeout(500);
+  await expect(page.locator('#rail')).toHaveCount(0);
+  await expect(page.getByText('Continue playing')).toHaveCount(0);
+});
+
+test('the browse tiles never wait for the rail, which arrives once progress is read', async ({ context }) => {
+  const { table } = await site(context, { table: progressTable(startedRows(id(2))) });
+  table.readDelay = 1500;
+  const page = await context.newPage();
+  const start = Date.now();
+  await page.goto('/app/');
+  await expect(page.locator('#tiles .tile')).toHaveCount(3);
+  expect(Date.now() - start).toBeLessThan(1500);
+  await expect(page.locator('#rail')).toBeHidden();
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2']);
 });
