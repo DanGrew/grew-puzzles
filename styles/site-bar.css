@@ -44,3 +44,18 @@
 .account-panel { min-width: 240px; }
 .account-panel .signed-in-as { margin: 0; cursor: default; color: var(--muted); font-size: 13px; }
 .signed-in-as strong { display: block; margin-top: 2px; color: var(--fg); font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+
+/* Delete my account's one question, on the site's own card under the picture — Cancel, or Delete in red — and, once
+   the account is gone, the note under Sign in that says so. Each fits beside the burger on the narrowest phone. */
+.delete-card, .deleted-note { position: absolute; right: 0; top: calc(100% + 10px); z-index: 10; box-sizing: border-box;
+  width: max-content; max-width: min(320px, calc(100vw - 100px)); margin: 0; padding: 16px; font: 15px var(--font-body);
+  background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+.delete-card[hidden], .deleted-note[hidden], .delete-card .delete-failed[hidden] { display: none; }
+.delete-card p { margin: 0 0 12px; line-height: 1.45; }
+.delete-card #delete-warning { font-weight: 600; }
+.delete-card .delete-failed { color: var(--muted); }
+.delete-choices { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.delete-choices button { flex: 1 1 auto; min-height: 44px; padding: 0 16px; font: 600 15px var(--font-body); border-radius: var(--r); cursor: pointer; }
+.cancel-delete { color: var(--fg); background: var(--surface); border: var(--ow) solid var(--line); }
+.confirm-delete { color: #ffffff; background: #b3261e; border: var(--ow) solid var(--line); }
+.confirm-delete:disabled { opacity: .6; cursor: progress; }

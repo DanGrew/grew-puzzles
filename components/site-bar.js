@@ -3,7 +3,7 @@
 // the menu entry this page belongs to. A page that puts its own [data-menu-entry] elements
 // inside the header gets those as its menu, in place of the site's sections. Collections — the
 // landing page filtered to collections — starts hidden: a page that knows a collection exists
-// shows it.
+// shows it. Privacy ends every menu, a page's own included — every page sits in app/, beside it.
 (function () {
   var bar = document.querySelector('[data-site-bar]');
   var home = bar.dataset.home;
@@ -23,13 +23,18 @@
 
   var burger = bar.querySelector('.burger');
   var panel = bar.querySelector('.menu-panel');
+  var privacy = document.createElement('a');
+  privacy.dataset.entry = 'privacy';
+  privacy.href = 'privacy.html';
+  privacy.textContent = 'Privacy';
 
   own.forEach(function (entry) {
     entry.addEventListener('click', function () { setMenu(false); });
   });
   if (own.length) panel.replaceChildren.apply(panel, own);
+  panel.append(privacy);
 
-  bar.querySelectorAll('.brand, [data-entry]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
+  bar.querySelectorAll('.brand, [data-query]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
   bar.querySelectorAll('[data-entry="' + bar.dataset.current + '"]').forEach(function (a) {
     a.setAttribute('aria-current', 'page');
   });

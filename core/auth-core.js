@@ -1,5 +1,5 @@
 // Sign-in's rules: the fingerprint of the one-time word that ties Google's answer to this page,
-// and how the site bar shows who is signed in. Who may reach a player's progress is the
+// how the site bar shows who is signed in, and when Delete my account worked. Who may reach a player's progress is the
 // database's rule, never the site's (grew-puzzles-tooling's docs/DATABASE.md).
 
 // Google is handed the fingerprint of a one-time word, Supabase the word itself, so a token
@@ -14,6 +14,12 @@ export function hexOf(bytes) {
 export function accountView(session) {
   const signedOut = { signedIn: false, picture: '', initial: '', email: '' };
   return session ? signedIn(session.user) : signedOut;
+}
+
+// Whether Delete my account's answer means the account is gone. Any refusal — the connection lost,
+// or the database saying no — leaves the player signed in, their account and progress as they were.
+export function deletedAnswer(answer) {
+  return !answer.error;
 }
 
 function signedIn(user) {

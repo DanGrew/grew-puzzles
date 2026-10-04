@@ -114,7 +114,7 @@ test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/privacy.html']) {
   test(`signed out, ${address} shows Sign in beside the burger, and nothing leaves the site`, async ({ page, context, baseURL }) => {
     const asked = await standInForGoogle(context);
     const left = leavingTheSite(page, baseURL);
@@ -305,7 +305,7 @@ test('the card closes on Sign in again, a click elsewhere, Escape, or the burger
   await expect(page.locator('#site-menu')).toBeVisible();
 });
 
-test('the picture opens a menu: Signed in as their email, and Sign out', async ({ page, context }) => {
+test('the picture opens a menu: Signed in as their email, Sign out, and Delete my account', async ({ page, context }) => {
   await standInForGoogle(context);
   await signInFrom(page, '/app/');
   const menu = page.locator('#account-menu');
@@ -317,7 +317,7 @@ test('the picture opens a menu: Signed in as their email, and Sign out', async (
   await expect(menu).toBeVisible();
   await expect(avatar(page)).toHaveAttribute('aria-expanded', 'true');
   await expect(menu.locator('.signed-in-as')).toHaveText('Signed in as pat@example.com');
-  await expect(menu.locator('button')).toHaveText(['Sign out']);
+  await expect(menu.locator('button')).toHaveText(['Sign out', 'Delete my account']);
 });
 
 test('the account menu closes on the picture again, a click elsewhere, Escape, or the burger', async ({ page, context }) => {
