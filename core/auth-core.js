@@ -1,15 +1,12 @@
-// Sign-in's rules: the page Google sends a player back to, and how the site bar shows who is
-// signed in. Who may reach a player's progress is the database's rule, never the site's
-// (grew-puzzles-tooling's docs/DATABASE.md).
+// Sign-in's rules: the fingerprint of the one-time word that ties Google's answer to this page,
+// and how the site bar shows who is signed in. Who may reach a player's progress is the
+// database's rule, never the site's (grew-puzzles-tooling's docs/DATABASE.md).
 
-// The page a player started on, without anything a sign-in leaves on its address on the way back:
-// Supabase's one-time code, or Google's word that the player cancelled. The site never uses an
-// address's #, so that goes too.
-export function returnAddress(href) {
-  const url = new URL(href);
-  ['code', 'error', 'error_code', 'error_description'].forEach(key => url.searchParams.delete(key));
-  url.hash = '';
-  return url.href;
+// Google is handed the fingerprint of a one-time word, Supabase the word itself, so a token
+// Google signs for this page can't be replayed on another. The fingerprint is SHA-256's bytes
+// written as lower-case hex, two digits a byte — the form Supabase checks against.
+export function hexOf(bytes) {
+  return Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // What the site bar shows. Signed out, the Sign in button. Signed in, the player's Google picture,
