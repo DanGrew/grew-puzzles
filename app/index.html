@@ -46,6 +46,7 @@ import {
   filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
   toggleRow, filtersLabel, clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons,
 } from '../core/browse-core.js';
+import { withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 
 const tiles = document.getElementById('tiles');
 const pager = document.getElementById('pager');
@@ -58,6 +59,10 @@ const dir = document.getElementById('dir');
 let items = [];
 let types = [];
 let state;
+// The puzzles the player has finished — none until they're looked up, and never signed out — and
+// each tile on show's ✓, repainted as they arrive.
+let done = [];
+let ticks = [];
 // Each filter in the popup repaints itself pressed or not as the picks change — the popup is
 // drawn once, so a press never loses keyboard focus.
 const painters = [];
@@ -78,6 +83,8 @@ function tile(item) {
   const detail = part('detail', '');
   detail.append(...item.lines.map(text => part('line', text)));
   a.append(part('name', item.title), detail);
+  ticks.push(() => paintDone(a, item, done));
+  paintDone(a, item, done);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -127,6 +134,7 @@ function show(page) {
   clear.hidden = noTypesPicked(state);
   sort.value = state.sort;
   dir.textContent = dirLabel(state);
+  ticks = [];
   tiles.replaceChildren(...pageOf(list, page).map(tile));
   pager.replaceChildren(...pagerButtons(page, pageCount(list.length)).map(pagerButton));
 }
@@ -174,6 +182,17 @@ filters.addEventListener('click', e => e.stopPropagation());
 document.addEventListener('click', () => closeOpenFilters());
 document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 
+function tick(finished) {
+  done = finished;
+  ticks.forEach(paint => paint());
+}
+
+// The tiles never wait for the ticks. A page brought back from the browser's cache — back, after
+// finishing a puzzle — looks them up again.
+const lookUpDone = () => withDone(items, tick);
+const RETURNS = { true: lookUpDone, false: () => {} };
+window.addEventListener('pageshow', e => RETURNS[e.persisted]());
+
 // The site bar's Collections entry shows only while a collection exists.
 function load([index, published]) {
   items = browseItems(index.puzzles, published.collections);
@@ -182,6 +201,7 @@ function load([index, published]) {
   state = browseState(location.search, types);
   rows.replaceChildren(...filterRows(types).flatMap(row));
   show(1);
+  lookUpDone();
 }
 
 // A site with no collections has no collections file: that reads as none.

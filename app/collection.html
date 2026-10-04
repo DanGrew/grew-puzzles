@@ -29,6 +29,13 @@
 <script type="module" src="../ui/sign-in-ui.js"></script>
 <script type="module">
 import { slugOf, collectionView } from '../core/collection-core.js';
+import { withDone, paintDone } from '../ui/wordsearch/done-ui.js';
+
+// The puzzles the player has finished — none until they're looked up, and never signed out — and
+// each tile's ✓, repainted as they arrive.
+let done = [];
+let ticks = [];
+let tiles = [];
 
 function part(className, text) {
   const span = document.createElement('span');
@@ -48,6 +55,8 @@ function tile(spec) {
   const detail = part('detail', '');
   detail.append(...spec.lines.map(text => part('line', text)));
   a.append(part('number', spec.number), part('name', spec.title), detail);
+  ticks.push(() => paintDone(a, spec, done));
+  paintDone(a, spec, done);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -63,8 +72,21 @@ function show([index, published]) {
   document.getElementById('book').hidden = !view.found;
   document.getElementById('missing').hidden = view.found;
   document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
-  document.getElementById('tiles').replaceChildren(...view.tiles.map(tile));
+  tiles = view.tiles;
+  document.getElementById('tiles').replaceChildren(...tiles.map(tile));
+  lookUpDone();
 }
+
+function tick(finished) {
+  done = finished;
+  ticks.forEach(paint => paint());
+}
+
+// The tiles never wait for the ticks. A page brought back from the browser's cache — back, after
+// finishing a puzzle — looks them up again.
+const lookUpDone = () => withDone(tiles, tick);
+const RETURNS = { true: lookUpDone, false: () => {} };
+window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 
 Promise.all([
   fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
