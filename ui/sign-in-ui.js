@@ -5,7 +5,8 @@
 // loaded from another site, and only once Sign in is tapped. Supabase's address and public key, and
 // Google's client ID, are the only values the site holds — the database's own rules keep every
 // player's progress theirs. Its rules are core/auth-core.js's. Its client is the page's one way to
-// Supabase: the play page saves a signed-in player's finds through it (ui/wordsearch/progress-ui.js).
+// Supabase: the play page saves a signed-in player's finds through it, and its line under the words
+// opens the card (ui/wordsearch/progress-ui.js).
 import { hexOf, accountView } from '../core/auth-core.js';
 
 var SUPABASE_URL = 'https://vxschtygvtilsadgixec.supabase.co';
@@ -116,6 +117,14 @@ async function drawGoogleButton() {
 
 function showUnavailable() {
   card.querySelector('.unavailable').hidden = false;
+}
+
+// The card opened from elsewhere on the page — the play page's line under the words — and brought
+// into view, as Sign in itself would.
+export function openSignIn() {
+  setCard(true);
+  loadGoogle();
+  card.scrollIntoView({ block: 'nearest' });
 }
 
 signIn.addEventListener('click', function () {

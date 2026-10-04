@@ -62,14 +62,27 @@ export function unsaved(queue, row) {
   return queue.filter(function (entry) { return entry.row === row; }).map(function (entry) { return entry.row; });
 }
 
-// The one quiet line under the words. Signed out, the invitation to sign in. Signed in, nothing —
-// until a find's retry has failed too, when the note says it isn't saved yet; a first save that is
-// only slow says nothing.
+// ---- Signing in mid-puzzle ----
+// Signing in syncs the puzzle on screen, never a partial save: every find already made is saved,
+// and what the player saved for this puzzle elsewhere joins the board. Nothing outside the puzzle
+// is touched. Only a change from signed out to signed in does it — not the first look, not a
+// renewed sign-in.
+
+export function becameSignedIn(was, now) {
+  return !was && now;
+}
+
+// The play with the saved finds joined to it: each one not already found, after the rest. The
+// selection and the page stay as they were, and nothing is set off.
+export function mergedPlay(play, found) {
+  var joining = found.filter(function (i) { return !play.found.includes(i); });
+  return { picked: play.picked, found: play.found.concat(joining), events: [], page: play.page };
+}
+
+// The one quiet line under the words: hint, the invitation to sign in, while signed out; note,
+// signed in, once a find's retry has failed too — a first save that is only slow says nothing.
 export function saveLine(signedIn, queue) {
   var stuck = queue.some(function (entry) { return entry.failed > 1; });
-  var line = {
-    true: { true: 'Progress not saved — reconnecting', false: '' }[stuck],
-    false: 'Sign in to save your progress — or just play.'
-  }[signedIn];
-  return { text: line, shown: line !== '' };
+  var note = signedIn && stuck;
+  return { shown: !signedIn || note, hint: !signedIn, note: note };
 }

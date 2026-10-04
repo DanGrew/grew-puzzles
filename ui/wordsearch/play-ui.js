@@ -6,6 +6,7 @@ import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
   countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
+import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -132,8 +133,14 @@ function showPuzzle(opened, found) {
   wireTextSize();
   wireWords();
   wireWordsFit();
-  wireProgress(playEl('save-line'));
+  wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
+
+  // Signed in mid-puzzle: what was saved for this puzzle elsewhere joins the board.
+  function joinSaved(found) {
+    play = mergedPlay(play, found);
+    render();
+  }
 
   // A page's grid on both sides — the solution side, on screen only, shows every real letter —
   // its tab picked on both, and its finds drawn. The word list never changes with it.

@@ -2,13 +2,10 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import { playBoard } from '../../../core/wordsearch/play-core.js';
 import {
-  findRow, savedRows, restoredFinds, savedAnswer, queued, attempted, keptQueue, unsaved, saveLine
+  findRow, savedRows, restoredFinds, savedAnswer, queued, attempted, keptQueue, unsaved, becameSignedIn, mergedPlay, saveLine
 } from '../../../core/wordsearch/progress-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
-
-const HINT = 'Sign in to save your progress — or just play.';
-const NOTE = 'Progress not saved — reconnecting';
 
 // Built per test, never at load: the mutation runner doesn't reload this file between mutants.
 let WORDS;
@@ -121,25 +118,48 @@ describe('finds waiting to be saved', () => {
   });
 });
 
+describe('signing in mid-puzzle', () => {
+  it('syncs only on the change from signed out to signed in', () => {
+    expect(becameSignedIn(false, true)).toBe(true);
+    expect(becameSignedIn(true, true)).toBe(false);
+    expect(becameSignedIn(false, false)).toBe(false);
+    expect(becameSignedIn(true, false)).toBe(false);
+  });
+
+  it('joins the finds saved elsewhere to the board, each once, after those already found', () => {
+    const play = { picked: [[1, 1]], found: [4, 0], events: ['complete'], page: 2 };
+    expect(mergedPlay(play, [0, 3, 6])).toEqual({ picked: [[1, 1]], found: [4, 0, 3, 6], events: [], page: 2 });
+  });
+
+  it('leaves the board as it was with nothing saved elsewhere', () => {
+    const play = { picked: [], found: [1], events: [], page: 0 };
+    expect(mergedPlay(play, [])).toEqual(play);
+    expect(mergedPlay(play, [1])).toEqual(play);
+  });
+});
+
 describe('the line under the words', () => {
   const waiting = failed => [{ row: {}, failed: 0 }, { row: {}, failed: failed }];
+  const hint = { shown: true, hint: true, note: false };
+  const none = { shown: false, hint: false, note: false };
+  const note = { shown: true, hint: false, note: true };
 
   it('signed out, invites the player to sign in — however the saves stood', () => {
-    expect(saveLine(false, [])).toEqual({ text: HINT, shown: true });
-    expect(saveLine(false, waiting(5))).toEqual({ text: HINT, shown: true });
+    expect(saveLine(false, [])).toEqual(hint);
+    expect(saveLine(false, waiting(5))).toEqual(hint);
   });
 
   it('signed in, says nothing while every find is saved', () => {
-    expect(saveLine(true, [])).toEqual({ text: '', shown: false });
+    expect(saveLine(true, [])).toEqual(none);
   });
 
   it('signed in, says nothing for a save that is only slow, or failed once', () => {
-    expect(saveLine(true, waiting(0))).toEqual({ text: '', shown: false });
-    expect(saveLine(true, waiting(1))).toEqual({ text: '', shown: false });
+    expect(saveLine(true, waiting(0))).toEqual(none);
+    expect(saveLine(true, waiting(1))).toEqual(none);
   });
 
   it('signed in, notes the find isn\'t saved once its retry has failed too', () => {
-    expect(saveLine(true, waiting(2))).toEqual({ text: NOTE, shown: true });
-    expect(saveLine(true, waiting(7))).toEqual({ text: NOTE, shown: true });
+    expect(saveLine(true, waiting(2))).toEqual(note);
+    expect(saveLine(true, waiting(7))).toEqual(note);
   });
 });

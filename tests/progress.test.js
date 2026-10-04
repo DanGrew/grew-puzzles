@@ -97,7 +97,7 @@ function watchTheLine(context) {
     window.lineShown = [];
     new MutationObserver(() => {
       const line = document.getElementById('save-line');
-      const now = line && !line.hidden ? line.textContent : '';
+      const now = line && !line.hidden ? line.innerText.trim() : '';
       if (now && window.lineShown[window.lineShown.length - 1] !== now) window.lineShown.push(now);
     }).observe(document, { subtree: true, childList: true, attributes: true, characterData: true });
   });
@@ -129,6 +129,8 @@ async function find(page, ...words) {
 
 const count = page => page.locator('#count');
 const line = page => page.locator('#save-line');
+const hint = page => page.locator('#save-hint');
+const note = page => page.locator('#save-note');
 const foundLines = page => page.locator('#overlay line.mark-found');
 const crossedOff = page => page.locator('#words li.done');
 const tab = (page, n) => page.locator('#tabs .tab').nth(n);
@@ -266,8 +268,9 @@ test('a finished puzzle reopens finished — every word found, Puzzle complete �
 test('signed out, one quiet line invites the player to sign in, finds work as ever, and a reload forgets them — Supabase never asked', async ({ context }) => {
   const table = await playing(context, { signedIn: false });
   const page = await open(context);
-  await expect(line(page)).toHaveText(HINT);
-  await expect(line(page)).toBeVisible();
+  await expect(hint(page)).toHaveText(HINT);
+  await expect(hint(page)).toBeVisible();
+  await expect(note(page)).toBeHidden();
   await find(page, CAT);
   await expect(count(page)).toHaveText('1/8');
   await expect(crossedOff(page)).toHaveText(['Cat']);
@@ -317,8 +320,9 @@ test('signed in with the connection off, play carries on and a note says the fin
   table.offline = true;
   await find(page, CAT);
   await expect(count(page)).toHaveText('1/8');
-  await expect(line(page)).toHaveText(NOTE);
-  await expect(line(page)).toBeVisible();
+  await expect(note(page)).toHaveText(NOTE);
+  await expect(note(page)).toBeVisible();
+  await expect(hint(page)).toBeHidden();
   await find(page, COW);
   await expect(count(page)).toHaveText('2/8');
   await expect(crossedOff(page)).toHaveText(['Cat', 'Cow']);
@@ -382,25 +386,45 @@ test('flipping to the solution and back leaves the saved finds as they were', as
   await expect(count(await open(context))).toHaveText('2/8');
 });
 
-test('signing in mid-puzzle keeps the earlier finds on screen but doesn\'t save them; finds after are saved', async ({ context }) => {
-  const table = await playing(context, { signedIn: false });
+// Hen was saved on another device; Cat is found here before signing in.
+test('signing in mid-puzzle syncs the whole puzzle: the finds on screen are saved, and those saved elsewhere join the board', async ({ context }) => {
+  const table = progressTable();
+  table.rows.push({ user_id: PLAYER.id, puzzle: 'WSCH-0007', page: 0, start_row: 6, start_col: 3, direction: 'NE' });
+  table.rows.push({ user_id: PLAYER.id, puzzle: 'WSCH-0001', page: 0, start_row: 0, start_col: 0, direction: 'E' });
+  await playing(context, { signedIn: false, table });
   const page = await open(context);
   await find(page, CAT);
+  await expect(count(page)).toHaveText('1/8');
   const signedIn = session(PLAYER);
   await page.evaluate(async tokens => {
     const { client } = await import('/ui/sign-in-ui.js');
     await client.auth.setSession(tokens);
   }, { access_token: signedIn.access_token, refresh_token: signedIn.refresh_token });
+
   await expect(line(page)).toBeHidden();
-  await find(page, COW);
   await expect(count(page)).toHaveText('2/8');
-  await expect.poll(() => table.rows.length).toBe(1);
-  expect(table.rows[0]).toMatchObject({ start_row: 1, start_col: 2, direction: 'SE' });
+  await expect(crossedOff(page)).toHaveText(['Cat', 'Hen']);
+  await expect(foundLines(page)).toHaveCount(2);
+  await expect.poll(() => table.rows.filter(r => r.puzzle === 'WSCH-0007').length).toBe(2);
+  expect(table.reads).toEqual(['WSCH-0007']);
+  await find(page, COW);
+  await expect(count(page)).toHaveText('3/8');
+  await expect.poll(() => table.rows.filter(r => r.puzzle === 'WSCH-0007').length).toBe(3);
   await page.close();
 
   const later = await open(context);
-  await expect(count(later)).toHaveText('1/8');
-  await expect(crossedOff(later)).toHaveText(['Cow']);
+  await expect(count(later)).toHaveText('3/8');
+  await expect(crossedOff(later)).toHaveText(['Cat', 'Cow', 'Hen']);
+});
+
+test('the line\'s Sign in opens the sign-in card', async ({ context }) => {
+  await playing(context, { signedIn: false });
+  await context.route('https://accounts.google.com/**', route => route.abort());
+  const page = await open(context);
+  await expect(page.locator('#sign-in-card')).toBeHidden();
+  await page.locator('#save-sign-in').click();
+  await expect(page.locator('#sign-in-card')).toBeVisible();
+  await expect(page.locator('.site .sign-in')).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('signing out mid-puzzle brings the line back, and finds after aren\'t saved', async ({ context }) => {
@@ -410,7 +434,8 @@ test('signing out mid-puzzle brings the line back, and finds after aren\'t saved
   await expect.poll(() => table.rows.length).toBe(1);
   await page.locator('.site .avatar').click();
   await page.locator('#account-menu .sign-out').click();
-  await expect(line(page)).toHaveText(HINT);
+  await expect(hint(page)).toHaveText(HINT);
+  await expect(hint(page)).toBeVisible();
   await find(page, COW);
   await expect(count(page)).toHaveText('2/8');
   await page.waitForTimeout(300);
