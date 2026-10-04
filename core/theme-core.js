@@ -63,9 +63,9 @@ export function themeScale(cardWidth) {
   return Math.min(1, cardWidth / 691);
 }
 
-// A phone: a window no wider than the play page's phone layout (styles/play.css, 760 px).
-export function isPhone(windowWidth) {
-  return windowWidth <= 760;
+// A phone: a screen no wider than the play page's phone layout (styles/play.css, 760 px).
+export function isPhone(screenWidth) {
+  return screenWidth <= 760;
 }
 
 // The room the words card leaves the character beside it, under the grid in templates beside and
