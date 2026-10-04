@@ -50,7 +50,8 @@
   });
   panel.addEventListener('click', function (e) { e.stopPropagation(); });
   document.addEventListener('click', function () { setMenu(false); });
+  // Escape is the menu's only while it is open — closed, the key belongs to the rest of the page.
   document.addEventListener('keydown', function (e) {
-    [closeAndFocus].filter(function () { return e.key === 'Escape'; }).forEach(function (f) { f(); });
+    [closeAndFocus].filter(function () { return e.key === 'Escape' && !panel.hidden; }).forEach(function (f) { f(); });
   });
 })();

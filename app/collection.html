@@ -35,12 +35,13 @@ function part(className, text) {
   return span;
 }
 
-// A numbered tile: the collection's number on its band, in its type's colour, then the puzzle's
+// A numbered tile: the collection's number on its band, in its difficulty's colour, then the puzzle's
 // tile as browse shows it.
 function tile(spec) {
   const a = document.createElement('a');
   a.className = 'tile numbered';
   a.dataset.type = spec.type;
+  a.dataset.tone = spec.tone;
   a.href = spec.href;
   const detail = part('detail', '');
   detail.append(...spec.lines.map(text => part('line', text)));

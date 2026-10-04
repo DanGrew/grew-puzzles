@@ -253,12 +253,56 @@ function knownWordsLayout(saved) {
 
 // Whether the choice was stored; a page that can't store it keeps it until it closes.
 export function saveWordsLayout(write, layout) {
+  return storeChoice(write, layout);
+}
+
+function storeChoice(write, choice) {
   try {
-    write(layout);
+    write(choice);
     return true;
   } catch (e) {
     return false;
   }
+}
+
+// ---- How big the grid and its words are ----
+// Five sizes, named by the grid's letters at their widest: Normal is the page as it has always
+// been. The words scale with the letters, by the same ratio — one setting, so the word list
+// keeps taking its size from the grid card. Kept per device, as where the words sit is.
+
+function textSizeLetters() {
+  return { tiny: 10, small: 15, normal: 22, large: 27, huge: 32 };
+}
+
+// The size's ratio to Normal: styles/play.css scales the grid's letters and the words by it.
+export function textScale(size) {
+  return textSizeLetters()[size] / textSizeLetters().normal;
+}
+
+// The text-size menu, smallest first: each size, its name, its ratio and whether it's the one
+// picked.
+export function textSizeMenu(picked) {
+  var labels = { tiny: 'Tiny', small: 'Small', normal: 'Normal', large: 'Large', huge: 'Huge' };
+  return Object.keys(textSizeLetters()).map(function (size) {
+    return { size: size, label: labels[size], scale: textScale(size), picked: size === picked };
+  });
+}
+
+// read() returns the stored size; a page that can't read it, or reads anything else, gets Normal.
+export function savedTextSize(read) {
+  try {
+    return knownTextSize(read());
+  } catch (e) {
+    return 'normal';
+  }
+}
+
+function knownTextSize(saved) {
+  return Object.keys(textSizeLetters()).includes(saved) ? saved : 'normal';
+}
+
+export function saveTextSize(write, size) {
+  return storeChoice(write, size);
 }
 
 // ---- How the words fill their card ----
@@ -272,8 +316,8 @@ export function saveWordsLayout(write, layout) {
 // wordWidths (each as revealed, so a reveal never reflows) and their rowHeight — and the list's
 // colGap/rowGap; the grid's gridCols × gridRows letters at the page's own naturalCell size, and
 // the grid card's band, tabs and edges round them (cardChromeWidth/cardChromeHeight); the words
-// card's own chromeWidth/chromeHeight round its list; and the page's pageWidth and pageGap
-// between grid and list.
+// card's own chromeWidth/chromeHeight round its list; the page's pageWidth and pageGap between
+// grid and list; and the player's text size as its scale.
 // sits is where the list goes; cell the grid's letter size, and cardWidth × cardHeight its card
 // at that size; wordSize the words' text size; columns how many, wordWidth each column's, and
 // places each word's [row, column], from 1.
@@ -333,12 +377,16 @@ function besideWidth(w, card) {
 
 // Beside: everything at the page's own size if the words fit beside the grid; else smaller words,
 // a pixel at a time, down to 13px — the printout's — so the grid keeps its letters; else smaller
-// letters with those words, a pixel at a time, down to 26px, the smallest the page draws
-// (play.css's --cell). The first that leaves the words room; only when none does, under.
+// letters with those words, a pixel at a time, down to 26px, the smallest the page draws at
+// Normal (play.css's --cell). At another text size both floors scale with it — m.scale, the
+// size's textScale — never below 11px words and 20px letters, the smallest a player can read and
+// tap, and never above the page's own words. The first that leaves the words room; only when
+// none does, under.
 function besideFit(m) {
-  var wordSteps = Math.floor(m.wordSize - 13) + 1, smallWords = m.wordSize - wordSteps + 1;
+  var smallestWords = Math.min(m.wordSize, Math.max(11, 13 * m.scale)), smallestCell = Math.max(20, 26 * m.scale);
+  var wordSteps = Math.floor(m.wordSize - smallestWords) + 1, smallWords = m.wordSize - wordSteps + 1;
   var sizes = Array.from({ length: wordSteps }, function (_, i) { return { cell: m.naturalCell, wordSize: m.wordSize - i }; })
-    .concat(Array.from({ length: Math.floor(m.naturalCell - 26) }, function (_, i) { return { cell: m.naturalCell - i - 1, wordSize: smallWords }; }));
+    .concat(Array.from({ length: Math.floor(m.naturalCell - smallestCell) }, function (_, i) { return { cell: m.naturalCell - i - 1, wordSize: smallWords }; }));
   var size = sizes.find(function (s) { return besideWidth(wordsAt(m, s.wordSize), gridCard(m, s.cell)) <= m.pageWidth; });
   var beside = Object.assign({ sits: 'right', columns: besideColumns }, size);
   return { true: underFit(m), false: beside }[size === undefined];

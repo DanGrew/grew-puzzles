@@ -69,6 +69,13 @@ test('Escape closes the menu and returns focus to the burger', async ({ page }) 
   await expect(burger).toBeFocused();
 });
 
+test('Escape with the menu closed leaves the keyboard where it was', async ({ page }) => {
+  await page.goto('/app/');
+  await page.locator('#sort').focus();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#sort')).toBeFocused();
+});
+
 test('other keys leave the menu open', async ({ page }) => {
   await page.goto('/app/');
   await page.locator('.site .burger').click();

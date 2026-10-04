@@ -130,26 +130,246 @@ function mixed(count) {
 
 const tileNames = page => page.locator('.tiles .tile .name');
 const tileTypes = page => page.locator('.tiles .tile .detail .line:first-child');
-const chip = (page, name) => page.locator('#filters').getByRole('button', { name, exact: true });
+// The filters live in a popup the Filters button opens: a chip per type, and a name per difficulty.
+const filterButton = page => page.locator('#filter-button');
+const popup = page => page.locator('#filters');
+const chip = (page, name) => popup(page).getByRole('button', { name, exact: true, includeHidden: true });
+const chips = page => popup(page).locator('.chip');
+const level = (page, name) => popup(page).locator('.level', { hasText: new RegExp(`^${name}$`) });
+async function openFilters(page) {
+  await filterButton(page).click();
+  await expect(popup(page)).toBeVisible();
+}
+// Picks a type the way a player does: open the popup, press the type, close the popup.
+async function pick(page, name) {
+  await openFilters(page);
+  await chip(page, name).click();
+  await page.keyboard.press('Escape');
+  await expect(popup(page)).toBeHidden();
+}
 
-test('above the grid, a filter for each type a puzzle has, none picked', async ({ page }) => {
+test('above the grid, a Filters button then the sort, no type filters showing, none picked', async ({ page }) => {
   await serve(page, mixed(30));
   await page.goto('/app/');
-  await expect(page.locator('#filters button')).toHaveText(['Mirra?e', 'Missing', 'Vanilla']);
-  await expect(page.locator('#filters button[aria-pressed="false"]')).toHaveCount(3);
-  await expect(page.locator('#clear')).toBeHidden();
-  const filters = await page.locator('#filters').boundingBox();
+  await expect(page.locator('.controls > :visible')).toHaveCount(3);
+  await expect(page.locator('.controls > :visible').first()).toHaveText('Filters');
+  await expect(page.locator('.controls > :visible').nth(1)).toHaveClass('sort');
+  await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e']);
+  await expect(chips(page).first()).toBeHidden();
+  await expect(popup(page).locator('[aria-pressed="true"]')).toHaveCount(0);
+  const button = await filterButton(page).boundingBox();
   const grid = await page.locator('#tiles').boundingBox();
-  expect(filters.y + filters.height).toBeLessThanOrEqual(grid.y);
+  expect(button.y + button.height).toBeLessThanOrEqual(grid.y);
   await expect(page.locator('#sort')).toHaveValue('date');
   await expect(page.locator('#dir')).toHaveText('Newest first');
+});
+
+test('the Filters button counts the types picked', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  await expect(filterButton(page)).toHaveText('Filters');
+  await pick(page, 'Missing');
+  await expect(filterButton(page)).toHaveText('Filters · 1');
+  await pick(page, 'Vanilla');
+  await expect(filterButton(page)).toHaveText('Filters · 2');
+});
+
+test('the popup opens over the page without moving the tiles, and closes back to its button', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  const before = await page.locator('#tiles').boundingBox();
+  await openFilters(page);
+  await expect(filterButton(page)).toHaveAttribute('aria-expanded', 'true');
+  expect(await page.locator('#tiles').boundingBox()).toEqual(before);
+  const box = await popup(page).boundingBox();
+  expect(box.y).toBeLessThan(before.y + 20);
+
+  // Pressing outside it.
+  await page.mouse.click(5, box.y + box.height + 40);
+  await expect(popup(page)).toBeHidden();
+  await expect(filterButton(page)).toHaveAttribute('aria-expanded', 'false');
+  await expect(filterButton(page)).toBeFocused();
+
+  // Escape, from a type inside it.
+  await openFilters(page);
+  await chip(page, 'Missing').focus();
+  await page.keyboard.press('Escape');
+  await expect(popup(page)).toBeHidden();
+  await expect(filterButton(page)).toBeFocused();
+
+  // The Filters button again.
+  await openFilters(page);
+  await filterButton(page).click();
+  await expect(popup(page)).toBeHidden();
+  await expect(filterButton(page)).toBeFocused();
+});
+
+test('pressing the sort while the popup is open closes it and leaves the keyboard on the sort', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  await openFilters(page);
+  await page.locator('#dir').click();
+  await expect(popup(page)).toBeHidden();
+  await expect(page.locator('#dir')).toBeFocused();
+});
+
+// One puzzle of each type the site has a difficulty for, as the real index holds them.
+function graded() {
+  const served = index(6);
+  ['Vanilla', 'Saga', 'Wildcards', 'Missing', 'Repeats', 'Mirra?e'].forEach((type, i) => { served.puzzles[i].type = type; });
+  return served;
+}
+const rowsOf = page => popup(page).locator('.filter-rows > *').evaluateAll(cells => {
+  const rows = [];
+  for (let i = 0; i < cells.length; i += 2) {
+    rows.push([cells[i].innerText.trim(), [...cells[i + 1].querySelectorAll('.chip')].map(c => c.textContent)]);
+  }
+  return rows;
+});
+
+test('the popup has a row per difficulty, Easy to Extreme, its name on the left and its types A to Z on the right', async ({ page }) => {
+  await serve(page, graded());
+  await page.goto('/app/');
+  await openFilters(page);
+  expect(await rowsOf(page)).toEqual([
+    ['Easy', ['Vanilla']],
+    ['Medium', ['Saga', 'Wildcards']],
+    ['Hard', ['Missing', 'Repeats']],
+    ['Extreme', ['Mirra?e']],
+  ]);
+  const lefts = locator => locator.evaluateAll(els => els.map(el => Math.round(el.getBoundingClientRect().left)));
+  const names = await lefts(popup(page).locator('.level'));
+  const firsts = await lefts(popup(page).locator('.types .chip:first-child'));
+  expect(new Set(names).size).toBe(1);
+  expect(new Set(firsts).size).toBe(1);
+  expect(firsts[0]).toBeGreaterThan(names[0]);
+});
+
+test('each difficulty\'s name is underlined in its colour, the colour of its types\' tile strips', async ({ page }) => {
+  await serve(page, graded());
+  await page.goto('/app/');
+  await openFilters(page);
+  const underline = name => level(page, name).evaluate(el => getComputedStyle(el).textDecorationColor);
+  const strip = type => page.locator(`.tiles .tile[data-type="${type}"]`).evaluate(el => getComputedStyle(el, '::before').backgroundColor);
+  expect(await underline('Easy')).toBe(STRIP.green);
+  expect(await underline('Medium')).toBe(STRIP.yellow);
+  expect(await underline('Hard')).toBe(STRIP.orange);
+  expect(await underline('Extreme')).toBe(STRIP.red);
+  expect(await underline('Medium')).toBe(await strip('Saga'));
+  expect(await underline('Hard')).toBe(await strip('Repeats'));
+  await expect(level(page, 'Easy')).toHaveCSS('text-decoration-line', 'underline');
+});
+
+test('pressing a type fills it in its difficulty\'s colour and narrows the tiles at once, the popup staying open', async ({ page }) => {
+  await serve(page, mixed(9));
+  await page.goto('/app/');
+  await openFilters(page);
+  await chip(page, 'Missing').click();
+  await expect(chip(page, 'Missing')).toHaveCSS('background-color', STRIP.orange);
+  await expect(tileTypes(page)).toHaveText(Array(3).fill('Missing'));
+  await expect(popup(page)).toBeVisible();
+  await expect(page.locator('#apply, button:text-is("Apply")')).toHaveCount(0);
+  await chip(page, 'Vanilla').click();
+  await expect(chip(page, 'Vanilla')).toHaveCSS('background-color', STRIP.green);
+  await expect(tileNames(page)).toHaveText(['Puzzle 8', 'Puzzle 7', 'Puzzle 5', 'Puzzle 4', 'Puzzle 2', 'Puzzle 1']);
+  // The popup is never redrawn under the player, so the type just pressed keeps the keyboard.
+  await expect(chip(page, 'Vanilla')).toBeFocused();
+});
+
+test('a difficulty\'s name picks its whole row, then the rest of it, then unpicks it, never touching other rows', async ({ page }) => {
+  await serve(page, graded());
+  await page.goto('/app/');
+  await openFilters(page);
+  await chip(page, 'Vanilla').click();
+  await level(page, 'Hard').click();
+  await expect(chip(page, 'Missing')).toHaveAttribute('aria-pressed', 'true');
+  await expect(chip(page, 'Repeats')).toHaveAttribute('aria-pressed', 'true');
+  await expect(level(page, 'Hard')).toHaveAttribute('aria-pressed', 'true');
+  await expect(level(page, 'Hard')).toHaveCSS('background-color', STRIP.orange);
+  await expect(tileTypes(page)).toHaveText(['Repeats', 'Missing', 'Vanilla']);
+
+  await level(page, 'Hard').click();
+  await expect(popup(page).locator('.chip[aria-pressed="true"]')).toHaveText(['Vanilla']);
+  await expect(level(page, 'Hard')).toHaveAttribute('aria-pressed', 'false');
+
+  await chip(page, 'Saga').click();
+  await expect(level(page, 'Medium')).toHaveAttribute('aria-pressed', 'false');
+  await level(page, 'Medium').click();
+  await expect(popup(page).locator('.chip[aria-pressed="true"]')).toHaveText(['Vanilla', 'Saga', 'Wildcards']);
+  await expect(level(page, 'Medium')).toHaveAttribute('aria-pressed', 'true');
+  await expect(level(page, 'Easy')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page).toHaveURL(/\?type=Vanilla&type=Saga&type=Wildcards$/);
+});
+
+test('Collections has its own row after Extreme with nothing on the left; Clear filters sits at the bottom while something is picked', async ({ page }) => {
+  await serve(page, graded(), [issue()]);
+  await page.goto('/app/');
+  await openFilters(page);
+  expect((await rowsOf(page)).slice(-2)).toEqual([['Extreme', ['Mirra?e']], ['', ['Collections']]]);
+  await expect(popup(page).locator('.level:visible')).toHaveCount(4);
+  await expect(page.locator('#clear')).toBeHidden();
+  await chip(page, 'Collections').click();
+  await expect(chip(page, 'Collections')).toHaveCSS('background-color', STRIP.blue);
+  await expect(page.locator('#clear')).toBeVisible();
+  const clear = await page.locator('#clear').boundingBox();
+  const rows = await popup(page).locator('.filter-rows').boundingBox();
+  expect(clear.y).toBeGreaterThanOrEqual(rows.y + rows.height);
+  await page.locator('#clear').click();
+  await expect(page.locator('#clear')).toBeHidden();
+  await expect(popup(page)).toBeVisible();
+  await expect(page.locator('#total')).toHaveText('6 puzzles · 1 collection');
+});
+
+test('a difficulty with no type has no row, and a type with no difficulty sits under Easy, in green', async ({ page }) => {
+  const served = index(3);
+  ['Vanilla', 'Brand New', 'Mirra?e'].forEach((type, i) => { served.puzzles[i].type = type; });
+  await serve(page, served);
+  await page.goto('/app/');
+  await openFilters(page);
+  expect(await rowsOf(page)).toEqual([['Easy', ['Brand New', 'Vanilla']], ['Extreme', ['Mirra?e']]]);
+  await chip(page, 'Brand New').click();
+  await expect(chip(page, 'Brand New')).toHaveCSS('background-color', STRIP.green);
+});
+
+test('on a phone the popup fits the screen, its columns side by side, each name level with its first types', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  const served = graded();
+  served.puzzles.push(...['Alphabet Soup', 'Backwards', 'Crossover', 'Diagonals'].map((type, i) => ({
+    hiddenId: `WSCH-01${i}0`, type, created: '2026-02-01', title: type,
+  })));
+  await serve(page, served, [issue()]);
+  await page.goto('/app/');
+  await openFilters(page);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  const box = await popup(page).boundingBox();
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(360);
+  // Each named row: its name's box, and its types' column and first type's box.
+  const rows = await popup(page).locator('.filter-rows > .types').evaluateAll(cells => cells.map(types => {
+    const name = types.previousElementSibling.querySelector('.level').getBoundingClientRect();
+    const column = types.getBoundingClientRect();
+    return { name: { top: name.top, right: name.right }, left: column.left, right: column.right,
+      first: types.querySelector('.chip').getBoundingClientRect().top };
+  }));
+  expect(rows).toHaveLength(5);
+  rows.slice(0, 4).forEach(row => {
+    expect(row.left).toBeGreaterThanOrEqual(row.name.right);
+    expect(row.right).toBeLessThanOrEqual(box.x + box.width);
+    expect(Math.abs(row.name.top - row.first)).toBeLessThan(1);
+  });
+  // Easy wraps: its five types take more than one line, all inside the right column.
+  const easy = popup(page).locator('.types').first();
+  const tops = await easy.locator('.chip').evaluateAll(els => els.map(el => Math.round(el.getBoundingClientRect().top)));
+  expect(new Set(tops).size).toBeGreaterThan(1);
+  const lefts = await easy.locator('.chip').evaluateAll(els => els.map(el => el.getBoundingClientRect().left));
+  lefts.forEach(left => expect(left).toBeGreaterThanOrEqual(rows[0].left));
 });
 
 test('picking Missing shows only Missing puzzles, back on page 1', async ({ page }) => {
   await serve(page, mixed(30));
   await page.goto('/app/');
   await page.locator('#pager').getByRole('button', { name: 'Page 2' }).click();
-  await chip(page, 'Missing').click();
+  await pick(page, 'Missing');
   await expect(chip(page, 'Missing')).toHaveAttribute('aria-pressed', 'true');
   await expect(tileTypes(page)).toHaveText(Array(10).fill('Missing'));
   await expect(tileNames(page).first()).toHaveText('Puzzle 29');
@@ -160,21 +380,24 @@ test('picking Missing shows only Missing puzzles, back on page 1', async ({ page
 test('picking two types shows puzzles of either', async ({ page }) => {
   await serve(page, mixed(9));
   await page.goto('/app/');
-  await chip(page, 'Missing').click();
-  await chip(page, 'Mirra?e').click();
+  await pick(page, 'Missing');
+  await pick(page, 'Mirra?e');
   await expect(tileNames(page)).toHaveText(['Puzzle 9', 'Puzzle 8', 'Puzzle 6', 'Puzzle 5', 'Puzzle 3', 'Puzzle 2']);
-  await chip(page, 'Missing').click();
+  await pick(page, 'Missing');
   await expect(tileTypes(page)).toHaveText(Array(3).fill('Mirra?e'));
 });
 
 test('clearing the filters shows every puzzle again', async ({ page }) => {
   await serve(page, mixed(30));
   await page.goto('/app/');
-  await chip(page, 'Vanilla').click();
+  await pick(page, 'Vanilla');
   await expect(page.locator('#total')).toHaveText('10 puzzles');
+  await openFilters(page);
   await page.locator('#clear').click();
   await expect(page.locator('#total')).toHaveText('30 puzzles');
-  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveCount(0);
+  await expect(filterButton(page)).toHaveText('Filters');
+  await expect(filterButton(page)).toBeFocused();
+  await expect(page.locator('#filters .chip[aria-pressed="true"]')).toHaveCount(0);
   await expect(page.locator('#clear')).toBeHidden();
   await expect(page).toHaveURL(/\/app\/$/);
 });
@@ -209,7 +432,7 @@ test('sorting by type groups the types, ties newest first', async ({ page }) => 
 test('sorting and filtering together shows the filtered puzzles in the chosen order', async ({ page }) => {
   await serve(page, mixed(9));
   await page.goto('/app/');
-  await chip(page, 'Vanilla').click();
+  await pick(page, 'Vanilla');
   await page.locator('#dir').click();
   await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 4', 'Puzzle 7']);
 });
@@ -218,7 +441,7 @@ test('a filter and a sort survive opening a puzzle and pressing back', async ({ 
   await serve(page, mixed(9));
   await page.route(/\/puzzles\/.*WSCH-\d+\.json$/, r => r.fulfill({ json: {} }));
   await page.goto('/app/');
-  await chip(page, 'Mirra?e').click();
+  await pick(page, 'Mirra?e');
   await page.locator('#sort').selectOption('title');
   await page.locator('#dir').click();
   await expect(page).toHaveURL(/\?type=Mirra%3Fe&sort=title&dir=asc$/);
@@ -231,10 +454,13 @@ test('a filter and a sort survive opening a puzzle and pressing back', async ({ 
   await expect(tileNames(page)).toHaveText(['Puzzle 3', 'Puzzle 6', 'Puzzle 9']);
 });
 
-test('a shared link opens with its filter and sort set', async ({ page }) => {
+test('a shared link opens with its filter and sort set, the popup closed and the button counting', async ({ page }) => {
   await serve(page, mixed(9));
   await page.goto('/app/?type=Mirra%3Fe&type=Vanilla&sort=title&dir=asc');
-  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveText(['Mirra?e', 'Vanilla']);
+  await expect(filterButton(page)).toHaveText('Filters · 2');
+  await expect(popup(page)).toBeHidden();
+  await expect(page.locator('#filters .chip[aria-pressed="true"]')).toHaveText(['Vanilla', 'Mirra?e']);
+  await openFilters(page);
   await expect(page.locator('#clear')).toBeVisible();
   await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4', 'Puzzle 6', 'Puzzle 7', 'Puzzle 9']);
 });
@@ -275,16 +501,16 @@ test('a puzzle shows once in browse, however many collections hold it', async ({
   await expect(page.locator('.tiles .tile .number')).toHaveCount(0);
 });
 
-test('the Collections filter comes first and shows only collections; a type shows none', async ({ page }) => {
+test('the Collections filter comes after the types and shows only collections; a type shows none', async ({ page }) => {
   await serve(page, mixed(6), [issue()]);
   await page.goto('/app/');
-  await expect(page.locator('#filters button')).toHaveText(['Collections', 'Mirra?e', 'Missing', 'Vanilla']);
-  await chip(page, 'Collections').click();
+  await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e', 'Collections']);
+  await pick(page, 'Collections');
   await expect(tileNames(page)).toHaveText(['Issue #1']);
   await expect(page.locator('#total')).toHaveText('1 collection');
   await expect(page).toHaveURL(/\/app\/\?type=Collections$/);
-  await chip(page, 'Collections').click();
-  await chip(page, 'Vanilla').click();
+  await pick(page, 'Collections');
+  await pick(page, 'Vanilla');
   await expect(tileNames(page)).toHaveText(['Puzzle 4', 'Puzzle 1']);
   await expect(collectionTiles(page)).toHaveCount(0);
 });
@@ -307,14 +533,15 @@ test('collections sort by name among titles, together as Collection by type, and
 test('a link from before collections opens as it always did', async ({ page }) => {
   await serve(page, mixed(9), [issue()]);
   await page.goto('/app/?type=Mirra%3Fe&type=Vanilla&sort=title&dir=asc');
-  await expect(page.locator('#filters button[aria-pressed="true"]')).toHaveText(['Mirra?e', 'Vanilla']);
+  await expect(page.locator('#filters .chip[aria-pressed="true"]')).toHaveText(['Vanilla', 'Mirra?e']);
   await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4', 'Puzzle 6', 'Puzzle 7', 'Puzzle 9']);
 });
 
 test('with no collections, there is no Collections filter and none in the menu', async ({ page }) => {
   await serve(page, mixed(3));
   await page.goto('/app/?type=Collections');
-  await expect(page.locator('#filters button')).toHaveText(['Mirra?e', 'Missing', 'Vanilla']);
+  await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e']);
+  await expect(filterButton(page)).toHaveText('Filters');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
   await page.locator('.site .burger').click();
   await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches']);
@@ -380,13 +607,13 @@ test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blu
   ]);
 });
 
-test('the tile green is lighter than the band green, which the heading and pills keep', async ({ page }) => {
+test('the tile green is lighter than the band green, which the heading keeps; a picked type takes the tile green', async ({ page }) => {
   await serve(page, mixed(3));
   await page.goto('/app/');
-  await chip(page, 'Vanilla').click();
+  await pick(page, 'Vanilla');
   const band = 'rgb(31, 111, 92)';
   await expect(page.locator('.browse-head')).toHaveCSS('background-color', band);
-  await expect(chip(page, 'Vanilla')).toHaveCSS('background-color', band);
+  await expect(chip(page, 'Vanilla')).toHaveCSS('background-color', STRIP.green);
   await expect(chip(page, 'Missing')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   const lightness = rgb => rgb.match(/\d+/g).map(Number).reduce((a, b) => a + b);
   expect(lightness(STRIP.green)).toBeGreaterThan(lightness(band) + 200);
@@ -416,10 +643,10 @@ test('filtering, sorting and paging leave every tile its type\'s colour', async 
   await coloured();
   await page.locator('#sort').selectOption('type');
   await coloured();
-  await chip(page, 'Mirra?e').click();
+  await pick(page, 'Mirra?e');
   await expect(tileTypes(page)).toHaveText(Array(10).fill('Mirra?e'));
   await coloured();
-  await chip(page, 'Collections').click();
+  await pick(page, 'Collections');
   await expect(page.locator('#total')).toHaveText('10 puzzles · 1 collection');
   await coloured();
   expect(new Set((await strips(page)).map(t => t.strip))).toEqual(new Set([STRIP.red, STRIP.blue]));
