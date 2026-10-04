@@ -16,3 +16,8 @@ There is no build step: the pages are plain HTML, CSS and JavaScript, served as 
 `package.json` carries only the test tooling (vitest, Playwright, StrykerJS).
 
 How to change it lives in `CLAUDE.md`, the index over this repo — start there rather than here.
+
+## Licence
+
+© 2026 Dan Grew. All rights reserved — the pages, the puzzles and the code are not licensed for
+reuse. `vendor/` holds third-party code under its own licence, beside it.
