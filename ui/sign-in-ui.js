@@ -5,7 +5,7 @@
 import { returnAddress, accountView } from '../core/auth-core.js';
 
 var SUPABASE_URL = 'https://vxschtygvtilsadgixec.supabase.co';
-var SUPABASE_PUBLIC_KEY = 'PASTE-THE-PUBLISHABLE-KEY';
+var SUPABASE_PUBLIC_KEY = 'sb_publishable_9q2ENh35OE6EbJvaZ4opsQ_ABWcyMW0';
 
 var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY, { auth: { flowType: 'pkce' } });
 
