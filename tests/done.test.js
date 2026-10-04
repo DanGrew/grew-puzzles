@@ -70,6 +70,7 @@ async function standInForSupabase(context, table) {
     const url = new URL(request.url());
     if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: CORS });
     if (url.pathname === '/auth/v1/user') return route.fulfill({ headers: CORS, json: PLAYER });
+    if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
     if (url.pathname !== '/rest/v1/progress' || !token.includes('.')) {
       table.strays.push(`${request.method()} ${url.pathname}`);
@@ -288,4 +289,46 @@ test('when the saved lines can\'t be read, no tile is ticked and the page carrie
   await page.getByRole('button', { name: 'Filters' }).click();
   await expect(page.locator('#filters')).toBeVisible();
   expect(table.strays).toEqual([]);
+});
+
+async function signOut(page) {
+  await page.locator('.site .avatar').click();
+  await page.locator('#account-menu .sign-out').click();
+  await expect(page.locator('.site .sign-in')).toBeVisible();
+}
+
+for (const path of ['/app/', '/app/collection.html?slug=farm']) {
+  test(`signing out on ${path} takes every ✓ away at once`, async ({ context }) => {
+    await site(context, { collections: [collection('farm', [id(1), id(2)])], table: progressTable([...finishedRows(id(1)), ...finishedRows(id(2))]) });
+    const page = await landing(context, path);
+    await expect(tile(page, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
+    await signOut(page);
+    await expect(tile(page, 'Puzzle 2')).toHaveAttribute('data-done', 'false');
+    expect(await tickedTitles(page)).toEqual([]);
+  });
+}
+
+test('signing in on the landing page brings the ticks without a reload', async ({ context }) => {
+  const { table } = await site(context, { signedIn: false, table: progressTable(finishedRows(id(2))) });
+  const page = await landing(context);
+  await page.waitForTimeout(300);
+  expect(await tickedTitles(page)).toEqual([]);
+  const tokens = session(PLAYER);
+  await page.evaluate(async t => {
+    const { client } = await import('/ui/sign-in-ui.js');
+    await client.auth.setSession(t);
+  }, { access_token: tokens.access_token, refresh_token: tokens.refresh_token });
+  await expect(tile(page, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
+  expect(await tickedTitles(page)).toEqual(['Puzzle 2']);
+  expect(table.strays).toEqual([]);
+});
+
+test('a slow read that lands after signing out ticks nothing', async ({ context }) => {
+  const { table } = await site(context, { table: progressTable(finishedRows(id(2))) });
+  table.readDelay = 1500;
+  const page = await landing(context);
+  await expect.poll(() => table.reads.length).toBe(1);
+  await signOut(page);
+  await page.waitForTimeout(2000);
+  expect(await tickedTitles(page)).toEqual([]);
 });

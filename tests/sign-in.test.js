@@ -82,6 +82,8 @@ async function standInForGoogle(context, { agree = true, user = PLAYER, reachabl
       asked.signOuts += 1;
       return route.fulfill({ status: 204, headers: CORS });
     }
+    // A signed-in page reads the player's saved lines for its ticks — none here; done.test.js's.
+    if (url.pathname === '/rest/v1/progress') return route.fulfill({ headers: CORS, json: [] });
     asked.other.push(url.href);
     return route.abort();
   });

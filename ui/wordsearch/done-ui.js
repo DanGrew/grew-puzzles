@@ -9,21 +9,42 @@ import { playJson } from '../../core/wordsearch/play-core.js';
 import { savedRows } from '../../core/wordsearch/progress-core.js';
 import { readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, tileDone } from '../../core/wordsearch/done-core.js';
 
-var DONE_LOOKUPS = { true: lookUp, false: function () {} };
+var DONE_LOOKUPS = { true: lookUp, false: none };
 var DONE_READS = { true: readFrom, false: function (n, rows, then) { then(rows); } };
+var DONE_HANDS = { true: function (then, done) { then(done); }, false: function () {} };
+// Each look-up is numbered: only the latest one's answer is handed on, so a slow read that lands
+// after the player has signed out never ticks a tile.
+var asked = 0;
 
-// Hands then the hidden IDs of the finished puzzles the tiles stand for — signed in only.
+// From here on, every change of who is signed in — the first look too — hands then the hidden IDs
+// of the finished puzzles the tiles stand for: signing in brings the ticks, signing out takes them
+// all away. Supabase asks that its own calls wait until its sign-in news has been handed round.
+export function wireDone(tiles, then) {
+  client.auth.onAuthStateChange(function (event, session) {
+    var signedIn = accountView(session).signedIn;
+    setTimeout(function () { DONE_LOOKUPS[signedIn](tiles, then); }, 0);
+  });
+}
+
+// The same, once, for whoever is signed in now — a page brought back from the browser's cache.
 export function withDone(tiles, then) {
   client.auth.getSession().then(function (answer) {
     DONE_LOOKUPS[accountView(answer.data.session).signedIn](tiles, then);
   }, function () {});
 }
 
+function none(tiles, then) {
+  asked += 1;
+  then([]);
+}
+
 function lookUp(tiles, then) {
+  asked += 1;
+  var mine = asked;
   readFrom(0, [], function (rows) {
     var started = startedPuzzles(rows, tiles);
     Promise.allSettled(started.map(openPuzzle)).then(function (opened) {
-      then(donePuzzles(rows, started, opened));
+      DONE_HANDS[mine === asked](then, donePuzzles(rows, started, opened));
     });
   });
 }

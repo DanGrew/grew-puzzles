@@ -96,9 +96,10 @@ function progress(route, db, player) {
     db.rows.push({ user_id: player, ...request.postDataJSON() });
     return route.fulfill({ status: 201, headers: CORS, body: '' });
   }
-  const puzzle = new URL(request.url()).searchParams.get('puzzle').replace('eq.', '');
-  const rows = db.rows.filter(r => r.user_id === player && r.puzzle === puzzle)
-    .map(({ page, start_row, start_col, direction }) => ({ page, start_row, start_col, direction }));
+  // The play page reads one puzzle's lines; the landing and collection pages' ticks read them all.
+  const puzzle = (new URL(request.url()).searchParams.get('puzzle') || '').replace('eq.', '');
+  const rows = db.rows.filter(r => r.user_id === player && (!puzzle || r.puzzle === puzzle))
+    .map(({ puzzle: p, page, start_row, start_col, direction }) => ({ puzzle: p, page, start_row, start_col, direction }));
   return route.fulfill({ headers: CORS, json: rows });
 }
 
