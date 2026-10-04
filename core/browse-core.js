@@ -31,12 +31,11 @@ export function filterOptions(puzzles, collections) {
 }
 
 // How hard each type is — the one place it is written. A tile's strip and the type's filter row
-// both take their colour from it, a colour per difficulty in styles/browse.css. A type with no
-// difficulty here counts as Easy, so a new type never ships uncoloured.
+// both take their colour from it, a colour per difficulty in styles/browse.css. Vanilla, and any
+// type not listed here, is Easy, so a new type never ships uncoloured.
 export function difficultyOf(type) {
   const difficulty = new Map([
-    ['Vanilla', 'Easy'], ['Saga', 'Medium'], ['Wildcards', 'Medium'], ['Missing', 'Hard'], ['Repeats', 'Hard'],
-    ['Mirra?e', 'Extreme'],
+    ['Saga', 'Medium'], ['Wildcards', 'Medium'], ['Missing', 'Hard'], ['Repeats', 'Hard'], ['Mirra?e', 'Extreme'],
   ]);
   return difficulty.get(type) ?? 'Easy';
 }
