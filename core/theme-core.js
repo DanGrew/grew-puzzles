@@ -77,24 +77,30 @@ export function wordsRoom(look, template, phone) {
 }
 
 // Where the character stands on the play page, for a template and where the words sit — the
-// owner's placements in the product's docs/MOCKUP-THEMED.html, the character's captured
-// 2026-10-03 and its name label's 2026-10-04: the character's centre from the grid card's
-// top-left, its height, its turn, in front of or behind the cards — and its name label's centre,
-// from the character's, in character heights across and down, so it moves and shrinks with it.
-// On a phone every template stands the character in one spot, measured on the phone's 422 px
-// grid card, with no name label. card is the grid card: its width, and its top-left from the
-// page's.
+// owner's placements in the product's docs/MOCKUP-THEMED.html, captured 2026-10-05 with all 12
+// characters in view: the character's centre from the grid card's top-left, its height, its turn,
+// in front of or behind the cards, its name label's centre, from the character's, in character
+// heights across and down, so it moves and shrinks with it — and whether it's flipped to face
+// right, towards the grid, from the left every character faces. On a phone every template stands
+// the character in one spot, facing left, measured on the phone's 422 px grid card, with no name
+// label. card is the grid card: its width, and its top-left from the page's.
 export function figurePlacement(template, sits, card, phone) {
   var captured = {
-    beside: { bottom: [675, 1014, 515, 0, 'front', 0.282, -0.454], right: [866, -4, 440, 0, 'behind', 0.377, -0.107], overlay: [935, 415, 675, 0, 'behind', -0.224, -0.477] },
-    mirror: { bottom: [30, 1022, 510, 0, 'front', -0.353, -0.441], right: [253, 8, 385, 0, 'behind', -0.475, -0.164], overlay: [-219, 438, 635, 0, 'behind', 0.098, -0.537] },
-    normal: { bottom: [670, 329, 560, 61, 'behind', 0.282, 0.22], right: [764, 48, 530, 30, 'behind', 0.483, -0.309], overlay: [30, 27, 455, -36, 'behind', -0.365, 0.116] }
+    beside: { bottom: [656, 1004, 700, 0, 'front', -0.156, 0.166, false], right: [870, -29, 440, 0, 'behind', 0.377, -0.107, false], overlay: [904, 732, 700, 0, 'behind', -0.121, -0.389, false] },
+    mirror: { bottom: [15, 1030, 695, 0, 'front', -0.187, 0.039, true], right: [256, -32, 385, 0, 'behind', -0.322, -0.104, true], overlay: [-190, 432, 635, 0, 'behind', 0.036, -0.391, true] },
+    normal: { bottom: [719, 293, 560, 61, 'behind', 0.143, 0.173, false], right: [275, -31, 455, -24, 'behind', -0.376, -0.136, true], overlay: [-89, 309, 455, -90, 'behind', -0.018, 0.341, false] }
   };
-  var spots = { false: { spot: captured[template][sits], full: 691, label: true }, true: { spot: [369, 1, 140, 0, 'behind', 0, 0], full: 422, label: false } };
+  var spots = { false: { spot: captured[template][sits], full: 691, label: true }, true: { spot: [369, 1, 140, 0, 'behind', 0, 0, false], full: 422, label: false } };
   var at = spots[phone], spot = at.spot, scale = Math.min(1, card.width / at.full);
   var left = card.left + spot[0] * scale, top = card.top + spot[1] * scale, height = spot[2] * scale;
   return {
-    left: left, top: top, height: height, turn: spot[3], layer: spot[4],
+    left: left, top: top, height: height, turn: spot[3], layer: spot[4], flip: spot[7],
     label: at.label, labelLeft: left + spot[5] * height, labelTop: top + spot[6] * height
   };
+}
+
+// How the character is drawn on its spot: centred on it, turned, and mirrored when flipped — the
+// figure only, never its name label, which reads the right way round wherever it stands.
+export function figureTransform(placement) {
+  return 'translate(-50%, -50%) rotate(' + placement.turn + 'deg)' + ['', ' scaleX(-1)'][Number(placement.flip)];
 }
