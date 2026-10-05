@@ -172,6 +172,20 @@ test('a tall grid keeps the character under it, not over its letters (Christmas,
   expect(figure.y + figure.height / 2).toBeGreaterThan(stage.y + stage.height);
 });
 
+test('under the grid, a long word list scrolls in a words card no taller than the character; Plain keeps the whole list', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
+  await page.goto('/app/play.html?id=WSCH-0041');
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+  const figure = await page.locator('#theme-figure').boundingBox();
+  expect(Math.abs((await page.locator('.words-box').boundingBox()).height - figure.height)).toBeLessThan(2);
+  expect(await page.locator('ul.words').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+  await page.locator('.site .burger').click();
+  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await expect.poll(async () => (await page.locator('.words-box').boundingBox()).height).toBeGreaterThan(1000);
+});
+
 test('on a phone the character stands at the grid card\'s top-right, behind it, facing left, with no label and no room taken from the words', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openPlay(page, 'WSCH-0008', 'bottom');

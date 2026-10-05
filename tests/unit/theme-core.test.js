@@ -1,6 +1,6 @@
 import {
   charactersFile, charactersOf, dressOf, characterAt, characterFor, tileCharacter, randomCharacter, templateFor, themeScale,
-  isPhone, wordsRoom, figurePlacement, figureTransform
+  isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap
 } from '../../core/theme-core.js';
 
 // Three characters stand in for the owner's list, in order.
@@ -152,5 +152,10 @@ describe('where the character stands on the play page', () => {
   test('is drawn centred on its spot and turned, mirrored only when flipped', () => {
     expect(figureTransform({ turn: -24, flip: false })).toBe('translate(-50%, -50%) rotate(-24deg)');
     expect(figureTransform({ turn: -24, flip: true })).toBe('translate(-50%, -50%) rotate(-24deg) scaleX(-1)');
+  });
+
+  test('caps the words card under the grid at the character\'s height, and not at all on a phone', () => {
+    expect(wordsCap({ height: 347.5 }, false)).toBe('347.5px');
+    expect(wordsCap({ height: 140 }, true)).toBe('none');
   });
 });

@@ -127,6 +127,13 @@ function fromEdge(captured, far, size, full, scale) {
   return far * size + (captured - far * full) * scale;
 }
 
+// The tallest the words card grows under the grid before its list scrolls, Themed: the character's
+// own height in its spot, so it stands beside the whole card, the owner's call 2026-10-05 — no cap
+// on a phone, where the character stands small over the grid card instead.
+export function wordsCap(placement, phone) {
+  return { false: placement.height + 'px', true: 'none' }[phone];
+}
+
 // How the character is drawn on its spot: centred on it, turned, and mirrored when flipped — the
 // figure only, never its name label, which reads the right way round wherever it stands.
 export function figureTransform(placement) {

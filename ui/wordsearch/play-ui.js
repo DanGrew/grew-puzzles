@@ -7,7 +7,7 @@ import {
   countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
-import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform } from '../../core/theme-core.js';
+import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook } from '../theme-ui.js';
 
@@ -398,18 +398,19 @@ function layoutWords() {
 }
 
 // The character on its template's spot for where the words ended up, measured from the grid
-// card as it now stands on the page, facing that spot's way, and its name label beside it — on a
-// phone, its one spot and no label.
+// card as it now stands on the page, facing that spot's way, and its name label beside it, the
+// words card under the grid no taller than it — on a phone, its one spot, no label and no cap.
 function placeFigure(fit) {
   var page = playEl('play').getBoundingClientRect(), card = playEl('stage').getBoundingClientRect();
+  var phone = isPhone(document.documentElement.clientWidth);
   var spot = figurePlacement(playEl('play').dataset.template, fit.sits,
-    { width: fit.cardWidth, height: fit.cardHeight, left: card.left - page.left, top: card.top - page.top },
-    isPhone(document.documentElement.clientWidth));
+    { width: fit.cardWidth, height: fit.cardHeight, left: card.left - page.left, top: card.top - page.top }, phone);
   var figure = playEl('theme-figure'), tag = playEl('name-tag');
   figure.style.left = spot.left + 'px';
   figure.style.top = spot.top + 'px';
   figure.style.height = spot.height + 'px';
   figure.style.transform = figureTransform(spot);
+  playEl('play').style.setProperty('--words-cap', wordsCap(spot, phone));
   tag.hidden = !spot.label;
   tag.style.left = spot.labelLeft + 'px';
   tag.style.top = spot.labelTop + 'px';
