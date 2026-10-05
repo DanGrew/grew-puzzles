@@ -1,4 +1,4 @@
-/* A page of the owner's words — Privacy: a heading, then short sections, at a reading width. */
+/* A page of the owner's words — About us, Privacy: a heading, then short sections, at a reading width. */
 .page { max-width: 640px; }
 .page h1 { margin: 0 0 16px; font: var(--dw) 32px var(--font-display); letter-spacing: -.01em; }
 .page h2 { margin: 32px 0 8px; font: var(--dw) 19px var(--font-display); }

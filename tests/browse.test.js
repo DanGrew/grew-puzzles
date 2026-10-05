@@ -546,14 +546,14 @@ test('with no collections, there is no Collections filter and none in the menu',
   await expect(filterButton(page)).toHaveText('Filters');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
   await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'Privacy']);
+  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'About us', 'Privacy']);
 });
 
 test('Collections in the burger menu opens the landing page filtered to collections', async ({ page }) => {
   await serve(page, mixed(6), [issue()]);
   await page.goto('/app/');
   await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'Collections', 'Privacy']);
+  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'Collections', 'About us', 'Privacy']);
   await page.locator('#site-menu').getByText('Collections').click();
   await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
   await expect(chip(page, 'Collections')).toHaveAttribute('aria-pressed', 'true');
