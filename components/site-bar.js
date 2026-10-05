@@ -3,8 +3,8 @@
 // the menu entry this page belongs to. A page that puts its own [data-menu-entry] elements
 // inside the header gets those as its menu, in place of the site's sections. Collections — the
 // landing page filtered to collections — starts hidden: a page that knows a collection exists
-// shows it. Privacy ends every menu, a page's own included — every page sits in app/, beside it.
-// Above Privacy, on every menu, the look: Themed or Plain, Themed until the player picks Plain,
+// shows it. About us follows the page's own entries and Privacy ends every menu — every page sits
+// in app/, beside them. Between the two, on every menu, the look: Themed or Plain, Themed until the player picks Plain,
 // kept in this browser. It sits on the page as <html data-look>, set here before any page script
 // runs; picking one tells the page with a grew-look event (styles/look.css, ui/theme-ui.js).
 (function () {
@@ -33,6 +33,10 @@
 
   var burger = bar.querySelector('.burger');
   var panel = bar.querySelector('.menu-panel');
+  var about = document.createElement('a');
+  about.dataset.entry = 'about';
+  about.href = 'about.html';
+  about.textContent = 'About us';
   var privacy = document.createElement('a');
   privacy.dataset.entry = 'privacy';
   privacy.href = 'privacy.html';
@@ -49,7 +53,7 @@
     entry.addEventListener('click', function () { setMenu(false); });
   });
   if (own.length) panel.replaceChildren.apply(panel, own);
-  panel.append(look, privacy);
+  panel.append(about, look, privacy);
 
   // The menu stays open on a pick, so the player sees the page change under it.
   function showLook() {

@@ -18,7 +18,7 @@ test('the brand returns to the landing page', async ({ page }) => {
   await expect(page.locator('.site .brand')).toHaveAttribute('href', 'index.html');
 });
 
-test('the burger opens a menu holding Wordsearches and Privacy, while the site has no collections', async ({ page }) => {
+test('the burger opens a menu holding Wordsearches, About us and Privacy, while the site has no collections', async ({ page }) => {
   await page.route('**/content/collections/index.json', r => r.fulfill({ status: 404, body: 'Not found' }));
   await page.goto('/app/');
   const burger = page.locator('.site .burger');
@@ -31,7 +31,7 @@ test('the burger opens a menu holding Wordsearches and Privacy, while the site h
   await expect(panel).toBeVisible();
   await expect(burger).toHaveAttribute('aria-expanded', 'true');
   const entries = panel.locator('a:visible');
-  await expect(entries).toHaveText(['Wordsearches', 'Privacy']);
+  await expect(entries).toHaveText(['Wordsearches', 'About us', 'Privacy']);
   await expect(entries.first()).toHaveAttribute('href', 'index.html');
   await expect(entries.first()).toHaveAttribute('aria-current', 'page');
   await expect(entries.last()).toHaveAttribute('href', 'privacy.html');

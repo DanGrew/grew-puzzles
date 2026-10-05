@@ -219,7 +219,7 @@ test('the menu holds How to play, which opens the instructions and closes the me
 
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['How to play', 'Print', /^Look/, 'Privacy']);
+  await expect(entries).toHaveText(['How to play', 'Print', 'About us', /^Look/, 'Privacy']);
   await entries.first().click();
   await expect(help).toBeVisible();
   await expect(help).toContainText('Tap a letter to circle it, then tap another in line with it.');

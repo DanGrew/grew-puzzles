@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About us · Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/page.css">
+<link rel="stylesheet" href="../styles/look.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="about"></header>
+  <main class="page" aria-labelledby="page-title">
+    <h1 id="page-title">Thank you!</h1>
+    <!-- Themed, the words sit on a card with a character beside it (styles/look.css). -->
+    <div class="page-card">
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
+    <p>Thank you for playing our puzzles! We hope they bring a little joy and fun to your day.</p>
+
+    <h2>About us</h2>
+    <p>We're a little family working on being creative together. We take inspiration from our home and our family, and our love of dinosaurs and animals – our four-year-old can't get enough of them!</p>
+
+    <h2>About these puzzles</h2>
+    <p>We've used some modern tools to help us create these puzzles. It hasn't been easy, but it's been fun, and it's taken time and care. We pick every puzzle ourselves. Please forgive us if you spot any mistakes (fingers crossed, no major ones!).</p>
+    </div>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module">
+import { dressTextPage } from '../ui/theme-ui.js';
+dressTextPage(Math.random);
+</script>
+</body>
+</html>
