@@ -402,14 +402,14 @@ function layoutWords() {
 // phone, its one spot and no label.
 function placeFigure(fit) {
   var page = playEl('play').getBoundingClientRect(), card = playEl('stage').getBoundingClientRect();
-  var spot = figurePlacement(playEl('play').dataset.template, fit.sits, { width: fit.cardWidth, left: card.left - page.left, top: card.top - page.top },
+  var spot = figurePlacement(playEl('play').dataset.template, fit.sits,
+    { width: fit.cardWidth, height: fit.cardHeight, left: card.left - page.left, top: card.top - page.top },
     isPhone(document.documentElement.clientWidth));
   var figure = playEl('theme-figure'), tag = playEl('name-tag');
   figure.style.left = spot.left + 'px';
   figure.style.top = spot.top + 'px';
   figure.style.height = spot.height + 'px';
   figure.style.transform = figureTransform(spot);
-  figure.dataset.layer = spot.layer;
   tag.hidden = !spot.label;
   tag.style.left = spot.labelLeft + 'px';
   tag.style.top = spot.labelTop + 'px';
