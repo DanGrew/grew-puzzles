@@ -22,8 +22,8 @@ var asked = 0;
 
 // From here on, every change of who is signed in — the first look too — hands then the player's
 // progress over the puzzles the tiles stand for, by hidden ID: done, those finished, and playing,
-// those started and not, most recently played first. Signing in brings the ticks and the rail,
-// signing out takes them all away. Supabase asks that its own calls wait until its sign-in news has been handed round.
+// those started and not, most recently played first — and signedIn, whether anyone is. Signing in
+// brings the ticks and the rail, signing out takes them all away. Supabase asks that its own calls wait until its sign-in news has been handed round.
 export function wireDone(tiles, then) {
   client.auth.onAuthStateChange(function (event, session) {
     var signedIn = accountView(session).signedIn;
@@ -40,7 +40,7 @@ export function withDone(tiles, then) {
 
 function none(tiles, then) {
   asked += 1;
-  then({ done: [], playing: [] });
+  then({ done: [], playing: [], signedIn: false });
 }
 
 function lookUp(tiles, then) {
@@ -50,7 +50,7 @@ function lookUp(tiles, then) {
     var started = startedPuzzles(rows, tiles);
     Promise.allSettled(started.map(openPuzzle)).then(function (opened) {
       var done = donePuzzles(rows, started, opened);
-      DONE_HANDS[mine === asked](then, { done: done, playing: playingPuzzles(rows, started, opened, done) });
+      DONE_HANDS[mine === asked](then, { done: done, playing: playingPuzzles(rows, started, opened, done), signedIn: true });
     });
   });
 }
