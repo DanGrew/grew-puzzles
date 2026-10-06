@@ -18,9 +18,8 @@ export function entriesJson(response) {
 // a word in two of them takes its first group's entry. A word without one is left unmarked.
 export function wordEntries(index, wordGroups, listed) {
   var entries = wordGroups.flatMap(function (slug) {
-    var group = index.groups.find(function (g) { return g.group === slug; });
-    return group ? group.entries : [];
-  });
+    return index.groups.filter(function (g) { return g.group === slug; });
+  }).flatMap(function (group) { return group.entries; });
   return listed.map(function (word) {
     var entry = entries.find(function (e) { return e.word === word.text; });
     return entry ? entryView(entry) : unmarked(word.text);
