@@ -50,9 +50,9 @@ function factRows(facts) {
   });
 }
 
-// Where the popup sits, in the window's own px: beside the word — to its right, or to its left
-// when the right hasn't the room — its top level with the word's, and never past the window's
-// edges. word is the word's box, popup the popup's size, view the window's. On a phone the popup
+// Where the popup sits, in the screen's own px: beside the word — to its right, or to its left
+// when the right hasn't the room — its top level with the word's, and never past the screen's
+// edges. word is the word's box, popup the popup's size, view the screen's. On a phone the popup
 // is a card over the page (styles/play.css), so it takes no place of its own.
 export function popupPlace(word, popup, view, phone) {
   var gap = 10, edge = 8;
@@ -65,7 +65,7 @@ export function popupPlace(word, popup, view, phone) {
   };
 }
 
-// at, kept between lo and hi; lo when the window hasn't room for even that.
+// at, kept between lo and hi; lo when the screen hasn't room for even that.
 function within(at, lo, hi) {
   return Math.max(lo, Math.min(at, hi));
 }
