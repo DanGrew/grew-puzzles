@@ -178,7 +178,7 @@ test('the copyright page follows the title page, on a page of its own, in the ow
   await expect(copyright.locator('p')).toHaveText([
     '© 2026 Grew Puzzles All rights reserved.',
     'No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations used in reviews or educational settings.',
-    'This book is for personal use only. It may not be used for commercial purposes or resale.',
+    "This book is for personal use only, and you're welcome to print it for yourself. It may not be used for commercial purposes or resale.",
   ], { useInnerText: true });
   await expect(copyright).toHaveCSS('break-before', 'page');
   const title = await page.locator('#title-page').boundingBox();
