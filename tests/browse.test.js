@@ -221,7 +221,8 @@ function graded() {
   ['Vanilla', 'Saga', 'Wildcards', 'Missing', 'Repeats', 'Mirra?e'].forEach((type, i) => { served.puzzles[i].type = type; });
   return served;
 }
-const rowsOf = page => popup(page).locator('.filter-rows > *').evaluateAll(cells => {
+// The popup's rows that show — signed out, there's no Finished row.
+const rowsOf = page => popup(page).locator('.filter-rows > :not([hidden])').evaluateAll(cells => {
   const rows = [];
   for (let i = 0; i < cells.length; i += 2) {
     rows.push([cells[i].innerText.trim(), [...cells[i + 1].querySelectorAll('.chip')].map(c => c.textContent)]);

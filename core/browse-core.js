@@ -3,6 +3,7 @@
 // filter and sort ride in the page address — and the Continue playing rail above them, a set at a
 // time. Reads only the indexes' entries — never a puzzle file.
 import { dayLabel } from './day-core.js';
+import { tileDone } from './wordsearch/done-core.js';
 
 export const PER_PAGE = 24;
 
@@ -66,9 +67,31 @@ export function toggleRow(state, row) {
   return { ...state, types };
 }
 
-// The Filters button counts the picks once there are any: "Filters · 2".
+// The Filters button counts the picks once there are any, a Finished choice among them: "Filters · 2".
 export function filtersLabel(state) {
-  return ['Filters', ...(state.types.length > 0 ? [state.types.length] : [])].join(' · ');
+  const count = state.types.length + Number(state.finished !== '');
+  return ['Filters', ...(count > 0 ? [count] : [])].join(' · ');
+}
+
+// The Finished row's two choices — finished, the ✓ tiles, or not — at most one picked. Picking the
+// other swaps them; picking the picked one again unpicks it.
+export function toggleFinished(state, choice) {
+  return { ...state, finished: state.finished === choice ? '' : choice };
+}
+
+export function finishedPressed(state, choice) {
+  return String(state.finished === choice);
+}
+
+// Whether the tiles shown hang on the player's progress — a Finished choice is picked — so the
+// grid waits for it, and draws again whenever it changes.
+export function filtersByProgress(state) {
+  return String(state.finished !== '');
+}
+
+// Finished is a question about whoever is signed in: signed out, any choice is dropped.
+export function withSignIn(state, signedIn) {
+  return signedIn ? state : { ...state, finished: '' };
 }
 
 // How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing".
@@ -106,36 +129,44 @@ export function browseItems(puzzles, collections) {
 
 // The filter and sort a page address asks for. A filter the page doesn't offer, or a sort or
 // direction it doesn't have, falls back as if it were never asked: everything, date, newest first.
+// A Finished choice — finished=yes or finished=no — holds only once someone is found signed in.
 export function browseState(search, types) {
   const params = new URLSearchParams(search);
   const sort = params.get('sort');
+  const finished = params.get('finished');
   return {
     types: types.filter(t => params.getAll('type').includes(t)),
+    finished: ['yes', 'no'].includes(finished) ? finished : '',
     sort: ['title', 'type'].includes(sort) ? sort : 'date',
     dir: params.get('dir') === 'asc' ? 'asc' : 'desc',
   };
 }
 
-// The address's query for a state: each picked type, and the sort and direction only when they
-// aren't the default — so the plain landing page keeps its plain address.
+// The address's query for a state: each picked type, a Finished choice, and the sort and direction
+// only when they aren't the default — so the plain landing page keeps its plain address.
 export function browseSearch(state) {
   const params = new URLSearchParams();
   state.types.forEach(t => params.append('type', t));
+  if (state.finished !== '') params.set('finished', state.finished);
   if (state.sort !== 'date') params.set('sort', state.sort);
   if (state.dir !== 'desc') params.set('dir', state.dir);
   const query = params.toString();
   return query ? `?${query}` : '';
 }
 
-// The tiles a state shows, in its order. No filter picked shows every tile; picked filters widen,
-// since a tile matches exactly one — its puzzle's type, or Collections. Ties fall back to newest
-// first, whichever way the sort runs.
-export function browseList(items, state) {
+// The tiles a state shows, in its order. No filter picked shows every tile; picked types widen,
+// since a tile matches exactly one — its puzzle's type, or Collections. A Finished choice narrows
+// whatever the types show to the tiles wearing a ✓ — or not — for the puzzles done so far: it's a
+// question about the player, not the puzzle. Ties fall back to newest first, whichever way the
+// sort runs.
+export function browseList(items, state, done) {
   const keys = { date: p => p.created, title: p => p.title, type: p => p.type };
   const key = keys[state.sort];
   const sign = state.dir === 'asc' ? 1 : -1;
+  const finished = { '': () => true, yes: p => tileDone(p, done), no: p => !tileDone(p, done) }[state.finished];
   return items
     .filter(p => state.types.length === 0 || state.types.includes(p.filter))
+    .filter(finished)
     .sort((a, b) => sign * key(a).localeCompare(key(b)) || newer(a, b));
 }
 
@@ -153,12 +184,13 @@ export function toggleType(state, type) {
   return { ...state, types };
 }
 
-export function clearTypes(state) {
-  return { ...state, types: [] };
+// Clear filters unpicks the types and any Finished choice, keeping the sort.
+export function clearFilters(state) {
+  return { ...state, types: [], finished: '' };
 }
 
-export function noTypesPicked(state) {
-  return state.types.length === 0;
+export function nothingPicked(state) {
+  return state.types.length === 0 && state.finished === '';
 }
 
 export function withSort(state, sort) {

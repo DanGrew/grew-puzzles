@@ -526,7 +526,11 @@ test('signed out, or with nothing in play, there\'s no rail and no space for one
   const nothingInPlay = await landing(other);
   await expect(tile(nothingInPlay, 'Puzzle 1')).toHaveAttribute('data-done', 'true');
   await expect(nothingInPlay.locator('#rail')).toBeHidden();
-  expect(await nothingInPlay.locator('#filter-button').boundingBox()).toEqual(filtersOut);
+  // The rail would push the filters down: they sit exactly as high either way. Across the page, text
+  // can measure a fraction of a pixel differently from one browser window to the next.
+  const filtersIn = await nothingInPlay.locator('#filter-button').boundingBox();
+  expect([filtersIn.y, filtersIn.height]).toEqual([filtersOut.y, filtersOut.height]);
+  expect(Math.abs(filtersIn.x - filtersOut.x)).toBeLessThan(1);
   const head = await nothingInPlay.locator('.browse-head').boundingBox();
   expect(filtersOut.y).toBeLessThan(head.y + head.height + 40);
   await other.close();
@@ -580,4 +584,173 @@ test('the browse tiles never wait for the rail, which arrives once progress is r
   expect(Date.now() - start).toBeLessThan(1500);
   await expect(page.locator('#rail')).toBeHidden();
   await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2']);
+});
+
+// The Filters popup's Finished row: signed in, Finished shows only the ✓ tiles, Not finished the
+// rest, either narrowing the type picks. Odd puzzles are Vanilla, even ones Missing.
+const shownNames = page => page.locator('#tiles .tile .name');
+const choice = (page, name) => page.locator('#filters .choice', { hasText: new RegExp(`^${name}$`) });
+
+async function openFilters(page) {
+  await page.locator('#filter-button').click();
+  await expect(page.locator('#filters')).toBeVisible();
+}
+
+// Puzzles 1 and 2 finished, 3 started, 4 untouched; pair holds 1 and 2 — finished — trio 2 and 3.
+async function finishedSite(context, options = {}) {
+  const collections = [collection('pair', [id(1), id(2)]), collection('trio', [id(2), id(3)])];
+  const rows = [...finishedRows(id(1)), ...finishedRows(id(2)), ...startedRows(id(3))];
+  return site(context, { served: index(4), collections, table: progressTable(rows), ...options });
+}
+
+test('signed in, the popup\'s last row is Finished, holding Finished and Not finished, none picked', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await expect(choice(page, 'Finished')).toBeVisible();
+  const cells = page.locator('#filter-rows > :not([hidden])');
+  await expect(cells.nth(-2)).toHaveText('Finished');
+  await expect(cells.last().locator('button')).toHaveText(['Finished', 'Not finished']);
+  await expect(page.locator('#filters .choice[aria-pressed="false"]')).toHaveCount(2);
+  // The row's name sits in the names' column, its choices in the types'.
+  const left = locator => locator.evaluate(el => Math.round(el.getBoundingClientRect().left));
+  expect(await left(cells.nth(-2))).toBe(await left(cells.first()));
+  expect(await left(cells.last())).toBe(await left(cells.nth(1)));
+});
+
+test('Finished shows only the ✓ tiles, a finished collection too, and the total counts only those', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await expect(shownNames(page)).toHaveText(['pair', 'Puzzle 2', 'Puzzle 1']);
+  expect(await tickedTitles(page)).toEqual(['pair', 'Puzzle 2', 'Puzzle 1']);
+  await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
+  await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'true');
+  await expect(choice(page, 'Finished')).toHaveCSS('background-color', 'rgb(31, 111, 92)');
+  await expect(page).toHaveURL(/\/app\/\?finished=yes$/);
+});
+
+test('Not finished shows every tile without a ✓, a started puzzle among them', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Not finished').click();
+  await expect(shownNames(page)).toHaveText(['trio', 'Puzzle 4', 'Puzzle 3']);
+  expect(await tickedTitles(page)).toEqual([]);
+  await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
+});
+
+test('picking one then the other swaps them; pressing the picked one again shows every tile', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await choice(page, 'Not finished').click();
+  await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'false');
+  await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'true');
+  await expect(shownNames(page)).toHaveText(['trio', 'Puzzle 4', 'Puzzle 3']);
+  await choice(page, 'Not finished').click();
+  await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'false');
+  await expect(shownNames(page)).toHaveText(['pair', 'trio', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  await expect(page).toHaveURL(/\/app\/$/);
+  await expect(choice(page, 'Not finished')).toBeFocused();
+});
+
+test('Finished with the type Missing shows only the finished Missing puzzles', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await page.locator('#filters .chip', { hasText: 'Missing' }).click();
+  await expect(shownNames(page)).toHaveText(['Puzzle 2']);
+  await expect(page.locator('#total')).toHaveText('1 puzzle');
+  await expect(page).toHaveURL(/\?type=Missing&finished=yes$/);
+});
+
+test('Finished counts on the Filters button, and Clear filters unpicks it with the types', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 1');
+  await expect(page.locator('#clear')).toBeVisible();
+  await page.locator('#filters .chip', { hasText: 'Missing' }).click();
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 2');
+  await page.locator('#clear').click();
+  await expect(page.locator('#filter-button')).toHaveText('Filters');
+  await expect(page.locator('#filters [aria-pressed="true"]')).toHaveCount(0);
+  await expect(shownNames(page)).toHaveCount(6);
+  await expect(page).toHaveURL(/\/app\/$/);
+});
+
+// Every tile name the grid ever draws, from the first moment, so a tile that showed and dropped out is caught.
+async function everDrawn(page) {
+  await page.addInitScript(() => {
+    window.drawn = new Set();
+    new MutationObserver(() => document.querySelectorAll('#tiles .tile .name').forEach(n => window.drawn.add(n.textContent)))
+      .observe(document, { childList: true, subtree: true });
+  });
+}
+
+test('a shared address with Finished opens, signed in, on the same filtered grid — never every tile first', async ({ context }) => {
+  const { table } = await finishedSite(context);
+  table.readDelay = 1000;
+  const page = await context.newPage();
+  await everDrawn(page);
+  await page.goto('/app/?type=Missing&finished=yes');
+  await expect(shownNames(page)).toHaveText(['Puzzle 2']);
+  expect(await page.evaluate(() => [...window.drawn])).toEqual(['Puzzle 2']);
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 2');
+  await expect(page).toHaveURL(/\?type=Missing&finished=yes$/);
+  await openFilters(page);
+  await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('a shared address with Finished opens, signed out, on every tile, as if it were never picked', async ({ context }) => {
+  await finishedSite(context, { signedIn: false });
+  const page = await context.newPage();
+  await page.goto('/app/?finished=no');
+  await expect(shownNames(page)).toHaveCount(6);
+  await expect(page.locator('#filter-button')).toHaveText('Filters');
+  await expect(page).toHaveURL(/\/app\/$/);
+});
+
+test('signed out, Filters has no Finished row', async ({ context }) => {
+  const { table } = await finishedSite(context, { signedIn: false });
+  const page = await landing(context);
+  await openFilters(page);
+  await page.waitForTimeout(300);
+  await expect(page.locator('#filters .choice')).toHaveCount(2);
+  await expect(page.locator('#filters .choice:visible, #filters .row-name:visible')).toHaveCount(0);
+  expect(table.reads).toEqual([]);
+});
+
+test('signing out with Finished picked takes the row away and brings every tile back', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await expect(shownNames(page)).toHaveCount(3);
+  await page.keyboard.press('Escape');
+  await signOut(page);
+  await expect(shownNames(page)).toHaveCount(6);
+  await expect(page.locator('#filter-button')).toHaveText('Filters');
+  await expect(page).toHaveURL(/\/app\/$/);
+  await openFilters(page);
+  await expect(choice(page, 'Finished')).toBeHidden();
+});
+
+test('finishing a puzzle with Finished picked, then going back, it shows among the finished', async ({ context }) => {
+  const { table } = await site(context, { served: { puzzles: [...index(2).puzzles, FARM] }, table: progressTable(finishedRows(id(1))) });
+  const page = await context.newPage();
+  await page.goto('/app/?finished=yes');
+  await expect(shownNames(page)).toHaveText(['Puzzle 1']);
+  await page.goto('/app/play.html?id=WSCH-0007');
+  await expect(page.locator('#play')).toBeVisible();
+  for (const ends of ALL_WORDS) for (const [r, c] of ends) await page.locator('#grid .cell').nth(r * COLS + c).click();
+  await expect(page.locator('#complete')).toBeVisible();
+  await expect.poll(() => table.rows.length).toBe(16);
+  await page.goBack();
+  await expect(shownNames(page)).toHaveText(['Farm', 'Puzzle 1']);
 });

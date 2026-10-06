@@ -20,7 +20,11 @@
   width: max-content; max-width: min(560px, calc(100vw - 32px)); box-sizing: border-box; padding: 18px; background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
 .filter-rows { display: grid; grid-template-columns: max-content 1fr; gap: 12px 14px; align-items: start; }
-.filter-rows .types { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-rows .types, .filter-rows .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+/* Signed in, the Finished row comes last: its name, plain, and its two choices, a pick filled in the
+   band's own green — it's about the player, not a difficulty. */
+.filter-rows .row-name { display: flex; align-items: center; height: 36px; padding: 0 8px; font: 600 14px var(--font-body); }
+.controls .choice[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
 .controls .level { border-color: transparent; border-radius: 8px; padding: 0 8px;
   text-decoration: underline 4px var(--tone); text-underline-offset: 7px; }
 .controls .level[aria-pressed="true"] { background: var(--tone); border-color: var(--line); }

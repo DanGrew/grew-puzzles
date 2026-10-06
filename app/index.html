@@ -30,8 +30,11 @@
     </section>
     <div class="controls">
       <button type="button" class="filter-button" id="filter-button" aria-expanded="false" aria-controls="filters">Filters</button>
-      <div class="filter-popup" id="filters" role="group" aria-label="Filter by type" hidden>
-        <div class="filter-rows" id="filter-rows"></div>
+      <div class="filter-popup" id="filters" role="group" aria-label="Filters" hidden>
+        <div class="filter-rows" id="filter-rows">
+          <div class="finished-cell" hidden><span class="row-name">Finished</span></div>
+          <div class="finished-cell choices" hidden></div>
+        </div>
         <button type="button" class="clear" id="clear" hidden>Clear filters</button>
       </div>
       <label class="sort">Sort by
@@ -53,8 +56,8 @@
 <script type="module">
 import {
   filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
-  toggleRow, filtersLabel, clearTypes, noTypesPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
-  columnsOf, railView,
+  toggleRow, filtersLabel, clearFilters, nothingPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
+  columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn,
 } from '../core/browse-core.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 import { tileCharacter, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
@@ -65,6 +68,8 @@ const pager = document.getElementById('pager');
 const filterButton = document.getElementById('filter-button');
 const filters = document.getElementById('filters');
 const rows = document.getElementById('filter-rows');
+// The Finished row's two cells, last in the popup, shown only while someone is signed in.
+const finishedCells = [...rows.querySelectorAll('.finished-cell')];
 const clear = document.getElementById('clear');
 const sort = document.getElementById('sort');
 const dir = document.getElementById('dir');
@@ -152,37 +157,44 @@ function pagerButton(spec) {
   return b;
 }
 
-// A button that picks the types it stands for, pressed while all of them are picked.
-function filter(className, label, stands, pick) {
+// A button in the popup: pressing it picks, pressed says whether it shows pressed.
+function filter(className, label, pressed, pick) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = className;
   b.textContent = label;
   b.addEventListener('click', () => update(pick(state)));
-  painters.push(() => b.setAttribute('aria-pressed', picked(state, stands)));
+  painters.push(() => b.setAttribute('aria-pressed', pressed(state)));
   return b;
 }
 
-// A row is two cells: the difficulty's name — none for Collections — and a chip per type.
+// The Finished row's choices: Finished, the ✓ tiles, and Not finished, the rest.
+finishedCells[1].append(
+  filter('choice', 'Finished', s => finishedPressed(s, 'yes'), s => toggleFinished(s, 'yes')),
+  filter('choice', 'Not finished', s => finishedPressed(s, 'no'), s => toggleFinished(s, 'no')),
+);
+
+// A row is two cells: the difficulty's name — none for Collections — and a chip per type, each
+// pressed while every type it stands for is picked.
 function row(spec) {
   const name = document.createElement('div');
   name.dataset.tone = spec.tone;
-  const level = filter('level', spec.name, spec.types, s => toggleRow(s, spec.types));
+  const level = filter('level', spec.name, s => picked(s, spec.types), s => toggleRow(s, spec.types));
   level.hidden = !spec.name;
   name.append(level);
   const chips = document.createElement('div');
   chips.className = 'types';
   chips.dataset.tone = spec.tone;
-  chips.append(...spec.types.map(type => filter('chip', type, [type], s => toggleType(s, type))));
+  chips.append(...spec.types.map(type => filter('chip', type, s => picked(s, [type]), s => toggleType(s, type))));
   return [name, chips];
 }
 
 function show(page) {
-  const list = browseList(items, state);
+  const list = browseList(items, state, done);
   document.getElementById('total').textContent = totalLabel(list);
   painters.forEach(paint => paint());
   filterButton.textContent = filtersLabel(state);
-  clear.hidden = noTypesPicked(state);
+  clear.hidden = nothingPicked(state);
   sort.value = state.sort;
   dir.textContent = dirLabel(state);
   ticks = [];
@@ -200,7 +212,7 @@ function update(next) {
 
 // Clearing hides Clear filters, so the keyboard goes back to the Filters button.
 clear.addEventListener('click', () => {
-  update(clearTypes(state));
+  update(clearFilters(state));
   filterButton.focus();
 });
 sort.addEventListener('change', () => update(withSort(state, sort.value)));
@@ -233,11 +245,17 @@ filters.addEventListener('click', e => e.stopPropagation());
 document.addEventListener('click', () => closeOpenFilters());
 document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 
-// The ticks and the rail come from one read of the player's progress. The filters, sort and search
-// never touch the rail.
+// The ticks, the rail and the Finished row come from one read of the player's progress. The filters,
+// sort and search never touch the rail. With a Finished choice picked the tiles shown hang on the
+// progress, so they're drawn again — and signed out, the choice is dropped and every tile comes back.
+const REDRAWS = { true: () => update(state), false: () => ticks.forEach(paint => paint()) };
+
 function tick(progress) {
+  const redraw = REDRAWS[filtersByProgress(state)];
   done = progress.done;
-  ticks.forEach(paint => paint());
+  state = withSignIn(state, progress.signedIn);
+  finishedCells.forEach(cell => { cell.hidden = !progress.signedIn; });
+  redraw();
   playing = railItems(items, progress.playing);
   showRail(0);
 }
@@ -247,7 +265,10 @@ function tick(progress) {
 const RETURNS = { true: () => withDone(items, tick), false: () => {} };
 window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 
-// The site bar's Collections entry shows only while a collection exists.
+// The site bar's Collections entry shows only while a collection exists. An address with a Finished
+// choice draws no tiles until the progress arrives, so none ever show only to drop out.
+const FIRST_DRAWS = { true: () => {}, false: () => show(1) };
+
 function load([index, published, owned]) {
   characters = owned;
   dressScene(randomCharacter(characters, Math.random));
@@ -255,8 +276,8 @@ function load([index, published, owned]) {
   types = filterOptions(index.puzzles, published.collections);
   document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   state = browseState(location.search, types);
-  rows.replaceChildren(...filterRows(types).flatMap(row));
-  show(1);
+  rows.replaceChildren(...filterRows(types).flatMap(row), ...finishedCells);
+  FIRST_DRAWS[filtersByProgress(state)]();
   wireDone(items, tick);
 }
 
