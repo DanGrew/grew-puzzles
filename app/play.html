@@ -99,6 +99,21 @@
     <div class="print-grids" id="print-grids"></div>
     <template id="grid-sheet"><section class="grid-sheet"><header class="play-head"><h1></h1></header><div class="face print-face"><div class="band"></div><div class="grid"></div></div></section></template>
   </main>
+
+  <!-- A word's entry, opened by tapping a marked word in the list (ui/wordsearch/entry-ui.js);
+       outside the puzzle, so the book's copies of the puzzle never carry it. -->
+  <div class="word-popup" id="word-popup" popover="manual" role="dialog" aria-labelledby="entry-word">
+    <div class="entry-head">
+      <h2 id="entry-word"></h2>
+      <button class="entry-close" id="entry-close" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="entry-body" id="entry-body">
+      <p class="entry-definition" id="entry-definition"></p>
+      <dl class="entry-facts" id="entry-facts" hidden></dl>
+      <p class="entry-credit" id="entry-credit" hidden></p>
+      <a class="entry-link" id="entry-link" target="_blank" rel="noopener" hidden>Read more on Wikipedia</a>
+    </div>
+  </div>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>

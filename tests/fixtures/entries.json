@@ -1,0 +1,36 @@
+{
+  "groups": [
+    {
+      "group": "farm-animals",
+      "entries": [
+        {
+          "word": "Cat",
+          "definition": "A small furry animal with whiskers, kept as a pet and for catching mice.",
+          "link": "https://en.wikipedia.org/wiki/Cat",
+          "credit": "From the Wikipedia article “Cat”, CC BY-SA 4.0",
+          "facts": { "name": "Domestic cat (Felis catus)", "habitat": "Homes, farms and towns", "lifespan": "12 to 18 years",
+                     "food": "Meat, fish and mice", "size": "Up to 46 cm long, without the tail" }
+        },
+        { "word": "Cow", "definition": "A large farm animal kept for its milk." },
+        { "word": "Goat", "definition": "A farm animal with horns and a beard, kept for its milk and wool." }
+      ]
+    },
+    {
+      "group": "cafe-menu",
+      "entries": [
+        {
+          "word": "Ice cream",
+          "definition": "A frozen sweet made from milk or cream, sugar and flavourings such as vanilla, chocolate or fruit. It is churned while it freezes, which beats in air and keeps the ice crystals small, so it stays smooth and soft enough to scoop. It has been eaten for hundreds of years, at first only by the rich, since it needed ice cut from frozen lakes and stored through the summer. Today it is sold in cones, tubs and bars, and served alongside cakes, pies and fruit in cafés everywhere.",
+          "link": "https://en.wikipedia.org/wiki/Ice_cream",
+          "credit": "From the Wikipedia article “Ice cream”, CC BY-SA 4.0"
+        }
+      ]
+    },
+    {
+      "group": "fish",
+      "entries": [
+        { "word": "Pig", "definition": "Not a fish: this group is no group of the puzzle's, so no word here is marked." }
+      ]
+    }
+  ]
+}
