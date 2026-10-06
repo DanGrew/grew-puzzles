@@ -8,7 +8,7 @@ import {
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
 // Puzzle n was saved on day n of October, so the highest is the newest.
 // The tiles a state shows, by hidden ID or collection name, from the indexes' entries.
-const shown = (index, state, collections = []) => browseList(browseItems(index, collections), state).map(i => i.hiddenId ?? i.title);
+const shown = (index, state, collections = []) => browseList(browseItems(index, collections), state, []).map(i => i.hiddenId ?? i.title);
 const collection = (name, created, ids = []) => ({
   slug: name.toLowerCase(), name, description: `About ${name}`, created, puzzles: ids.map((id, i) => ({ id, number: i + 1 })),
 });
@@ -264,8 +264,8 @@ describe('browse-core.js', () => {
 
   test('with nothing finished yet, Finished shows nothing and Not finished everything', () => {
     const items = browseItems(puzzles(2), []);
-    expect(browseList(items, { finished: 'yes', types: [], sort: 'date', dir: 'desc' })).toEqual([]);
-    expect(browseList(items, { finished: 'no', types: [], sort: 'date', dir: 'desc' })).toHaveLength(2);
+    expect(browseList(items, { finished: 'yes', types: [], sort: 'date', dir: 'desc' }, [])).toEqual([]);
+    expect(browseList(items, { finished: 'no', types: [], sort: 'date', dir: 'desc' }, [])).toHaveLength(2);
   });
 
   test('picking a sort keeps the filter and direction', () => {

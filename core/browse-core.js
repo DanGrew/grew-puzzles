@@ -159,7 +159,7 @@ export function browseSearch(state) {
 // whatever the types show to the tiles wearing a ✓ — or not — for the puzzles done so far: it's a
 // question about the player, not the puzzle. Ties fall back to newest first, whichever way the
 // sort runs.
-export function browseList(items, state, done = []) {
+export function browseList(items, state, done) {
   const keys = { date: p => p.created, title: p => p.title, type: p => p.type };
   const key = keys[state.sort];
   const sign = state.dir === 'asc' ? 1 : -1;
