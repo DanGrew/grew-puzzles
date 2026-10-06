@@ -143,11 +143,55 @@ for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009']) {
   }
 }
 
-test('on a phone the character stands at the grid card\'s top-right, behind it, with no label and no room taken from the words', async ({ page }) => {
+// Mirrored left to right: the figure's drawn matrix turns over (its determinant goes negative).
+const mirrored = locator => locator.evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return m.a * m.d - m.b * m.c < 0; });
+
+for (const [id, layout, flipped] of [
+  ['WSCH-0007', 'bottom', false], ['WSCH-0007', 'right', false], ['WSCH-0007', 'overlay', false],
+  ['WSCH-0008', 'bottom', true], ['WSCH-0008', 'right', true], ['WSCH-0008', 'overlay', true],
+  ['WSCH-0009', 'bottom', false], ['WSCH-0009', 'right', true], ['WSCH-0009', 'overlay', false]
+]) {
+  test(`${id} in ${layout}: the character faces ${flipped ? 'right, flipped' : 'left'}, behind the cards, and its name label reads the right way round`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await openPlay(page, id, layout);
+    expect(await mirrored(page.locator('#theme-figure'))).toBe(flipped);
+    expect(await mirrored(page.locator('#name-tag'))).toBe(false);
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
+  });
+}
+
+test('a tall grid keeps the character under it, not over its letters (Christmas, WSCH-0041)', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
+  await page.goto('/app/play.html?id=WSCH-0041');
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+  const stage = await page.locator('.stage').boundingBox();
+  const figure = await page.locator('#theme-figure').boundingBox();
+  expect(stage.height).toBeGreaterThan(1000);
+  expect(figure.y + figure.height / 2).toBeGreaterThan(stage.y + stage.height);
+});
+
+test('under the grid, a long word list scrolls in a words card no taller than the character; Plain keeps the whole list', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
+  await page.goto('/app/play.html?id=WSCH-0041');
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+  const figure = await page.locator('#theme-figure').boundingBox();
+  expect(Math.abs((await page.locator('.words-box').boundingBox()).height - figure.height)).toBeLessThan(2);
+  expect(await page.locator('ul.words').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+  await page.locator('.site .burger').click();
+  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await expect.poll(async () => (await page.locator('.words-box').boundingBox()).height).toBeGreaterThan(1000);
+});
+
+test('on a phone the character stands at the grid card\'s top-right, behind it, facing left, with no label and no room taken from the words', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openPlay(page, 'WSCH-0007', 'bottom');
+  await openPlay(page, 'WSCH-0008', 'bottom');
+  expect(await mirrored(page.locator('#theme-figure'))).toBe(false);
   await expect(page.locator('#name-tag')).toBeHidden();
-  await expect(page.locator('#theme-figure')).toHaveAttribute('data-layer', 'behind');
+  expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
   const stage = await page.locator('.stage').boundingBox();
   const figure = await page.locator('#theme-figure').boundingBox();
   expect(figure.height).toBeCloseTo(140 * Math.min(1, stage.width / 422), 0);

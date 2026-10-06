@@ -77,24 +77,65 @@ export function wordsRoom(look, template, phone) {
 }
 
 // Where the character stands on the play page, for a template and where the words sit — the
-// owner's placements in the product's docs/MOCKUP-THEMED.html, the character's captured
-// 2026-10-03 and its name label's 2026-10-04: the character's centre from the grid card's
-// top-left, its height, its turn, in front of or behind the cards — and its name label's centre,
-// from the character's, in character heights across and down, so it moves and shrinks with it.
-// On a phone every template stands the character in one spot, measured on the phone's 422 px
-// grid card, with no name label. card is the grid card: its width, and its top-left from the
-// page's.
+// owner's placements in the product's docs/MOCKUP-THEMED.html, captured 2026-10-05 with all 12
+// characters in view on a 691 × 733 px grid card: the character's centre from the grid card's
+// top-left, its height, its turn, its name label's centre, from the character's, in character
+// heights across and down, so it moves and shrinks with it, and whether it's flipped to face
+// right, towards the grid, from the left every character faces. Every one stands behind the cards
+// (styles/look.css), the owner's call 2026-10-05.
+// The owner placed each one against the card edges nearest it, and those are its anchors — the
+// last two: 0 holds it from the card's left (or top), 1 from its right (or bottom). On any other
+// grid card it keeps its offset from them, so it stays beside the grid whatever the grid's size
+// (TASK-64). On a card narrower than 691 px the offsets and the size shrink in proportion; on a
+// wider one, neither grows.
+// On a phone every template stands the character in one spot, facing left, measured from the
+// phone's 422 px grid card's top-left, with no name label. card is the grid card: its width and
+// height, and its top-left from the page's.
 export function figurePlacement(template, sits, card, phone) {
   var captured = {
-    beside: { bottom: [675, 1014, 515, 0, 'front', 0.282, -0.454], right: [866, -4, 440, 0, 'behind', 0.377, -0.107], overlay: [935, 415, 675, 0, 'behind', -0.224, -0.477] },
-    mirror: { bottom: [30, 1022, 510, 0, 'front', -0.353, -0.441], right: [253, 8, 385, 0, 'behind', -0.475, -0.164], overlay: [-219, 438, 635, 0, 'behind', 0.098, -0.537] },
-    normal: { bottom: [670, 329, 560, 61, 'behind', 0.282, 0.22], right: [764, 48, 530, 30, 'behind', 0.483, -0.309], overlay: [30, 27, 455, -36, 'behind', -0.365, 0.116] }
+    beside: {
+      bottom: [656, 1004, 700, 0, -0.156, 0.166, false, 1, 1], right: [870, -29, 440, 0, 0.377, -0.107, false, 1, 0],
+      overlay: [904, 732, 700, 0, -0.121, -0.389, false, 1, 1]
+    },
+    mirror: {
+      bottom: [15, 1030, 695, 0, -0.187, 0.039, true, 0, 1], right: [256, -32, 385, 0, -0.322, -0.104, true, 0, 0],
+      overlay: [-190, 432, 635, 0, 0.036, -0.391, true, 0, 1]
+    },
+    normal: {
+      bottom: [719, 293, 560, 61, 0.143, 0.173, false, 1, 0], right: [275, -31, 455, -24, -0.376, -0.136, true, 0, 0],
+      overlay: [-89, 309, 455, -90, -0.018, 0.341, false, 0, 0]
+    }
   };
-  var spots = { false: { spot: captured[template][sits], full: 691, label: true }, true: { spot: [369, 1, 140, 0, 'behind', 0, 0], full: 422, label: false } };
-  var at = spots[phone], spot = at.spot, scale = Math.min(1, card.width / at.full);
-  var left = card.left + spot[0] * scale, top = card.top + spot[1] * scale, height = spot[2] * scale;
+  var spots = {
+    false: { spot: captured[template][sits], full: [691, 733], label: true },
+    true: { spot: [369, 1, 140, 0, 0, 0, false, 0, 0], full: [422, 0], label: false }
+  };
+  var at = spots[phone], spot = at.spot, scale = Math.min(1, card.width / at.full[0]);
+  var left = card.left + fromEdge(spot[0], spot[7], card.width, at.full[0], scale);
+  var top = card.top + fromEdge(spot[1], spot[8], card.height, at.full[1], scale);
+  var height = spot[2] * scale;
   return {
-    left: left, top: top, height: height, turn: spot[3], layer: spot[4],
-    label: at.label, labelLeft: left + spot[5] * height, labelTop: top + spot[6] * height
+    left: left, top: top, height: height, turn: spot[3], flip: spot[6],
+    label: at.label, labelLeft: left + spot[4] * height, labelTop: top + spot[5] * height
   };
+}
+
+// A captured offset along one side of the card, kept from its anchor edge: the near edge (left or
+// top) as captured, or the far edge (right or bottom) by how far beyond or short of it it was
+// captured — scaled with the card either way.
+function fromEdge(captured, far, size, full, scale) {
+  return far * size + (captured - far * full) * scale;
+}
+
+// The tallest the words card grows under the grid before its list scrolls, Themed: the character's
+// own height in its spot, so it stands beside the whole card, the owner's call 2026-10-05 — no cap
+// on a phone, where the character stands small over the grid card instead.
+export function wordsCap(placement, phone) {
+  return { false: placement.height + 'px', true: 'none' }[phone];
+}
+
+// How the character is drawn on its spot: centred on it, turned, and mirrored when flipped — the
+// figure only, never its name label, which reads the right way round wherever it stands.
+export function figureTransform(placement) {
+  return 'translate(-50%, -50%) rotate(' + placement.turn + 'deg)' + ['', ' scaleX(-1)'][Number(placement.flip)];
 }
