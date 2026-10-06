@@ -9,6 +9,7 @@ import {
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
+import { wireEntries } from './entry-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook } from '../theme-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -39,7 +40,7 @@ export function openPlayPage(search) {
     .then(function (url) { return fetch(url); })
     .then(playJson)
     .then(function (puzzle) { return markPrintout(playEl, puzzle); })
-    .then(function (puzzle) { return { id: puzzle.hiddenId, board: playBoard(puzzle) }; })
+    .then(function (puzzle) { return { id: puzzle.hiddenId, board: playBoard(puzzle), groups: puzzle.wordGroups }; })
     .then(function (opened) {
       withSavedFinds(opened.id, opened.board.words, function (found) { showPuzzle(opened, found); });
     }, showMissing);
@@ -138,6 +139,8 @@ function showPuzzle(opened, found) {
   wireWordsFit();
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
+  // The words that have an entry are marked once the entries arrive; the grid never waits on them.
+  wireEntries(opened.groups, listedWords(board.words));
 
   // Signed in mid-puzzle: what was saved for this puzzle elsewhere joins the board.
   function joinSaved(found) {
