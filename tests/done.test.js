@@ -183,6 +183,74 @@ test('a finished puzzle wears its ✓ on every collection page it\'s in, numbere
   }
 });
 
+// Whether the ✓ is the topmost thing at its own centre: a pseudo-element answers a hit test as its
+// tile, so anything of the tile's drawn over the ✓ — its number band, its character — answers instead.
+const tickOnTop = locator => locator.evaluate(el => {
+  const s = getComputedStyle(el);
+  const mark = getComputedStyle(el, '::after');
+  if (mark.content === 'none') return false;
+  const box = el.getBoundingClientRect();
+  const x = box.right - parseFloat(s.borderRightWidth) - parseFloat(mark.right) - parseFloat(mark.width) / 2;
+  const y = box.top + parseFloat(s.borderTopWidth) + parseFloat(mark.top) + parseFloat(mark.height) / 2;
+  return document.elementFromPoint(x, y) === el;
+});
+const lookIs = (context, look) => context.addInitScript(l => localStorage.setItem('grew-puzzles.look', l), look);
+
+for (const look of ['themed', 'plain']) {
+  test(`${look}, the ✓ is drawn on top of a finished tile — a collection tile's number band and a landing tile alike`, async ({ context }) => {
+    await lookIs(context, look);
+    const collections = [collection('farm', [id(1), id(2)]), collection('done', [id(2)])];
+    await site(context, { collections, table: progressTable(finishedRows(id(2))) });
+
+    const farm = await landing(context, '/app/collection.html?slug=farm');
+    await expect(farm.locator('html')).toHaveAttribute('data-look', look);
+    await expect(tile(farm, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
+    expect(await tickOnTop(tile(farm, 'Puzzle 2'))).toBe(true);
+
+    const home = await landing(context);
+    await expect(tile(home, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
+    await expect(tile(home, 'done')).toHaveAttribute('data-done', 'true');
+    expect(await tickOnTop(tile(home, 'Puzzle 2'))).toBe(true);
+    expect(await tickOnTop(tile(home, 'done'))).toBe(true);
+  });
+}
+
+test('switching to Plain on a themed collection page keeps every ✓ on top of its tile', async ({ context }) => {
+  await site(context, { collections: [collection('farm', [id(1), id(2), id(3)])], table: progressTable([...finishedRows(id(1)), ...finishedRows(id(3))]) });
+  const page = await landing(context, '/app/collection.html?slug=farm');
+  await expect(tile(page, 'Puzzle 3')).toHaveAttribute('data-done', 'true');
+  const onTop = () => Promise.all(['Puzzle 1', 'Puzzle 2', 'Puzzle 3'].map(t => tickOnTop(tile(page, t))));
+  expect(await onTop()).toEqual([true, false, true]);
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Plain' }).click();
+  await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
+  expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 3']);
+  expect(await onTop()).toEqual([true, false, true]);
+});
+
+test('themed, a ticked tile keeps its character in the bottom-right, behind the words, clear of the ✓', async ({ context }) => {
+  await site(context, { collections: [collection('farm', [id(1), id(2)])], table: progressTable(finishedRows(id(2))) });
+  const page = await landing(context, '/app/collection.html?slug=farm');
+  const ticked2 = tile(page, 'Puzzle 2');
+  await expect(ticked2).toHaveAttribute('data-done', 'true');
+  const figure = ticked2.locator('.theme-figure');
+  await expect(figure).toBeVisible();
+  const layers = await ticked2.evaluate(el => {
+    const z = node => getComputedStyle(node).zIndex;
+    const fig = el.querySelector('.theme-figure');
+    const words = [...el.children].filter(c => c !== fig);
+    const f = fig.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    const mark = getComputedStyle(el, '::after');
+    return {
+      figure: z(fig), words: [...new Set(words.map(z))], tick: mark.zIndex,
+      figureCorner: [(f.left + f.width / 2 - box.left) / box.width > .5, (f.top + f.height / 2 - box.top) / box.height > .5],
+      clear: f.top > box.top + parseFloat(mark.top) + parseFloat(mark.height),
+    };
+  });
+  expect(layers).toEqual({ figure: 'auto', words: ['1'], tick: '2', figureCorner: [true, true], clear: true });
+});
+
 test('the tiles draw at once, and the ticks arrive a moment after', async ({ context }) => {
   const { table } = await site(context, { table: progressTable(finishedRows(id(2))) });
   table.readDelay = 1500;
