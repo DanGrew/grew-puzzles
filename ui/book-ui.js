@@ -2,7 +2,7 @@
 // drawn by the play page's own printout (drawSheet), and the print dialog once every grid is
 // drawn. Every rule lives in core/book-core.js; how a puzzle's page looks is styles/play.css's.
 import { slugOf } from '../core/collection-core.js';
-import { bookView } from '../core/book-core.js';
+import { bookView, pageNumbers } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { markPrintout, drawSheet } from './wordsearch/play-ui.js';
 
@@ -46,8 +46,10 @@ function printBook(book, playPage) {
   var template = sheetTemplate(playPage);
   Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); }))
     .then(function (puzzles) {
+      var boards = puzzles.map(function (puzzle) { return playBoard(puzzle); });
+      var numbers = pageNumbers(boards);
       bookEl('sheets').replaceChildren.apply(bookEl('sheets'), puzzles.map(function (puzzle, i) {
-        return sheet(template, book.pages[i].heading, puzzle);
+        return sheet(template, book.pages[i].heading, puzzle, boards[i], numbers[i]);
       }));
       return document.fonts.ready;
     })
@@ -75,15 +77,25 @@ function sheetTemplate(playPage) {
 }
 
 // One puzzle's page, drawn exactly as the play page draws its printout — a puzzle of several grids
-// runs on over a page per grid, each headed with the puzzle's number too. Each copy then drops the
-// play page's ids, which belong to the play page alone.
-function sheet(template, heading, puzzle) {
+// runs on over a page per grid, each headed with the puzzle's number too. Every page carries its
+// page number at the foot, on its outer side. Each copy then drops the play page's ids, which
+// belong to the play page alone.
+function sheet(template, heading, puzzle, board, numbers) {
   var page = template.cloneNode(true);
   var part = function (id) { return page.querySelector('#' + id); };
   var number = page.querySelector('.sheet-number');
+  var pageNumber = page.querySelector('.page-number');
   number.textContent = heading;
-  drawSheet(part, playBoard(markPrintout(part, puzzle)), function () {});
-  page.querySelectorAll('.grid-sheet').forEach(function (grid) { grid.prepend(number.cloneNode(true)); });
+  markPrintout(part, puzzle);
+  drawSheet(part, board, function () {});
+  page.querySelectorAll('.grid-sheet').forEach(function (grid) {
+    grid.prepend(number.cloneNode(true));
+    grid.append(pageNumber.cloneNode(true));
+  });
+  page.querySelectorAll('.page-number').forEach(function (el, i) {
+    el.textContent = numbers[i].number;
+    el.dataset.side = numbers[i].side;
+  });
   page.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
   return page;
 }

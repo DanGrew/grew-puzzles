@@ -22,15 +22,25 @@
       <p class="answers" id="answers"></p>
       <p class="address" id="address"></p>
     </section>
+    <!-- The owner's words (the product's docs/CONTENT.md, Copyright page). Paper only. -->
+    <section class="copyright-page" id="copyright-page">
+      <p>© 2026 Grew Puzzles<br>All rights reserved.</p>
+      <p>No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations used in reviews or educational settings.</p>
+      <p>This book is for personal use only. It may not be used for commercial purposes or resale.</p>
+    </section>
     <p class="book-status" id="status">Putting the book together…</p>
-    <p class="book-status" id="ready" hidden><button type="button" id="print-again">Print book</button> <a id="back">Back to the collection</a></p>
+    <div class="book-status" id="ready" hidden>
+      <p><button type="button" id="print-again">Print book</button> <a id="back">Back to the collection</a></p>
+      <p class="book-hint" id="hint">To save it as a PDF, print from Chrome, pick Save as PDF and keep the default settings.</p>
+    </div>
     <p class="book-status" id="failed" hidden>The book couldn't be put together. <a href="">Try again</a>.</p>
     <p class="book-status" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
   </main>
   <div class="sheets" id="sheets"></div>
 </div>
-<!-- A book page: its number, then the play page's own printout, copied in by ui/book-ui.js. -->
-<template id="sheet"><section class="sheet"><p class="sheet-number"></p></section></template>
+<!-- A book page: its puzzle's number, then the play page's own printout, copied in by
+     ui/book-ui.js, and its page number at the foot. -->
+<template id="sheet"><section class="sheet"><p class="sheet-number"></p><p class="page-number"></p></section></template>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script type="module" src="../ui/sign-in-ui.js"></script>

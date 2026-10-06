@@ -201,12 +201,14 @@ ul.words li .progress:empty { display: none; }
    index-card look turned black and white — black outlines, hard shadows, black bands. Title and
    date, the grid card with its type band, the words card beneath, read down each column. The
    printout is always the blank puzzle — whatever is flipped, found, selected or laid out on
-   screen. The cell is sized so the grid leaves the words room, however many rows and columns. */
+   screen. The cell is sized so the grid leaves the words room, however many rows and columns —
+   but never so small its letters (half the cell) print under 7 pt, KDP's smallest text, unless
+   the grid would then be wider than 7.5 in, the book's page less its 0.5 in edges. */
 @page { margin: 12mm; }
 @media print {
   :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff; --wild: #000;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .play { --cell: min(36px, calc(165mm / var(--cols)), calc(120mm / var(--rows))); }
+  .play { --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
   .site, .help, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, ul.words li .progress { display: none; }
 
@@ -219,9 +221,12 @@ ul.words li .progress:empty { display: none; }
   .board { animation: none; }
   .cell { outline: none; }
 
-  /* The words come home beneath the grid from wherever they sat, open or closed. */
+  /* The words come home beneath the grid from wherever they sat, open or closed, as wide as the
+     grid's widest — 165 mm — so a long list runs to more columns rather than off the page. */
   .stage > aside { position: static; margin-top: 20px; }
   .play[data-words][data-list] aside { display: block; }
+  aside { width: 165mm; max-width: none; }
+  .card { width: max-content; margin-inline: auto; }
   .stage > aside .words-box { height: auto; display: block; }
   ul.words, .stage > aside ul.words { display: block; columns: 88px; column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
@@ -233,12 +238,13 @@ ul.words li .progress:empty { display: none; }
     font: 400 8pt var(--font-body); letter-spacing: .06em; }
 
   /* A puzzle of several grids: the first sheet is the title and the words card alone, however the
-     screen shows them; then each grid on a sheet of its own, under the title and a band naming its
-     page — every grid the same size, sized to the sheet with no words to leave room for. */
+     screen shows them, the card the page's full width, a long list's room to spread; then each
+     grid on a sheet of its own, under the title and a band naming its page — every grid the same
+     size, sized to the sheet with no words to leave room for. */
   .tabs { display: none; }
   .play[data-paged="true"] .card { display: none; }
-  .play[data-paged="true"] aside { width: 165mm; max-width: none; }
-  .play[data-paged="true"] .print-grids { display: block; --cell: min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows))); }
+  .play[data-paged="true"] aside { width: 100%; }
+  .play[data-paged="true"] .print-grids { display: block; --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .grid-sheet { break-before: page; display: flex; flex-direction: column; align-items: center; }
   .print-face { width: max-content; }
 }

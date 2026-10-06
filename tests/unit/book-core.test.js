@@ -1,4 +1,4 @@
-import { bookView } from '../../core/book-core.js';
+import { bookView, pageNumbers } from '../../core/book-core.js';
 
 const collections = () => [
   { slug: 'other', name: 'Other', description: 'Not this one.', created: '2026-10-01', puzzles: [{ id: 'WSCH-0001', number: 1 }] },
@@ -42,6 +42,16 @@ describe('book-core.js', () => {
     const held = collections();
     bookView(held, 'issue-1');
     expect(held[1].puzzles.map(p => p.number)).toEqual([2, 10, 1]);
+  });
+
+  test('puzzle pages are numbered on from the title and copyright pages, even on the left and odd on the right', () => {
+    const boards = [{ sheets: [] }, { sheets: ['Page 1 of 3', 'Page 2 of 3', 'Page 3 of 3'] }, { sheets: [] }];
+    expect(pageNumbers(boards)).toEqual([
+      [{ number: 3, side: 'right' }],
+      [{ number: 4, side: 'left' }, { number: 5, side: 'right' }, { number: 6, side: 'left' }, { number: 7, side: 'right' }],
+      [{ number: 8, side: 'left' }],
+    ]);
+    expect(pageNumbers([])).toEqual([]);
   });
 
   test('an address naming no collection the site holds has no book', () => {

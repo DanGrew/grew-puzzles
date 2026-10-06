@@ -8,6 +8,18 @@ export function bookView(collections, slug) {
   return collection ? book(collection) : missing;
 }
 
+// Each puzzle's page numbers, in book order, given each one's board (play-core's playBoard): a
+// puzzle prints one page, then a page more for each grid printed on a sheet of its own. The title
+// page is page 1 and the copyright page 2, so the first puzzle starts on 3. Page 1 is a right-hand
+// page, so every even number falls on the left, as KDP needs.
+export function pageNumbers(boards) {
+  let next = 3;
+  return boards.map(board => Array.from({ length: 1 + board.sheets.length }, () => {
+    const number = next++;
+    return { number, side: number % 2 === 0 ? 'left' : 'right' };
+  }));
+}
+
 function book(collection) {
   const pages = [...collection.puzzles]
     .sort((a, b) => a.number - b.number)

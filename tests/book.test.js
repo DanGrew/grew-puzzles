@@ -123,14 +123,107 @@ test('apart from its number, each page is exactly that puzzle\'s own printout', 
   }
 });
 
-for (const format of ['A4', 'Letter']) {
-  test(`saved as a PDF, the book is one ${format} file with the title page then every puzzle\'s page, in order`, async ({ page }) => {
-    await openBook(page);
-    const pdf = (await page.pdf({ format })).toString('latin1');
-    expect((pdf.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(4);
-    expect(pdf).toContain('/ToUnicode');
-  });
+// The book saved as a PDF the way Chrome's Save as PDF makes it: at the page's own size.
+async function savePdf(page) {
+  return (await page.pdf({ preferCSSPageSize: true })).toString('latin1');
 }
+
+// Each page's size, in points.
+function pageSizes(pdf) {
+  return [...pdf.matchAll(/\/Type\s*\/Page[^s][\s\S]*?\/MediaBox\s*\[([^\]]*)\]/g)].map(m => m[1].trim().split(/\s+/).map(Number));
+}
+
+// Every font the PDF uses is in the file: a Type 3 font carries its own glyphs, and every other
+// font's descriptor carries its font file. Returns the fonts left to the reader's machine.
+function unembeddedFonts(pdf) {
+  // Each object's dictionary: its text up to its stream, if it has one.
+  const objects = new Map([...pdf.matchAll(/(\d+) 0 obj([\s\S]*?)endobj/g)].map(m => [m[1], m[2].split(/\bstream\r?\n/)[0]]));
+  const fonts = [...objects.values()].filter(o => /\/Type\s*\/Font\b/.test(o));
+  const type3 = fonts.filter(f => /\/Subtype\s*\/Type3/.test(f));
+  const ownGlyphs = new Set(type3.map(f => (f.match(/\/FontDescriptor\s+(\d+) 0 R/) || [])[1]));
+  const bare = [...objects.entries()].filter(([id, o]) => /\/Type\s*\/FontDescriptor/.test(o) && !ownGlyphs.has(id) && !/\/FontFile[23]?\b/.test(o));
+  return [...type3.filter(f => !/\/CharProcs/.test(f)), ...bare.map(([, o]) => o)];
+}
+
+const LETTER = [0, 0, 612, 792];
+
+test('saved as a PDF, every page of the book is 8.5×11 in: the title page, the copyright page, then every puzzle\'s page, in order', async ({ page }) => {
+  await openBook(page);
+  const pdf = await savePdf(page);
+  expect(pageSizes(pdf)).toEqual([LETTER, LETTER, LETTER, LETTER, LETTER]);
+  expect(pdf).toContain('/ToUnicode');
+});
+
+test('the book\'s page has no margin, so the browser has no room to print its date, address or title on any page', async ({ page }) => {
+  await openBook(page);
+  // The site's own stylesheets, in the order they load; the font's, from Google, is unreadable here.
+  const rules = await page.evaluate(() => [...document.styleSheets].filter(s => s.href.startsWith(location.origin))
+    .flatMap(s => [...s.cssRules]).filter(r => r instanceof CSSPageRule).map(r => [r.style.size, r.style.margin]));
+  expect(rules.at(-1)).toEqual(['8.5in 11in', '0px']);
+});
+
+test('saved as a PDF, every font in the book is embedded, with no links, notes or bookmarks', async ({ page }) => {
+  await openBook(page, {}, 'sagas');
+  const pdf = await savePdf(page);
+  expect(pdf).toMatch(/\/Type\s*\/Font\b/);
+  expect(unembeddedFonts(pdf)).toEqual([]);
+  for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
+});
+
+test('the copyright page follows the title page, on a page of its own, in the owner\'s words', async ({ page }) => {
+  await openBook(page);
+  await page.emulateMedia({ media: 'print' });
+  const copyright = page.locator('#copyright-page');
+  await expect(copyright).toBeVisible();
+  await expect(copyright.locator('p')).toHaveText([
+    '© 2026 Grew Puzzles All rights reserved.',
+    'No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations used in reviews or educational settings.',
+    'This book is for personal use only. It may not be used for commercial purposes or resale.',
+  ], { useInnerText: true });
+  await expect(copyright).toHaveCSS('break-before', 'page');
+  const title = await page.locator('#title-page').boundingBox();
+  const box = await copyright.boundingBox();
+  const first = await sheets(page).first().boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(title.y + title.height);
+  expect(first.y).toBeGreaterThanOrEqual(box.y + box.height);
+  expect(parseFloat(await copyright.evaluate(el => getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(7 * 4 / 3);
+});
+
+test('puzzle pages are numbered on from the copyright page, even on the left and odd on the right, at each page\'s foot', async ({ page }) => {
+  await openBook(page, {}, 'sagas');
+  await page.emulateMedia({ media: 'print' });
+  const numbers = page.locator('.sheet .page-number');
+  await expect(numbers).toHaveText(['3', '4', '5', '6', '7']);
+  expect(await numbers.evaluateAll(n => n.map(el => el.dataset.side))).toEqual(['right', 'left', 'right', 'left', 'right']);
+  // Each number sits inside its own page — the puzzle's first page or one of its grid pages —
+  // 0.5 in in from the outer edge, below everything else on it.
+  for (const [i, side] of [[0, 'right'], [1, 'left'], [4, 'right']]) {
+    const number = numbers.nth(i);
+    await expect(number).toHaveCSS(side, '0px');
+    await expect(number).toHaveCSS('position', 'absolute');
+    expect(parseFloat(await number.evaluate(el => getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(7 * 4 / 3);
+  }
+  await expect(page.locator('.title-page .page-number, .copyright-page .page-number')).toHaveCount(0);
+});
+
+test('on every puzzle page, even the biggest grid\'s letters print at 7 pt or more, and the grid stays inside the page\'s edges', async ({ page }) => {
+  await openBook(page);
+  await page.emulateMedia({ media: 'print' });
+  const smallest = await page.locator('.sheet .front-face .cell').evaluateAll(cells => Math.min(...cells.map(c => parseFloat(getComputedStyle(c).fontSize))));
+  expect(smallest).toBeGreaterThanOrEqual(7 * 4 / 3 - 0.01);
+  // The 30×30 grid, at the floor, keeps within the page's 7.5 in between its 0.5 in edges.
+  const big = await sheets(page).nth(2).locator('.front-face .grid').boundingBox();
+  expect(big.width).toBeLessThanOrEqual(7.5 * 96);
+});
+
+test('a grid too wide to print at 7 pt keeps the page\'s edges, its letters as big as the page allows', async ({ page }) => {
+  await openBook(page);
+  await page.emulateMedia({ media: 'print' });
+  // The 30×30's grid told it has 60 columns: at 7 pt it would be 11.7 in wide.
+  const grid = sheets(page).nth(2).locator('.front-face .grid');
+  await sheets(page).nth(2).locator('main.play').evaluate(el => el.style.setProperty('--cols', '60'));
+  expect((await grid.boundingBox()).width).toBeCloseTo(7.5 * 96, 0);
+});
 
 test('a Saga fills four book pages — its words, then Pages 1–3 — each headed with its number, and the next puzzle starts on a fresh page', async ({ page }) => {
   await openBook(page, {}, 'sagas');
@@ -150,11 +243,8 @@ test('a Saga fills four book pages — its words, then Pages 1–3 — each head
   await expect(sheets(page).nth(1).locator('.sheet-number')).toHaveText('Puzzle 2');
   await expect(sheets(page).nth(1).locator('.grid-sheet')).toHaveCount(0);
   expect(await page.locator('.sheet, .grid-sheet').evaluateAll(s => s.map(el => getComputedStyle(el).breakBefore))).toEqual(['page', 'page', 'page', 'page', 'page']);
-  for (const format of ['A4', 'Letter']) {
-    const pdf = (await page.pdf({ format })).toString('latin1');
-    // The title page, the Saga's four, then the single-grid puzzle's one.
-    expect((pdf.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(6);
-  }
+  // The title and copyright pages, the Saga's four, then the single-grid puzzle's one.
+  expect(pageSizes(await savePdf(page))).toHaveLength(7);
 });
 
 test('nothing the book adds shows an answer or a hidden ID', async ({ page }) => {
@@ -168,10 +258,12 @@ test('nothing the book adds shows an answer or a hidden ID', async ({ page }) =>
   await expect(sheets(page).nth(1).locator('.front-face .cell').first()).toHaveText('?');
 });
 
-test('on screen the book shows its title page, Print book again and the way back; the puzzle pages are paper only', async ({ page }) => {
+test('on screen the book shows its title page, Print book again, the hint for saving it as a PDF and the way back; the rest is paper only', async ({ page }) => {
   await openBook(page);
   await expect(page.locator('#title-page')).toBeVisible();
-  await expect(page.locator('#sheets')).toBeHidden();
+  await expect(page.locator('#hint')).toHaveText('To save it as a PDF, print from Chrome, pick Save as PDF and keep the default settings.');
+  await expect(page.locator('#hint')).toBeVisible();
+  for (const paper of ['#sheets', '#copyright-page']) await expect(page.locator(paper)).toBeHidden();
   await expect(page.locator('#status')).toBeHidden();
   await expect(page.locator('#back')).toHaveAttribute('href', 'collection.html?slug=issue-1');
   await page.locator('#print-again').click();
@@ -209,4 +301,41 @@ test('the real collections each make a book', async ({ page }) => {
   await expect(page.locator('#ready')).toBeVisible();
   await expect(sheets(page).first().locator('.sheet-number')).toHaveText('Puzzle 1');
   expect(await page.evaluate(() => window.printed.length)).toBe(1);
+});
+
+// Laid out as on paper — 8.5 in wide — how far down its page each puzzle page's content runs, and
+// where its page number sits, in inches from the page's top. A page is a puzzle's first page or
+// one of its grid pages; each starts a fresh sheet of paper.
+function pageDepths() {
+  const IN = 96;
+  // The page an element is on: its grid page if it has one, else its puzzle's first page. An
+  // element holding grid pages spans several pages, so it is on none of them.
+  const pageOf = el => el.querySelector('.grid-sheet') ? null : el.closest('.grid-sheet') || el.closest('.sheet');
+  return [...document.querySelectorAll('.sheet, .sheet .grid-sheet')].map(root => {
+    const top = root.getBoundingClientRect().top;
+    const own = [...root.querySelectorAll('*')].filter(el => pageOf(el) === root && !el.closest('.page-number'));
+    const number = [...root.children].find(el => el.matches('.page-number')).getBoundingClientRect();
+    return { content: (Math.max(...own.map(el => el.getBoundingClientRect().bottom)) - top) / IN,
+      numberTop: (number.top - top) / IN, numberBottom: (number.bottom - top) / IN };
+  });
+}
+
+test('every real collection\'s book fits its pages: each page\'s puzzle ends above its page number, which keeps clear of the foot; saved as a PDF, it is the title and copyright pages plus each puzzle\'s own, all 8.5×11 in', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await catchPrint(page);
+  const { collections } = await (await page.request.get('/content/collections/index.json')).json();
+  for (const { slug } of collections) {
+    await page.goto('/app/book.html?slug=' + slug);
+    await expect(page.locator('#ready')).toBeVisible();
+    await page.emulateMedia({ media: 'print' });
+    for (const depth of await page.evaluate(pageDepths)) {
+      expect(depth.content).toBeLessThan(depth.numberTop);
+      expect(depth.numberBottom).toBeLessThanOrEqual(11 - 0.25);
+    }
+    // A page that still ran over would push the book a page longer than its page numbers.
+    const pages = await page.locator('.sheet .page-number').count();
+    await expect(page.locator('.sheet .page-number').last()).toHaveText(String(pages + 2));
+    expect(pageSizes(await savePdf(page))).toEqual(Array(pages + 2).fill(LETTER));
+  }
 });

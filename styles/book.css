@@ -1,7 +1,7 @@
-/* The collection book (app/book.html): a title page, then each puzzle's own printout from
-   styles/play.css, one to a page, headed with its number. Only the title page and its
-   number headings are this file's; on screen the title page shows with Print book, and the
-   puzzle pages are paper only. */
+/* The collection book (app/book.html): a title page, the copyright page, then each puzzle's
+   own printout from styles/play.css, one to a page, headed with its number. Only the title and
+   copyright pages, the number headings and the page numbers are this file's; on screen the
+   title page shows with Print book and the hint for saving it, and the rest is paper only. */
 .book [hidden] { display: none; }
 .title-page { max-width: 520px; margin: 8px auto 28px; text-align: center; background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
@@ -15,12 +15,28 @@
 .book-status a { color: var(--fg); margin-left: 12px; }
 .book-status button { font: 600 14px var(--font-body); height: 36px; padding: 0 16px; color: var(--band-fg); background: var(--band);
   border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: var(--shadow); cursor: pointer; }
-.sheets { display: none; }
+.book-status p { margin: 0 0 10px; }
+.book-hint { font-size: 13px; color: var(--muted); }
+.sheets, .copyright-page { display: none; }
 .sheet-number { margin: 0 0 6px; text-align: center; font: 600 15px var(--font-display); letter-spacing: .02em; }
 
+/* The book is its own KDP interior: every page 8.5×11 in, no bleed. A margin of 0 leaves the
+   browser no room for its own header and footer (date, address, title), so each page keeps its
+   0.5 in edges itself — the book's sides, and each page's own top — and its page number sits
+   inside the page, 0.5 in up from the foot, on the outer side: even on the left, odd on the
+   right. The title page is page 1 and the copyright page 2, neither numbered. */
+@page { size: 8.5in 11in; margin: 0; }
 @media print {
+  .wrap { padding: 0 .5in; }
   .book-status { display: none; }
   .title-page { margin: 50mm auto 0; }
+  .copyright-page { display: block; break-before: page; padding: 7.5in .5in 0; font: 9pt/1.5 var(--font-body); }
+  .copyright-page p { margin: 0 0 1em; }
   .sheets { display: block; }
   .sheet { break-before: page; }
+  .sheet, .grid-sheet { position: relative; padding-top: .5in; }
+  .sheet .print-grids { align-self: stretch; }
+  .page-number { position: absolute; top: 10.3in; margin: 0; font: 600 11pt var(--font-display); font-variant-numeric: tabular-nums; }
+  .page-number[data-side="left"] { left: 0; }
+  .page-number[data-side="right"] { right: 0; }
 }
