@@ -401,6 +401,35 @@ const CUP_PUZZLE = {
 };
 const sheepCell = (page, r, c) => page.locator('#grid .cell').nth(r * SHEEP_COLS + c);
 const progress = (page, word) => page.locator('#words li', { hasText: word }).locator('.progress');
+// Each listed word as the paper reads it: the word, then its count of copies when it carries one.
+const printedLines = page => page.locator('#words li').evaluateAll(lis => lis.map(li => {
+  const count = getComputedStyle(li, '::after').content;
+  return li.firstChild.textContent + (count === 'none' ? '' : ' ' + JSON.parse(count));
+}));
+// Once the fonts are in, the page sizes paper's word columns.
+const columnsSized = page => expect(page.locator('#words')).toHaveAttribute('style', /--print-word-w/);
+// On paper: the columns' width, the words laid out wider than their column — running into the
+// next — and how many lines each word takes, by its text.
+async function printedFit(page) {
+  await columnsSized(page);
+  await page.emulateMedia({ media: 'print' });
+  return page.locator('#words').evaluate(ul => {
+    const lis = Array.from(ul.children);
+    const one = Math.min(...lis.map(li => li.getBoundingClientRect().height));
+    // A printed word's box grows to hold its widest unbreakable piece, count and all, so it runs
+    // into the next when that box is wider than its column: as many columns of column-width as
+    // fit across the list, stretched to fill it.
+    const css = getComputedStyle(ul);
+    const gap = parseFloat(css.columnGap), want = parseFloat(css.columnWidth);
+    const count = Math.max(1, Math.floor((ul.clientWidth + gap) / (want + gap)));
+    const column = (ul.clientWidth - (count - 1) * gap) / count;
+    return {
+      want,
+      over: lis.filter(li => li.getBoundingClientRect().width > column + 0.5).map(li => li.firstChild.textContent),
+      lines: Object.fromEntries(lis.map(li => [li.firstChild.textContent, Math.round(li.getBoundingClientRect().height / one)]))
+    };
+  });
+}
 
 // Opens a Repeats puzzle with the words under the grid, so the list is always in view.
 async function openRepeats(page, puzzle) {
@@ -494,6 +523,103 @@ test('the printout leaves the progress off, as it does the count', async ({ page
   await page.emulateMedia({ media: 'print' });
   await expect(progress(page, 'Cup')).toBeHidden();
   await expect(page.locator('#words li', { hasText: 'Cup' })).toBeVisible();
+});
+
+test('a printed Sheep puzzle lists Sheep once, as Sheep ×45', async ({ page }) => {
+  await openRepeats(page, SHEEP_PUZZLE);
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Sheep ×45']);
+});
+
+test('a printed Cup puzzle reads Cup ×5 on its one line, and Cow and Hen as before', async ({ page }) => {
+  await openRepeats(page, CUP_PUZZLE);
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Cow', 'Cup ×5', 'Hen']);
+  const heights = await page.locator('#words li').evaluateAll(lis => lis.map(li => li.getBoundingClientRect().height));
+  expect(new Set(heights).size).toBe(1);
+});
+
+test('printed after finding copies on screen, the sheet still reads Sheep ×45, never the progress', async ({ page }) => {
+  await openRepeats(page, SHEEP_PUZZLE);
+  for (const ends of SHEEP_ENDS.slice(0, 12)) await findSheep(page, ends);
+  await expect(progress(page, 'Sheep')).toHaveText('12/45');
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Sheep ×45']);
+  await expect(progress(page, 'Sheep')).toBeHidden();
+});
+
+test('a puzzle with no repeated word prints every word alone, nothing after it', async ({ page }) => {
+  await open(page);
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Cat', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+});
+
+test('the screen never shows the printed count: Cup keeps its 0/5', async ({ page }) => {
+  await openRepeats(page, CUP_PUZZLE);
+  expect(await printedLines(page)).toEqual(['Cow', 'Cup', 'Hen']);
+  await expect(progress(page, 'Cup')).toHaveText('0/5');
+});
+
+// A Mirra?e at a real one's size, 25 × 35, its list long words with the longest of them five times.
+const LONG_WORDS = Array.from({ length: 60 }, (_, i) => 'Pachycephalosaur' + String.fromCharCode(97 + (i % 26)) + String.fromCharCode(97 + Math.floor(i / 26)));
+const MIRRAGE_PUZZLE = {
+  ...PUZZLE, type: 'Mirra?e', title: 'Dinosaurs',
+  grids: [{ rows: Array.from({ length: 35 }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXY') }],
+  words: LONG_WORDS.map(word => ({ word, grid: 0, start: { row: 0, col: 0 }, direction: 'E', length: 3 }))
+    .concat(Array.from({ length: 4 }, () => ({ word: LONG_WORDS[0], grid: 0, start: { row: 0, col: 0 }, direction: 'E', length: 3 })))
+};
+
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`a Mirra?e-size list printed from ${layout} keeps every long word, and its ×5, on one line in its own column`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await open(page, null, MIRRAGE_PUZZLE);
+    const fit = await printedFit(page);
+    expect((await printedLines(page))[0]).toBe(LONG_WORDS[0] + ' ×5');
+    expect(fit.over).toEqual([]);
+    expect(new Set(Object.values(fit.lines))).toEqual(new Set([1]));
+    expect(fit.want).toBeGreaterThan(88);
+  });
+}
+
+test('a long word in capitals gets a column wide enough for it too', async ({ page }) => {
+  const caps = ['WWWWMMMMWWWW', 'MOWWOWMOM', 'Cat'];
+  await openRepeats(page, { ...PUZZLE, words: caps.map(word => ({ ...PUZZLE.words[0], word })) });
+  const fit = await printedFit(page);
+  expect(fit.over).toEqual([]);
+  expect(fit.lines).toEqual({ WWWWMMMMWWWW: 1, MOWWOWMOM: 1, Cat: 1 });
+});
+
+test('a word\'s count never leaves it: Royal blue ×5 wraps, if it must, between Royal and blue ×5', async ({ page }) => {
+  const words = ['Royal blue', 'Royal blue', 'Royal blue', 'Royal blue', 'Royal blue', 'Mint'];
+  await openRepeats(page, { ...PUZZLE, words: words.map(word => ({ ...PUZZLE.words[0], word })) });
+  const fit = await printedFit(page);
+  expect(fit.over).toEqual([]);
+  // The last line holds blue and its count together: its last piece of text ends before the count starts.
+  const tail = await page.locator('#words li', { hasText: 'Royal blue' }).evaluate(li => {
+    const range = document.createRange();
+    range.setStart(li.firstChild, li.firstChild.textContent.indexOf('blue'));
+    range.setEnd(li.firstChild, li.firstChild.textContent.length);
+    const blue = range.getBoundingClientRect(), box = li.getBoundingClientRect();
+    return { blueBottom: Math.round(blue.bottom), boxBottom: Math.round(box.bottom) };
+  });
+  expect(Math.abs(tail.blueBottom - tail.boxBottom)).toBeLessThanOrEqual(2);
+});
+
+test('a list whose words all fit keeps paper\'s 88px columns, as before', async ({ page }) => {
+  await openIn(page, 'bottom');
+  const fit = await printedFit(page);
+  expect(fit.want).toBe(88);
+  expect(fit.over).toEqual([]);
+});
+
+test('a line of two words too long for its column wraps at its space, and runs into nothing', async ({ page }) => {
+  const words = ['Raspberry ripple', 'Mint', 'Toffee'];
+  await openRepeats(page, { ...PUZZLE, words: words.map(word => ({ ...PUZZLE.words[0], word })) });
+  const fit = await printedFit(page);
+  expect(fit.want).toBe(88);
+  expect(fit.over).toEqual([]);
+  expect(fit.lines).toEqual({ 'Raspberry ripple': 2, Mint: 1, Toffee: 1 });
 });
 
 // ---- Where the words sit ----
@@ -1433,6 +1559,24 @@ test('a 3-page puzzle\'s printed grids keep their ?s, on the page they sit', asy
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('.grid-sheet .cell', { hasText: '?' })).toHaveCount(1);
   await expect(page.locator('.grid-sheet').nth(1).locator('.cell').nth(63)).toHaveText('?');
+});
+
+test('a Saga with Cow on two of its pages prints Cow ×2 on its words sheet', async ({ page }) => {
+  const cow = SAGA.words.find(w => w.word === 'Cow');
+  await open(page, null, { ...SAGA, words: SAGA.words.concat([{ ...cow, grid: 1 }]) });
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Cat', 'Cow ×2', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+  await expect(page.locator('.grid-sheet li')).toHaveCount(0);
+});
+
+test('a Saga\'s words sheet keeps every long word in its own column', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, 'bottom']);
+  const long = ['Carcharodontosaurus', 'Pachycephalosaurus', 'Christmas pudding', 'Ratchet and Clank'];
+  await open(page, null, { ...SAGA, words: SAGA.words.map((w, i) => ({ ...w, word: long[i % 4] + ' ' + i })) });
+  const fit = await printedFit(page);
+  expect(fit.over).toEqual([]);
+  expect(fit.want).toBeGreaterThan(88);
 });
 
 test('a single-grid puzzle prints no sheets of its own beyond the one', async ({ page }) => {

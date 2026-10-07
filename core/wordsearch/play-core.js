@@ -247,6 +247,27 @@ export function wordList(play, words, flipped) {
   });
 }
 
+// On paper, a listed word with several copies says how many to find, as the generator names it —
+// Sheep ×45 — whatever was found on screen; a word of one copy, a missing one too, says nothing.
+export function printedCount(entry) {
+  return { true: '×' + entry.copies.length, false: '' }[entry.copies.length > 1];
+}
+
+// A printed line, as the pieces it may wrap between: a line wraps only at a space, never inside a
+// word or between a word and its count, so the count rides on the last word.
+export function printedPieces(text, copies) {
+  var words = text.split(' ');
+  return words.map(function (word, i) {
+    return { text: word, copies: { true: copies, false: '' }[i === words.length - 1] };
+  });
+}
+
+// Paper's column, in whole pixels: as wide as the list's widest piece, so no word runs into the
+// next — a longer line wraps at a space instead. styles/play.css keeps it 88px at the least.
+export function printedColumnWidth(pieceWidths) {
+  return Math.ceil(Math.max.apply(null, [0].concat(pieceWidths)));
+}
+
 // Out of the placed copies only: a missing word is never there to find.
 export function countLabel(play, words) {
   return play.found.length + '/' + placedWords(words).length;

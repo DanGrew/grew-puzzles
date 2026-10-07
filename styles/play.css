@@ -235,6 +235,13 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    but never so small its letters (half the cell) print under 7 pt, KDP's smallest text, unless
    the grid would then be wider than 7.5 in, the book's page less its 0.5 in edges. */
 @page { margin: 12mm; }
+/* A printed word's type, and the room before its count — shared by paper and by the unseen line
+   the page measures each printed word on, so a column is sized in the type it prints in. */
+:root { --print-word-size: 13px; --print-count-gap: 6px; }
+.print-measure { position: absolute; top: 0; left: -10000px; visibility: hidden; white-space: nowrap;
+  font: 400 var(--print-word-size) var(--font-body); }
+.print-measure::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }
+.print-measure[data-copies=""]::after { content: none; }
 @media print {
   :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff; --wild: #000;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
@@ -254,15 +261,22 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .cell { outline: none; }
 
   /* The words come home beneath the grid from wherever they sat, open or closed, as wide as the
-     grid's widest — 165 mm — so a long list runs to more columns rather than off the page. */
+     grid's widest — 165 mm — so a long list runs to more columns rather than off the page. Each
+     column is 88px, or the list's widest word where that's wider, a count on its word
+     (--print-word-w, measured by ui/wordsearch/play-ui.js), so no word runs into the next; a
+     longer line of several words wraps at a space. */
   .stage > aside { position: static; margin-top: 20px; }
   .play[data-words][data-list] aside { display: block; }
   aside { width: 165mm; max-width: none; }
   .card { width: max-content; margin-inline: auto; }
   .stage > aside .words-box { height: auto; display: block; }
-  ul.words, .stage > aside ul.words { display: block; columns: 88px; column-gap: 14px; overflow: visible; }
+  ul.words, .stage > aside ul.words { display: block; columns: max(88px, var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
-    font-size: 13px; text-align: center; color: var(--fg); text-decoration: none; }
+    font-size: var(--print-word-size); text-align: center; color: var(--fg); text-decoration: none; }
+  /* A repeated word's count of copies, after it on its line — Sheep ×45 — never the screen's
+     progress; a word of one copy has none. Drawn from the attribute, so it's never page text. */
+  ul.words li::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }
+  ul.words li[data-copies=""]::after { content: none; }
 
   /* The hidden ID, small under the words card's corner: matches a sheet to its puzzle. Paper only —
      drawn from the attribute, so it's never page text on screen. */
