@@ -4,7 +4,7 @@
 import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
-import { markPrintout, drawSheet } from './wordsearch/play-ui.js';
+import { markPrintout, drawSheet, sizePrintedWords } from './wordsearch/play-ui.js';
 import { dressRandomScene } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
@@ -47,7 +47,8 @@ function showMissing() {
 }
 
 // Every puzzle file loads and every page is drawn before the dialog opens, its fonts and the
-// page's background too, so no page prints blank however many puzzles the collection holds.
+// page's background too, so no page prints blank however many puzzles the collection holds — and,
+// the fonts in, each page's word columns are sized as the play page sizes its own.
 function printBook(book, playPage, scene) {
   var template = sheetTemplate(playPage);
   Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); }))
@@ -59,7 +60,12 @@ function printBook(book, playPage, scene) {
       }));
       return Promise.all([document.fonts.ready, scene]);
     })
+    .then(sizeBookWords)
     .then(showReady, showFailed);
+}
+
+function sizeBookWords() {
+  bookEl('sheets').querySelectorAll('ul.words').forEach(sizePrintedWords);
 }
 
 function showReady() {

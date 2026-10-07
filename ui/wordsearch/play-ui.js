@@ -4,7 +4,7 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
-  countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
+  printedCount, printedPieces, printedColumnWidth, countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
@@ -68,12 +68,14 @@ export function drawSheet(part, board, onCell) {
   part('play').dataset.paged = String(board.sheets.length > 0);
   drawPuzzleGrid(part('grid'), board.grids[0], onCell);
   // One line per word, however many copies; a word's progress sits beside it, on screen only,
-  // as wide from the first find as when every copy is found, so a find never moves a word.
+  // as wide from the first find as when every copy is found, so a find never moves a word. On
+  // paper its count of copies takes the progress's place (styles/play.css draws it from the attribute).
   var full = wordList({ found: board.words.map(function (_, i) { return i; }) }, board.words, false);
   listedWords(board.words).forEach(function (entry, i) {
     var li = document.createElement('li');
     var progress = document.createElement('span');
     li.textContent = entry.text;
+    li.dataset.copies = printedCount(entry);
     progress.className = 'progress';
     progress.style.minWidth = full[i].progress.length + 'ch';
     li.appendChild(progress);
@@ -83,6 +85,27 @@ export function drawSheet(part, board, onCell) {
     part('print-grids').appendChild(gridSheet(part('grid-sheet'), board, label, board.grids[i]));
   });
   part('play').hidden = false;
+}
+
+// Paper's word columns, sized to the list's widest word, a count on its word: each piece a line
+// may wrap between is measured on an unseen line in the printout's own type (styles/play.css,
+// .print-measure), since paper's layout is never the screen's. Run once the fonts are in, so the
+// type is the real one.
+export function sizePrintedWords(list) {
+  var line = document.createElement('span');
+  line.className = 'print-measure';
+  document.body.appendChild(line);
+  var widths = Array.from(list.children).flatMap(function (li) {
+    return printedPieces(li.firstChild.textContent, li.dataset.copies).map(function (piece) { return measurePiece(line, piece); });
+  });
+  line.remove();
+  list.style.setProperty('--print-word-w', printedColumnWidth(widths) + 'px');
+}
+
+function measurePiece(line, piece) {
+  line.textContent = piece.text;
+  line.dataset.copies = piece.copies;
+  return line.getBoundingClientRect().width;
 }
 
 // The puzzle side of one grid. It shows a wildcard's ?, never its letter — in its label too.
@@ -137,6 +160,7 @@ function showPuzzle(opened, found) {
   wireTextSize();
   wireWords();
   wireWordsFit();
+  document.fonts.ready.then(function () { sizePrintedWords(playEl('words')); });
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
   // The words that have an entry are marked once the entries arrive; the grid never waits on them.
