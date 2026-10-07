@@ -42,13 +42,18 @@ export function difficultyOf(type) {
   return difficulty.get(type) ?? 'Easy';
 }
 
+// Every tone, easiest first, then collections: the filter rows' order, and the Difficulty sort's.
+function tones() {
+  return ['Easy', 'Medium', 'Hard', 'Extreme', COLLECTION_TYPE];
+}
+
 // The filter popup: a row per difficulty, Easy to Extreme, holding its types A to Z — a
 // difficulty with none has no row — then Collections on a row of its own, with no name. Each
 // row's tone names its colour.
 export function filterRows(types) {
   const rowOf = type => (type === COLLECTIONS ? COLLECTION_TYPE : difficultyOf(type));
   const named = { [COLLECTION_TYPE]: '' };
-  return ['Easy', 'Medium', 'Hard', 'Extreme', COLLECTION_TYPE]
+  return tones()
     .map(tone => ({ name: named[tone] ?? tone, tone, types: types.filter(t => rowOf(t) === tone) }))
     .filter(row => row.types.length > 0);
 }
@@ -128,8 +133,8 @@ export function browseItems(puzzles, collections) {
 }
 
 // The filter and sort a page address asks for. A filter the page doesn't offer, or a sort or
-// direction it doesn't have, falls back as if it were never asked: everything, date, newest first.
-// A Finished choice — finished=yes or finished=no — holds only once someone is found signed in.
+// direction it doesn't have, falls back as if it were never asked: everything, difficulty, easiest
+// first. A Finished choice — finished=yes or finished=no — holds only once someone is found signed in.
 export function browseState(search, types) {
   const params = new URLSearchParams(search);
   const sort = params.get('sort');
@@ -137,7 +142,7 @@ export function browseState(search, types) {
   return {
     types: types.filter(t => params.getAll('type').includes(t)),
     finished: ['yes', 'no'].includes(finished) ? finished : '',
-    sort: ['title', 'type'].includes(sort) ? sort : 'date',
+    sort: ['date', 'title', 'type'].includes(sort) ? sort : 'difficulty',
     dir: params.get('dir') === 'asc' ? 'asc' : 'desc',
   };
 }
@@ -148,7 +153,7 @@ export function browseSearch(state) {
   const params = new URLSearchParams();
   state.types.forEach(t => params.append('type', t));
   if (state.finished !== '') params.set('finished', state.finished);
-  if (state.sort !== 'date') params.set('sort', state.sort);
+  if (state.sort !== 'difficulty') params.set('sort', state.sort);
   if (state.dir !== 'desc') params.set('dir', state.dir);
   const query = params.toString();
   return query ? `?${query}` : '';
@@ -160,14 +165,29 @@ export function browseSearch(state) {
 // question about the player, not the puzzle. Ties fall back to newest first, whichever way the
 // sort runs.
 export function browseList(items, state, done) {
-  const keys = { date: p => p.created, title: p => p.title, type: p => p.type };
-  const key = keys[state.sort];
+  const [first, ...within] = sortOrder(state.sort);
   const sign = state.dir === 'asc' ? 1 : -1;
   const finished = { '': () => true, yes: p => tileDone(p, done), no: p => !tileDone(p, done) }[state.finished];
   return items
     .filter(p => state.types.length === 0 || state.types.includes(p.filter))
     .filter(finished)
-    .sort((a, b) => sign * key(a).localeCompare(key(b)) || newer(a, b));
+    .sort((a, b) => within.reduce((d, order) => d || order(a, b), sign * first(a, b)) || newer(a, b));
+}
+
+// A sort's order: its first key runs the way the direction does, and any after it hold A to Z
+// either way. Difficulty runs Easy to Extreme, then collections — the filter rows' order — as the
+// default direction, desc, so the plain landing page is easiest first; within a difficulty, type
+// then title.
+function sortOrder(sort) {
+  const byTitle = (a, b) => a.title.localeCompare(b.title);
+  const byType = (a, b) => a.type.localeCompare(b.type);
+  const orders = {
+    difficulty: [(a, b) => tones().indexOf(b.tone) - tones().indexOf(a.tone), byType, byTitle],
+    date: [(a, b) => a.created.localeCompare(b.created)],
+    title: [byTitle],
+    type: [byType],
+  };
+  return orders[sort];
 }
 
 export function pageCount(total) {
@@ -204,6 +224,7 @@ export function flipDir(state) {
 // The direction button reads in the sort's own terms.
 export function dirLabel(state) {
   const labels = {
+    difficulty: { desc: 'Easiest first', asc: 'Hardest first' },
     date: { desc: 'Newest first', asc: 'Oldest first' },
     title: { asc: 'A to Z', desc: 'Z to A' },
     type: { asc: 'A to Z', desc: 'Z to A' },
