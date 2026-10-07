@@ -293,6 +293,87 @@ test('an address naming no collection says so, leads back to the collections, an
   await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
 });
 
+// Themed or Plain (BUG-73): the page behind the print dialog wears the look the player picked, as
+// the collection page it came from does; the paper never does.
+const LOOK_KEY = 'grew-puzzles.look';
+const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::before').backgroundImage);
+const lookOf = (locator, props) => locator.evaluate((el, p) => p.map(k => getComputedStyle(el)[k]), props);
+const TAG = ['backgroundColor', 'boxShadow'];
+
+// Every character image the page asks for.
+function imageRequests(page) {
+  const asked = [];
+  page.on('request', r => { if (/\/content\/characters\/.*\.webp$/.test(r.url())) asked.push(r.url()); });
+  return asked;
+}
+
+// Notes, at each opening of the print dialog, whether the page's background had arrived by then.
+async function catchPrintScene(page) {
+  await page.addInitScript(() => {
+    window.printed = [];
+    window.print = () => window.printed.push(performance.getEntriesByType('resource').some(e => /-bg\.webp$/.test(e.name) && e.responseEnd > 0));
+  });
+}
+
+test('Themed, the book page wears a character\'s background, the site\'s name on its white tag, and its words readable over it', async ({ page }) => {
+  await openBook(page);
+  expect(await sceneOf(page)).toMatch(/content\/characters\/[a-z]+-bg\.webp/);
+  const [white, shadow] = await lookOf(page.locator('.site .brand'), TAG);
+  expect(white).toBe('rgb(255, 255, 255)');
+  expect(shadow).not.toBe('none');
+  for (const selector of ['#title-page', '#ready']) {
+    const [bg, sh] = await lookOf(page.locator(selector), TAG);
+    expect(bg).toBe('rgb(255, 255, 255)');
+    expect(sh).not.toBe('none');
+  }
+  await page.locator('#print-again').click();
+  expect(await page.evaluate(() => window.printed.length)).toBe(2);
+});
+
+test('Themed, the print dialog waits for the book page\'s background to arrive', async ({ page }) => {
+  await serve(page);
+  await page.route(/-bg\.webp$/, async r => { await new Promise(done => setTimeout(done, 600)); return r.continue(); });
+  await catchPrintScene(page);
+  await page.goto('/app/book.html?slug=issue-1');
+  await expect.poll(() => page.evaluate(() => window.printed)).toEqual([true]);
+});
+
+test('Themed, a background that never arrives holds the print dialog back only briefly', async ({ page }) => {
+  await serve(page);
+  await page.route(/-bg\.webp$/, () => {});
+  await catchPrint(page);
+  const start = Date.now();
+  // The stalled background holds the page's load event back too, so the test doesn't wait for it.
+  await page.goto('/app/book.html?slug=issue-1', { waitUntil: 'commit' });
+  await expect.poll(() => page.evaluate(() => window.printed.length), { timeout: 4000 }).toBe(1);
+  expect(Date.now() - start).toBeLessThan(4000);
+});
+
+test('Themed, a list of characters that cannot be read leaves the book page plain grey, and the book still prints', async ({ page }) => {
+  await page.route('**/content/characters/index.json', r => r.fulfill({ status: 404, body: 'Not found' }));
+  await openBook(page);
+  expect(await sceneOf(page)).toBe('none');
+  expect(await page.evaluate(() => window.printed.length)).toBe(1);
+});
+
+test('Plain, the book page is as it was: no background, no tags, and no character image asked for', async ({ page }) => {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LOOK_KEY, 'plain']);
+  const asked = imageRequests(page);
+  await openBook(page);
+  expect(await sceneOf(page)).toBe('none');
+  expect((await lookOf(page.locator('.site .brand'), TAG))[1]).toBe('none');
+  expect((await lookOf(page.locator('#ready'), TAG))[1]).toBe('none');
+  expect(asked).toEqual([]);
+});
+
+test('Themed, the printed book has no background and no character on any page', async ({ page }) => {
+  await openBook(page);
+  await page.emulateMedia({ media: 'print' });
+  expect(await sceneOf(page)).toBe('none');
+  // Each page is a copy of the play page, its character's empty spots and all: none shows.
+  await expect(page.locator('.theme-figure:visible, .name-tag:visible')).toHaveCount(0);
+});
+
 test('the real collections each make a book', async ({ page }) => {
   await catchPrint(page);
   await page.goto('/app/?type=Collections');
