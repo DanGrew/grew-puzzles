@@ -1,0 +1,1478 @@
+{
+  "groups": [
+    {
+      "group": "fish",
+      "entries": [
+        {
+          "word": "Anchovy",
+          "definition": "Anchovies are small, common forage fish of the family Engraulidae.",
+          "link": "https://en.wikipedia.org/wiki/Anchovy",
+          "credit": "From the Wikipedia article “Anchovy”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Anchovies (family Engraulidae)",
+            "habitat": "Warm and temperate seas worldwide, in big schools near the surface",
+            "lifespan": "Varies between kinds",
+            "food": "Plankton",
+            "size": "Up to 40 cm, most under 20 cm"
+          }
+        },
+        {
+          "word": "Angelfish",
+          "definition": "Marine angelfish are perciform fish of the family Pomacanthidae.",
+          "link": "https://en.wikipedia.org/wiki/Pomacanthidae",
+          "credit": "From the Wikipedia article “Pomacanthidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Marine angelfish (family Pomacanthidae)",
+            "habitat": "Shallow tropical coral reefs",
+            "lifespan": "Varies between kinds",
+            "food": "Sponges, algae and small sea creatures",
+            "size": "Up to 60 cm, most much smaller"
+          }
+        },
+        {
+          "word": "Anglerfish",
+          "definition": "The anglerfish are ray-finned fish in the order Lophiiformes.",
+          "link": "https://en.wikipedia.org/wiki/Anglerfish",
+          "credit": "From the Wikipedia article “Anglerfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Anglerfish (order Lophiiformes)",
+            "habitat": "Seas worldwide, many in the deep dark ocean",
+            "lifespan": "Varies between kinds",
+            "food": "Fish and other prey, lured close by a glowing or wiggling lure on its head",
+            "size": "From 2 cm to 2 m"
+          }
+        },
+        {
+          "word": "Arapaima",
+          "definition": "The arapaima, pirarucu, or paiche is a large species of bonytongue in the genus Arapaima native to the Amazon and Essequibo basins of South America.",
+          "link": "https://en.wikipedia.org/wiki/Arapaima",
+          "credit": "From the Wikipedia article “Arapaima”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Arapaima (Arapaima gigas)",
+            "habitat": "Rivers and flooded forests of the Amazon basin",
+            "lifespan": "Not well known",
+            "food": "Fish, plus crabs, fruit, seeds, insects and small animals near the shore",
+            "size": "Up to 3 m"
+          }
+        },
+        {
+          "word": "Arowana",
+          "definition": "Osteoglossinae are a subfamily of freshwater bony fish, commonly known as arowanas or bonytongues (though the latter is also used for other osteoglossiform fish).",
+          "link": "https://en.wikipedia.org/wiki/Arowana",
+          "credit": "From the Wikipedia article “Arowana”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Arowanas (subfamily Osteoglossinae)",
+            "habitat": "Slow rivers and swamps in South America, Asia and Australia",
+            "lifespan": "Varies between kinds",
+            "food": "Insects, small fish and even birds, leaping out of the water to catch them",
+            "size": "Up to 90 cm in the silver arowana"
+          }
+        },
+        {
+          "word": "Asian carp",
+          "definition": "Asian carp is a term that groups together several species of carp native to Eurasia, commonly referring to the four East Asian species silver carp, bighead carp, grass carp (or white amur) and black carp (or black amur), which were introduced to North America during the 1970s and are now regarded as invasive in the United States.",
+          "link": "https://en.wikipedia.org/wiki/Asian_carp",
+          "credit": "From the Wikipedia article “Asian carp”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Asian carp (silver, bighead, grass and black carp)",
+            "habitat": "Large rivers and lakes; native to East Asia, invasive in North America",
+            "lifespan": "Varies between kinds",
+            "food": "Plankton or water plants, depending on the kind",
+            "size": "Big — a black carp can weigh 70 kg"
+          }
+        },
+        {
+          "word": "Barbel",
+          "definition": "Barbels are a group of carp-like freshwater fish, almost all of the genus Barbus.",
+          "link": "https://en.wikipedia.org/wiki/Barbel_(fish)",
+          "credit": "From the Wikipedia article “Barbel (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common barbel (Barbus barbus)",
+            "habitat": "Fast, clear rivers in Europe",
+            "lifespan": "Up to 15 years",
+            "food": "Small animals from the riverbed, like insect larvae, snails and shrimp, plus small fish",
+            "size": "Up to 1.2 m, usually around 30 cm"
+          }
+        },
+        {
+          "word": "Barracuda",
+          "definition": "A barracuda is a large, predatory, ray-finned, saltwater fish of the genus Sphyraena, the only genus in the family Sphyraenidae, which was named by Constantine Samuel Rafinesque in 1815.",
+          "link": "https://en.wikipedia.org/wiki/Barracuda",
+          "credit": "From the Wikipedia article “Barracuda”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Barracudas (genus Sphyraena)",
+            "habitat": "Warm seas worldwide, near reefs and the surface",
+            "lifespan": "Varies between kinds",
+            "food": "Fish",
+            "size": "Up to 1.7 m"
+          }
+        },
+        {
+          "word": "Basa",
+          "definition": "Basa (Pangasius bocourti), as it is commonly referred to, is a species of primarily freshwater-dwelling catfish in the shark-catfish family, Pangasiidae, native to the Mekong and Chao Phraya river basins of Mainland Southeast Asia.",
+          "link": "https://en.wikipedia.org/wiki/Basa_(fish)",
+          "credit": "From the Wikipedia article “Basa (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Basa (Pangasius bocourti)",
+            "habitat": "Big rivers of Southeast Asia, especially the Mekong",
+            "lifespan": "Not well known",
+            "food": "Mostly plants",
+            "size": "Up to 1.2 m"
+          }
+        },
+        {
+          "word": "Bass",
+          "definition": "Bass is a common name shared by many species of ray-finned fish from the large clade Percomorpha, mainly belonging to the orders Perciformes and Moroniformes, encompassing both freshwater and marine species.",
+          "link": "https://en.wikipedia.org/wiki/Bass_(fish)",
+          "credit": "From the Wikipedia article “Bass (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Bass (many kinds, from sea bass to black bass)",
+            "habitat": "Seas, rivers and lakes worldwide, depending on the kind",
+            "lifespan": "Varies between kinds",
+            "food": "Varies between kinds",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Blue tang",
+          "definition": "Blue tang is the common name of several species of surgeonfish.",
+          "link": "https://en.wikipedia.org/wiki/Blue_tang",
+          "credit": "From the Wikipedia article “Blue tang”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Pacific blue tang (Paracanthurus hepatus)",
+            "habitat": "Coral reefs of the Indian and Pacific oceans",
+            "lifespan": "Not well known",
+            "food": "Plankton, and sometimes algae",
+            "size": "Up to 31 cm"
+          }
+        },
+        {
+          "word": "Bluegill",
+          "definition": "The bluegill (Lepomis macrochirus), sometimes referred to as \"bream\", \"brim\", \"sunny\", or, in Texas, \"copper nose\", is a species of North American freshwater fish, native to and commonly found in streams, rivers, lakes, ponds and wetlands east of the Rocky Mountains.",
+          "link": "https://en.wikipedia.org/wiki/Bluegill",
+          "credit": "From the Wikipedia article “Bluegill”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Bluegill (Lepomis macrochirus)",
+            "habitat": "Lakes, ponds and slow streams in North America",
+            "lifespan": "Up to 11 years",
+            "food": "Insects, worms and small fish",
+            "size": "Up to 40 cm, usually under 30 cm"
+          }
+        },
+        {
+          "word": "Bowfin",
+          "definition": "The ruddy bowfin (Amia calva) is a ray-finned fish native to North America.",
+          "link": "https://en.wikipedia.org/wiki/Bowfin",
+          "credit": "From the Wikipedia article “Bowfin”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Bowfin (Amia calva)",
+            "habitat": "Swamps, lakes and slow rivers in eastern North America",
+            "lifespan": "Up to 33 years",
+            "food": "Fish, crayfish and frogs",
+            "size": "Up to 1.1 m"
+          }
+        },
+        {
+          "word": "Bream",
+          "definition": "Bream are species of freshwater fish belonging to a variety of genera including Abramis (e.g., A. brama, the common bream), Ballerus, Blicca, Chilotilapia, Etelis, Lepomis, Gymnocranius, Lethrinus, Nemipterus, Pharyngochromis, Rhabdosargus, Scolopsis, or Serranochromis.",
+          "link": "https://en.wikipedia.org/wiki/Bream",
+          "credit": "From the Wikipedia article “Bream”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common bream (Abramis brama)",
+            "habitat": "Lakes, slow rivers and estuaries in Europe",
+            "lifespan": "Up to 23 years",
+            "food": "Insects, small crustaceans, snails and plants; big ones eat small fish",
+            "size": "Up to 82 cm, usually around 25 cm"
+          }
+        },
+        {
+          "word": "Cabezon",
+          "definition": "The cabezon (Scorpaenichthys marmoratus) is a large species of sculpin native to the Pacific coast of North America.",
+          "link": "https://en.wikipedia.org/wiki/Cabezon_(fish)",
+          "credit": "From the Wikipedia article “Cabezon (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Cabezon (Scorpaenichthys marmoratus)",
+            "habitat": "Rocky reefs and kelp forests along North America's Pacific coast",
+            "lifespan": "Up to 13 years",
+            "food": "Crabs, small fish and shellfish",
+            "size": "Up to 1 m"
+          }
+        },
+        {
+          "word": "Carp",
+          "definition": "The term carp is a generic common name for numerous species of freshwater fish from the family Cyprinidae, a very large clade of ray-finned fish mostly native to Eurasia.",
+          "link": "https://en.wikipedia.org/wiki/Carp",
+          "credit": "From the Wikipedia article “Carp”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common carp (Cyprinus carpio)",
+            "habitat": "Lakes, ponds and slow rivers worldwide",
+            "lifespan": "Up to 38 years",
+            "food": "Small animals from the bottom, and plants",
+            "size": "Up to 1.3 m"
+          }
+        },
+        {
+          "word": "Catfish",
+          "definition": "Catfish are a diverse group of ray-finned fish of the order Siluriformes (historically Nematognathi).",
+          "link": "https://en.wikipedia.org/wiki/Catfish",
+          "credit": "From the Wikipedia article “Catfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Catfish (order Siluriformes)",
+            "habitat": "Fresh water on every continent but Antarctica; a few live in the sea",
+            "lifespan": "Varies between kinds",
+            "food": "Mostly food from the bottom, found with the whiskers around their mouths",
+            "size": "From 1 cm to over 3 m"
+          }
+        },
+        {
+          "word": "Chub",
+          "definition": "Squalius cephalus, the common chub, European chub or simply chub, is a species of freshwater ray-finned fish belonging to the family Leuciscidae, the daces, Eurasian minnows and related fishes.",
+          "link": "https://en.wikipedia.org/wiki/Squalius_cephalus",
+          "credit": "From the Wikipedia article “Squalius cephalus”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common chub (Squalius cephalus)",
+            "habitat": "Rivers and streams across Europe",
+            "lifespan": "Up to 22 years",
+            "food": "Insects, worms, small fish and berries",
+            "size": "Up to 60 cm, most around 30 cm"
+          }
+        },
+        {
+          "word": "Clownfish",
+          "definition": "Clownfish or anemonefishes (genus Amphiprion) are saltwater fish found in the warm and tropical waters of the Indo-Pacific.",
+          "link": "https://en.wikipedia.org/wiki/Clownfish",
+          "credit": "From the Wikipedia article “Clownfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Clownfish (genus Amphiprion)",
+            "habitat": "Warm coral reefs, living among the stinging arms of sea anemones",
+            "lifespan": "Varies between kinds",
+            "food": "Plankton, algae and small sea creatures",
+            "size": "Up to 16 cm"
+          }
+        },
+        {
+          "word": "Cobia",
+          "definition": "The cobia (Rachycentron canadum) is a species of marine carangiform ray-finned fish, the only extant representative of the genus Rachycentron and the family Rachycentridae.",
+          "link": "https://en.wikipedia.org/wiki/Cobia",
+          "credit": "From the Wikipedia article “Cobia”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Cobia (Rachycentron canadum)",
+            "habitat": "Warm seas worldwide, often around floating objects and reefs",
+            "lifespan": "Up to 15 years",
+            "food": "Crabs, squid and fish",
+            "size": "Up to 2 m"
+          }
+        },
+        {
+          "word": "Cod",
+          "definition": "Cod is the common name for the demersal fish genus Gadus, belonging to the family Gadidae.",
+          "link": "https://en.wikipedia.org/wiki/Cod",
+          "credit": "From the Wikipedia article “Cod”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic cod (Gadus morhua)",
+            "habitat": "Cold waters of the North Atlantic",
+            "lifespan": "Up to 25 years",
+            "food": "Fish, crabs and worms",
+            "size": "Up to 2 m, usually under 1 m"
+          }
+        },
+        {
+          "word": "Corydoras",
+          "definition": "Corydoras is a genus of freshwater ray-finned fish belonging to the family Callichthyidae, commonly referred to as the armoured catfishes, and the subfamily Corydoradinae, the corys.",
+          "link": "https://en.wikipedia.org/wiki/Corydoras",
+          "credit": "From the Wikipedia article “Corydoras”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Corydoras catfish (genus Corydoras)",
+            "habitat": "Shallow streams and pools in South America",
+            "lifespan": "Up to 20 years in an aquarium",
+            "food": "Worms, insect larvae and bits of plants from the bottom",
+            "size": "Up to 12 cm, most around 5 cm"
+          }
+        },
+        {
+          "word": "Croaker",
+          "definition": "The Atlantic croaker (Micropogonias undulatus) is a species of marine ray-finned fish belonging to the family Sciaenidae and is closely related to the black drum (Pogonias cromis), the silver perch (Bairdiella chrysoura), the spot croaker (Leiostomus xanthurus), the red drum (Sciaenops ocellatus), the spotted seatrout (Cynoscion nebulosus), and the weakfish (Cynoscion regalis).",
+          "link": "https://en.wikipedia.org/wiki/Atlantic_croaker",
+          "credit": "From the Wikipedia article “Atlantic croaker”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic croaker (Micropogonias undulatus)",
+            "habitat": "Coasts and river mouths of the western Atlantic",
+            "lifespan": "Up to 8 years",
+            "food": "Worms, shrimp, crabs and small fish",
+            "size": "Up to 70 cm, usually under 50 cm"
+          }
+        },
+        {
+          "word": "Dab",
+          "definition": "The common dab (Limanda limanda) is an edible flatfish of the family Pleuronectidae.",
+          "link": "https://en.wikipedia.org/wiki/Common_dab",
+          "credit": "From the Wikipedia article “Common dab”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common dab (Limanda limanda)",
+            "habitat": "Sandy seabeds of the northeast Atlantic",
+            "lifespan": "Up to 12 years",
+            "food": "Worms, shrimp and other small seabed animals",
+            "size": "Up to 40 cm"
+          }
+        },
+        {
+          "word": "Damselfish",
+          "definition": "Damselfish are fish within the subfamilies Abudefdufinae, Chrominae, Lepidozyginae, Pomacentrinae, and Stegastinae within the family Pomacentridae.",
+          "link": "https://en.wikipedia.org/wiki/Damselfish",
+          "credit": "From the Wikipedia article “Damselfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Damselfish (family Pomacentridae)",
+            "habitat": "Warm coral reefs worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae and plankton",
+            "size": "Up to 30 cm, most much smaller"
+          }
+        },
+        {
+          "word": "Dorado",
+          "definition": "The mahi-mahi, common dolphinfish, dolphinfish, dolphin or dorado (Coryphaena hippurus) is a surface-dwelling ray-finned fish found in off-shore temperate, tropical, and subtropical waters worldwide.",
+          "link": "https://en.wikipedia.org/wiki/Mahi-mahi",
+          "credit": "From the Wikipedia article “Mahi-mahi”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Mahi-mahi (Coryphaena hippurus)",
+            "habitat": "Open warm seas worldwide, near the surface",
+            "lifespan": "Up to 5 years",
+            "food": "Flying fish, squid and other fish",
+            "size": "Up to 2 m"
+          }
+        },
+        {
+          "word": "Dory",
+          "definition": "John Dory, St Pierre, or Peter's fish are names which refers to fish of the genus Zeus, especially Zeus faber, which is a demersal coastal marine fish.",
+          "link": "https://en.wikipedia.org/wiki/John_Dory",
+          "credit": "From the Wikipedia article “John Dory”, CC BY-SA 4.0",
+          "facts": {
+            "name": "John Dory (Zeus faber)",
+            "habitat": "Coastal seas of Europe, Africa, Asia and Australia",
+            "lifespan": "Up to 12 years",
+            "food": "Small fish, crept up on from the front",
+            "size": "Up to 90 cm"
+          }
+        },
+        {
+          "word": "Drumfish",
+          "definition": "Sciaenidae is a family of ray-finned fishes belonging to the order Acanthuriformes.",
+          "link": "https://en.wikipedia.org/wiki/Sciaenidae",
+          "credit": "From the Wikipedia article “Sciaenidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Drums and croakers (family Sciaenidae)",
+            "habitat": "Coasts, river mouths and some rivers worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Shrimp, crabs and fish",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Eel",
+          "definition": "Eels are ray-finned fish belonging to the order Anguilliformes, which consists of eight suborders, 20 families, 164 genera, and about 1000 species.",
+          "link": "https://en.wikipedia.org/wiki/Eel",
+          "credit": "From the Wikipedia article “Eel”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Eels (order Anguilliformes)",
+            "habitat": "Seas worldwide; some, like the European eel, live in rivers",
+            "lifespan": "Varies between kinds",
+            "food": "Mostly other animals — most eels are hunters",
+            "size": "From 5 cm to 4 m"
+          }
+        },
+        {
+          "word": "Flounder",
+          "definition": "Flounders are a group of flatfish species.",
+          "link": "https://en.wikipedia.org/wiki/Flounder",
+          "credit": "From the Wikipedia article “Flounder”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Flounders (several families of flatfish)",
+            "habitat": "Sandy seabeds and river mouths",
+            "lifespan": "Varies between kinds",
+            "food": "Worms, shrimp and small fish",
+            "size": "Up to 95 cm, most under 60 cm"
+          }
+        },
+        {
+          "word": "Flying fish",
+          "definition": "The Exocoetidae are a family of saltwater ray-finned fish in the order Beloniformes, known colloquially as flying fish or flying cod, with about 64 species in seven genera.",
+          "link": "https://en.wikipedia.org/wiki/Flying_fish",
+          "credit": "From the Wikipedia article “Flying fish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Flying fish (family Exocoetidae)",
+            "habitat": "Warm open seas, near the surface",
+            "lifespan": "Varies between kinds",
+            "food": "Plankton",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Giant trevally",
+          "definition": "The giant trevally (Caranx ignobilis), also known as the lowly trevally, barrier trevally, giant kingfish, or ulua, is a species of large marine fish classified in the jack family, Carangidae.",
+          "link": "https://en.wikipedia.org/wiki/Giant_trevally",
+          "credit": "From the Wikipedia article “Giant trevally”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Giant trevally (Caranx ignobilis)",
+            "habitat": "Reefs and coasts of the Indian and Pacific oceans",
+            "lifespan": "Not well known",
+            "food": "Fish, squid and crabs",
+            "size": "Up to 1.7 m"
+          }
+        },
+        {
+          "word": "Goblin shark",
+          "definition": "The goblin shark (Mitsukurina owstoni) is a rare species of deep-sea shark.",
+          "link": "https://en.wikipedia.org/wiki/Goblin_shark",
+          "credit": "From the Wikipedia article “Goblin shark”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Goblin shark (Mitsukurina owstoni)",
+            "habitat": "The deep sea worldwide, below 100 m",
+            "lifespan": "Unknown — it is rarely seen",
+            "food": "Deep-sea fish, octopus and crabs, snatched with jaws that shoot forward",
+            "size": "Up to 6 m, usually around 3 m"
+          }
+        },
+        {
+          "word": "Goby",
+          "definition": "The Gobioidei are a suborder of percomorph fish.",
+          "link": "https://en.wikipedia.org/wiki/Gobioidei",
+          "credit": "From the Wikipedia article “Gobioidei”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Gobies (suborder Gobioidei)",
+            "habitat": "Seas, river mouths and fresh water worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Small animals and algae",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Golden trout",
+          "definition": "The California golden trout (Oncorhynchus aguabonita) is a species of trout native to California.",
+          "link": "https://en.wikipedia.org/wiki/Golden_trout",
+          "credit": "From the Wikipedia article “Golden trout”, CC BY-SA 4.0",
+          "facts": {
+            "name": "California golden trout (Oncorhynchus aguabonita)",
+            "habitat": "Cold high mountain streams and lakes in California",
+            "lifespan": "Up to 9 years",
+            "food": "Not well known",
+            "size": "Up to 30 cm"
+          }
+        },
+        {
+          "word": "Goldfish",
+          "definition": "The goldfish (Carassius auratus) is a freshwater fish in the family Cyprinidae of the order Cypriniformes.",
+          "link": "https://en.wikipedia.org/wiki/Goldfish",
+          "credit": "From the Wikipedia article “Goldfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Goldfish (Carassius auratus)",
+            "habitat": "Ponds and aquariums worldwide; first bred in China",
+            "lifespan": "Up to 41 years",
+            "food": "Plankton, small bottom animals and plants",
+            "size": "Up to 48 cm, usually around 10 cm"
+          }
+        },
+        {
+          "word": "Grayling",
+          "definition": "Thymallus thymallus, harjus, the grayling or European grayling, is a species of freshwater fish in the salmon family Salmonidae.",
+          "link": "https://en.wikipedia.org/wiki/Thymallus_thymallus",
+          "credit": "From the Wikipedia article “Thymallus thymallus”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Grayling (Thymallus thymallus)",
+            "habitat": "Cold, clean rivers in Europe",
+            "lifespan": "Up to 14 years",
+            "food": "Insects, shrimp, snails and small fish",
+            "size": "Up to 60 cm"
+          }
+        },
+        {
+          "word": "Grouper",
+          "definition": "Groupers are a diverse group of marine ray-finned fish in the family Epinephelidae, in the order Perciformes.",
+          "link": "https://en.wikipedia.org/wiki/Grouper",
+          "credit": "From the Wikipedia article “Grouper”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Groupers (family Epinephelidae)",
+            "habitat": "Warm seas worldwide, around reefs and rocks",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, crabs and octopus, swallowed whole",
+            "size": "Up to 2.4 m"
+          }
+        },
+        {
+          "word": "Gudgeon",
+          "definition": "Gobio gobio, or the gudgeon or common gudgeon, is a species of fish in the family Gobionidae.",
+          "link": "https://en.wikipedia.org/wiki/Gobio_gobio",
+          "credit": "From the Wikipedia article “Gobio gobio”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Gudgeon (Gobio gobio)",
+            "habitat": "Rivers and lakes across Europe",
+            "lifespan": "Up to 5 years",
+            "food": "Insect larvae, worms and snails from the bottom",
+            "size": "Up to 20 cm, usually around 12 cm"
+          }
+        },
+        {
+          "word": "Guppy",
+          "definition": "The guppy (Poecilia reticulata), also known as the millionfish or rainbow fish, is a member of the family Poeciliidae and, akin to most New World members of the family, is classified as a livebearer.",
+          "link": "https://en.wikipedia.org/wiki/Guppy",
+          "credit": "From the Wikipedia article “Guppy”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Guppy (Poecilia reticulata)",
+            "habitat": "Streams and pools in northern South America; aquariums worldwide",
+            "lifespan": "Around 2 years",
+            "food": "Algae, insects and fish food",
+            "size": "Up to 7 cm"
+          }
+        },
+        {
+          "word": "Gurnard",
+          "definition": "Triglidae, commonly known as gurnards or sea robins, are a family of bottom-feeding scorpaenoid ray-finned fish.",
+          "link": "https://en.wikipedia.org/wiki/Triglidae",
+          "credit": "From the Wikipedia article “Triglidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Gurnards (family Triglidae)",
+            "habitat": "Sandy and muddy seabeds worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Shrimp, crabs and small fish, found by 'walking' on finger-like fins",
+            "size": "Up to 75 cm"
+          }
+        },
+        {
+          "word": "Haddock",
+          "definition": "The haddock (Melanogrammus aeglefinus) is a saltwater ray-finned fish from the family Gadidae, the true cods.",
+          "link": "https://en.wikipedia.org/wiki/Haddock",
+          "credit": "From the Wikipedia article “Haddock”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Haddock (Melanogrammus aeglefinus)",
+            "habitat": "Cold waters of the North Atlantic",
+            "lifespan": "Up to 14 years",
+            "food": "Worms, shellfish, starfish and small fish",
+            "size": "Up to 94 cm, usually 30 to 70 cm"
+          }
+        },
+        {
+          "word": "Hake",
+          "definition": "Hake is the common name for fish in the Merlucciidae family of the northern and southern oceans and the Phycidae family of the northern oceans.",
+          "link": "https://en.wikipedia.org/wiki/Hake",
+          "credit": "From the Wikipedia article “Hake”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Hake (family Merlucciidae)",
+            "habitat": "Deep coastal seas worldwide",
+            "lifespan": "Up to 14 years",
+            "food": "Fish and squid, near the seabed",
+            "size": "Up to 1 m"
+          }
+        },
+        {
+          "word": "Halibut",
+          "definition": "Halibut is the common name for three species of flatfish in the family of right-eye flounders.",
+          "link": "https://en.wikipedia.org/wiki/Halibut",
+          "credit": "From the Wikipedia article “Halibut”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic halibut (Hippoglossus hippoglossus)",
+            "habitat": "Cold northern seas, on the seabed",
+            "lifespan": "Up to 50 years",
+            "food": "Fish, crabs and squid",
+            "size": "Up to 4.7 m — the biggest flatfish"
+          }
+        },
+        {
+          "word": "Hammerhead",
+          "definition": "The hammerhead sharks are a group of sharks that form the family Sphyrnidae, named for the unusual and distinctive form of their heads, which are flattened and laterally extended into a cephalofoil (a T-shape or \"hammer\").",
+          "link": "https://en.wikipedia.org/wiki/Hammerhead_shark",
+          "credit": "From the Wikipedia article “Hammerhead shark”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Hammerhead sharks (family Sphyrnidae)",
+            "habitat": "Warm coasts worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, squid and stingrays",
+            "size": "From 1 m to 6 m"
+          }
+        },
+        {
+          "word": "Herring",
+          "definition": "Herring are various species of forage fish, belonging to the order Clupeiformes.",
+          "link": "https://en.wikipedia.org/wiki/Herring",
+          "credit": "From the Wikipedia article “Herring”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic herring (Clupea harengus)",
+            "habitat": "Cold northern seas, in huge schools",
+            "lifespan": "Up to 25 years",
+            "food": "Plankton",
+            "size": "Up to 45 cm"
+          }
+        },
+        {
+          "word": "Kingfish",
+          "definition": "The king mackerel (Scomberomorus cavalla), kingfish or carite lucio is a migratory species of mackerel of the western Atlantic Ocean and Gulf of Mexico.",
+          "link": "https://en.wikipedia.org/wiki/King_mackerel",
+          "credit": "From the Wikipedia article “King mackerel”, CC BY-SA 4.0",
+          "facts": {
+            "name": "King mackerel (Scomberomorus cavalla)",
+            "habitat": "Warm western Atlantic and the Gulf of Mexico",
+            "lifespan": "Up to 26 years",
+            "food": "Fish, plus some shrimp and squid",
+            "size": "Up to 1.8 m"
+          }
+        },
+        {
+          "word": "Koi",
+          "definition": "Koi (Japanese: 鯉; Japanese: [koꜜi], literally 'carp'), or more specifically nishikigoi (錦鯉; Japanese: [ɲiɕi̥kiꜜɡoi], literally 'brocaded carp'), are colored varieties of carp (Cyprinus sp.) that are kept for decorative purposes in outdoor koi ponds or water gardens.",
+          "link": "https://en.wikipedia.org/wiki/Koi",
+          "credit": "From the Wikipedia article “Koi”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Koi (Cyprinus rubrofuscus)",
+            "habitat": "Garden ponds worldwide; first bred in Japan",
+            "lifespan": "Not well known",
+            "food": "Plants, insects and fish food",
+            "size": "Not well known"
+          }
+        },
+        {
+          "word": "Lamprey",
+          "definition": "Lampreys (sometimes inaccurately called lamprey eels) are a group of jawless fish composing the order Petromyzontiformes, sole order in the class Petromyzontida.",
+          "link": "https://en.wikipedia.org/wiki/Lamprey",
+          "credit": "From the Wikipedia article “Lamprey”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Lampreys (order Petromyzontiformes)",
+            "habitat": "Rivers and seas in cool parts of the world",
+            "lifespan": "Varies between kinds — most of it is spent as a larva",
+            "food": "Blood and flesh of other fish, sucked through a round toothed mouth",
+            "size": "Up to 1.2 m"
+          }
+        },
+        {
+          "word": "Lemon shark",
+          "definition": "The lemon shark (Negaprion brevirostris) is a species of requiem shark from the family Carcharhinidae, known for its yellowish skin, which inspires its common name.",
+          "link": "https://en.wikipedia.org/wiki/Lemon_shark",
+          "credit": "From the Wikipedia article “Lemon shark”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Lemon shark (Negaprion brevirostris)",
+            "habitat": "Shallow warm coasts and mangroves of the Atlantic and eastern Pacific",
+            "lifespan": "Around 25 to 30 years",
+            "food": "Mostly fish, found at night by sensing their electric signals",
+            "size": "Up to 3.4 m"
+          }
+        },
+        {
+          "word": "Lionfish",
+          "definition": "Lionfish are venomous marine ray-finned fish of the genus Pterois, native to coral reefs of the Indo-Pacific.",
+          "link": "https://en.wikipedia.org/wiki/Lionfish",
+          "credit": "From the Wikipedia article “Lionfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Lionfish (genus Pterois)",
+            "habitat": "Coral reefs of the Indian and Pacific oceans; invasive in the Atlantic",
+            "lifespan": "From 5 to 15 years",
+            "food": "Small fish and shrimp",
+            "size": "Up to 46 cm in the red lionfish"
+          }
+        },
+        {
+          "word": "Mackerel",
+          "definition": "Mackerel is a common name applied to a number of different species of pelagic fish, mostly from the family Scombridae.",
+          "link": "https://en.wikipedia.org/wiki/Mackerel",
+          "credit": "From the Wikipedia article “Mackerel”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic mackerel (Scomber scombrus)",
+            "habitat": "Open seas of the North Atlantic, in big schools",
+            "lifespan": "Up to 17 years",
+            "food": "Plankton and small fish",
+            "size": "Up to 60 cm"
+          }
+        },
+        {
+          "word": "Manta ray",
+          "definition": "Manta rays are large rays belonging to the genus Mobula (formerly its own genus Manta).",
+          "link": "https://en.wikipedia.org/wiki/Manta_ray",
+          "credit": "From the Wikipedia article “Manta ray”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Manta rays (genus Mobula)",
+            "habitat": "Warm open seas worldwide",
+            "lifespan": "Up to 50 years",
+            "food": "Plankton, filtered from the water",
+            "size": "Up to 7 m across"
+          }
+        },
+        {
+          "word": "Marlin",
+          "definition": "Marlins are fish from the family Istiophoridae, which includes between 9 and 11 species, depending on the taxonomic authority.",
+          "link": "https://en.wikipedia.org/wiki/Marlin",
+          "credit": "From the Wikipedia article “Marlin”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Marlins (family Istiophoridae)",
+            "habitat": "Warm open seas worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Other sea animals — marlins are top predators",
+            "size": "Up to 5 m"
+          }
+        },
+        {
+          "word": "Minnow",
+          "definition": "Minnow is the common name for a number of species of small freshwater fish, belonging to several genera of the family Cyprinidae and in particular the subfamily Leuciscinae.",
+          "link": "https://en.wikipedia.org/wiki/Minnow",
+          "credit": "From the Wikipedia article “Minnow”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Eurasian minnow (Phoxinus phoxinus)",
+            "habitat": "Cold, clean streams, rivers and lakes across Europe and northern Asia",
+            "lifespan": "Up to 11 years",
+            "food": "Algae, plants, snails, tiny crustaceans and insects",
+            "size": "Up to 14 cm, usually around 7 cm"
+          }
+        },
+        {
+          "word": "Molly",
+          "definition": "The sailfin molly (Poecilia latipinna) is a livebearer fish typically found in both freshwater and brackish waterways along the East Coast of the United States, from North Carolina south to Florida, and around the Gulf of Mexico to Texas, and south to the Yucatán Peninsula of Mexico.",
+          "link": "https://en.wikipedia.org/wiki/Sailfin_molly",
+          "credit": "From the Wikipedia article “Sailfin molly”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sailfin molly (Poecilia latipinna)",
+            "habitat": "Fresh and brackish water in the southern United States and Mexico; aquariums worldwide",
+            "lifespan": "Short — many live less than 2 years",
+            "food": "Mostly algae, plus tiny animals and insects",
+            "size": "Up to 15 cm"
+          }
+        },
+        {
+          "word": "Monkfish",
+          "definition": "Members of the genus Lophius, commonly called monkfish, toadfish, sea frogs, fishing frogs, frogfish, and sea devils, are various species of lophiid anglerfishes found in the Atlantic and Indian Oceans.",
+          "link": "https://en.wikipedia.org/wiki/Lophius",
+          "credit": "From the Wikipedia article “Lophius”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Monkfish (genus Lophius)",
+            "habitat": "Seabeds of the Atlantic and other seas",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, lured close by a fleshy lure on its head",
+            "size": "Up to 2 m"
+          }
+        },
+        {
+          "word": "Moray eel",
+          "definition": "Moray eels, or Muraenidae, are a family of eels whose members are found worldwide.",
+          "link": "https://en.wikipedia.org/wiki/Moray_eel",
+          "credit": "From the Wikipedia article “Moray eel”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Moray eels (family Muraenidae)",
+            "habitat": "Warm seas worldwide, in reef holes and crevices",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, octopus and crabs",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Mullet",
+          "definition": "The mullets or grey mullets are a family (Mugilidae) of ray-finned fish found worldwide in coastal temperate and tropical waters, and some species in fresh water.",
+          "link": "https://en.wikipedia.org/wiki/Mullet_(fish)",
+          "credit": "From the Wikipedia article “Mullet (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Grey mullets (family Mugilidae)",
+            "habitat": "Warm and temperate coasts and river mouths worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae and bits of food sifted from mud",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Needlefish",
+          "definition": "Needlefish (family Belonidae) or long toms are piscivorous fishes primarily associated with very shallow marine habitats or the surface of the open sea.",
+          "link": "https://en.wikipedia.org/wiki/Needlefish",
+          "credit": "From the Wikipedia article “Needlefish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Needlefish (family Belonidae)",
+            "habitat": "Shallow warm seas; a few live in rivers",
+            "lifespan": "Varies between kinds",
+            "food": "Small fish",
+            "size": "Up to 95 cm"
+          }
+        },
+        {
+          "word": "Oarfish",
+          "definition": "Oarfish are the three species of large and extremely long pelagic lampriform fish belonging to the small family Regalecidae.",
+          "link": "https://en.wikipedia.org/wiki/Oarfish",
+          "credit": "From the Wikipedia article “Oarfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Giant oarfish (Regalecus glesne)",
+            "habitat": "The deep open ocean worldwide",
+            "lifespan": "Unknown — it is rarely seen",
+            "food": "Krill, small fish and squid",
+            "size": "Up to 8 m — the longest bony fish"
+          }
+        },
+        {
+          "word": "Opah",
+          "definition": "The opah, also commonly known as moonfish, sunfish (not to be confused with Molidae or ocean sunfish), cowfish, kingfish, and redfin ocean pan are large, colorful, deep-bodied pelagic lampriform fishes comprising the genus Lampris, of the small family Lampridae (also spelled Lamprididae).",
+          "link": "https://en.wikipedia.org/wiki/Opah",
+          "credit": "From the Wikipedia article “Opah”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Opah (genus Lampris)",
+            "habitat": "Open seas worldwide, in deep water",
+            "lifespan": "Not well known",
+            "food": "Squid, krill and small fish",
+            "size": "Up to 2 m"
+          }
+        },
+        {
+          "word": "Pacu",
+          "definition": "Pacu is a common name used to refer to several species of omnivorous South American freshwater serrasalmid fish related to piranhas.",
+          "link": "https://en.wikipedia.org/wiki/Pacu",
+          "credit": "From the Wikipedia article “Pacu”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Pacu (several kinds, related to piranhas)",
+            "habitat": "Rivers of South America, especially the Amazon",
+            "lifespan": "Varies between kinds",
+            "food": "Fruit, seeds and nuts that fall into the water, crushed with human-like teeth",
+            "size": "Up to 1 m"
+          }
+        },
+        {
+          "word": "Parrotfish",
+          "definition": "Parrotfish (named because their mouths resemble a parrot's beak) are a clade of fish placed in the subfamily Scarinae of the wrasse family (Labridae).",
+          "link": "https://en.wikipedia.org/wiki/Parrotfish",
+          "credit": "From the Wikipedia article “Parrotfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Parrotfish (subfamily Scarinae)",
+            "habitat": "Warm coral reefs worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae scraped off coral with a beak-like mouth",
+            "size": "Up to 1.3 m, most around 50 cm"
+          }
+        },
+        {
+          "word": "Perch",
+          "definition": "Perch is a common name for freshwater fish from the genus Perca, which belongs to the family Percidae of the large order Perciformes.",
+          "link": "https://en.wikipedia.org/wiki/Perch",
+          "credit": "From the Wikipedia article “Perch”, CC BY-SA 4.0",
+          "facts": {
+            "name": "European perch (Perca fluviatilis)",
+            "habitat": "Lakes and rivers in Europe and Asia",
+            "lifespan": "Up to 22 years",
+            "food": "Insects, small fish and shrimp",
+            "size": "Up to 60 cm, usually around 25 cm"
+          }
+        },
+        {
+          "word": "Pike",
+          "definition": "The northern pike (Esox lucius), also known as jack, northern or simply pike, is a species of carnivorous fish of the genus Esox (pikes).",
+          "link": "https://en.wikipedia.org/wiki/Northern_pike",
+          "credit": "From the Wikipedia article “Northern pike”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Northern pike (Esox lucius)",
+            "habitat": "Weedy lakes and rivers in the cool north of the world",
+            "lifespan": "Up to 25 years",
+            "food": "Mostly fish, sometimes frogs and crayfish, ambushed from weeds",
+            "size": "Up to 1.5 m"
+          }
+        },
+        {
+          "word": "Piranha",
+          "definition": "A piranha is any of a number of freshwater fish species in the subfamily Serrasalminae, of the family Serrasalmidae, in the order Characiformes.",
+          "link": "https://en.wikipedia.org/wiki/Piranha",
+          "credit": "From the Wikipedia article “Piranha”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Red-bellied piranha (Pygocentrus nattereri)",
+            "habitat": "Rivers of South America",
+            "lifespan": "Not well known",
+            "food": "Insects, worms and fish",
+            "size": "Up to 50 cm, most under 35 cm"
+          }
+        },
+        {
+          "word": "Plaice",
+          "definition": "Plaice is a common name for a group of flatfish that comprises four species: the European, American, Alaskan and scale-eye plaice.",
+          "link": "https://en.wikipedia.org/wiki/Plaice",
+          "credit": "From the Wikipedia article “Plaice”, CC BY-SA 4.0",
+          "facts": {
+            "name": "European plaice (Pleuronectes platessa)",
+            "habitat": "Sandy seabeds of the northeast Atlantic",
+            "lifespan": "Up to 50 years",
+            "food": "Shellfish and worms",
+            "size": "Up to 1 m, usually around 40 cm"
+          }
+        },
+        {
+          "word": "Platy",
+          "definition": "Platy is a common name of freshwater fish in the genus Xiphophorus that lack a \"sword\" at the bottom of their tails.",
+          "link": "https://en.wikipedia.org/wiki/Platy_(fish)",
+          "credit": "From the Wikipedia article “Platy (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Southern platyfish (Xiphophorus maculatus)",
+            "habitat": "Warm streams in Mexico and Central America; aquariums worldwide",
+            "lifespan": "Around 3 years",
+            "food": "Worms, small crustaceans, insects and plants",
+            "size": "Up to 7 cm"
+          }
+        },
+        {
+          "word": "Pollock",
+          "definition": "Pollock or pollack (pronounced ) is the common name used for either of the two species of North Atlantic marine fish in the genus Pollachius.",
+          "link": "https://en.wikipedia.org/wiki/Pollock",
+          "credit": "From the Wikipedia article “Pollock”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic pollock (Pollachius pollachius)",
+            "habitat": "Rocky coasts of the northeast Atlantic",
+            "lifespan": "Up to 8 years",
+            "food": "Not well known",
+            "size": "Up to 1.3 m"
+          }
+        },
+        {
+          "word": "Pompano",
+          "definition": "Pompanos are marine fish in the genus Trachinotus in the subfamily Trachinotinae in the family Trachinotidae.",
+          "link": "https://en.wikipedia.org/wiki/Pompano",
+          "credit": "From the Wikipedia article “Pompano”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Florida pompano (Trachinotus carolinus)",
+            "habitat": "Sandy beaches and surf of the western Atlantic",
+            "lifespan": "Up to 7 years",
+            "food": "Clams, crabs and other small animals, and small fish",
+            "size": "Up to 65 cm"
+          }
+        },
+        {
+          "word": "Porgy",
+          "definition": "Sparidae, the seabreams and porgies, is a family of ray-finned fishes belonging to the order Acanthuriformes, although they were previously classified in the order Perciformes.",
+          "link": "https://en.wikipedia.org/wiki/Sparidae",
+          "credit": "From the Wikipedia article “Sparidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Porgies and sea breams (family Sparidae)",
+            "habitat": "Warm and temperate coasts worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Crabs, clams, sea urchins and worms",
+            "size": "Up to 2 m, most around 40 cm"
+          }
+        },
+        {
+          "word": "Pufferfish",
+          "definition": "Tetraodontidae is a family of marine and freshwater fish in the order Tetraodontiformes.",
+          "link": "https://en.wikipedia.org/wiki/Tetraodontidae",
+          "credit": "From the Wikipedia article “Tetraodontidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Pufferfish (family Tetraodontidae)",
+            "habitat": "Warm seas worldwide; some in rivers",
+            "lifespan": "Varies between kinds",
+            "food": "Algae and small shellfish and crabs, crushed with beak-like teeth",
+            "size": "From 2 cm to about 70 cm"
+          }
+        },
+        {
+          "word": "Rainbow trout",
+          "definition": "The rainbow trout (Oncorhynchus mykiss) is a species of trout native to cold-water tributaries of the Pacific Ocean in North America and Asia.",
+          "link": "https://en.wikipedia.org/wiki/Rainbow_trout",
+          "credit": "From the Wikipedia article “Rainbow trout”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Rainbow trout (Oncorhynchus mykiss)",
+            "habitat": "Cool rivers and lakes; native to the Pacific side of North America",
+            "lifespan": "Up to 11 years",
+            "food": "Insects and other small creatures, and small fish",
+            "size": "Up to 1.2 m"
+          }
+        },
+        {
+          "word": "Red drum",
+          "definition": "The red drum (Sciaenops ocellatus), also known as redfish, channel bass, puppy drum, spottail bass, or simply red, is a game fish found in the Atlantic Ocean from Massachusetts to Florida and in the Gulf of Mexico from Florida to northern Mexico.",
+          "link": "https://en.wikipedia.org/wiki/Red_drum",
+          "credit": "From the Wikipedia article “Red drum”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Red drum (Sciaenops ocellatus)",
+            "habitat": "Coasts and river mouths of the western Atlantic and Gulf of Mexico",
+            "lifespan": "Up to 60 years",
+            "food": "Crabs, shrimp and fish",
+            "size": "Up to 1.5 m"
+          }
+        },
+        {
+          "word": "Roach",
+          "definition": "The roach, or rutilus roach (Rutilus rutilus), also known as the common roach, is a fresh- and brackish-water fish of the family Cyprinidae, native to most of Europe and western Asia.",
+          "link": "https://en.wikipedia.org/wiki/Common_roach",
+          "credit": "From the Wikipedia article “Common roach”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common roach (Rutilus rutilus)",
+            "habitat": "Lakes and rivers across Europe and western Asia",
+            "lifespan": "Up to 15 years or more",
+            "food": "Insects, snails and water plants",
+            "size": "Up to 50 cm, usually under 35 cm"
+          }
+        },
+        {
+          "word": "Sablefish",
+          "definition": "The sablefish (Anoplopoma fimbria) is one of two members of the fish family Anoplopomatidae and the only species in the genus Anoplopoma.",
+          "link": "https://en.wikipedia.org/wiki/Sablefish",
+          "credit": "From the Wikipedia article “Sablefish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sablefish (Anoplopoma fimbria)",
+            "habitat": "Deep muddy seabeds of the North Pacific",
+            "lifespan": "Up to 94 years",
+            "food": "Fish, squid and krill",
+            "size": "Up to 1.1 m"
+          }
+        },
+        {
+          "word": "Sailfish",
+          "definition": "The sailfish is one or two species of marine fish in the genus Istiophorus, which belong to the family Istiophoridae (marlins).",
+          "link": "https://en.wikipedia.org/wiki/Sailfish",
+          "credit": "From the Wikipedia article “Sailfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sailfish (genus Istiophorus)",
+            "habitat": "Warm open seas worldwide",
+            "lifespan": "Up to 13 years",
+            "food": "Fish and squid",
+            "size": "Up to 3.5 m — one of the fastest fish"
+          }
+        },
+        {
+          "word": "Salmon",
+          "definition": "Salmon are any of several commercially important species of euryhaline ray-finned fish from the genera Salmo and Oncorhynchus of the family Salmonidae, native to tributaries of the North Atlantic (Salmo) and North Pacific (Oncorhynchus) basins.",
+          "link": "https://en.wikipedia.org/wiki/Salmon",
+          "credit": "From the Wikipedia article “Salmon”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic salmon (Salmo salar)",
+            "habitat": "Born in rivers, grows up at sea, and comes back to its river to breed",
+            "lifespan": "Up to 13 years",
+            "food": "Insects in rivers; fish and shrimp at sea",
+            "size": "Up to 1.5 m"
+          }
+        },
+        {
+          "word": "Sardine",
+          "definition": "Sardine and pilchard are common names for various species of small, oily forage fish in the herring suborder Clupeoidei.",
+          "link": "https://en.wikipedia.org/wiki/Sardine",
+          "credit": "From the Wikipedia article “Sardine”, CC BY-SA 4.0",
+          "facts": {
+            "name": "European pilchard (Sardina pilchardus)",
+            "habitat": "Coastal seas of the northeast Atlantic and the Mediterranean, in big schools",
+            "lifespan": "Up to 15 years",
+            "food": "Plankton",
+            "size": "Up to 27 cm"
+          }
+        },
+        {
+          "word": "Scad",
+          "definition": "The Atlantic horse mackerel (Trachurus trachurus), also known as the European horse mackerel or common scad, is a species of jack mackerel in the family Carangidae, which includes the jacks, pompanos and trevallies.",
+          "link": "https://en.wikipedia.org/wiki/Atlantic_horse_mackerel",
+          "credit": "From the Wikipedia article “Atlantic horse mackerel”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Atlantic horse mackerel (Trachurus trachurus)",
+            "habitat": "Coastal seas of the eastern Atlantic and the Mediterranean",
+            "lifespan": "Not well known",
+            "food": "Small fish, shrimp and squid",
+            "size": "Up to 60 cm, usually around 25 cm"
+          }
+        },
+        {
+          "word": "Seahorse",
+          "definition": "A seahorse (also written sea-horse and sea horse) is any of 47 species of small marine bony fish in the genus Hippocampus.",
+          "link": "https://en.wikipedia.org/wiki/Seahorse",
+          "credit": "From the Wikipedia article “Seahorse”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Seahorses (genus Hippocampus)",
+            "habitat": "Shallow warm seas, among seagrass and coral",
+            "lifespan": "Varies between kinds",
+            "food": "Food sucked in through a long snout — they must eat almost all the time",
+            "size": "From 1.5 cm to 35 cm"
+          }
+        },
+        {
+          "word": "Shad",
+          "definition": "The Alosidae, or the shads, are a family of clupeiform fishes.",
+          "link": "https://en.wikipedia.org/wiki/Alosidae",
+          "credit": "From the Wikipedia article “Alosidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Shads (family Alosidae)",
+            "habitat": "Varies between kinds",
+            "lifespan": "Varies between kinds",
+            "food": "Varies between kinds",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Shark",
+          "definition": "Sharks are a group of elasmobranch cartilaginous fishes characterized by a ribless endoskeleton, dermal denticles, five to seven gill slits on each side, and pectoral fins that are not fused to the head.",
+          "link": "https://en.wikipedia.org/wiki/Shark",
+          "credit": "From the Wikipedia article “Shark”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sharks (superorder Selachimorpha)",
+            "habitat": "Every ocean, from the shore to the deep sea",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, seals, squid or plankton, depending on the kind",
+            "size": "From 17 cm to over 12 m"
+          }
+        },
+        {
+          "word": "Silver carp",
+          "definition": "The silver carp or silverfin (Hypophthalmichthys molitrix) is a species of freshwater cyprinid fish, a variety of Asian carp native to China and eastern Siberia, from the Amur River drainage in the north to the Xi Jiang River drainage in the south.",
+          "link": "https://en.wikipedia.org/wiki/Silver_carp",
+          "credit": "From the Wikipedia article “Silver carp”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Silver carp (Hypophthalmichthys molitrix)",
+            "habitat": "Big rivers; native to East Asia, invasive in North America",
+            "lifespan": "Up to 20 years",
+            "food": "Plankton",
+            "size": "Up to 1.4 m — and it leaps out of the water when startled"
+          }
+        },
+        {
+          "word": "Skate",
+          "definition": "Skates are cartilaginous fish belonging to the family Rajidae in the superorder Batoidea of rays.",
+          "link": "https://en.wikipedia.org/wiki/Skate_(fish)",
+          "credit": "From the Wikipedia article “Skate (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Skates (family Rajidae)",
+            "habitat": "Seabeds worldwide, from the shallows to the deep sea",
+            "lifespan": "Varies between kinds",
+            "food": "Shrimp, crabs, clams and other seabed animals",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Snapper",
+          "definition": "Lutjanidae, the snappers and fusiliers, are a family of percomorph fishes, mainly marine but with some members inhabiting estuaries and, in some cases, fresh water (e.g., Lutjanus goldiei).",
+          "link": "https://en.wikipedia.org/wiki/Lutjanidae",
+          "credit": "From the Wikipedia article “Lutjanidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Snappers (family Lutjanidae)",
+            "habitat": "Warm seas worldwide, around reefs",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, crabs and shrimp",
+            "size": "Up to 1.5 m, most under 1 m"
+          }
+        },
+        {
+          "word": "Sockeye salmon",
+          "definition": "The sockeye salmon (Oncorhynchus nerka), also called red salmon, kokanee salmon, blueback salmon, or simply sockeye, is an anadromous species of salmon found in the Northern Pacific Ocean and rivers discharging into it.",
+          "link": "https://en.wikipedia.org/wiki/Sockeye_salmon",
+          "credit": "From the Wikipedia article “Sockeye salmon”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sockeye salmon (Oncorhynchus nerka)",
+            "habitat": "The North Pacific and the rivers and lakes around it, turning bright red to breed",
+            "lifespan": "Up to 8 years",
+            "food": "Mostly plankton",
+            "size": "Up to 84 cm"
+          }
+        },
+        {
+          "word": "Sole",
+          "definition": "A sole is a fish belonging to several families in the suborder Pleuronectoidei.",
+          "link": "https://en.wikipedia.org/wiki/Sole_(fish)",
+          "credit": "From the Wikipedia article “Sole (fish)”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Common sole (Solea solea)",
+            "habitat": "Sandy seabeds of the northeast Atlantic and Mediterranean",
+            "lifespan": "Up to 26 years",
+            "food": "Worms, shellfish and small crustaceans, hunted at night",
+            "size": "Up to 70 cm"
+          }
+        },
+        {
+          "word": "Spadefish",
+          "definition": "Ephippidae is a family of percomorph fishes in the suborder Moronoidei of the order Acanthuriformes.",
+          "link": "https://en.wikipedia.org/wiki/Ephippidae",
+          "credit": "From the Wikipedia article “Ephippidae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Spadefish (family Ephippidae)",
+            "habitat": "Warm coasts and reefs worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae, sponges, worms and other small seabed animals",
+            "size": "Up to 90 cm"
+          }
+        },
+        {
+          "word": "Sprat",
+          "definition": "Sprat is the common name applied to a group of forage fish belonging to the genus Sprattus in the family Clupeidae.",
+          "link": "https://en.wikipedia.org/wiki/Sprat",
+          "credit": "From the Wikipedia article “Sprat”, CC BY-SA 4.0",
+          "facts": {
+            "name": "European sprat (Sprattus sprattus)",
+            "habitat": "Coastal seas of Europe, in big schools",
+            "lifespan": "Up to 6 years",
+            "food": "Plankton",
+            "size": "Up to 25 cm, usually around 12 cm"
+          }
+        },
+        {
+          "word": "Stickleback",
+          "definition": "The sticklebacks are a family of ray-finned fishes, the Gasterosteidae which have a Holarctic distribution in fresh, brackish and marine waters.",
+          "link": "https://en.wikipedia.org/wiki/Stickleback",
+          "credit": "From the Wikipedia article “Stickleback”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Three-spined stickleback (Gasterosteus aculeatus)",
+            "habitat": "Ponds, streams and coasts in the north of the world",
+            "lifespan": "Up to 8 years",
+            "food": "Insects, worms and tiny crustaceans",
+            "size": "Up to 11 cm, usually around 5 cm"
+          }
+        },
+        {
+          "word": "Stingray",
+          "definition": "Stingrays are a group of rays, a type of cartilaginous fish.",
+          "link": "https://en.wikipedia.org/wiki/Stingray",
+          "credit": "From the Wikipedia article “Stingray”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Stingrays (order Myliobatiformes)",
+            "habitat": "Warm shallow seas worldwide; some in rivers",
+            "lifespan": "Varies between kinds",
+            "food": "Clams, shrimp, crabs and worms dug from the sand",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Sturgeon",
+          "definition": "Sturgeon are the 27 species of fish belonging to the family Acipenseridae.",
+          "link": "https://en.wikipedia.org/wiki/Sturgeon",
+          "credit": "From the Wikipedia article “Sturgeon”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Sturgeons (family Acipenseridae)",
+            "habitat": "Rivers, lakes and coasts in the north of the world",
+            "lifespan": "Varies between kinds",
+            "food": "Snails, worms, shellfish and small fish from the bottom",
+            "size": "Up to 7 m in the beluga"
+          }
+        },
+        {
+          "word": "Suckerfish",
+          "definition": "The remora, sometimes called suckerfish or sharksucker, is any of a family (Echeneidae) of ray-finned fish in the order Carangiformes.",
+          "link": "https://en.wikipedia.org/wiki/Remora",
+          "credit": "From the Wikipedia article “Remora”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Remoras (family Echeneidae)",
+            "habitat": "Warm open seas, riding on sharks, whales and turtles",
+            "lifespan": "Varies between kinds",
+            "food": "Scraps from their host's meals",
+            "size": "Up to 1.1 m"
+          }
+        },
+        {
+          "word": "Sunfish",
+          "definition": "The ocean sunfish (Mola mola), also known as the common mola, is one of the largest ray-finned fish in the world.",
+          "link": "https://en.wikipedia.org/wiki/Ocean_sunfish",
+          "credit": "From the Wikipedia article “Ocean sunfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Ocean sunfish (Mola mola)",
+            "habitat": "Warm and temperate open seas worldwide",
+            "lifespan": "Not known for sure — perhaps over 20 years",
+            "food": "Jellyfish, small fish, molluscs and other small sea animals",
+            "size": "Up to 3.3 m and 1.3 tonnes — one of the heaviest bony fish"
+          }
+        },
+        {
+          "word": "Swordfish",
+          "definition": "The swordfish (Xiphias gladius), also known as the broadbill in some countries, are large, highly migratory predatory fish characterized by a long, flat, sword-like, pointed bill.",
+          "link": "https://en.wikipedia.org/wiki/Swordfish",
+          "credit": "From the Wikipedia article “Swordfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Swordfish (Xiphias gladius)",
+            "habitat": "Open seas worldwide",
+            "lifespan": "Up to 16 years",
+            "food": "Fish and squid, slashed with its long flat bill",
+            "size": "Up to 4.5 m"
+          }
+        },
+        {
+          "word": "Tang",
+          "definition": "The Acanthuridae are a family of ray-finned fishes, which includes surgeonfishes, tangs, and unicornfishes.",
+          "link": "https://en.wikipedia.org/wiki/Acanthuridae",
+          "credit": "From the Wikipedia article “Acanthuridae”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Tangs and surgeonfish (family Acanthuridae)",
+            "habitat": "Warm coral reefs worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae",
+            "size": "Up to 1 m, most around 25 cm"
+          }
+        },
+        {
+          "word": "Tench",
+          "definition": "The tench or doctor fish (Tinca tinca) is a fresh- and brackish-water fish of the order Cypriniformes found throughout Eurasia from Western Europe including Britain and Ireland east into Asia as far as the Ob and Yenisei Rivers.",
+          "link": "https://en.wikipedia.org/wiki/Tench",
+          "credit": "From the Wikipedia article “Tench”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Tench (Tinca tinca)",
+            "habitat": "Weedy lakes, ponds and slow rivers across Europe and western Asia",
+            "lifespan": "Not well known",
+            "food": "Small animals from the bottom, especially snails and tiny clams, and plants",
+            "size": "Up to 70 cm"
+          }
+        },
+        {
+          "word": "Tetra",
+          "definition": "Tetra is the common name of many small freshwater characiform fishes.",
+          "link": "https://en.wikipedia.org/wiki/Tetra",
+          "credit": "From the Wikipedia article “Tetra”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Tetras (several families of small characins)",
+            "habitat": "Rivers and streams of South America and Africa; aquariums worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Varies between kinds",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Tigerfish",
+          "definition": "Hydrocynus is a genus of Characin fish in the family Alestidae commonly called \"tigerfish,\" native to Africa.",
+          "link": "https://en.wikipedia.org/wiki/Hydrocynus",
+          "credit": "From the Wikipedia article “Hydrocynus”, CC BY-SA 4.0",
+          "facts": {
+            "name": "African tigerfish (genus Hydrocynus)",
+            "habitat": "Rivers and lakes across Africa",
+            "lifespan": "Varies between kinds",
+            "food": "Fish, and even birds snatched in flight",
+            "size": "Varies between kinds"
+          }
+        },
+        {
+          "word": "Tilapia",
+          "definition": "Tilapia ( tih-LAH-pee-ə) is the common name for nearly a hundred species of cichlid fish from the coelotilapine, coptodonine, heterotilapine, oreochromine, pelmatolapiine, and tilapiine tribes (formerly all were \"Tilapiini\"), with the economically most important species placed in the Coptodonini and Oreochromini.",
+          "link": "https://en.wikipedia.org/wiki/Tilapia",
+          "credit": "From the Wikipedia article “Tilapia”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Tilapia (many kinds of cichlid)",
+            "habitat": "Warm lakes and rivers; native to Africa and the Middle East, farmed worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Algae, plants and small creatures",
+            "size": "Up to 60 cm"
+          }
+        },
+        {
+          "word": "Triggerfish",
+          "definition": "Triggerfish are one of 41 species of marine, ray-finned fishes belonging to the family Balistidae.",
+          "link": "https://en.wikipedia.org/wiki/Triggerfish",
+          "credit": "From the Wikipedia article “Triggerfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Triggerfish (family Balistidae)",
+            "habitat": "Warm coral reefs worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Varies between kinds",
+            "size": "Up to 1 m, most around 30 cm"
+          }
+        },
+        {
+          "word": "Trout",
+          "definition": "Trout is a generic common name for numerous species of carnivorous freshwater fishes belonging to the genera Oncorhynchus, Salmo, and Salvelinus, all of which are members of the subfamily Salmoninae in the family Salmonidae.",
+          "link": "https://en.wikipedia.org/wiki/Trout",
+          "credit": "From the Wikipedia article “Trout”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Brown trout (Salmo trutta)",
+            "habitat": "Cool, clean rivers and lakes; native to Europe",
+            "lifespan": "Up to 38 years",
+            "food": "Insects, shrimp and small fish",
+            "size": "Up to 1.4 m, usually under 75 cm"
+          }
+        },
+        {
+          "word": "Tuna",
+          "definition": "Tuna (pl.: tunas or tuna) are saltwater fish belonging to the tribe Thunnini, a subgrouping of the Scombridae (mackerel) family.",
+          "link": "https://en.wikipedia.org/wiki/Tuna",
+          "credit": "From the Wikipedia article “Tuna”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Tuna (tribe Thunnini)",
+            "habitat": "Open seas worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Other sea animals — tuna are fast hunters",
+            "size": "From 50 cm to 4.6 m"
+          }
+        },
+        {
+          "word": "Turbot",
+          "definition": "The turbot, Scophthalmus maximus, is a relatively large species of flatfish in the family Scophthalmidae.",
+          "link": "https://en.wikipedia.org/wiki/Turbot",
+          "credit": "From the Wikipedia article “Turbot”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Turbot (Scophthalmus maximus)",
+            "habitat": "Sandy seabeds of the northeast Atlantic, the Baltic and the Mediterranean",
+            "lifespan": "Up to 25 years",
+            "food": "Mostly other bottom fish, plus crabs and shellfish",
+            "size": "Up to 1 m"
+          }
+        },
+        {
+          "word": "Viperfish",
+          "definition": "A viperfish is any species of the genus Chauliodus, marine fish inhabiting the twilight or mesopelagic zone.",
+          "link": "https://en.wikipedia.org/wiki/Viperfish",
+          "credit": "From the Wikipedia article “Viperfish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Viperfish (genus Chauliodus)",
+            "habitat": "The deep, dark ocean worldwide",
+            "lifespan": "Not well known",
+            "food": "Fish and shrimp, drawn in by a glowing lure and caught with needle-like teeth",
+            "size": "Up to 30 cm"
+          }
+        },
+        {
+          "word": "Whale shark",
+          "definition": "The whale shark (Rhincodon typus) is a slow-moving, filter-feeding carpet shark and the largest known extant fish species.",
+          "link": "https://en.wikipedia.org/wiki/Whale_shark",
+          "credit": "From the Wikipedia article “Whale shark”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Whale shark (Rhincodon typus)",
+            "habitat": "Warm open seas worldwide",
+            "lifespan": "Thought to be 80 to 130 years",
+            "food": "Plankton and small fish, filtered from the water",
+            "size": "Up to about 18 m — the biggest fish in the world"
+          }
+        },
+        {
+          "word": "Whiting",
+          "definition": "Merlangius merlangus, commonly known as whiting or merling, is an important food fish in the eastern North Atlantic Ocean and the northern Mediterranean, western Baltic, and Black Sea.",
+          "link": "https://en.wikipedia.org/wiki/Merlangius",
+          "credit": "From the Wikipedia article “Merlangius”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Whiting (Merlangius merlangus)",
+            "habitat": "Coastal seas of the northeast Atlantic",
+            "lifespan": "Up to 20 years",
+            "food": "Shrimp, crabs and small fish",
+            "size": "Up to 90 cm, usually around 25 cm"
+          }
+        },
+        {
+          "word": "Wrasse",
+          "definition": "The wrasses are a family, Labridae, of marine ray-finned fish, many of which are brightly colored.",
+          "link": "https://en.wikipedia.org/wiki/Wrasse",
+          "credit": "From the Wikipedia article “Wrasse”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Wrasses (family Labridae)",
+            "habitat": "Reefs and rocky coasts worldwide",
+            "lifespan": "Varies between kinds",
+            "food": "Small creatures, and some clean parasites off other fish",
+            "size": "From 5 cm to 2.5 m, most under 20 cm"
+          }
+        },
+        {
+          "word": "Yellowtail",
+          "definition": "The Japanese amberjack or yellowtail, Seriola quinqueradiata, is a species of jack fish in the family Carangidae, native to the northwest Pacific Ocean.",
+          "link": "https://en.wikipedia.org/wiki/Japanese_amberjack",
+          "credit": "From the Wikipedia article “Japanese amberjack”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Japanese amberjack (Seriola quinqueradiata)",
+            "habitat": "Coastal seas of the northwest Pacific",
+            "lifespan": "Not well known",
+            "food": "Plankton",
+            "size": "Up to 1.5 m"
+          }
+        },
+        {
+          "word": "Zander",
+          "definition": "The zander (Sander lucioperca), sander, pikeperch, or Eurasian pikeperch, is a species of ray-finned fish from the family Percidae (which also includes perch, ruffe and darter).",
+          "link": "https://en.wikipedia.org/wiki/Zander",
+          "credit": "From the Wikipedia article “Zander”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Zander (Sander lucioperca)",
+            "habitat": "Lakes and slow, murky rivers across Europe and western Asia",
+            "lifespan": "Up to 17 years",
+            "food": "Fish",
+            "size": "Up to 1 m, usually around 50 cm"
+          }
+        },
+        {
+          "word": "Zebrafish",
+          "definition": "The zebrafish (Danio rerio) is a species of danionin belonging to the genus Danio in the suborder Cyprinoidei.",
+          "link": "https://en.wikipedia.org/wiki/Zebrafish",
+          "credit": "From the Wikipedia article “Zebrafish”, CC BY-SA 4.0",
+          "facts": {
+            "name": "Zebrafish (Danio rerio)",
+            "habitat": "Streams, ponds and rice paddies of South Asia; aquariums and laboratories worldwide",
+            "lifespan": "Around 2 to 3 years, sometimes over 5",
+            "food": "Worms, small crustaceans and insect larvae",
+            "size": "Up to 5 cm"
+          }
+        }
+      ]
+    }
+  ]
+}
