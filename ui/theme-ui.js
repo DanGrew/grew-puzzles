@@ -24,18 +24,18 @@ export function dressScene(character) {
 export function dressRandomScene(random, wait) {
   return Promise.race([
     withCharacters(function (characters) { return sceneShown(randomCharacter(characters, random)); }),
-    new Promise(function (done) { setTimeout(done, wait); }),
+    new Promise(function (done) { window.setTimeout(done, wait); }),
   ]);
 }
 
 function sceneShown(character) {
   var loads = { themed: loadImage, plain: function () {} };
   dressScene(character);
-  return loads[lookNow()](sceneFile(character));
+  return loads[document.documentElement.dataset.look](sceneFile(character));
 }
 
 function loadImage(file) {
-  var image = new Image();
+  var image = document.createElement('img');
   image.src = file;
   return image.decode().catch(function () {});
 }
