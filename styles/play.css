@@ -290,10 +290,12 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   /* A puzzle of several grids: the first sheet is the title and the words card alone, however the
      screen shows them, the card the page's full width, a long list's room to spread; then each
      grid on a sheet of its own, under the title and a band naming its page — every grid the same
-     size, sized to the sheet with no words to leave room for. */
+     size, sized to the sheet with no words to leave room for. Words over the grid sit inside the
+     grid's box, which would shrink to the list once its grid card is gone, so it takes the page's
+     width too. */
   .tabs { display: none; }
   .play[data-paged="true"] .card { display: none; }
-  .play[data-paged="true"] aside { width: 100%; }
+  .play[data-paged="true"] aside, .play[data-paged="true"] .col, .play[data-paged="true"] .stage { width: 100%; }
   .play[data-paged="true"] .print-grids { display: block; --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .grid-sheet { break-before: page; display: flex; flex-direction: column; align-items: center; }
   .print-face { width: max-content; }
