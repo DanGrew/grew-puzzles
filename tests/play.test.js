@@ -1579,6 +1579,59 @@ test('a Saga\'s words sheet keeps every long word in its own column', async ({ p
   expect(fit.want).toBeGreaterThan(88);
 });
 
+// A Saga with a Countries-size list: 30 words, the longest a single short word, so paper fits
+// many columns across the page.
+const LONG_LIST_SAGA = { ...SAGA, words: Array.from({ length: 30 }, (_, i) => ({ ...SAGA.words[i % 8], word: 'Word ' + i })) };
+// On paper: the words list's width, and how many columns it lays the words in — as many of
+// column-width as fit across it, as in printedFit.
+const printedSpread = page => page.locator('#words').evaluate(ul => {
+  const css = getComputedStyle(ul);
+  const gap = parseFloat(css.columnGap), want = parseFloat(css.columnWidth);
+  return { width: Math.round(ul.clientWidth), columns: Math.floor((ul.clientWidth + gap) / (want + gap)) };
+});
+
+test('a Saga\'s words sheet spreads its words across the page from every layout, as under the grid', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const spreads = {};
+  for (const layout of ['bottom', 'right', 'overlay']) {
+    await page.emulateMedia({ media: 'screen' });
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await open(page, null, LONG_LIST_SAGA);
+    await columnsSized(page);
+    await page.emulateMedia({ media: 'print' });
+    spreads[layout] = await printedSpread(page);
+  }
+  expect(spreads.bottom.columns).toBeGreaterThan(3);
+  expect(spreads.right).toEqual(spreads.bottom);
+  expect(spreads.overlay).toEqual(spreads.bottom);
+});
+
+test('a single-grid puzzle prints its grid and words the same from every layout', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const sheets = {};
+  for (const layout of ['bottom', 'right', 'overlay']) {
+    await page.emulateMedia({ media: 'screen' });
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await open(page, null, PUZZLE);
+    await columnsSized(page);
+    await page.emulateMedia({ media: 'print' });
+    const card = await page.locator('#card').boundingBox();
+    sheets[layout] = { words: await printedSpread(page), card: Object.values(card).map(Math.round) };
+  }
+  expect(sheets.right).toEqual(sheets.bottom);
+  expect(sheets.overlay).toEqual(sheets.bottom);
+});
+
+test('after printing a Saga in Overlay, the screen keeps the words over the grid', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await openSaga(page, 'overlay');
+  await columnsSized(page);
+  const before = await page.locator('.col').boundingBox();
+  await page.emulateMedia({ media: 'print' });
+  await page.emulateMedia({ media: 'screen' });
+  await expect.poll(() => page.locator('.col').boundingBox()).toEqual(before);
+});
+
 test('a single-grid puzzle prints no sheets of its own beyond the one', async ({ page }) => {
   await open(page);
   await page.emulateMedia({ media: 'print' });
