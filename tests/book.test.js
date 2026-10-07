@@ -14,7 +14,18 @@ const SAGA = {
   words: PUZZLE.words.map((w, i) => ({ ...w, grid: i % 3 })),
   grids: [0, 1, 2].map(() => ({ rows: PUZZLE.grids[0].rows })),
 };
-const FILES = { 'WSCH-0007': PUZZLE, 'WSCH-0008': WILD, 'WSCH-0009': BIG, 'WSCH-0010': SAGA };
+// A Repeats puzzle: Cup five times among Cow and Hen.
+const cup = (row, col, direction) => ({ word: 'Cup', grid: 0, start: { row, col }, direction, length: 3 });
+const CUPS = {
+  ...PUZZLE, hiddenId: 'WSCH-0011', type: 'Repeats', title: 'Cups',
+  grids: [{ rows: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR'] }],
+  words: [
+    { word: 'Cow', grid: 0, start: { row: 2, col: 3 }, direction: 'E', length: 3 },
+    cup(0, 0, 'E'), cup(0, 4, 'E'), cup(1, 2, 'W'), cup(2, 0, 'S'), cup(4, 4, 'E'),
+    { word: 'Hen', grid: 0, start: { row: 1, col: 3 }, direction: 'E', length: 3 }
+  ]
+};
+const FILES = { 'WSCH-0007': PUZZLE, 'WSCH-0008': WILD, 'WSCH-0009': BIG, 'WSCH-0010': SAGA, 'WSCH-0011': CUPS };
 const issue = {
   slug: 'issue-1', name: 'Issue #1', description: 'The first book, remade.', created: '2026-01-05',
   puzzles: [{ id: 'WSCH-0009', number: 3 }, { id: 'WSCH-0007', number: 1 }, { id: 'WSCH-0008', number: 2 }],
@@ -24,13 +35,18 @@ const sagas = {
   slug: 'sagas', name: 'Sagas', description: 'A long one, then a short one.', created: '2026-10-03',
   puzzles: [{ id: 'WSCH-0010', number: 1 }, { id: 'WSCH-0007', number: 2 }],
 };
+// A book holding the Repeats puzzle, then a puzzle of single words.
+const repeats = {
+  slug: 'repeats', name: 'Repeats', description: 'Count them all.', created: '2026-10-07',
+  puzzles: [{ id: 'WSCH-0011', number: 1 }, { id: 'WSCH-0007', number: 2 }],
+};
 const index = { puzzles: Object.values(FILES).map(p => ({ hiddenId: p.hiddenId, type: p.type, created: p.created, title: p.title })) };
 
 // Serves the stand-ins; a puzzle named in slow answers only after the others, as a slow
 // connection would.
 async function serve(page, { slow = [], missing = [] } = {}) {
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: index }));
-  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, sagas] } }));
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, sagas, repeats] } }));
   await page.route(/\/puzzles\/wordsearch\/WSCH-\d+\.json$/, async r => {
     const id = r.request().url().match(/(WSCH-\d+)\.json$/)[1];
     if (slow.includes(id)) await new Promise(done => setTimeout(done, 800));
@@ -99,7 +115,10 @@ async function printout(page, scope) {
   return {
     title: await at('h1').textContent(), created: await at('.created').textContent(), label: await at('.front-face .band').textContent(),
     letters: await page.locator(`${scope} .front-face .cell`).allTextContents(),
-    words: await page.locator(`${scope} ul.words li`).allTextContents(),
+    // The words as printed: the word itself and its count, never the screen's progress beside it.
+    words: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => li.firstChild.textContent)),
+    counts: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => getComputedStyle(li, '::after').content)),
+    columns: await at('ul.words').evaluate(el => getComputedStyle(el).columnWidth),
     mark: await at('aside').evaluate(el => getComputedStyle(el, '::after').content),
     grid: await size('.front-face .grid'), card: await size('.front-face'), list: await size('.words-box'),
     cardLook: await style('.front-face', ['backgroundColor', 'borderTop', 'borderRadius', 'boxShadow']),
@@ -117,10 +136,27 @@ test('apart from its number, each page is exactly that puzzle\'s own printout', 
     await play.route(`**/content/puzzles/wordsearch/${puzzle.hiddenId}.json`, r => r.fulfill({ json: puzzle }));
     await play.goto(`/app/play.html?id=${puzzle.hiddenId}`);
     await expect(play.locator('#grid .cell').first()).toBeVisible();
+    await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
     await play.emulateMedia({ media: 'print' });
     expect(await printout(page, `.sheet:nth-child(${i + 1})`)).toEqual(await printout(play, 'body'));
     await play.close();
   }
+});
+
+test('a Repeats puzzle\'s book page carries its Cup ×5 exactly as its own printout does', async ({ page, browser }) => {
+  await openBook(page, {}, 'repeats');
+  await page.emulateMedia({ media: 'print' });
+  const counts = i => page.locator(`.sheet:nth-child(${i}) ul.words li`).evaluateAll(lis => lis.map(li => getComputedStyle(li, '::after').content));
+  expect(await counts(1)).toEqual(['none', '"×5"', 'none']);
+  expect(await counts(2)).toEqual(Array(8).fill('none'));
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/wordsearch/WSCH-0011.json', r => r.fulfill({ json: CUPS }));
+  await play.goto('/app/play.html?id=WSCH-0011');
+  await expect(play.locator('#grid .cell').first()).toBeVisible();
+  await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
+  await play.emulateMedia({ media: 'print' });
+  expect(await printout(page, '.sheet:nth-child(1)')).toEqual(await printout(play, 'body'));
+  await play.close();
 });
 
 // The book saved as a PDF the way Chrome's Save as PDF makes it: at the page's own size.

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, countLabel, sparkles,
+  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, printedCount, printedPieces, printedColumnWidth, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
@@ -255,6 +255,25 @@ describe('what the board shows', () => {
   });
 });
 
+describe('paper\'s word columns', () => {
+  it('are as wide as the longest piece measured, rounded up to a whole pixel', () => {
+    expect(printedColumnWidth([40.2, 133.4, 91])).toBe(134);
+    expect(printedColumnWidth([75])).toBe(75);
+  });
+
+  it('take no room of their own for a list with no words', () => {
+    expect(printedColumnWidth([])).toBe(0);
+  });
+
+  it('measure a line a word at a time, since it may wrap at a space, its count kept on its last word', () => {
+    expect(printedPieces('Central African Republic', '')).toEqual([
+      { text: 'Central', copies: '' }, { text: 'African', copies: '' }, { text: 'Republic', copies: '' }
+    ]);
+    expect(printedPieces('Royal blue', '×5')).toEqual([{ text: 'Royal', copies: '' }, { text: 'blue', copies: '×5' }]);
+    expect(printedPieces('Parasaurolophus', '×5')).toEqual([{ text: 'Parasaurolophus', copies: '×5' }]);
+  });
+});
+
 describe('a puzzle with a missing word', () => {
   // The fixture with Goat listed but nowhere in the grid, sorted in among the rest.
   let MISSING;
@@ -271,6 +290,10 @@ describe('a puzzle with a missing word', () => {
     expect(MISSING.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
     expect(MISSING[goat()]).toEqual({ text: 'Goat', missing: true, cells: [], line: null });
     expect(MISSING[0].missing).toBe(false);
+  });
+
+  it('prints no count beside any word, the missing one included', () => {
+    expect(listedWords(MISSING).map(printedCount)).toEqual(['', '', '', '', '', '', '', '', '']);
   });
 
   it('counts only the placed words', () => {
@@ -441,6 +464,15 @@ describe('a puzzle with repeated words', () => {
 
   it('lines through every copy on the solution side', () => {
     expect(playMarks(solvedPlay(REPEATS, 0), REPEATS).found).toHaveLength(7);
+  });
+
+  it('prints Cup ×5, and the other words as before', () => {
+    expect(listedWords(REPEATS).map(printedCount)).toEqual(['', '×5', '']);
+  });
+
+  it('prints the count of every copy, however many were found on screen', () => {
+    const sheep = Array.from({ length: 45 }, (_, i) => ({ text: 'Sheep', grid: 0, cells: [[i, 0]] }));
+    expect(listedWords(sheep).map(printedCount)).toEqual(['×45']);
   });
 });
 
