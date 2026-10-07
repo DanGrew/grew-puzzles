@@ -116,7 +116,7 @@ test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html']) {
   test(`signed out, ${address} shows Sign in beside the burger, and nothing leaves the site`, async ({ page, context, baseURL }) => {
     const asked = await standInForGoogle(context);
     const left = leavingTheSite(page, baseURL);

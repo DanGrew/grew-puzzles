@@ -62,10 +62,6 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
   .col { box-sizing: border-box; max-width: calc(100% + 40px); margin: -20px; padding: 20px; overflow-x: auto; }
 }
 
-/* How to play: the menu's entry opens the instructions as a small card mid-screen. */
-.help { max-width: min(300px, calc(100vw - 64px)); padding: 12px 14px; font: 13px/1.5 var(--font-body); color: var(--fg); background: var(--surface);
-  border: var(--ow) solid var(--line); border-radius: calc(var(--r) * .66); box-shadow: var(--shadow); }
-
 /* The flip card */
 .stage { perspective: 1400px; position: relative; width: max-content; }
 .card { position: relative; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,.7,.3,1); }
@@ -251,7 +247,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .help, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, ul.words li .progress,
+  .site, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, ul.words li .progress,
   .word-popup, .word-popup:popover-open { display: none; }
   ul.words li.has-entry { background: none; }
 

@@ -13,7 +13,7 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html']) {
   test(`on ${address}, the burger menu holds About us, which opens the About us page`, async ({ page, baseURL }) => {
     await page.goto(address);
     await page.locator('.site .burger').click();
