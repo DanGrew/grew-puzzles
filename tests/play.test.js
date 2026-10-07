@@ -1625,10 +1625,11 @@ test('a single-grid puzzle prints its grid and words the same from every layout'
 test('after printing a Saga in Overlay, the screen keeps the words over the grid', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await openSaga(page, 'overlay');
+  await columnsSized(page);
   const before = await page.locator('.col').boundingBox();
   await page.emulateMedia({ media: 'print' });
   await page.emulateMedia({ media: 'screen' });
-  expect(await page.locator('.col').boundingBox()).toEqual(before);
+  await expect.poll(() => page.locator('.col').boundingBox()).toEqual(before);
 });
 
 test('a single-grid puzzle prints no sheets of its own beyond the one', async ({ page }) => {
