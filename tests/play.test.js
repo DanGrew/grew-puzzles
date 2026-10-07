@@ -211,31 +211,14 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-test('the menu holds How to play, which opens the instructions and closes the menu; Escape closes them', async ({ page }) => {
+test('the menu holds Print, then How to play — the site\'s page, the only one', async ({ page }) => {
   await open(page);
-  const help = page.locator('#help');
-  await expect(help).toBeHidden();
   await expect(page.locator('.play-head button')).toHaveCount(0);
-
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['How to play', 'Print', 'About us', /^Look/, 'Privacy']);
-  await entries.first().click();
-  await expect(help).toBeVisible();
-  await expect(help).toContainText('Tap a letter to circle it, then tap another in line with it.');
-  await expect(help).toContainText('Tap the circled letter again to deselect.');
-  await expect(page.locator('#site-menu')).toBeHidden();
-
-  await page.keyboard.press('Escape');
-  await expect(help).toBeHidden();
-});
-
-test('clicking away closes the instructions', async ({ page }) => {
-  await open(page);
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu > *').first().click();
-  await page.mouse.click(10, 800);
-  await expect(page.locator('#help')).toBeHidden();
+  await expect(entries).toHaveText(['Print', 'How to play', 'About us', /^Look/, 'Privacy']);
+  await expect(entries.nth(1)).toHaveAttribute('href', 'how-to-play.html');
+  await expect(page.locator('[popover]#help')).toHaveCount(0);
 });
 
 test('the brand is the one way back to the puzzles: no All puzzles link, no Wordsearches entry', async ({ page }) => {
