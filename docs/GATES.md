@@ -26,6 +26,9 @@ later. `checks-local --post` puts the local verdict on the PR.
   `checks-local`, not the hook.
 - `claude-workflow/tools/checks-local.py <worktree>` runs the whole workflow before a push — it
   reads `test.yml`, so a new job is picked up without touching the tool.
+- Run directly, Playwright reuses whatever already serves its port (3000 unless `.port` or `PORT`
+  says otherwise) — another worktree's server, its code not yours. Give a worktree its own
+  port before running e2e there.
 
 ## Mutation — local, on demand
 

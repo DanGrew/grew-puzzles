@@ -3,11 +3,11 @@
 // look is on: styles/look.css shows them only while Themed is, so Plain never loads an image and
 // the site bar's switch (components/site-bar.js) changes the look without redressing anything.
 // Every rule is core/theme-core.js's.
-import { charactersFile, charactersOf, dressOf, randomCharacter } from '../core/theme-core.js';
+import { charactersFile, charactersOf, dressOf, sceneFile, randomCharacter } from '../core/theme-core.js';
 
 // The characters, in the owner's order — none when the list can't be read, which dresses nothing.
 export function withCharacters(then) {
-  fetch(charactersFile())
+  return fetch(charactersFile())
     .then(function (r) { return r.json(); })
     .then(charactersOf)
     .catch(function () { return []; })
@@ -16,6 +16,28 @@ export function withCharacters(then) {
 
 export function dressScene(character) {
   document.documentElement.style.setProperty('--scene', dressOf(character).scene);
+}
+
+// The page's background in a character picked at random, settling once its image has arrived —
+// or after wait ms, whichever is first, so a page waiting on it never waits long. Plain, or no
+// characters, settles without loading an image.
+export function dressRandomScene(random, wait) {
+  return Promise.race([
+    withCharacters(function (characters) { return sceneShown(randomCharacter(characters, random)); }),
+    new Promise(function (done) { window.setTimeout(done, wait); }),
+  ]);
+}
+
+function sceneShown(character) {
+  var loads = { themed: loadImage, plain: function () {} };
+  dressScene(character);
+  return loads[document.documentElement.dataset.look](sceneFile(character));
+}
+
+function loadImage(file) {
+  var image = document.createElement('img');
+  image.src = file;
+  return image.decode().catch(function () {});
 }
 
 export function dressFigure(el, character) {

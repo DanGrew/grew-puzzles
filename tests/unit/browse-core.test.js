@@ -21,13 +21,13 @@ describe('browse-core.js', () => {
     expect(PER_PAGE).toBe(24);
   });
 
-  test('by default every puzzle shows newest first by created date, leaving the index as it was', () => {
+  test('by date every puzzle shows newest first by created date, leaving the index as it was', () => {
     const index = [
       { hiddenId: id(1), created: '2026-09-30' },
       { hiddenId: id(2), created: '2026-11-01' },
       { hiddenId: id(3), created: '2026-10-15' },
     ];
-    expect(shown(index, browseState('', []))).toEqual([id(2), id(3), id(1)]);
+    expect(shown(index, browseState('?sort=date', []))).toEqual([id(2), id(3), id(1)]);
     expect(index.map(p => p.hiddenId)).toEqual([id(1), id(2), id(3)]);
   });
 
@@ -37,7 +37,7 @@ describe('browse-core.js', () => {
       { hiddenId: 'WSCH-10000', created: '2026-10-02' },
       { hiddenId: 'WSCH-0002', created: '2026-10-02' },
     ];
-    expect(shown(index, browseState('', []))).toEqual(['WSCH-10000', 'WSCH-9999', 'WSCH-0002']);
+    expect(shown(index, browseState('?sort=date', []))).toEqual(['WSCH-10000', 'WSCH-9999', 'WSCH-0002']);
   });
 
   test('the filters are every type a puzzle has, once each, A to Z', () => {
@@ -46,8 +46,8 @@ describe('browse-core.js', () => {
     expect(typesOf([])).toEqual([]);
   });
 
-  test('a plain address is every type, by date, newest first', () => {
-    expect(browseState('', ['Missing', 'Vanilla'])).toEqual({ finished: '', types: [], sort: 'date', dir: 'desc' });
+  test('a plain address is every type, by difficulty, easiest first', () => {
+    expect(browseState('', ['Missing', 'Vanilla'])).toEqual({ finished: '', types: [], sort: 'difficulty', dir: 'desc' });
   });
 
   test('an address picks its types, sort and direction', () => {
@@ -59,15 +59,16 @@ describe('browse-core.js', () => {
 
   test('an address asking for a type no puzzle has, or a sort the page lacks, falls back', () => {
     expect(browseState('?type=Wildcards&type=Vanilla&sort=size&dir=up', ['Vanilla']))
-      .toEqual({ finished: '', types: ['Vanilla'], sort: 'date', dir: 'desc' });
-    expect(browseState('?sort=constructor&dir=toString', ['Vanilla'])).toEqual({ finished: '', types: [], sort: 'date', dir: 'desc' });
+      .toEqual({ finished: '', types: ['Vanilla'], sort: 'difficulty', dir: 'desc' });
+    expect(browseState('?sort=constructor&dir=toString', ['Vanilla'])).toEqual({ finished: '', types: [], sort: 'difficulty', dir: 'desc' });
   });
 
   test('the default state has a plain address; anything else is spelled out', () => {
-    expect(browseSearch({ finished: '', types: [], sort: 'date', dir: 'desc' })).toBe('');
-    expect(browseSearch({ finished: '', types: ['Missing'], sort: 'date', dir: 'desc' })).toBe('?type=Missing');
+    expect(browseSearch({ finished: '', types: [], sort: 'difficulty', dir: 'desc' })).toBe('');
+    expect(browseSearch({ finished: '', types: ['Missing'], sort: 'difficulty', dir: 'desc' })).toBe('?type=Missing');
     expect(browseSearch({ finished: '', types: [], sort: 'title', dir: 'desc' })).toBe('?sort=title');
-    expect(browseSearch({ finished: '', types: [], sort: 'date', dir: 'asc' })).toBe('?dir=asc');
+    expect(browseSearch({ finished: '', types: [], sort: 'date', dir: 'desc' })).toBe('?sort=date');
+    expect(browseSearch({ finished: '', types: [], sort: 'difficulty', dir: 'asc' })).toBe('?dir=asc');
     expect(browseSearch({ finished: '', types: ['Missing', 'Vanilla'], sort: 'type', dir: 'asc' }))
       .toBe('?type=Missing&type=Vanilla&sort=type&dir=asc');
   });
@@ -115,6 +116,45 @@ describe('browse-core.js', () => {
     expect(by('title', 'asc')).toEqual([id(3), id(2), id(1)]);
     expect(by('type', 'desc')).toEqual([id(3), id(2), id(1)]);
     expect(by('date', 'asc')).toEqual([id(1), id(3), id(2)]);
+  });
+
+  test('by difficulty, Easy to Extreme then collections, each difficulty by type then title A to Z', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Mirra?e', created: '2026-10-01', title: 'Apples' },
+      { hiddenId: id(2), type: 'Wildcards', created: '2026-10-02', title: 'Apples' },
+      { hiddenId: id(3), type: 'Saga', created: '2026-10-03', title: 'Cars' },
+      { hiddenId: id(4), type: 'Vanilla', created: '2026-10-04', title: 'Birds' },
+      { hiddenId: id(5), type: 'Saga', created: '2026-10-05', title: 'Birds' },
+      { hiddenId: id(6), type: 'Missing', created: '2026-10-06', title: 'Zoo' },
+      { hiddenId: id(7), type: 'Brand New', created: '2026-10-07', title: 'Zebras' },
+      { hiddenId: id(8), type: 'Repeats', created: '2026-10-08', title: 'Ants' },
+    ];
+    const held = [collection('Zines', '2026-10-09'), collection('Atlas', '2026-10-01')];
+    const by = dir => shown(index, { finished: '', types: [], sort: 'difficulty', dir }, held);
+    expect(by('desc')).toEqual([id(7), id(4), id(5), id(3), id(2), id(6), id(8), id(1), 'Atlas', 'Zines']);
+    // Flipped, the difficulties run the other way; the types and titles inside them don't.
+    expect(by('asc')).toEqual(['Atlas', 'Zines', id(1), id(6), id(8), id(5), id(3), id(2), id(7), id(4)]);
+  });
+
+  test('by difficulty, filtered to Medium, every Saga A to Z then every Wildcards A to Z', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Wildcards', created: '2026-10-01', title: 'Apples' },
+      { hiddenId: id(2), type: 'Saga', created: '2026-10-02', title: 'Cars' },
+      { hiddenId: id(3), type: 'Wildcards', created: '2026-10-03', title: 'Birds' },
+      { hiddenId: id(4), type: 'Saga', created: '2026-10-04', title: 'Birds' },
+    ];
+    expect(shown(index, { finished: '', types: ['Saga', 'Wildcards'], sort: 'difficulty', dir: 'desc' }))
+      .toEqual([id(4), id(2), id(1), id(3)]);
+  });
+
+  test('by difficulty, a tile with the same type and title as another falls back to newest first, either way', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Saga', created: '2026-10-01', title: 'Same' },
+      { hiddenId: id(2), type: 'Saga', created: '2026-10-03', title: 'Same' },
+      { hiddenId: id(3), type: 'Saga', created: '2026-10-02', title: 'Same' },
+    ];
+    expect(shown(index, { finished: '', types: [], sort: 'difficulty', dir: 'desc' })).toEqual([id(2), id(3), id(1)]);
+    expect(shown(index, { finished: '', types: [], sort: 'difficulty', dir: 'asc' })).toEqual([id(2), id(3), id(1)]);
   });
 
   test('each type has a difficulty, Easy to Extreme; a type the site has none for counts as Easy', () => {
@@ -230,7 +270,7 @@ describe('browse-core.js', () => {
   test('a Finished choice rides in the address after the types, and round-trips', () => {
     const state = { finished: 'no', types: ['Missing'], sort: 'title', dir: 'asc' };
     expect(browseSearch(state)).toBe('?type=Missing&finished=no&sort=title&dir=asc');
-    expect(browseSearch({ finished: 'yes', types: [], sort: 'date', dir: 'desc' })).toBe('?finished=yes');
+    expect(browseSearch({ finished: 'yes', types: [], sort: 'difficulty', dir: 'desc' })).toBe('?finished=yes');
     expect(browseState(browseSearch(state), ['Missing', 'Vanilla'])).toEqual(state);
   });
 
@@ -278,6 +318,8 @@ describe('browse-core.js', () => {
   });
 
   test('the direction reads in the sort\'s own terms', () => {
+    expect(dirLabel({ sort: 'difficulty', dir: 'desc' })).toBe('Easiest first');
+    expect(dirLabel({ sort: 'difficulty', dir: 'asc' })).toBe('Hardest first');
     expect(dirLabel({ sort: 'date', dir: 'desc' })).toBe('Newest first');
     expect(dirLabel({ sort: 'date', dir: 'asc' })).toBe('Oldest first');
     expect(dirLabel({ sort: 'title', dir: 'asc' })).toBe('A to Z');

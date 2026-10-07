@@ -276,7 +276,7 @@ test('only the puzzles the player has started are opened — never every puzzle 
 
 test('filtering, sorting and paging keep each ✓ on its own puzzle\'s tile', async ({ context }) => {
   await site(context, { served: index(30), table: progressTable([...finishedRows(id(3)), ...finishedRows(id(28))]) });
-  const page = await landing(context);
+  const page = await landing(context, '/app/?sort=date');
   await expect.poll(() => tickedTitles(page)).toEqual(['Puzzle 28']);
 
   await page.getByRole('button', { name: 'Next page' }).click();
@@ -623,8 +623,8 @@ test('Finished shows only the ✓ tiles, a finished collection too, and the tota
   const page = await landing(context);
   await openFilters(page);
   await choice(page, 'Finished').click();
-  await expect(shownNames(page)).toHaveText(['pair', 'Puzzle 2', 'Puzzle 1']);
-  expect(await tickedTitles(page)).toEqual(['pair', 'Puzzle 2', 'Puzzle 1']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 2', 'pair']);
+  expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 2', 'pair']);
   await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
   await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'true');
   await expect(choice(page, 'Finished')).toHaveCSS('background-color', 'rgb(31, 111, 92)');
@@ -636,7 +636,7 @@ test('Not finished shows every tile without a ✓, a started puzzle among them',
   const page = await landing(context);
   await openFilters(page);
   await choice(page, 'Not finished').click();
-  await expect(shownNames(page)).toHaveText(['trio', 'Puzzle 4', 'Puzzle 3']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4', 'trio']);
   expect(await tickedTitles(page)).toEqual([]);
   await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
 });
@@ -649,10 +649,10 @@ test('picking one then the other swaps them; pressing the picked one again shows
   await choice(page, 'Not finished').click();
   await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'false');
   await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'true');
-  await expect(shownNames(page)).toHaveText(['trio', 'Puzzle 4', 'Puzzle 3']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4', 'trio']);
   await choice(page, 'Not finished').click();
   await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'false');
-  await expect(shownNames(page)).toHaveText(['pair', 'trio', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 2', 'Puzzle 4', 'pair', 'trio']);
   await expect(page).toHaveURL(/\/app\/$/);
   await expect(choice(page, 'Not finished')).toBeFocused();
 });
