@@ -23,7 +23,17 @@ export function dressOf(character) {
 }
 
 function imageOf(file) {
-  return 'url("../content/characters/' + file + '")';
+  return 'url("' + characterFile(file) + '")';
+}
+
+function characterFile(file) {
+  return '../content/characters/' + file;
+}
+
+// A character's background as a file, to load ahead of the page waiting on it — none without a
+// character.
+export function sceneFile(character) {
+  return [character].filter(Boolean).map(function (c) { return characterFile(c.scene); }).concat('')[0];
 }
 
 // A puzzle's number: the digits of its hidden ID.

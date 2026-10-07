@@ -5,22 +5,28 @@ import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { markPrintout, drawSheet } from './wordsearch/play-ui.js';
+import { dressRandomScene } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
+// The longest the print dialog waits on the page's background, which is the screen behind it only.
+var SCENE_WAIT = 1500;
 
 function bookEl(id) {
   return document.getElementById(id);
 }
 
+// Themed, the page behind the print dialog wears a background, as the collection page does — the
+// paper never does (styles/look.css is screen only).
 export function openBook(search) {
   bookEl('print-again').addEventListener('click', function () { window.print(); });
+  var scene = dressRandomScene(Math.random, SCENE_WAIT);
   Promise.all([
     fetch('../content/collections/index.json').then(function (r) { return r.json(); }),
     fetch('play.html').then(function (r) { return r.text(); }),
   ]).then(function (got) {
     var book = bookView(got[0].collections, slugOf(search));
     showTitlePage(book);
-    BOOK_SHOWS[book.found](book, got[1]);
+    BOOK_SHOWS[book.found](book, got[1], scene);
   });
 }
 
@@ -40,9 +46,9 @@ function showMissing() {
   bookEl('missing').hidden = false;
 }
 
-// Every puzzle file loads and every page is drawn before the dialog opens, its fonts too, so no
-// page prints blank however many puzzles the collection holds.
-function printBook(book, playPage) {
+// Every puzzle file loads and every page is drawn before the dialog opens, its fonts and the
+// page's background too, so no page prints blank however many puzzles the collection holds.
+function printBook(book, playPage, scene) {
   var template = sheetTemplate(playPage);
   Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); }))
     .then(function (puzzles) {
@@ -51,7 +57,7 @@ function printBook(book, playPage) {
       bookEl('sheets').replaceChildren.apply(bookEl('sheets'), puzzles.map(function (puzzle, i) {
         return sheet(template, book.pages[i].heading, puzzle, boards[i], numbers[i]);
       }));
-      return document.fonts.ready;
+      return Promise.all([document.fonts.ready, scene]);
     })
     .then(showReady, showFailed);
 }

@@ -1,5 +1,5 @@
 import {
-  charactersFile, charactersOf, dressOf, characterAt, characterFor, tileCharacter, randomCharacter, templateFor, themeScale,
+  charactersFile, charactersOf, dressOf, sceneFile, characterAt, characterFor, tileCharacter, randomCharacter, templateFor, themeScale,
   isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap
 } from '../../core/theme-core.js';
 
@@ -24,6 +24,14 @@ describe('the characters list', () => {
 
   test('no character — the list could not be read — dresses nothing', () => {
     expect(dressOf(undefined)).toEqual({ figure: 'none', scene: 'none', name: '' });
+  });
+
+  test('a character\'s background, as a file to load ahead, beside the images', () => {
+    expect(sceneFile(cast()[1])).toBe('../content/characters/catosaur-bg.webp');
+  });
+
+  test('no character has no background file to load', () => {
+    expect(sceneFile(undefined)).toBe('');
   });
 });
 
