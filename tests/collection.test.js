@@ -118,12 +118,12 @@ test('an address naming no collection says so, and leads back to the collections
   await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
 });
 
-test('the burger menu on a collection page holds Wordsearches, Collections, About us and Privacy, Collections current', async ({ page }) => {
+test('the burger menu on a collection page holds Wordsearches, Collections, How to play, About us and Privacy, Collections current', async ({ page }) => {
   await serve(page);
   await page.goto('/app/collection.html?slug=issue-1');
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu a:visible');
-  await expect(entries).toHaveText(['Wordsearches', 'Collections', 'About us', 'Privacy']);
+  await expect(entries).toHaveText(['Wordsearches', 'Collections', 'How to play', 'About us', 'Privacy']);
   await expect(entries.nth(1)).toHaveAttribute('aria-current', 'page');
   await expect(entries.nth(1)).toHaveAttribute('href', 'index.html?type=Collections');
 });

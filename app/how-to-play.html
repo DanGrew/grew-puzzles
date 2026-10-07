@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to play · Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/page.css">
+<link rel="stylesheet" href="../styles/look.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="how-to-play"></header>
+  <main class="page how-to-play" aria-labelledby="page-title">
+    <h1 id="page-title">How to play</h1>
+    <!-- Themed, the words sit on a card with a character beside it (styles/look.css). One section
+         per type, in the owner's words (the product's docs/CONTENT.md, How to play), each at its own
+         address; a new type is one more section and one more entry in the list. -->
+    <div class="page-card">
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
+    <nav class="types" aria-label="Puzzle types">
+      <ul>
+        <li><a href="#vanilla">Vanilla</a></li>
+        <li><a href="#missing-words">Missing words</a></li>
+        <li><a href="#repeating-words">Repeating words</a></li>
+        <li><a href="#wildcard">Wildcard</a></li>
+        <li><a href="#saga">Saga</a></li>
+        <li><a href="#mirrage">Mirra?e</a></li>
+      </ul>
+    </nav>
+
+    <section class="type" id="vanilla" aria-labelledby="vanilla-title">
+      <img src="../content/how-to-play/vanilla.png" width="792" height="616" alt="A Vanilla wordsearch, with the word BULLOCK found in the grid.">
+      <div class="type-words">
+        <h2 id="vanilla-title">Vanilla wordsearches</h2>
+        <p>A nice calming wordsearch. No tricks, no challenges; just a normal puzzle: find the words in the list. Words can run in any direction, including diagonally. Of course, they can overlap, but rest assured that words within words (like 'grape' within 'grapefruit') appear as two separate words in the grid.</p>
+      </div>
+    </section>
+
+    <section class="type" id="missing-words" aria-labelledby="missing-words-title">
+      <img src="../content/how-to-play/missing-words.png" width="1384" height="476" alt="A Missing words wordsearch with every word found; the leftover words in the list aren't in the grid.">
+      <div class="type-words">
+        <h2 id="missing-words-title">Missing words wordsearches</h2>
+        <p>This is the first type of challenge! The word list includes one or more words that aren't in the puzzle… You might have been looking so hard for a word that isn't actually in the puzzle! What fun!</p>
+      </div>
+    </section>
+
+    <section class="type" id="repeating-words" aria-labelledby="repeating-words-title">
+      <img src="../content/how-to-play/repeating-words.png" width="1320" height="1320" alt="A Repeating words wordsearch where every word is SHEEP, with one copy found.">
+      <div class="type-words">
+        <h2 id="repeating-words-title">Repeating words wordsearches</h2>
+        <p>The next challenge doesn't involve any trickery, but it does test your focus! The puzzle contains only one word… but lots of it. What starts off as a novelty might leave you seeing the word 'sheep' in your sleep!</p>
+      </div>
+    </section>
+
+    <section class="type" id="wildcard" aria-labelledby="wildcard-title">
+      <img src="../content/how-to-play/wildcard.png" width="616" height="616" alt="A Wildcard wordsearch with '?' letters in the grid, and BROOM found across one of them.">
+      <div class="type-words">
+        <h2 id="wildcard-title">Wildcard wordsearches</h2>
+        <p>Back to tricky stuff: wildcards are letters in the puzzle hidden behind a '?'. Each one stands for a single letter, which could be any letter, and each wildcard can be a different one. Basically, we've just hidden letters to make it harder for you!</p>
+      </div>
+    </section>
+
+    <section class="type" id="saga" aria-labelledby="saga-title">
+      <img src="../content/how-to-play/saga.png" width="4476" height="2492" alt="A Saga wordsearch: one long word list split across several grids.">
+      <div class="type-words">
+        <h2 id="saga-title">Saga wordsearches</h2>
+        <p>No more rules, just lots of words! These puzzles have a huge list of words split across several grids. And you guessed it, you have no idea which words are in which grid!</p>
+      </div>
+    </section>
+
+    <section class="type" id="mirrage" aria-labelledby="mirrage-title">
+      <img src="../content/how-to-play/mirrage.png" width="4728" height="3372" alt="A Mirra?e wordsearch with '?' letters, showing a second copy of TELESCOPE found.">
+      <div class="type-words">
+        <h2 id="mirrage-title">Mirra?e wordsearches</h2>
+        <p>The ultimate challenge: every trick at once! Two puzzle grids, a word list with words that aren't really there, '?' wildcards hiding letters, and one word hidden five times across both grids. Like any good mirage, not everything you see is real… Good luck!</p>
+      </div>
+    </section>
+    </div>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module">
+import { dressTextPage } from '../ui/theme-ui.js';
+dressTextPage(Math.random);
+</script>
+</body>
+</html>
