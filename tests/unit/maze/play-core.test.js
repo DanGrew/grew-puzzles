@@ -364,6 +364,11 @@ describe('the control pad', () => {
     expect(ran.runs).toEqual([1, 3, 4, 6]);
   });
 
+  it('runs left round a bend, never back the way it came', () => {
+    const ran = padMaze(play([[0, 2]], [1]), 'W', BOARD);
+    expect(ran.trail).toEqual([[0, 2], [0, 1], [0, 0], [1, 0], [2, 0]]);
+  });
+
   it('stops at a dead end', () => {
     const ran = padMaze(play([[2, 0], [2, 1]], [1, 2]), 'N', BOARD);
     expect(ran.trail).toEqual([[2, 0], [2, 1], [1, 1]]);
@@ -424,6 +429,13 @@ describe('the control pad', () => {
     expect(padMaze(two, 'W', BOARD)).toEqual(padMaze(two, 'back', BOARD));
     const down = padMaze(newMazePlay(BOARD), 'S', BOARD);
     expect(padMaze(down, 'N', BOARD).trail).toEqual([[0, 0]]);
+  });
+
+  it('only the cell just behind the player is the way back: a trail of one cell has none, and an earlier one beside it isn\'t it', () => {
+    expect(padMaze(play([[1, 4]], [1]), 'N', BOARD).trail).toEqual([[1, 4], [0, 4], [0, 3]]);
+    const looped = play([[1, 1], [2, 1], [2, 0], [1, 0]], [1, 2, 3, 4]);
+    expect(padMaze(looped, 'E', BOARD)).toEqual(looped);
+    expect(padMaze(looped, 'S', BOARD).trail).toEqual([[1, 1], [2, 1], [2, 0]]);
   });
 
   it('Back at the start, before any move, does nothing', () => {
@@ -513,8 +525,9 @@ describe('the view', () => {
     expect(centreOn({ cell: 8, x: 3, y: 3 }, [99, 99], frame, big())).toEqual({ cell: 8, x: 0, y: 0 });
   });
 
-  it('a resize keeps a player looking at the whole maze on the whole of it', () => {
+  it('a resize keeps a player looking at the whole maze on the whole of it, the frame grown or shrunk', () => {
     expect(refitView({ cell: 8, x: 0, y: 0 }, frame, { fit: 9, width: 900, height: 900 }, big(), [50, 50])).toEqual({ cell: 9, x: 0, y: 0 });
+    expect(refitView({ cell: 8, x: 0, y: 0 }, frame, { fit: 7, width: 700, height: 700 }, big(), [50, 50])).toEqual({ cell: 7, x: 0, y: 0 });
   });
 
   it('a resize keeps any other zoom as it was, as far as the new frame lets it, centred on the player', () => {
@@ -616,6 +629,7 @@ describe('drawing only what\'s on screen', () => {
     const corner = windowCells(BOARD, { top: 0, left: 0, bottom: 0, right: 1 });
     expect(corner.map(c => c.start)).toEqual([true, false]);
     expect(windowCells(BOARD, { top: 0, left: 0, bottom: 5, right: 5 })).toHaveLength(36);
+    expect(windowCells(BOARD, { top: 1, left: 4, bottom: 1, right: 5 }).map(c => c.cell)).toEqual([[1, 4], [1, 5]]);
   });
 
   it('keeps the blocks and zones over any of the window\'s cells', () => {
@@ -672,5 +686,6 @@ describe('the little map', () => {
     const frame = { fit: 8, width: 800, height: 800 }, big = { rows: 100, cols: 100 };
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 0, y: 0 }, { x: 5, y: -2.5 }, 2.5, frame, big)).toEqual({ cell: 20, x: 12, y: 9 });
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 50, y: 50 }, { x: 0, y: 500 }, 1, frame, big)).toEqual({ cell: 20, x: 0, y: 60 });
+    expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 10, y: 10 }, { x: 13, y: 5 }, 1, frame, big)).toEqual({ cell: 20, x: 13, y: 5 });
   });
 });

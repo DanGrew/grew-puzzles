@@ -50,11 +50,6 @@ export function wallPath(bits, win) {
   }).join('');
 }
 
-// The patch holding every cell of a maze rows by cols.
-function wholeMaze(rows, cols) {
-  return { top: 0, left: 0, bottom: rows - 1, right: cols - 1 };
-}
-
 // Everything a player can step on and tick, each with an id the play remembers it by: guides,
 // collectibles, keys and letters picked up, and the exits — or, in a maze without letters, its
 // end. An exit is right when it stands on the end. The exits run ABC to CBA — their codes A to Z —
@@ -104,7 +99,8 @@ export function mazeBoard(puzzle) {
     cols: puzzle.width,
     rows: puzzle.height,
     bits: bits,
-    walls: wallPath(bits, wholeMaze(puzzle.height, puzzle.width)),
+    // Every wall: a patch to the maze's far edges and past, which the walls stop at.
+    walls: wallPath(bits, { top: 0, left: 0, bottom: puzzle.height, right: puzzle.width }),
     blocks: puzzle.blocks.map(at),
     start: at(puzzle.start),
     stops: stopsOf(puzzle),
