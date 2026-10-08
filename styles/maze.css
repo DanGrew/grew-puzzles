@@ -16,9 +16,18 @@
   .play.maze #checklist-card { width: 100%; }
 }
 
+/* The frame: the grid card's window onto the maze, sized by ui/maze/play-ui.js (--frame-w,
+   --frame-h). The maze sits behind it at the player's zoom (--cell), moved so they stay in the
+   centre — gliding there after a move. Only the cells round the view are drawn, each in its own
+   place in the maze's grid. A maze that zooms takes a pinch on it, not the page's. */
+.maze-view { position: relative; width: var(--frame-w, 0px); height: var(--frame-h, 0px); overflow: hidden; }
+.play.maze[data-zoomable="true"] #view { touch-action: none; }
+.maze-world { position: absolute; left: 0; top: 0; width: calc(var(--cols) * var(--cell)); height: calc(var(--rows) * var(--cell)); }
+.maze-world.glide { transition: transform .25s ease-out; }
+
 /* The maze: its cells, then its blocks and zones over them, then its walls and the trail. */
-.maze-grid, .maze-marks { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-template-rows: repeat(var(--rows), var(--cell)); }
-.maze-marks { position: absolute; inset: 0; pointer-events: none; }
+.maze-grid, .maze-marks { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-template-rows: repeat(var(--rows), var(--cell)); }
+.maze-marks { pointer-events: none; }
 .maze-lines { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .maze-cell { position: relative; width: var(--cell); height: var(--cell); padding: 0; border: 0; background: none; display: grid; place-items: center; }
 button.maze-cell { cursor: pointer; }
@@ -30,6 +39,18 @@ button.maze-cell:focus-visible { outline: 2px solid var(--select); outline-offse
 .walls { fill: none; stroke: var(--line); stroke-width: .12; stroke-linecap: square; }
 .trail { fill: none; stroke: var(--select); stroke-opacity: .55; stroke-width: .34; stroke-linecap: round; stroke-linejoin: round; }
 .here { fill: var(--select); }
+/* A move draws its new steps on from where the trail ended (--from, a dash offset, over --ms),
+   and the player's dot lands as it finishes. */
+.trail.drawing { animation: trail-draw var(--ms) linear; }
+.here.drawing { animation: here-lands var(--ms) steps(1, end); }
+@keyframes trail-draw { from { stroke-dashoffset: var(--from); } to { stroke-dashoffset: 0; } }
+@keyframes here-lands { from { opacity: 0; } to { opacity: 1; } }
+/* A step a zone refused: its keys' numbers, called at the corner of the trail's end, haloed so
+   they read over whatever is under them. */
+.key-call { font: 700 .5px var(--font-body); fill: var(--maze-key-fg); dominant-baseline: central; text-anchor: middle; opacity: 0;
+  stroke: var(--surface); stroke-width: .16; paint-order: stroke; }
+.key-call.flash { animation: key-called .9s ease-out; }
+@keyframes key-called { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
 /* A block lies over the walls, so none crosses it. */
 .block { position: relative; z-index: 3; background: var(--muted); border-radius: 2px; }
 
@@ -83,6 +104,42 @@ ul.checklist .mark { font-weight: 700; }
 ul.checklist li[data-mark="✓"] .mark { color: var(--band); }
 ul.checklist li[data-mark="✗"] .mark { color: var(--maze-exit); }
 
+/* The zoom: − and + at the grid card's top-left, as the flip is at its top-right — only on a maze
+   that zooms. */
+button.zoom-out { left: 0; transform: translate(-35%, -35%); }
+button.zoom-in { left: 37px; transform: translateY(-35%); }
+button.zoom-out svg, button.zoom-in svg { display: block; }
+.play.maze button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+.play.maze:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+
+/* The little map: the whole maze in the frame's top-right corner — on screen as the page opens — while zoomed in, drawn by
+   ui/maze/play-ui.js. Dragging its box looks round the maze. */
+.minimap { position: absolute; right: 8px; top: 8px; z-index: 4; display: none; padding: 3px; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 8px; box-shadow: 3px 3px 0 var(--line); cursor: grab; touch-action: none; }
+.play.maze[data-zoomed="true"] .minimap { display: block; }
+
+/* The control pad: up, down, left and right round Back, over the checklist — under the grid card
+   on a phone. A way with a wall greys out. */
+.pad { display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px); gap: 8px; width: max-content;
+  margin: 0 auto 20px; grid-template-areas: ". up ." "left back right" ". down ."; }
+.pad-key { display: grid; place-items: center; padding: 0; color: var(--fg); background: var(--surface); border: var(--ow) solid var(--line);
+  border-radius: 14px; box-shadow: 3px 3px 0 var(--line); cursor: pointer; touch-action: manipulation; }
+.pad-key svg { width: 22px; height: 22px; }
+.pad-key.up { grid-area: up; }
+.pad-key.left { grid-area: left; }
+.pad-key.back { grid-area: back; color: var(--band-fg); background: var(--band); }
+.pad-key.right { grid-area: right; }
+.pad-key.down { grid-area: down; }
+.pad-key:hover:not(:disabled) { border-color: var(--fg); }
+.pad-key:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+.pad-key:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
+.pad-key:disabled { opacity: .3; cursor: default; box-shadow: none; }
+@media (max-width: 760px) {
+  .pad { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .zone.flash, .zone.flash::after { animation: none; }
+  .maze-world.glide { transition: none; }
+  .trail.drawing, .here.drawing { animation: none; }
 }

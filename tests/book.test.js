@@ -81,6 +81,24 @@ test('Print book on a collection\'s page opens the print dialog on its book, eve
   await expect(page).toHaveTitle('Issue #1 · Grew Puzzles');
 });
 
+test('a maze in a collection is left out of its book, never fetched, and the rest prints', async ({ page }) => {
+  const mixed = {
+    slug: 'mixed', name: 'Mixed', description: 'A wordsearch and a big maze.', created: '2026-10-08',
+    puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0007', number: 1 }],
+  };
+  const asked = [];
+  page.on('request', r => asked.push(r.url()));
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [mixed] } }));
+  await catchPrint(page);
+  await page.goto('/app/book.html?slug=mixed');
+  await expect(page.locator('#ready')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.printed)).toEqual([[64]]);
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1']);
+  expect(asked.filter(url => url.includes('MAZE'))).toEqual([]);
+});
+
 test('the book opens on a title page: the collection\'s name and description, the site\'s address, and where the answers are', async ({ page }) => {
   await openBook(page);
   await page.emulateMedia({ media: 'print' });

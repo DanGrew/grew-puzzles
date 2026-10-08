@@ -4,15 +4,22 @@ const { test, expect } = require('@playwright/test');
 // one CBA — and MAZE-0002, a real-size 32×40 Vanilla of guides. Both pass tooling's maze checks.
 const MAZE = require('./fixtures/MAZE-0001.json');
 const BIG = require('./fixtures/MAZE-0002.json');
+// MAZE-0003: a 100×100 Collectibles maze, eight collectibles and six blocks, made by tooling's own
+// engine and passing its checks.
+const HUNDRED = require('./fixtures/MAZE-0003.json');
 const WORDSEARCH = require('./fixtures/WSCH-0007.json');
 
 // The fixture without its letters and exits: its checklist ends in End.
 const NO_LETTERS = { ...MAZE, type: 'Collectibles', letters: [], exits: [] };
+// The 100×100 maze set off from its middle, an open crossroads, so the view can centre on the
+// player every way.
+const MIDDLE = { ...HUNDRED, start: { row: 50, col: 50 } };
 
 async function open(page, { maze, look, id } = {}) {
   await page.addInitScript(l => localStorage.setItem('grew-puzzles.look', l), look || 'plain');
   await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: maze || MAZE }));
   await page.route('**/content/puzzles/maze/MAZE-0002.json', route => route.fulfill({ json: BIG }));
+  await page.route('**/content/puzzles/maze/MAZE-0003.json', route => route.fulfill({ json: maze || HUNDRED }));
   await page.goto('/app/maze.html?id=' + (id || 'MAZE-0001'));
   await expect(page.locator('#play')).toBeVisible();
 }
@@ -290,3 +297,255 @@ for (const query of ['', '?id=', '?id=WSCH-0007', '?id=../MAZE-0001']) {
     expect(fetched).toEqual([]);
   });
 }
+
+// ---- The control pad, the view and the little map (TASK-101) ----
+
+const pad = (page, press) => page.locator(`#pad [data-press="${press}"]`);
+const at = (page, r, c) => page.locator(`#grid [data-cell="${r},${c}"]`);
+const cellSize = page => page.locator('#play').evaluate(p => p.style.getPropertyValue('--cell'));
+// Where the player's dot sits, against the middle of the frame, px.
+async function offCentre(page) {
+  const view = await page.locator('#view').boundingBox();
+  const here = await page.locator('#here').boundingBox();
+  return [here.x + here.width / 2 - (view.x + view.width / 2), here.y + here.height / 2 - (view.y + view.height / 2)];
+}
+
+test('every maze shows the control pad: up, down, left, right and Back', async ({ page }) => {
+  for (const id of ['MAZE-0001', 'MAZE-0002', 'MAZE-0003']) {
+    await open(page, { id });
+    for (const press of ['N', 'S', 'W', 'E', 'back']) await expect(pad(page, press)).toBeVisible();
+    await expect(pad(page, 'back')).toHaveAttribute('aria-label', 'Back');
+  }
+});
+
+test('pressing right runs the trail along the corridor and stops at the next junction', async ({ page }) => {
+  await open(page);
+  await pad(page, 'E').click();
+  expect(await trail(page)).toEqual([[0, 0], [0, 1], [0, 2]]);
+});
+
+test('a run follows the corridor round its bends', async ({ page }) => {
+  await open(page);
+  await pad(page, 'E').click();
+  await pad(page, 'E').click();
+  await pad(page, 'E').click();
+  expect((await trail(page)).slice(3)).toEqual([[0, 3], [0, 4], [1, 4]]);
+});
+
+test('a run stops on anything on the checklist, picks it up and ticks it', async ({ page }) => {
+  await open(page);
+  await pad(page, 'E').click();
+  await pad(page, 'E').click();
+  expect((await trail(page)).at(-1)).toEqual([0, 3]);
+  await expect(stop(page, 'letter-C')).toHaveClass(/\bgot\b/);
+  await expect(line(page, 'C')).toHaveClass(/\bdone\b/);
+});
+
+test('a way with a wall is greyed out and does nothing, and so is Back before any move', async ({ page }) => {
+  await open(page);
+  for (const press of ['N', 'W', 'back']) await expect(pad(page, press)).toBeDisabled();
+  for (const press of ['E', 'S']) await expect(pad(page, press)).toBeEnabled();
+  await page.keyboard.press('ArrowUp');
+  expect(await trail(page)).toEqual([[0, 0]]);
+});
+
+test('Back goes back one run, the way I came does the same, ticks stay ticked, and the branch left leaves no trace', async ({ page }) => {
+  await open(page);
+  await pad(page, 'E').click();
+  await pad(page, 'E').click();
+  await pad(page, 'back').click();
+  expect(await trail(page)).toEqual([[0, 0], [0, 1], [0, 2]]);
+  await expect(line(page, 'C')).toHaveClass(/\bdone\b/);
+  await expect(stop(page, 'letter-C')).toHaveClass(/\bgot\b/);
+  await pad(page, 'W').click();
+  expect(await trail(page)).toEqual([[0, 0]]);
+  await expect(page.locator('#trail')).toHaveAttribute('points', '0.5,0.5');
+  await expect(line(page, 'C')).toHaveClass(/\bdone\b/);
+});
+
+test('a run into a zone whose key I don\'t hold stops at its edge, the zone flashing and its key\'s number beside the trail\'s end', async ({ page }) => {
+  await open(page);
+  await pad(page, 'E').click();
+  await pad(page, 'S').click();
+  expect(await trail(page)).toEqual([[0, 0], [0, 1], [0, 2]]);
+  await expect(page.locator('#marks .zone[data-key="1"]')).toHaveClass(/\bflash\b/);
+  const call = page.locator('#key-call');
+  await expect(call).toHaveText('1');
+  await expect(call).toHaveClass(/\bflash\b/);
+  expect([await call.getAttribute('x'), await call.getAttribute('y')]).toEqual(['2.8', '0.28']);
+});
+
+test('on a keyboard, the arrow keys and Backspace do what the pad does — and rest while the solution shows', async ({ page }) => {
+  await open(page);
+  await page.keyboard.press('ArrowRight');
+  expect(await trail(page)).toEqual([[0, 0], [0, 1], [0, 2]]);
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('#marks .zone[data-key="1"]')).toHaveClass(/\bflash\b/);
+  await page.keyboard.press('Backspace');
+  expect(await trail(page)).toEqual([[0, 0]]);
+  await page.keyboard.press('ArrowDown');
+  expect(await trail(page)).toEqual([[0, 0], [1, 0], [2, 0]]);
+  await page.click('#flip');
+  await page.keyboard.press('Backspace');
+  await page.click('#flip');
+  expect(await trail(page)).toEqual([[0, 0], [1, 0], [2, 0]]);
+});
+
+test('Back pressed ten times quickly goes back ten runs, with no lag', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003' });
+  // Ten runs along the main path, the one route from the start to the end, so none dead-ends:
+  // the saved walk with every step back the way it came undone.
+  const step = { N: [-1, 0], E: [0, 1], S: [1, 0], W: [0, -1] };
+  const main = HUNDRED.solution.split('').reduce((path, side) => {
+    const here = path.at(-1), next = [here[0] + step[side][0], here[1] + step[side][1]];
+    const back = path.length > 1 && path.at(-2)[0] === next[0] && path.at(-2)[1] === next[1];
+    return back ? path.slice(0, -1) : path.concat([next]);
+  }, [[0, 0]]);
+  const ends = [];
+  for (let i = 0; i < 10; i++) {
+    const here = (await trail(page)).at(-1);
+    const next = main[main.findIndex(c => c[0] === here[0] && c[1] === here[1]) + 1];
+    const way = Object.keys(step).find(w => here[0] + step[w][0] === next[0] && here[1] + step[w][1] === next[1]);
+    await page.keyboard.press({ N: 'ArrowUp', E: 'ArrowRight', S: 'ArrowDown', W: 'ArrowLeft' }[way]);
+    ends.push((await trail(page)).length);
+  }
+  expect(new Set(ends).size).toBe(10);
+  const ms = await page.evaluate(() => {
+    const begun = performance.now();
+    for (let i = 0; i < 10; i++) document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
+    return performance.now() - begun;
+  });
+  expect(await trail(page)).toEqual([[0, 0]]);
+  expect(ms).toBeLessThan(250);
+});
+
+test('a press cuts short any run still drawing: the next draws only its own steps', async ({ page }) => {
+  await open(page);
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowRight');
+  expect(await trail(page)).toEqual([[0, 0], [1, 0], [2, 0], [2, 1]]);
+  expect(await page.locator('#lines').evaluate(l => l.style.getPropertyValue('--from'))).toBe('1');
+  await expect(page.locator('#trail')).toHaveAttribute('stroke-dasharray', '3 3');
+  await page.keyboard.press('Backspace');
+  expect(await page.locator('#lines').evaluate(l => l.style.getPropertyValue('--from'))).toBe('0');
+});
+
+test('the view keeps the end of my trail in the centre of the maze card as I move', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  expect((await offCentre(page)).map(Math.round)).toEqual([0, 0]);
+  for (const key of ['ArrowRight', 'ArrowDown', 'ArrowLeft']) {
+    await page.keyboard.press(key);
+    await page.waitForTimeout(400);
+    const [x, y] = await offCentre(page);
+    expect(Math.abs(x)).toBeLessThan(2);
+    expect(Math.abs(y)).toBeLessThan(2);
+  }
+});
+
+test('a 100×100 maze opens zoomed in on the start; + and − zoom in and out, from the whole maze to its closest', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003' });
+  await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'true');
+  expect(await cellSize(page)).toBe('20px');
+  await expect(at(page, 0, 0)).toHaveClass(/\bstart\b/);
+  await page.click('#zoom-in');
+  expect(await cellSize(page)).toBe('25px');
+  for (let i = 0; i < 3; i++) await page.click('#zoom-in');
+  expect(await cellSize(page)).toBe('48px');
+  await expect(page.locator('#zoom-in')).toBeDisabled();
+  while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
+  await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'false');
+  const frame = await page.locator('#view').boundingBox();
+  expect(parseFloat(await cellSize(page)) * 100).toBeCloseTo(frame.width, 0);
+});
+
+test('a small maze shows whole and has no zoom', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('#zoom-in')).toBeHidden();
+  await expect(page.locator('#zoom-out')).toBeHidden();
+  await expect(page.locator('#minimap')).toBeHidden();
+});
+
+test('a pinch on the maze zooms it', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await page.locator('#view').evaluate(view => {
+    const box = view.getBoundingClientRect(), x = box.x + box.width / 2, y = box.y + box.height / 2;
+    const touch = (type, id, dx) => view.dispatchEvent(new PointerEvent(type, { pointerId: id, clientX: x + dx, clientY: y, bubbles: true, pointerType: 'touch' }));
+    touch('pointerdown', 1, -20);
+    touch('pointerdown', 2, 20);
+    touch('pointermove', 1, -30);
+    touch('pointermove', 2, 30);
+    touch('pointerup', 1, -30);
+    touch('pointerup', 2, 30);
+  });
+  expect(await cellSize(page)).toBe('30px');
+});
+
+test('the zoom is only ever mine: moves, taps and pickups never zoom, nor do finishing the maze or flipping to the solution', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 450 });
+  await open(page, { id: 'MAZE-0002' });
+  await page.click('#zoom-in');
+  const zoom = await cellSize(page);
+  expect(zoom).toBe('25px');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Backspace');
+  const step = { N: [-1, 0], E: [0, 1], S: [1, 0], W: [0, -1] };
+  let here = [BIG.start.row, BIG.start.col];
+  for (const side of BIG.solution) {
+    here = [here[0] + step[side][0], here[1] + step[side][1]];
+    // A tap on the cell itself, wherever the little map sits.
+    await at(page, here[0], here[1]).dispatchEvent('click');
+  }
+  await expect(page.locator('#complete')).toBeVisible();
+  expect(await cellSize(page)).toBe(zoom);
+  await page.click('#flip');
+  expect(await cellSize(page)).toBe(zoom);
+  await page.click('#flip');
+  expect(await cellSize(page)).toBe(zoom);
+});
+
+test('zoomed in, the little map shows the whole maze in the card\'s corner, every collectible on it; dragging its box looks round, and my next move brings the view back', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const map = page.locator('#minimap');
+  await expect(map).toBeVisible();
+  const frame = await page.locator('#view').boundingBox(), box = await map.boundingBox();
+  expect(box.x + box.width).toBeLessThanOrEqual(frame.x + frame.width);
+  expect(box.y + box.height).toBeLessThanOrEqual(frame.y + frame.height);
+  const ink = await map.evaluate((canvas, c) => {
+    const scale = canvas.width / 100;
+    return Array.from(canvas.getContext('2d').getImageData(Math.floor((c.col + 0.5) * scale), Math.floor((c.row + 0.5) * scale), 1, 1).data.slice(0, 3));
+  }, HUNDRED.collectibles[0]);
+  expect(ink[0]).toBeGreaterThan(200);
+  expect(ink[2]).toBeLessThan(100);
+  const before = await page.locator('#world').evaluate(w => w.style.transform);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 20, box.y + 20, { steps: 4 });
+  await page.mouse.up();
+  expect(await page.locator('#world').evaluate(w => w.style.transform)).not.toBe(before);
+  expect(Math.abs((await offCentre(page))[0])).toBeGreaterThan(50);
+  await page.keyboard.press('ArrowDown');
+  await page.waitForTimeout(400);
+  expect(Math.abs((await offCentre(page))[0])).toBeLessThan(2);
+});
+
+test('a maze that isn\'t 32×40 has no Print button', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003' });
+  await expect(page.locator('[data-menu-entry]')).toHaveCount(0);
+  await expect(page.locator('#print')).toHaveCount(0);
+});
+
+test('on a phone, a 100×100 maze plays with the pad on screen under it, drawing only the cells round the view, and moves without lag', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const card = await page.locator('#front').boundingBox(), down = await pad(page, 'S').boundingBox();
+  expect(card.x + card.width).toBeLessThanOrEqual(390);
+  expect(down.y + down.height - card.y).toBeLessThanOrEqual(844);
+  expect(await page.locator('#grid .maze-cell').count()).toBeLessThan(1500);
+  const ms = await page.evaluate(() => {
+    const keys = ['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'], begun = performance.now();
+    for (let i = 0; i < 20; i++) document.dispatchEvent(new KeyboardEvent('keydown', { key: keys[i % 4] }));
+    return performance.now() - begun;
+  });
+  expect(ms).toBeLessThan(500);
+  expect(await page.locator('#grid .maze-cell').count()).toBeLessThan(1500);
+});

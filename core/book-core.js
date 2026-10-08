@@ -20,8 +20,14 @@ export function pageNumbers(boards) {
   }));
 }
 
+// Only a wordsearch prints in the book. A maze is played on the site alone, and is left out: only
+// a 32×40 maze will ever print, and none prints yet (TASK-88).
+function prints(id) {
+  return id.startsWith('WSCH-');
+}
+
 function book(collection) {
-  const pages = [...collection.puzzles]
+  const pages = collection.puzzles.filter(p => prints(p.id))
     .sort((a, b) => a.number - b.number)
     .map(({ id, number }) => ({ heading: `Puzzle ${number}`, search: `?id=${id}` }));
   return {
