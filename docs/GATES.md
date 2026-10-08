@@ -14,7 +14,7 @@ The set mirrors `homeschooling-app`'s, minus its content-specific gates.
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |
 | `ui-cyclomatic` | inline page scripts and `ui/` stay at complexity 1 — only files this PR touches block |
 | `validate-json` | every JSON content file against its schema — mappings in `scripts/validate-schemas.js` |
-| arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-json-in-repo` (JSON only in `content/`; `tests/` fixtures aside) · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
+| arch checks | `scripts/arch-check.js <rule>`: `no-dom-in-core` (the bare words `document` and `window` anywhere in `core/`, comments too — call a window of cells something else) · `no-ui-imports` · `no-stray-files` · `no-app-exports` · `app-index-only` · `no-media-outside-assets` · `no-json-in-repo` (JSON only in `content/`; `tests/` fixtures aside) · `no-css-outside-styles` · `no-md-outside-docs` · `no-guard-chain` · `no-filter-conditional` · `no-pure-fn-outside-core` · `no-logic-in-inline-callbacks` |
 
 Each gate passes on an empty layer, so it runs from the first commit rather than switching on
 later. `checks-local --post` puts the local verdict on the PR.
