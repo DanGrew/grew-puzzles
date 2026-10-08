@@ -95,6 +95,13 @@ describe('the board', () => {
     ]);
   });
 
+  it('lists the exits ABC to CBA whatever order the file has them in, and leaves the file as it was', () => {
+    const puzzle = { ...structuredClone(MAZE), exits: structuredClone(MAZE.exits).reverse() };
+    const before = structuredClone(puzzle.exits);
+    expect(mazeBoard(puzzle).stops.filter(s => s.kind === 'exit').map(s => s.label)).toEqual(['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA']);
+    expect(puzzle.exits).toEqual(before);
+  });
+
   it('gives a maze without letters its end as the last stop, in place of exits', () => {
     const board = mazeBoard({ ...structuredClone(MAZE), letters: [], exits: [] });
     expect(board.stops.at(-1)).toEqual({ id: 'end', kind: 'end', cell: [5, 5], label: 'End', right: true });
@@ -175,6 +182,11 @@ describe('tapping a trail', () => {
     expect(keyed.trail.at(-1)).toEqual([1, 2]);
     expect(keyed.events).toEqual([]);
     expect(keyed.locked).toEqual([]);
+  });
+
+  it('a cell just below a zone, in its columns, is not locked', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), zones: [{ key: 1, top: 0, left: 0, bottom: 0, right: 0 }] });
+    expect(tapMaze(newMazePlay(board), [1, 0], board)).toEqual({ trail: [[0, 0], [1, 0]], got: [], events: [], locked: [] });
   });
 
   it('a cell in two zones needs both keys', () => {

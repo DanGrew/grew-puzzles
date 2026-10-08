@@ -47,20 +47,16 @@ export function wallPath(walls) {
   }).join('');
 }
 
-// The six orders of A, B and C: the exits' lines on the checklist, in this order.
-function orders() {
-  return ['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'];
-}
-
 // Everything a player can step on and tick, each with an id the play remembers it by: guides,
 // collectibles, keys and letters picked up, and the exits — or, in a maze without letters, its
-// end. An exit is right when it stands on the end.
+// end. An exit is right when it stands on the end. The exits run ABC to CBA — their codes A to Z —
+// whatever order the file lists them in.
 function stopsOf(puzzle) {
   var end = at(puzzle.end);
   var pickups = function (kind, list) {
     return list.map(function (s, i) { return { id: kind + '-' + i, kind: kind, cell: at(s), label: '' }; });
   };
-  var exits = puzzle.exits.slice().sort(function (a, b) { return orders().indexOf(a.code) - orders().indexOf(b.code); })
+  var exits = puzzle.exits.slice().sort(function (a, b) { return a.code.localeCompare(b.code); })
     .map(function (e) { return { id: 'exit-' + e.code, kind: 'exit', cell: at(e), label: e.code, right: sameCell(at(e), end) }; });
   var finish = { true: exits, false: [{ id: 'end', kind: 'end', cell: end, label: 'End', right: true }] }[exits.length > 0];
   return pickups('guide', puzzle.guides)
@@ -154,7 +150,7 @@ function stepTo(play, cell, board) {
   var locked = missingKeys(board, play.got, cell);
   var fresh = board.stops.filter(function (s) { return sameCell(s.cell, cell) && !play.got.includes(s.id); });
   var got = play.got.concat(fresh.map(function (s) { return s.id; }));
-  var walked = { trail: play.trail.concat([cell]), got: got, events: [], locked: [] };
+  var walked = { trail: play.trail.concat([cell]), got: got, locked: [] };
   walked.events = { true: ['complete'], false: [] }[mazeFinished(walked, board) && !mazeFinished(play, board)];
   var refused = { trail: play.trail, got: play.got, events: ['locked'], locked: locked };
   return { true: refused, false: walked }[locked.length > 0];
