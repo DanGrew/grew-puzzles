@@ -33,8 +33,8 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 // A card not on screen — the words over the grid, closed — has no box, and nothing covers it.
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
-for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'privacy.html', 'how-to-play.html']) {
-  test(`the menu on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, above Privacy`, async ({ page }) => {
+for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
+  test(`the menu on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, ending the menu`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
     await page.locator('.site .burger').click();
@@ -42,7 +42,7 @@ for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.h
     await expect(look.locator('button')).toHaveText(['Themed', 'Plain']);
     await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(look.locator('button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.locator('#site-menu > *').last()).toHaveText('Privacy');
+    await expect(page.locator('#site-menu > *').last()).toHaveClass(/\blook\b/);
   });
 }
 

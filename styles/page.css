@@ -4,6 +4,8 @@
 .page h2 { margin: 32px 0 8px; font: var(--dw) 19px var(--font-display); }
 .page p { margin: 0; font-size: 16px; line-height: 1.6; }
 .page a { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+/* Saving your progress: one short paragraph a point, each led in bold, with no headings between. */
+.saving p + p { margin-top: 12px; }
 
 /* How to play: the types listed at the top, each a link to its section; then a section a type,
    its picture beside its words, the sides alternating down the page as in the owner's book — on a
