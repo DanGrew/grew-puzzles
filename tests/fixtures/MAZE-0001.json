@@ -1,0 +1,112 @@
+{
+  "hiddenId": "MAZE-0001",
+  "type": "Keylecticodes",
+  "created": "2026-10-08",
+  "title": "Everything corner",
+  "width": 6,
+  "height": 6,
+  "walls": [
+    "95153B",
+    "ABC782",
+    "86FFEA",
+    "87FFBA",
+    "8513C6",
+    "ED6C57"
+  ],
+  "blocks": [
+    {
+      "row": 2,
+      "col": 2
+    }
+  ],
+  "start": {
+    "row": 0,
+    "col": 0
+  },
+  "end": {
+    "row": 5,
+    "col": 5
+  },
+  "guides": [
+    {
+      "row": 4,
+      "col": 1
+    }
+  ],
+  "collectibles": [
+    {
+      "row": 1,
+      "col": 3
+    },
+    {
+      "row": 0,
+      "col": 5
+    }
+  ],
+  "keys": [
+    {
+      "key": 1,
+      "row": 2,
+      "col": 1
+    }
+  ],
+  "zones": [
+    {
+      "key": 1,
+      "top": 1,
+      "left": 2,
+      "bottom": 1,
+      "right": 3
+    }
+  ],
+  "letters": [
+    {
+      "letter": "A",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "letter": "B",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "letter": "C",
+      "row": 0,
+      "col": 3
+    }
+  ],
+  "exits": [
+    {
+      "row": 5,
+      "col": 5,
+      "code": "CBA"
+    },
+    {
+      "row": 1,
+      "col": 5,
+      "code": "ACB"
+    },
+    {
+      "row": 2,
+      "col": 5,
+      "code": "CAB"
+    },
+    {
+      "row": 3,
+      "col": 5,
+      "code": "BAC"
+    },
+    {
+      "row": 2,
+      "col": 4,
+      "code": "BCA"
+    },
+    {
+      "row": 3,
+      "col": 4,
+      "code": "ABC"
+    }
+  ],
+  "solution": "SSEWNNEEEESENSWNWWSEWNWWSSSEWSEESWENESEE"
+}

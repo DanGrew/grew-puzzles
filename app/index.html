@@ -270,11 +270,12 @@ window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 // choice draws no tiles until the progress arrives, so none ever show only to drop out.
 const FIRST_DRAWS = { true: () => {}, false: () => show(1) };
 
-function load([index, published, owned]) {
+function load([index, mazes, published, owned]) {
+  const puzzles = index.puzzles.concat(mazes.puzzles);
   characters = owned;
   dressScene(randomCharacter(characters, Math.random));
-  items = browseItems(index.puzzles, published.collections);
-  types = filterOptions(index.puzzles, published.collections);
+  items = browseItems(puzzles, published.collections);
+  types = filterOptions(puzzles, published.collections);
   document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   state = browseState(location.search, types);
   rows.replaceChildren(...filterRows(types).flatMap(row), ...finishedCells);
@@ -282,10 +283,11 @@ function load([index, published, owned]) {
   wireDone(items, tick);
 }
 
-// A site with no collections has no collections file: that reads as none. Characters that can't be
-// read dress nothing — the tiles still draw.
+// A site with no collections has no collections file, and one with no mazes no maze index: each
+// reads as none. Characters that can't be read dress nothing — the tiles still draw.
 Promise.all([
   fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
+  fetch('../content/puzzles/maze/index.json').then(r => r.json()).catch(() => ({ puzzles: [] })),
   fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
   fetch(charactersFile()).then(r => r.json()).then(charactersOf).catch(() => []),
 ]).then(load);

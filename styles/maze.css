@@ -1,0 +1,88 @@
+/* The maze play page — over play.css's cards: the maze in the grid card, its checklist in a card
+   beside it where a wordsearch's words would be, under it on a phone. Each element wears the
+   generator's editor colours (grew-puzzles-tooling), so the owner's maze reads the same here: guides
+   blue, collectibles amber, keys and their zones purple, letters pink, exits white pills with their
+   code, the solution's main path blue and its detours green, the right exit dotted and the wrong
+   ones crossed in red. Themed, collectibles and blocks wear the puzzle's character (look.css). */
+:root {
+  --maze-guide: #2a6df5; --maze-collectible: #e8a317; --maze-key: #7b4fd6; --maze-key-fg: #5b32b8;
+  --maze-letter: #d6336c; --maze-main: #2a6df5; --maze-detour: #1b9a46; --maze-exit: #d62a1e;
+}
+
+.play.maze { flex-flow: row wrap; justify-content: center; align-items: flex-start; }
+/* --cell is the page's, sized by ui/maze/play-ui.js to fit the grid card in the window. */
+.play.maze #checklist-card { flex: none; width: 240px; max-width: none; }
+@media (max-width: 760px) {
+  .play.maze #checklist-card { width: 100%; }
+}
+
+/* The maze: its cells, then its blocks and zones over them, then its walls and the trail. */
+.maze-grid, .maze-marks { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-template-rows: repeat(var(--rows), var(--cell)); }
+.maze-marks { position: absolute; inset: 0; pointer-events: none; }
+.maze-lines { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.maze-cell { position: relative; width: var(--cell); height: var(--cell); padding: 0; border: 0; background: none; display: grid; place-items: center; }
+button.maze-cell { cursor: pointer; }
+button.maze-cell:hover { background: color-mix(in srgb, var(--fg) 7%, transparent); }
+button.maze-cell:focus-visible { outline: 2px solid var(--select); outline-offset: -2px; }
+/* The start, highlighted: the trail sets off from here. */
+.maze-cell.start { background: color-mix(in srgb, var(--band) 30%, transparent); }
+
+.walls { fill: none; stroke: var(--line); stroke-width: .12; stroke-linecap: square; }
+.trail { fill: none; stroke: var(--select); stroke-opacity: .55; stroke-width: .34; stroke-linecap: round; stroke-linejoin: round; }
+.here { fill: var(--select); }
+/* A block lies over the walls, so none crosses it. */
+.block { position: relative; z-index: 3; background: var(--muted); border-radius: 2px; }
+
+/* A stop: a dot in its kind's colour, its label inside — a key's number, a letter — or, for an exit
+   or the end, a pill its cell wide with its code, so two exits side by side never overlap. Picked
+   up, it fades; an exit stepped on wears ✓ or ✗ at its corner. */
+.stop { position: absolute; inset: 12%; display: grid; place-items: center; border-radius: 50%; color: #fff;
+  font: 700 calc(var(--cell) * .5)/1 var(--font-body); transition: opacity .3s; }
+.stop::after { content: attr(data-label); }
+.stop.guide { inset: 32%; background: var(--maze-guide); }
+.stop.collectible { inset: 26%; background: var(--maze-collectible); }
+.stop.key { background: var(--maze-key); }
+.stop.letter { background: var(--maze-letter); }
+.stop.exit, .stop.end { inset: 24% 2%; z-index: 1; border-radius: 999px; font-size: calc(var(--cell) * .3); letter-spacing: -.03em; }
+.stop.exit { color: var(--fg); background: var(--surface); border: 1px solid var(--line); }
+/* On the solution side the paths run up to an exit, never over its code. */
+.back-face .stop.exit, .back-face .stop.end { z-index: 3; }
+.stop.end { background: var(--fg); }
+.stop.got:is(.guide, .collectible, .key, .letter) { opacity: .25; }
+.stop:is([data-mark="✓"], [data-mark="✗"])::before { content: attr(data-mark); position: absolute; top: -70%; right: 0; width: calc(var(--cell) * .5); height: calc(var(--cell) * .5);
+  display: grid; place-items: center; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); font-size: calc(var(--cell) * .38); }
+.stop[data-mark="✓"]::before { color: var(--band); }
+.stop[data-mark="✗"]::before { color: var(--maze-exit); }
+
+/* A zone: locked until its key is held, tinted in the key's purple and numbered with it. A step
+   refused flashes it, its number large; once its key is held it clears. */
+.zone { position: relative; background: color-mix(in srgb, var(--maze-key) 13%, transparent); outline: 2px dashed var(--maze-key); outline-offset: -1px; }
+.zone::after { content: attr(data-key); position: absolute; top: calc(var(--cell) * .12); left: calc(var(--cell) * .14); font: 700 calc(var(--cell) * .45)/1 var(--font-body); color: var(--maze-key-fg); }
+.zone.open { background: none; outline-color: color-mix(in srgb, var(--maze-key) 35%, transparent); }
+.zone.flash { animation: zone-flash .9s ease-out; }
+.zone.flash::after { animation: key-call .9s ease-out; }
+@keyframes zone-flash { 30% { background: color-mix(in srgb, var(--maze-key) 45%, transparent); } }
+@keyframes key-call { 30% { transform: scale(2.2); transform-origin: top left; } }
+
+/* The solution side: the detours green, the main path blue over them, the right exit's red dot and
+   the wrong exits' red crosses. */
+.detour, .main { fill: none; stroke-width: .3; stroke-linecap: round; stroke-linejoin: round; }
+.detour { stroke: var(--maze-detour); }
+.main { stroke: var(--maze-main); }
+.exit-right { fill: var(--maze-exit); }
+.exit-wrong { fill: none; stroke: var(--maze-exit); stroke-width: .09; stroke-linecap: round; }
+
+/* The checklist: a line per thing to find, ticked as it's found — a count beside a group, ✓ or ✗
+   beside an exit stepped on. */
+ul.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+ul.checklist li { display: flex; align-items: baseline; gap: 8px; font-size: 16px; transition: color .3s; }
+ul.checklist li.done { color: var(--muted); }
+ul.checklist li.done .line-text { text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
+ul.checklist .progress { font-size: .8125em; color: var(--muted); font-variant-numeric: tabular-nums; }
+ul.checklist .mark { font-weight: 700; }
+ul.checklist li[data-mark="✓"] .mark { color: var(--band); }
+ul.checklist li[data-mark="✗"] .mark { color: var(--maze-exit); }
+
+@media (prefers-reduced-motion: reduce) {
+  .zone.flash, .zone.flash::after { animation: none; }
+}

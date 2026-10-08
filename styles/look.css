@@ -65,6 +65,11 @@
   :root[data-look="themed"] .play[data-sits="bottom"] .words-box { max-height: var(--words-cap, none); }
   :root[data-look="themed"] .play[data-sits="bottom"] ul.words { overflow-y: auto; }
 
+  /* A maze: its collectibles and its blocks wear the puzzle's character (ui/maze/play-ui.js sets
+     --figure on the page) — Plain keeps the dot and the solid tile (styles/maze.css). */
+  :root[data-look="themed"] .maze .stop.collectible { inset: 2%; border-radius: 0; background: var(--figure, none) center / contain no-repeat; }
+  :root[data-look="themed"] .maze .block { background: var(--surface) var(--figure, none) center / contain no-repeat; }
+
   /* A text page: the words on a card at a reading width, mid-page, and the character beside the
      card, behind it, its name label under its feet — or, on a window too narrow for that, smaller,
      standing over the card's top edge in front of it. Spots from the card's top-left. */
