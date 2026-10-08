@@ -4,16 +4,16 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
-  printedCount, printedPieces, printedColumnWidth, countLabel, sparkles, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
+  printedCount, printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { wireEntries } from './entry-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook } from '../theme-ui.js';
+import { wireFlip, celebrate } from '../card-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
-var PLAY_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
 var PLAY_LAYOUT_KEY = 'grew-puzzles.words-layout';
 var PLAY_LAYOUT_LABELS = { bottom: 'Words: under the grid', right: 'Words: beside the grid', overlay: 'Words: over the grid' };
 // Under and beside, the list is the page's, in its own slot ahead of the printed grids; in
@@ -26,8 +26,6 @@ var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
 var PLAY_SIZE_KEY = 'grew-puzzles.text-size';
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
-var PLAY_SPARKLE_COUNT = 28;
-var PLAY_SPARKLE_LIFE_MS = 1700;
 
 function playEl(id) {
   return document.getElementById(id);
@@ -277,22 +275,6 @@ function drawRing(svg, cell, kind) {
   svg.appendChild(ring);
 }
 
-// The grid turns over like a revolving door; the found words on the front stay as they were.
-// onFlip redraws the list, which shows a missing word red only while the solution shows.
-function wireFlip(onFlip) {
-  var card = playEl('card'), button = playEl('flip');
-  button.addEventListener('click', function () {
-    var on = card.classList.toggle('flipped');
-    button.setAttribute('aria-pressed', String(on));
-    button.setAttribute('aria-label', PLAY_FLIP_LABELS[on]);
-    button.title = PLAY_FLIP_LABELS[on];
-    playEl('front').inert = on;
-    playEl('back').inert = !on;
-    playEl('back').setAttribute('aria-hidden', String(!on));
-    onFlip();
-  });
-}
-
 // The corner button cycles where the words sit; in Overlay its neighbour lays the list over
 // the grid and lifts it off again, leaving the grid as it was.
 function wireWords() {
@@ -441,22 +423,4 @@ function placeFigure(fit) {
   tag.hidden = !spot.label;
   tag.style.left = spot.labelLeft + 'px';
   tag.style.top = spot.labelTop + 'px';
-}
-
-function celebrate() {
-  var board = playEl('board');
-  board.classList.remove('pop');
-  void board.offsetWidth;
-  board.classList.add('pop');
-  sparkles(PLAY_SPARKLE_COUNT, board.offsetWidth, board.offsetHeight, Math.random).forEach(function (s) {
-    var spark = document.createElement('span');
-    spark.className = 'spark';
-    spark.style.left = s.x + 'px';
-    spark.style.top = s.y + 'px';
-    spark.style.setProperty('--dx', s.dx + 'px');
-    spark.style.setProperty('--dy', s.dy + 'px');
-    spark.style.animationDelay = s.delay + 's';
-    board.appendChild(spark);
-    setTimeout(function () { spark.remove(); }, PLAY_SPARKLE_LIFE_MS);
-  });
 }

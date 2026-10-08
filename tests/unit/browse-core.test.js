@@ -164,6 +164,11 @@ describe('browse-core.js', () => {
     expect(difficultyOf('constructor')).toBe('Easy');
   });
 
+  test("the maze's five types: Vanilla Easy, Collectibles and Code Breaker Medium, Keys Hard, Keylecticodes Extreme", () => {
+    expect(['Vanilla', 'Collectibles', 'Code Breaker', 'Keys', 'Keylecticodes'].map(difficultyOf))
+      .toEqual(['Easy', 'Medium', 'Medium', 'Hard', 'Extreme']);
+  });
+
   test('the filter rows run Easy to Extreme, each with its types A to Z, then Collections with no name', () => {
     const types = ['Collections', 'Mirra?e', 'Missing', 'Repeats', 'Saga', 'Vanilla', 'Wildcards'];
     expect(filterRows(types)).toEqual([
@@ -350,6 +355,12 @@ describe('browse-core.js', () => {
   test('a tile links to the play page by hidden ID', () => {
     expect(playHref('WSCH-0007')).toBe('play.html?id=WSCH-0007');
     expect(playHref('a b&c')).toBe('play.html?id=a%20b%26c');
+  });
+
+  test('a maze tile links to the maze page by hidden ID; only the MAZE prefix goes there', () => {
+    expect(playHref('MAZE-0001')).toBe('maze.html?id=MAZE-0001');
+    expect(playHref('MAZEX-0001')).toBe('play.html?id=MAZEX-0001');
+    expect(playHref('xMAZE-0001')).toBe('play.html?id=xMAZE-0001');
   });
 
   test('the total reads in puzzles, singular for one', () => {

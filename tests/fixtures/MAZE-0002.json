@@ -1,0 +1,156 @@
+{
+  "hiddenId": "MAZE-0002",
+  "type": "Vanilla",
+  "created": "2026-10-08",
+  "title": "Long way round",
+  "width": 32,
+  "height": 40,
+  "walls": [
+    "9553BD553951579557915153D1157B97",
+    "AD146B916C7C13A9512EBC7E96879407",
+    "87C3D2AEBBD16C2ABE852FF903C3EB83",
+    "ED3AD287869453868503AFFAEED6D46A",
+    "BD06906D43ED56C7AD2AC3BC513D3B96",
+    "83816C15543BD3912BEABE8552E942C3",
+    "AAAED143BB847C6AEA94296D14169692",
+    "EAEBD6D406C7BFFC7A87A813ABC7ABEA",
+    "BA9695516D17AFFD3AAD6AAAEA95687A",
+    "C047A910392D4395444152AABC015016",
+    "B8556EEEAAEBD2ED55107AEEC16ABEC3",
+    "80557D53AC16903D17EE92D1387A8516",
+    "EC3D39542D2D2EC385556816EE96EBEB",
+    "B9016817878543BE8557D2E93B815452",
+    "86AC7EC3C7AD5407C7B93C7AE82EFFBA",
+    "E96B917C17E91781556EABBC3EC7FFC2",
+    "D2946C53C13E87EAB9796AC3C517D552",
+    "96AD3B96D2C56D1686929416D543D53A",
+    "ED478441545797AD416AEB817B92B942",
+    "BB9547BA939107A95292B82ED42C6C3A",
+    "AAE917C42C6EAD06D6AC2AEBBD07916A",
+    "8416E95507FFAD03BBA96C5281416EBA",
+    "C3C53A97C3FFEBEC46AEBBD4683E97C2",
+    "D453EC03D6BD5417954386953EC3C396",
+    "D3D4156A93C3B96947900143E9503C2B",
+    "901503D6AEBC2C56BBAEEC7856BAC782",
+    "EAEBAABD450781554403FFBEB942BD6A",
+    "D2B82AC3FFAD6ED3B96EFF87C2D46D52",
+    "96AEE856FF87B9102855516D12BD13D2",
+    "AD07D453D14146AEC69516D52C03EC52",
+    "8545557A943C3BAD5387C795692EBBD2",
+    "87D39516ED2D2AEB92A97BC7BAED043A",
+    "C13AAD4397C7C296EAC2B87BC6D16D42",
+    "BEEAEBD005117843B8104016953813BE",
+    "ABB87C56E96EBEBA86EED6E947C2EC43",
+    "C044793D10554142C139553AB9529392",
+    "BC1156C56EB952907EE857846E96E86A",
+    "83EA917957AAD6E853D07B857D297C3E",
+    "EC16EC543B80513EBC7AD403D5003BC3",
+    "D547D555446ED6C547D47D6C57EEC6D6"
+  ],
+  "blocks": [
+    {
+      "row": 2,
+      "col": 21
+    },
+    {
+      "row": 7,
+      "col": 13
+    },
+    {
+      "row": 14,
+      "col": 28
+    },
+    {
+      "row": 21,
+      "col": 10
+    },
+    {
+      "row": 26,
+      "col": 20
+    },
+    {
+      "row": 27,
+      "col": 8
+    }
+  ],
+  "start": {
+    "row": 0,
+    "col": 0
+  },
+  "end": {
+    "row": 39,
+    "col": 31
+  },
+  "guides": [
+    {
+      "row": 4,
+      "col": 2
+    },
+    {
+      "row": 7,
+      "col": 7
+    },
+    {
+      "row": 12,
+      "col": 6
+    },
+    {
+      "row": 17,
+      "col": 9
+    },
+    {
+      "row": 21,
+      "col": 5
+    },
+    {
+      "row": 27,
+      "col": 5
+    },
+    {
+      "row": 33,
+      "col": 7
+    },
+    {
+      "row": 35,
+      "col": 13
+    },
+    {
+      "row": 30,
+      "col": 12
+    },
+    {
+      "row": 29,
+      "col": 17
+    },
+    {
+      "row": 24,
+      "col": 22
+    },
+    {
+      "row": 22,
+      "col": 26
+    },
+    {
+      "row": 19,
+      "col": 29
+    },
+    {
+      "row": 24,
+      "col": 30
+    },
+    {
+      "row": 32,
+      "col": 30
+    },
+    {
+      "row": 34,
+      "col": 30
+    }
+  ],
+  "collectibles": [],
+  "keys": [],
+  "zones": [],
+  "letters": [],
+  "exits": [],
+  "solution": "EEESWSESSWSEENESESESESWSESSSWWWSESESESESSWWSSESWWWSSESWWSESSSSEESSWSESEEESWSEEEEEENNWWNWNNWNEENEEESENNENNNEEEEESEENEENWNWNEEENEENWNEESSSSSWSSESSSSSSSWNWWSWSEESEESWSWSESES"
+}

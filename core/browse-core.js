@@ -34,10 +34,13 @@ export function filterOptions(puzzles, collections) {
 
 // How hard each type is — the one place it is written. A tile's strip and the type's filter row
 // both take their colour from it, a colour per difficulty in styles/browse.css. Vanilla, and any
-// type not listed here, is Easy, so a new type never ships uncoloured.
+// type not listed here, is Easy, so a new type never ships uncoloured. The maze's types sit beside
+// the wordsearch's by name alone: the two Vanillas are both Easy, so the name agrees until the
+// table knows each type's kind (TASK-96).
 export function difficultyOf(type) {
   const difficulty = new Map([
     ['Saga', 'Medium'], ['Wildcards', 'Medium'], ['Missing', 'Hard'], ['Repeats', 'Hard'], ['Mirra?e', 'Extreme'],
+    ['Collectibles', 'Medium'], ['Code Breaker', 'Medium'], ['Keys', 'Hard'], ['Keylecticodes', 'Extreme'],
   ]);
   return difficulty.get(type) ?? 'Easy';
 }
@@ -238,8 +241,11 @@ export function tileDetail(puzzle) {
   return [puzzle.type, dayLabel(puzzle.created)];
 }
 
+// A puzzle's play page, by its kind's prefix: a maze plays on its own page, a wordsearch on the
+// play page.
 export function playHref(hiddenId) {
-  return `play.html?id=${encodeURIComponent(hiddenId)}`;
+  const page = { MAZE: 'maze.html' }[hiddenId.split('-')[0]] ?? 'play.html';
+  return `${page}?id=${encodeURIComponent(hiddenId)}`;
 }
 
 function counted(n, word) {
