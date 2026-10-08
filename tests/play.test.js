@@ -216,7 +216,7 @@ test('the menu holds Print, then How to play — the site\'s page, the only one'
   await expect(page.locator('.play-head button')).toHaveCount(0);
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['Print', 'How to play', 'About us', /^Look/, 'Privacy']);
+  await expect(entries).toHaveText(['Print', 'How to play', 'Saving your progress', 'About us', 'Privacy', /^Look/]);
   await expect(entries.nth(1)).toHaveAttribute('href', 'how-to-play.html');
   await expect(page.locator('[popover]#help')).toHaveCount(0);
 });
@@ -1796,6 +1796,8 @@ test('the solution is the same size as the puzzle side, and flipping back keeps 
   await pickSize(page, 'Large');
   await page.locator('#flip').click();
   await expect(page.locator('#card')).toHaveClass(/flipped/);
+  // The card turns over for .7s; both sides are measured once it has landed, not mid-turn.
+  await page.locator('#card').evaluate(card => Promise.all(card.getAnimations().map(turn => turn.finished)));
   expect(await box(page, '#back')).toEqual(await box(page, '#front'));
   await expect(page.locator('#solution-grid .cell').first()).toHaveCSS('font-size', '27px');
   await page.locator('#flip').click();

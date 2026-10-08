@@ -14,7 +14,7 @@
 .menu-panel > * + *, .account-panel > * + * { border-top: 1px solid var(--rule); }
 .menu-panel > *:hover, .account-panel > button:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .menu-panel a[aria-current] { font-weight: 700; }
-/* The look, above Privacy: Themed or Plain as two pills, the one on filled in the band's green. */
+/* The look, ending the menu: Themed or Plain as two pills, the one on filled in the band's green. */
 .menu-panel > .look { display: flex; align-items: center; gap: 8px; cursor: default; }
 .menu-panel > .look:hover { background: none; }
 .look-name { margin-right: auto; padding-right: 8px; }

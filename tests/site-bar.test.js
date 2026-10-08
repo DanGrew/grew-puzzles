@@ -31,7 +31,7 @@ test('the burger opens a menu holding Wordsearches, About us and Privacy, while 
   await expect(panel).toBeVisible();
   await expect(burger).toHaveAttribute('aria-expanded', 'true');
   const entries = panel.locator('a:visible');
-  await expect(entries).toHaveText(['Wordsearches', 'How to play', 'About us', 'Privacy']);
+  await expect(entries).toHaveText(['Wordsearches', 'How to play', 'Saving your progress', 'About us', 'Privacy']);
   await expect(entries.first()).toHaveAttribute('href', 'index.html');
   await expect(entries.first()).toHaveAttribute('aria-current', 'page');
   await expect(entries.last()).toHaveAttribute('href', 'privacy.html');

@@ -123,7 +123,7 @@ test('the burger menu on a collection page holds Wordsearches, Collections, How 
   await page.goto('/app/collection.html?slug=issue-1');
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu a:visible');
-  await expect(entries).toHaveText(['Wordsearches', 'Collections', 'How to play', 'About us', 'Privacy']);
+  await expect(entries).toHaveText(['Wordsearches', 'Collections', 'How to play', 'Saving your progress', 'About us', 'Privacy']);
   await expect(entries.nth(1)).toHaveAttribute('aria-current', 'page');
   await expect(entries.nth(1)).toHaveAttribute('href', 'index.html?type=Collections');
 });
