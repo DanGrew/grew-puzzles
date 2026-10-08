@@ -238,8 +238,8 @@ export function solutionMarks(board) {
 }
 
 // ---- How big the maze is ----
-// The grid card fits the window's height, and the page's width, at the largest whole cell that
-// does — never smaller than 10px, the least a cell can be tapped at. m: the window's viewHeight,
+// The grid card fits the screen's height, and the page's width, at the largest whole cell that
+// does — never smaller than 10px, the least a cell can be tapped at. m: the screen's viewHeight,
 // the room the page's head and the card's band and edges take above and round the cells
 // (chromeHeight, chromeWidth), the page's width, and the maze's rows and cols.
 export function mazeCellSize(m) {
