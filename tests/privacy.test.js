@@ -16,11 +16,11 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html']) {
-  test(`on ${address}, the burger menu ends with Privacy, which opens the Privacy page`, async ({ page, baseURL }) => {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
+  test(`on ${address}, Privacy is the burger menu's last page, which opens the Privacy page`, async ({ page, baseURL }) => {
     await page.goto(address);
     await page.locator('.site .burger').click();
-    const last = page.locator('#site-menu > *:visible').last();
+    const last = page.locator('#site-menu > a:visible').last();
     await expect(last).toHaveText('Privacy');
     await last.click();
     await expect(page).toHaveURL(`${baseURL}/app/privacy.html`);

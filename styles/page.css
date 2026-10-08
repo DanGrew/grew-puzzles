@@ -4,6 +4,8 @@
 .page h2 { margin: 32px 0 8px; font: var(--dw) 19px var(--font-display); }
 .page p { margin: 0; font-size: 16px; line-height: 1.6; }
 .page a { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+/* Saving your progress: one short paragraph a point, each led in bold, with no headings between. */
+.saving p + p { margin-top: 12px; }
 
 /* How to play: the types listed at the top, each a link to its section; then a section a type,
    its picture beside its words, the sides alternating down the page as in the owner's book — on a
@@ -13,10 +15,6 @@
 .how-to-play .type img { width: 100%; height: auto; border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
 .how-to-play .type:nth-of-type(even) img { order: 2; }
 .how-to-play .type h2 { margin-top: 0; }
-/* Saving your progress closes the page: words alone, no picture. */
-.how-to-play .saving { margin-top: 32px; scroll-margin-top: 16px; }
-.how-to-play .saving h2 { margin-top: 0; }
-.how-to-play .saving p + p { margin-top: 12px; }
 @media (max-width: 559px) {
   .how-to-play .type { grid-template-columns: 1fr; gap: 12px; }
   .how-to-play .type:nth-of-type(even) img { order: 0; }

@@ -216,7 +216,7 @@ test('the menu holds Print, then How to play — the site\'s page, the only one'
   await expect(page.locator('.play-head button')).toHaveCount(0);
   await page.locator('.site .burger').click();
   const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['Print', 'How to play', 'About us', /^Look/, 'Privacy']);
+  await expect(entries).toHaveText(['Print', 'How to play', 'Saving your progress', 'About us', 'Privacy', /^Look/]);
   await expect(entries.nth(1)).toHaveAttribute('href', 'how-to-play.html');
   await expect(page.locator('[popover]#help')).toHaveCount(0);
 });

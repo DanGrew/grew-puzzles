@@ -17,7 +17,7 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
   test(`on ${address}, the burger menu holds How to play, which opens the How to play page`, async ({ page, baseURL }) => {
     await page.goto(address);
     await page.locator('.site .burger').click();
@@ -32,10 +32,10 @@ for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.
 test('the How to play page shows every type in order, each worded exactly as the owner wrote it', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
   await expect(page).toHaveTitle('How to play · Grew Puzzles');
-  await expect(page.locator('main section.type')).toHaveCount(TYPES.length);
-  expect(await page.locator('main section.type').evaluateAll(sections => sections.map(s => s.id))).toEqual(TYPES.map(([id]) => id));
-  await expect(page.locator('main section.type h2')).toHaveText(TYPES.map(([, , heading]) => heading));
-  await expect(page.locator('main section.type p')).toHaveText(TYPES.map(([, , , words]) => words));
+  await expect(page.locator('main section')).toHaveCount(TYPES.length);
+  expect(await page.locator('main section').evaluateAll(sections => sections.map(s => s.id))).toEqual(TYPES.map(([id]) => id));
+  await expect(page.locator('main section h2')).toHaveText(TYPES.map(([, , heading]) => heading));
+  await expect(page.locator('main section p')).toHaveText(TYPES.map(([, , , words]) => words));
 });
 
 test('each type\'s picture is its own, and its alt text names the type and what it shows', async ({ page }) => {
@@ -48,10 +48,10 @@ test('each type\'s picture is its own, and its alt text names the type and what 
   }
 });
 
-test('the top of the page lists every type, then Saving your progress, and picking one goes to its section', async ({ page, baseURL }) => {
+test('the top of the page lists every type, and picking one goes to its section', async ({ page, baseURL }) => {
   await page.goto('/app/how-to-play.html');
   const links = page.locator('main nav a');
-  await expect(links).toHaveText([...TYPES.map(([, name]) => name), 'Saving your progress']);
+  await expect(links).toHaveText(TYPES.map(([, name]) => name));
   await links.filter({ hasText: 'Saga' }).click();
   await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#saga`);
   await expect(page.locator('#saga h2')).toBeInViewport();
@@ -88,52 +88,6 @@ test('on a phone each picture sits above its words', async ({ page }) => {
   }
 });
 
-// Saving your progress, in the owner's words (the product's docs/CONTENT.md, How to play): the
-// page's last section, after the types, with no picture.
-const SAVING = [
-  'Sign in with Google and we\'ll save your progress as you play: every word, the moment you find it! Close the page, come back tomorrow, and pick up right where you left off.',
-  'Play anywhere. Start a puzzle on your phone and finish it on your laptop! Sign in with the same Google account and your finds will be waiting. Playing on two at once? Just reopen the puzzle on the other one to catch up.',
-  'Lost your connection? Don\'t worry, we\'ll keep trying until your finds are saved. A little note under the words lets you know until they are, so keep the puzzle open.',
-  'Ticks and Continue playing. Finished a puzzle? It gets a ✓ on its tile. Wandered off halfway? It\'ll be waiting for you under Continue playing at the top of the page.',
-  'Not signed in? That\'s fine too. Every puzzle plays just the same, we just can\'t remember where you got to. Sign in partway through and the words you\'ve found in that puzzle are saved.',
-];
-
-test('Saving your progress follows the types, the page\'s last section, worded exactly as the owner wrote it', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
-  expect(await page.locator('main section').evaluateAll(sections => sections.map(s => s.id))).toEqual([...TYPES.map(([id]) => id), 'saving']);
-  await expect(page.locator('#saving h2')).toHaveText('Saving your progress');
-  await expect(page.locator('#saving p')).toHaveText(SAVING);
-  await expect(page.locator('#saving p strong')).toHaveText(['Play anywhere.', 'Lost your connection?', 'Ticks and Continue playing.', 'Not signed in?']);
-});
-
-test('picking Saving your progress at the top of the page goes to its section', async ({ page, baseURL }) => {
-  await page.goto('/app/how-to-play.html');
-  await page.locator('main nav a', { hasText: 'Saving your progress' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#saving`);
-  await expect(page.locator('#saving h2')).toBeInViewport();
-});
-
-test('opening how-to-play.html#saving lands on Saving your progress', async ({ page }) => {
-  await page.goto('/app/how-to-play.html#saving');
-  await expect(page.locator('#saving h2')).toBeInViewport();
-});
-
-for (const [device, width, height] of [['a phone', 375, 700], ['a desktop', 1280, 800]]) {
-  test(`on ${device}, Saving your progress has no picture and sits on the page's card, its words the card's width`, async ({ page }) => {
-    await page.setViewportSize({ width, height });
-    await page.goto('/app/how-to-play.html');
-    await expect(page.locator('#saving img')).toHaveCount(0);
-    await expect(page.locator('.page-card #saving')).toHaveCount(1);
-    const card = await page.locator('.page-card').boundingBox();
-    const words = await page.locator('#saving p').first().boundingBox();
-    const above = await page.locator('#mirrage').boundingBox();
-    expect(words.y).toBeGreaterThan(above.y + above.height);
-    expect(words.x).toBeGreaterThanOrEqual(card.x);
-    expect(words.x + words.width).toBeLessThanOrEqual(card.x + card.width);
-    expect(words.width).toBeGreaterThan(card.width / 2);
-  });
-}
-
 test('on the How to play page, How to play is the menu\'s current entry', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
   await page.locator('.site .burger').click();
@@ -143,7 +97,7 @@ test('on the How to play page, How to play is the menu\'s current entry', async 
 test('the How to play page wears the site bar, and its words sit on the card with a character, Themed', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
   await expect(page.locator('.site .brand')).toHaveText('Grew Puzzles');
-  await expect(page.locator('.page-card section.type')).toHaveCount(TYPES.length);
+  await expect(page.locator('.page-card section')).toHaveCount(TYPES.length);
   await expect(page.locator('#name-tag')).not.toBeEmpty();
   await expect(page.locator('#theme-figure')).toBeVisible();
 });
@@ -154,7 +108,7 @@ test('Plain, the How to play page shows no character', async ({ page }) => {
   await page.locator('#site-menu .look button[data-look="plain"]').click();
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
-  await expect(page.locator('main section.type')).toHaveCount(TYPES.length);
+  await expect(page.locator('main section')).toHaveCount(TYPES.length);
 });
 
 test('on the narrowest phone the How to play page reads without scrolling sideways', async ({ page }) => {
