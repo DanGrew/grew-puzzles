@@ -26,6 +26,19 @@ describe('book-core.js', () => {
     ]);
   });
 
+  test('a maze in the collection is left out of its book: it plays on the site alone, its number skipped', () => {
+    const mixed = [{
+      slug: 'mixed', name: 'Mixed', description: '', created: '2026-10-08',
+      puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0001', number: 3 }, { id: 'WSCH-0002', number: 1 }],
+    }];
+    expect(bookView(mixed, 'mixed').pages).toEqual([
+      { heading: 'Puzzle 1', search: '?id=WSCH-0002' },
+      { heading: 'Puzzle 3', search: '?id=WSCH-0001' },
+    ]);
+    const mazes = [{ slug: 'mazes', name: 'Mazes', description: '', created: '2026-10-08', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
+    expect(bookView(mazes, 'mazes').pages).toEqual([]);
+  });
+
   test('nothing the book adds names a hidden ID', () => {
     const { pages, ...added } = bookView(collections(), 'issue-1');
     expect(JSON.stringify(added)).not.toContain('WSCH');

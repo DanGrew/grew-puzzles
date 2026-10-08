@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
-  mazeUrl, wallPath, mazeBoard, newMazePlay, tapMaze, checklist, mazeFinished, checklistCount, trailPoints, stopMarks,
-  zoneMarks, solutionMarks, mazeCellSize
+  mazeUrl, wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
+  mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
+  openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
+  windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -48,14 +50,24 @@ describe('finding the maze a play URL names', () => {
 });
 
 describe('the walls', () => {
+  const whole = (rows, cols) => ({ top: 0, left: 0, bottom: rows - 1, right: cols - 1 });
+
   it('draws each cell\'s north and west walls, and the edge along the bottom row and right column', () => {
-    expect(wallPath(['F', 'F'])).toBe('M0 0h1M0 0v1M1 0v1' + 'M0 1h1M0 1v1M0 2h1M1 1v1');
-    expect(wallPath(['FF'])).toBe('M0 0h1M0 0v1M0 1h1' + 'M1 0h1M1 0v1M1 1h1M2 0v1');
+    expect(wallPath([[15], [15]], whole(2, 1))).toBe('M0 0h1M0 0v1M1 0v1' + 'M0 1h1M0 1v1M0 2h1M1 1v1');
+    expect(wallPath([[15, 15]], whole(1, 2))).toBe('M0 0h1M0 0v1M0 1h1' + 'M1 0h1M1 0v1M1 1h1M2 0v1');
   });
 
   it('draws no wall a cell leaves open', () => {
-    expect(wallPath(['0'])).toBe('');
-    expect(wallPath(['2', '4'])).toBe('M1 0v1M0 2h1');
+    expect(wallPath([[0]], whole(1, 1))).toBe('');
+    expect(wallPath([[2], [4]], whole(2, 1))).toBe('M1 0v1M0 2h1');
+  });
+
+  it('draws only the cells in a window, each where it stands in the maze, the edge only at the maze\'s edge', () => {
+    const bits = [[15, 15, 15], [15, 15, 15], [15, 15, 15]];
+    expect(wallPath(bits, { top: 1, left: 1, bottom: 1, right: 1 })).toBe('M1 1h1M1 1v1');
+    expect(wallPath(bits, { top: 2, left: 2, bottom: 2, right: 2 })).toBe('M2 2h1M2 2v1M2 3h1M3 2v1');
+    expect(wallPath(bits, { top: 0, left: 1, bottom: 0, right: 2 })).toBe('M1 0h1M1 0v1' + 'M2 0h1M2 0v1M3 0v1');
+    expect(wallPath(bits, { top: 1, left: 0, bottom: 2, right: 0 })).toBe('M0 1h1M0 1v1' + 'M0 2h1M0 2v1M0 3h1');
   });
 });
 
@@ -71,7 +83,9 @@ describe('the board', () => {
     expect([BOARD.cols, BOARD.rows]).toEqual([6, 6]);
     expect(BOARD.bits[0]).toEqual([9, 5, 1, 5, 3, 11]);
     expect(BOARD.bits[5]).toEqual([14, 13, 6, 12, 5, 7]);
-    expect(BOARD.walls).toBe(wallPath(MAZE.walls));
+    expect(BOARD.walls).toBe(wallPath(BOARD.bits, { top: 0, left: 0, bottom: 5, right: 5 }));
+    expect(BOARD.walls.startsWith('M0 0h1M0 0v1M1 0h1')).toBe(true);
+    expect(BOARD.walls.endsWith('M5 6h1M6 5v1')).toBe(true);
     expect(BOARD.blocks).toEqual([[2, 2]]);
     expect(BOARD.start).toEqual([0, 0]);
     expect(BOARD.zones).toEqual([{ key: 1, top: 1, left: 2, bottom: 1, right: 3 }]);
@@ -129,8 +143,26 @@ describe('the board', () => {
 });
 
 describe('tapping a trail', () => {
-  it('starts at the start, holding nothing', () => {
-    expect(newMazePlay(BOARD)).toEqual({ trail: [[0, 0]], got: [], events: [], locked: [] });
+  it('starts at the start, holding nothing, the start its only move\'s end', () => {
+    expect(newMazePlay(BOARD)).toEqual({ trail: [[0, 0]], got: [], events: [], locked: [], runs: [1] });
+    expect(trailEnd(newMazePlay(BOARD))).toEqual([0, 0]);
+    expect(trailEnd(taps([[0, 1], [0, 2]]))).toEqual([0, 2]);
+  });
+
+  it('ends a move at each step a tap takes, and none at a tap that goes nowhere', () => {
+    expect(taps([[0, 1], [0, 2]]).runs).toEqual([1, 2, 3]);
+    expect(taps([[0, 1], [5, 5]]).runs).toEqual([1, 2]);
+    expect(taps([[0, 1], [0, 2], [1, 2]]).runs).toEqual([1, 2, 3]);
+  });
+
+  it('backing out to an earlier cell drops the moves past it, and ends one there', () => {
+    const play = taps([[0, 1], [0, 2], [0, 3], [0, 4]]);
+    expect(tapMaze(play, [0, 2], BOARD).runs).toEqual([1, 2, 3]);
+    expect(tapMaze(play, [0, 0], BOARD).runs).toEqual([1]);
+    const ran = padMaze(newMazePlay(BOARD), 'E', BOARD);
+    expect(ran.runs).toEqual([1, 3]);
+    expect(tapMaze(ran, [0, 1], BOARD).runs).toEqual([1, 2]);
+    expect(tapMaze(ran, [0, 2], BOARD).runs).toEqual([1, 3]);
   });
 
   it('goes on to an open cell beside the trail\'s end, each way', () => {
@@ -140,13 +172,13 @@ describe('tapping a trail', () => {
     expect(taps([[1, 0], [2, 0], [2, 1], [1, 1]]).trail.at(-1)).toEqual([1, 1]);
     expect(taps([[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5]]).trail.at(-1)).toEqual([1, 5]);
     expect(taps([[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5]]).trail.at(-1)).toEqual([0, 5]);
-    expect(tapMaze({ trail: [[1, 5]], got: [], events: [], locked: [] }, [1, 4], BOARD).trail).toEqual([[1, 5], [1, 4]]);
+    expect(tapMaze({ trail: [[1, 5]], got: [], events: [], locked: [], runs: [1] }, [1, 4], BOARD).trail).toEqual([[1, 5], [1, 4]]);
   });
 
   it('does nothing for a cell through a wall, one not beside the trail\'s end, or one corner to corner', () => {
     const one = taps([[0, 1]]);
     [[1, 1], [0, 3], [1, 2], [1, 0], [5, 5]].forEach(cell => {
-      expect(tapMaze(one, cell, BOARD)).toEqual({ trail: one.trail, got: [], events: [], locked: [] });
+      expect(tapMaze(one, cell, BOARD)).toEqual({ trail: one.trail, got: [], events: [], locked: [], runs: [1, 2] });
     });
   });
 
@@ -177,7 +209,7 @@ describe('tapping a trail', () => {
   it('refuses a cell in a zone without its key, naming the key, and lets the player in once they hold it', () => {
     const before = taps([[0, 1], [0, 2]]);
     const refused = tapMaze(before, [1, 2], BOARD);
-    expect(refused).toEqual({ trail: before.trail, got: before.got, events: ['locked'], locked: [1] });
+    expect(refused).toEqual({ trail: before.trail, got: before.got, events: ['locked'], locked: [1], runs: [1, 2, 3] });
     const keyed = taps([[1, 0], [2, 0], [2, 1], [2, 0], [1, 0], [0, 0], [0, 1], [0, 2], [1, 2]]);
     expect(keyed.trail.at(-1)).toEqual([1, 2]);
     expect(keyed.events).toEqual([]);
@@ -186,7 +218,7 @@ describe('tapping a trail', () => {
 
   it('a cell just below a zone, in its columns, is not locked', () => {
     const board = mazeBoard({ ...structuredClone(MAZE), zones: [{ key: 1, top: 0, left: 0, bottom: 0, right: 0 }] });
-    expect(tapMaze(newMazePlay(board), [1, 0], board)).toEqual({ trail: [[0, 0], [1, 0]], got: [], events: [], locked: [] });
+    expect(tapMaze(newMazePlay(board), [1, 0], board)).toEqual({ trail: [[0, 0], [1, 0]], got: [], events: [], locked: [], runs: [1, 2] });
   });
 
   it('a cell in two zones needs both keys', () => {
@@ -292,11 +324,9 @@ describe('what the board shows', () => {
     expect(zoneMarks(taps([[1, 0], [2, 0], [2, 1]]), BOARD)).toEqual([{ key: 1, open: true }]);
   });
 
-  it('draws the solution: the main path, each detour step, and the exits, the right one apart', () => {
+  it('draws the solution: the main path, and the exits, the right one apart', () => {
     const marks = solutionMarks(BOARD);
     expect(marks.main).toBe(trailPoints(BOARD.main));
-    expect(marks.detours.startsWith('M0.5,2.5L1.5,2.5M1.5,2.5L0.5,2.5')).toBe(true);
-    expect(marks.detours.match(/M/g)).toHaveLength(26);
     expect(marks.exits).toHaveLength(6);
     expect(marks.exits.filter(e => e.right)).toEqual([{ cell: [5, 5], right: true }]);
     expect(marks.exits[0]).toEqual({ cell: [3, 4], right: false });
@@ -306,25 +336,341 @@ describe('what the board shows', () => {
     const board = mazeBoard({ ...structuredClone(MAZE), letters: [], exits: [] });
     expect(solutionMarks(board).exits).toEqual([]);
   });
+
+  it('draws each detour step with a cell in the window, and only those', () => {
+    const all = windowDetours(BOARD, { top: 0, left: 0, bottom: 5, right: 5 });
+    expect(all.startsWith('M0.5,2.5L1.5,2.5M1.5,2.5L0.5,2.5')).toBe(true);
+    expect(all.match(/M/g)).toHaveLength(26);
+    expect(windowDetours(BOARD, { top: 2, left: 0, bottom: 2, right: 0 })).toBe('M0.5,2.5L1.5,2.5M1.5,2.5L0.5,2.5');
+    expect(windowDetours(BOARD, { top: 2, left: 1, bottom: 2, right: 1 })).toBe('M0.5,2.5L1.5,2.5M1.5,2.5L0.5,2.5');
+    expect(windowDetours(BOARD, { top: 5, left: 0, bottom: 5, right: 0 })).toBe('');
+  });
 });
 
-describe('how big the maze is', () => {
+describe('the control pad', () => {
+  const play = (trail, runs, got = []) => ({ trail, got, events: [], locked: [], runs });
+
+  it('runs along a corridor and stops at the next junction', () => {
+    const ran = padMaze(newMazePlay(BOARD), 'E', BOARD);
+    expect(ran.trail).toEqual([[0, 0], [0, 1], [0, 2]]);
+    expect(ran.runs).toEqual([1, 3]);
+    expect(ran.events).toEqual([]);
+    expect(padMaze(newMazePlay(BOARD), 'S', BOARD).trail).toEqual([[0, 0], [1, 0], [2, 0]]);
+  });
+
+  it('follows the corridor round its bends', () => {
+    const ran = padMaze(play([[0, 0], [0, 1], [0, 2], [0, 3]], [1, 3, 4], ['letter-C']), 'E', BOARD);
+    expect(ran.trail.slice(3)).toEqual([[0, 3], [0, 4], [1, 4]]);
+    expect(ran.runs).toEqual([1, 3, 4, 6]);
+  });
+
+  it('stops at a dead end', () => {
+    const ran = padMaze(play([[2, 0], [2, 1]], [1, 2]), 'N', BOARD);
+    expect(ran.trail).toEqual([[2, 0], [2, 1], [1, 1]]);
+  });
+
+  it('stops on anything on the checklist, and picks it up', () => {
+    const ran = padMaze(play([[0, 0], [0, 1], [0, 2]], [1, 3]), 'E', BOARD);
+    expect(ran.trail.at(-1)).toEqual([0, 3]);
+    expect(ran.got).toEqual(['letter-C']);
+    const keyed = padMaze(play([[0, 0], [1, 0], [2, 0]], [1, 3]), 'E', BOARD);
+    expect(keyed.trail.at(-1)).toEqual([2, 1]);
+    expect(keyed.got).toEqual(['key-1']);
+  });
+
+  it('stops on a stop already picked up, too: it\'s still on the checklist', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), collectibles: [{ row: 0, col: 1 }, { row: 0, col: 5 }] });
+    const ran = padMaze({ ...newMazePlay(board), got: ['collectible-0'] }, 'E', board);
+    expect(ran.trail).toEqual([[0, 0], [0, 1]]);
+  });
+
+  it('a run that ticks the last line completes the maze', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), guides: [], collectibles: [], keys: [], zones: [], letters: [], exits: [] });
+    const ran = padMaze(play([[5, 3]], [1]), 'E', board);
+    expect(ran.trail).toEqual([[5, 3], [5, 4], [5, 5]]);
+    expect(ran.events).toEqual(['complete']);
+    expect(mazeFinished(ran, board)).toBe(true);
+  });
+
+  it('a zone whose key isn\'t held refuses the first step, naming the key; the trail doesn\'t move', () => {
+    const at = play([[0, 0], [0, 1], [0, 2]], [1, 3]);
+    expect(padMaze(at, 'S', BOARD)).toEqual({ trail: at.trail, got: [], events: ['locked'], locked: [1], runs: [1, 3] });
+  });
+
+  it('a run into a zone whose key isn\'t held stops at its edge', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), zones: [{ key: 1, top: 0, left: 2, bottom: 0, right: 2 }] });
+    const ran = padMaze(newMazePlay(board), 'E', board);
+    expect(ran).toEqual({ trail: [[0, 0], [0, 1]], got: [], events: ['locked'], locked: [1], runs: [1, 2] });
+  });
+
+  it('a way with a wall does nothing', () => {
+    const start = newMazePlay(BOARD);
+    expect(padMaze(start, 'N', BOARD)).toEqual(start);
+    expect(padMaze(start, 'W', BOARD)).toEqual(start);
+    const refused = { ...play([[0, 0], [0, 1], [0, 2]], [1, 3]), events: ['locked'], locked: [1] };
+    expect(padMaze(refused, 'N', BOARD)).toEqual(play([[0, 0], [0, 1], [0, 2]], [1, 3]));
+  });
+
+  it('Back goes back one move, to where the move before ended, keeping every tick', () => {
+    const one = padMaze(newMazePlay(BOARD), 'E', BOARD);
+    const two = padMaze(one, 'E', BOARD);
+    const back = padMaze(two, 'back', BOARD);
+    expect(back).toEqual({ trail: one.trail, got: ['letter-C'], events: [], locked: [], runs: [1, 3] });
+    expect(padMaze(back, 'back', BOARD)).toEqual({ trail: [[0, 0]], got: ['letter-C'], events: [], locked: [], runs: [1] });
+  });
+
+  it('pressing the way the trail came in by is Back too', () => {
+    const two = padMaze(padMaze(newMazePlay(BOARD), 'E', BOARD), 'E', BOARD);
+    expect(padMaze(two, 'W', BOARD)).toEqual(padMaze(two, 'back', BOARD));
+    const down = padMaze(newMazePlay(BOARD), 'S', BOARD);
+    expect(padMaze(down, 'N', BOARD).trail).toEqual([[0, 0]]);
+  });
+
+  it('Back at the start, before any move, does nothing', () => {
+    const start = { ...newMazePlay(BOARD), events: ['locked'], locked: [1] };
+    expect(padMaze(start, 'back', BOARD)).toEqual(newMazePlay(BOARD));
+  });
+
+  it('Back after taps goes back a step a tap', () => {
+    const tapped = taps([[0, 1], [0, 2]]);
+    expect(padMaze(tapped, 'back', BOARD).trail).toEqual([[0, 0], [0, 1]]);
+  });
+
+  it('greys each way with a wall, and Back until there\'s a move to go back on', () => {
+    expect(padState(newMazePlay(BOARD), BOARD)).toEqual({ back: false, N: false, E: true, S: true, W: false });
+    const ran = padMaze(newMazePlay(BOARD), 'E', BOARD);
+    expect(padState(ran, BOARD)).toEqual({ back: true, N: false, E: true, S: true, W: true });
+    expect(padState(play([[1, 4]], [1]), BOARD)).toEqual({ back: false, N: true, E: true, S: true, W: false });
+  });
+
+  it('the arrow keys and Backspace press the pad; any other key, or one with a modifier, nothing', () => {
+    const key = (k, held = {}) => padKey({ key: k, altKey: false, ctrlKey: false, metaKey: false, shiftKey: false, ...held });
+    expect(['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft', 'Backspace'].map(k => key(k))).toEqual(['N', 'E', 'S', 'W', 'back']);
+    expect(key('a')).toBe('');
+    expect(key('Enter')).toBe('');
+    ['altKey', 'ctrlKey', 'metaKey', 'shiftKey'].forEach(held => expect(key('ArrowUp', { [held]: true })).toBe(''));
+  });
+
+  it('draws a move\'s new steps on from where the trail ended, 40ms a step up to 300ms; a move back draws nothing', () => {
+    const start = newMazePlay(BOARD), ran = padMaze(start, 'E', BOARD);
+    expect(trailDraw(start, ran)).toEqual({ total: 2, from: 2, ms: 80 });
+    expect(trailDraw(ran, start)).toEqual({ total: 0, from: 0, ms: 0 });
+    expect(trailDraw(start, start)).toEqual({ total: 0, from: 0, ms: 0 });
+    const long = { trail: Array.from({ length: 12 }, (_, i) => [0, i]) };
+    expect(trailDraw({ trail: [[0, 0]] }, long)).toEqual({ total: 11, from: 11, ms: 300 });
+    expect(trailDraw({ trail: long.trail.slice(0, 5) }, long)).toEqual({ total: 11, from: 7, ms: 280 });
+  });
+
+  it('calls a refused step\'s keys at the top-right corner of where the player stands', () => {
+    expect(keyCall({ trail: [[0, 0], [0, 2]], locked: [1] })).toEqual({ x: 2.8, y: 0.28, text: '1' });
+    expect(keyCall({ trail: [[4, 1]], locked: [1, 2] })).toEqual({ x: 1.8, y: 4.28, text: '1 2' });
+  });
+});
+
+describe('the frame', () => {
   const room = { viewHeight: 900, chromeHeight: 100, width: 1000, chromeWidth: 40, rows: 40, cols: 32 };
 
-  it('fits the window\'s height when that is the tighter', () => {
-    expect(mazeCellSize(room)).toBe(20);
-    expect(mazeCellSize({ ...room, viewHeight: 939 })).toBe(20);
-    expect(mazeCellSize({ ...room, viewHeight: 940 })).toBe(21);
+  it('fits the window\'s height when that is the tighter, the frame the whole maze at that cell', () => {
+    expect(mazeFrame(room)).toEqual({ fit: 20, width: 640, height: 800 });
+    expect(mazeFrame({ ...room, viewHeight: 939 }).fit).toBe(20);
+    expect(mazeFrame({ ...room, viewHeight: 940 }).fit).toBe(21);
   });
 
   it('fits the page\'s width when that is the tighter', () => {
-    expect(mazeCellSize({ ...room, width: 400 })).toBe(11);
-    expect(mazeCellSize({ ...room, width: 40 + 32 * 12 })).toBe(12);
-    expect(mazeCellSize({ ...room, width: 39 + 32 * 12 })).toBe(11);
+    expect(mazeFrame({ ...room, width: 40 + 32 * 12 }).fit).toBe(12);
+    expect(mazeFrame({ ...room, width: 39 + 32 * 12 }).fit).toBe(11);
   });
 
-  it('never draws a cell under 10px', () => {
-    expect(mazeCellSize({ ...room, viewHeight: 300 })).toBe(10);
-    expect(mazeCellSize({ ...room, viewHeight: 100 + 40 * 11 })).toBe(11);
+  it('a cell is a whole pixel down to 10px; under that, every bit of room counts', () => {
+    expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 10.5 }).fit).toBe(10);
+    expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 10 }).fit).toBe(10);
+    expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 9.5 })).toEqual({ fit: 9.5, width: 32 * 9.5, height: 40 * 9.5 });
+    const hundred = { viewHeight: 950, chromeHeight: 100, width: 1000, chromeWidth: 40, rows: 100, cols: 100 };
+    expect(mazeFrame(hundred)).toEqual({ fit: 8.5, width: 850, height: 850 });
+  });
+});
+
+describe('the view', () => {
+  const big = () => ({ rows: 100, cols: 100, start: [50, 50] });
+  const frame = { fit: 8, width: 800, height: 800 };
+
+  it('a maze opens whole when its cells can be tapped so', () => {
+    expect(openView({ fit: 20, width: 640, height: 800 }, { rows: 40, cols: 32, start: [20, 16] })).toEqual({ cell: 20, x: 0, y: 0 });
+    expect(openView({ fit: 10, width: 1000, height: 1000 }, big())).toEqual({ cell: 10, x: 0, y: 0 });
+  });
+
+  it('a maze too big for that opens zoomed in on the start, cells 20px across', () => {
+    expect(openView(frame, big())).toEqual({ cell: 20, x: 30.5, y: 30.5 });
+    expect(openView({ fit: 9.9, width: 990, height: 990 }, big()).cell).toBe(20);
+  });
+
+  it('keeps a cell in the frame\'s centre, as near as the maze\'s edges let it', () => {
+    const view = { cell: 20, x: 0, y: 0 };
+    expect(centreOn(view, [50, 40], frame, big())).toEqual({ cell: 20, x: 20.5, y: 30.5 });
+    expect(centreOn(view, [0, 0], frame, big())).toEqual({ cell: 20, x: 0, y: 0 });
+    expect(centreOn(view, [99, 99], frame, big())).toEqual({ cell: 20, x: 60, y: 60 });
+    expect(centreOn(view, [99, 0], { fit: 8, width: 800, height: 400 }, big())).toEqual({ cell: 20, x: 0, y: 80 });
+    expect(centreOn({ cell: 8, x: 3, y: 3 }, [99, 99], frame, big())).toEqual({ cell: 8, x: 0, y: 0 });
+  });
+
+  it('a resize keeps a player looking at the whole maze on the whole of it', () => {
+    expect(refitView({ cell: 8, x: 0, y: 0 }, frame, { fit: 9, width: 900, height: 900 }, big(), [50, 50])).toEqual({ cell: 9, x: 0, y: 0 });
+  });
+
+  it('a resize keeps any other zoom as it was, as far as the new frame lets it, centred on the player', () => {
+    expect(refitView({ cell: 20, x: 0, y: 0 }, frame, { fit: 9, width: 900, height: 900 }, big(), [50, 50])).toEqual({ cell: 20, x: 28, y: 28 });
+    expect(refitView({ cell: 20, x: 0, y: 0 }, frame, { fit: 30, width: 3000, height: 3000 }, big(), [50, 50])).toEqual({ cell: 30, x: 0, y: 0 });
+    expect(refitView({ cell: 48, x: 0, y: 0 }, frame, { fit: 9, width: 900, height: 900 }, big(), [0, 0]).cell).toBe(48);
+  });
+
+  it('zooms about the player, who stays where they are on screen', () => {
+    const view = { cell: 20, x: 30, y: 30 };
+    const zoomed = zoomView(view, 1.25, frame, big(), [50, 40]);
+    expect(zoomed.cell).toBe(25);
+    expect(zoomed.x).toBeCloseTo(32.1);
+    expect(zoomed.y).toBeCloseTo(34.1);
+    expect((40.5 - zoomed.x) * 25).toBeCloseTo((40.5 - 30) * 20);
+    const corner = zoomView({ cell: 20, x: 0, y: 0 }, 1.25, frame, big(), [0, 0]);
+    expect(corner.x).toBeCloseTo(0.1);
+    expect(corner.y).toBeCloseTo(0.1);
+    expect(zoomView(view, 1.25, frame, big(), [69, 69]).x).toBeCloseTo(69.5 - 39.5 * 0.8);
+  });
+
+  it('zooms about the middle of what\'s on view once the player is off it, from the whole maze to cells 48px across', () => {
+    const view = { cell: 20, x: 30, y: 30 };
+    expect(zoomView(view, 1.25, frame, big(), [0, 0])).toEqual({ cell: 25, x: 34, y: 34 });
+    expect(zoomView(view, 1.25, frame, big(), [70, 50])).toEqual({ cell: 25, x: 34, y: 34 });
+    expect(zoomView(view, 1.25, frame, big(), [50, 29])).toEqual({ cell: 25, x: 34, y: 34 });
+    const most = zoomView(view, 10, frame, big(), [0, 0]);
+    expect(most.cell).toBe(48);
+    expect(most.x).toBeCloseTo(50 - 800 / 48 / 2);
+    expect(zoomView(view, 0.1, frame, big(), [0, 0])).toEqual({ cell: 8, x: 0, y: 0 });
+    expect(zoomView({ cell: 20, x: 60, y: 0 }, 0.8, frame, big(), [0, 0])).toEqual({ cell: 16, x: 50, y: 0 });
+    expect(zoomView({ cell: 20, x: 40, y: 40 }, 0.8, frame, big(), [0, 0])).toEqual({ cell: 16, x: 35, y: 35 });
+  });
+
+  it('a maze whose whole fits bigger than 48px a cell doesn\'t zoom', () => {
+    const small = { fit: 60, width: 360, height: 360 };
+    expect(zoomView({ cell: 60, x: 0, y: 0 }, 1.25, small, { rows: 6, cols: 6 }, [0, 0])).toEqual({ cell: 60, x: 0, y: 0 });
+    expect(zoomState({ cell: 60, x: 0, y: 0 }, small)).toEqual({ zoomIn: false, zoomOut: false, zoomable: false });
+  });
+
+  it('says what the zoom can do: in up to 48px, out down to the whole maze', () => {
+    expect(zoomState({ cell: 20 }, frame)).toEqual({ zoomIn: true, zoomOut: true, zoomable: true });
+    expect(zoomState({ cell: 48 }, frame)).toEqual({ zoomIn: false, zoomOut: true, zoomable: true });
+    expect(zoomState({ cell: 8 }, frame)).toEqual({ zoomIn: true, zoomOut: false, zoomable: true });
+    expect(zoomState({ cell: 48 }, { fit: 48 })).toEqual({ zoomIn: false, zoomOut: false, zoomable: false });
+  });
+
+  it('+ steps in a quarter, − back out', () => {
+    expect(zoomFactor('in')).toBe(1.25);
+    expect(zoomFactor('out')).toBe(0.8);
+  });
+
+  it('a pinch zooms by how far the fingers moved apart', () => {
+    expect(pinchFactor([{ x: 0, y: 0 }, { x: 3, y: 4 }], [{ x: 0, y: 0 }, { x: 6, y: 8 }])).toBe(2);
+    expect(pinchFactor([{ x: 10, y: 10 }, { x: 10, y: 20 }], [{ x: 10, y: 10 }, { x: 15, y: 10 }])).toBe(0.5);
+    expect(pinchFactor([{ x: 5, y: 5 }, { x: 5, y: 5 }], [{ x: 0, y: 0 }, { x: 0, y: 3 }])).toBe(3);
+  });
+
+  it('a wheel turned up zooms in, down out', () => {
+    expect(wheelFactor(0)).toBe(1);
+    expect(wheelFactor(-100)).toBeCloseTo(Math.E);
+    expect(wheelFactor(100)).toBeCloseTo(1 / Math.E);
+  });
+
+  it('moves the maze behind the frame so the view\'s top-left sits at the frame\'s', () => {
+    expect(worldTransform({ cell: 20, x: 1.5, y: 2 })).toBe('translate(-30px, -40px)');
+  });
+});
+
+describe('drawing only what\'s on screen', () => {
+  const big = () => ({ rows: 100, cols: 100 });
+  const frame = { fit: 8, width: 800, height: 800 };
+
+  it('draws the cells on view and 8 more each way', () => {
+    expect(viewWindow({ cell: 20, x: 30.5, y: 10 }, frame, big())).toEqual({ top: 2, left: 22, bottom: 57, right: 78 });
+  });
+
+  it('never past the maze\'s edges', () => {
+    expect(viewWindow({ cell: 20, x: 0, y: 0 }, frame, big())).toEqual({ top: 0, left: 0, bottom: 47, right: 47 });
+    expect(viewWindow({ cell: 20, x: 60, y: 60 }, frame, big())).toEqual({ top: 52, left: 52, bottom: 99, right: 99 });
+    expect(viewWindow({ cell: 8, x: 0, y: 0 }, frame, big())).toEqual({ top: 0, left: 0, bottom: 99, right: 99 });
+  });
+
+  it('a window holds the view until a cell on view falls outside it, on any side', () => {
+    const win = viewWindow({ cell: 20, x: 30, y: 30 }, frame, big());
+    expect(win).toEqual({ top: 22, left: 22, bottom: 77, right: 77 });
+    const at = (x, y) => windowHolds(win, { cell: 20, x, y }, frame, big());
+    expect(at(30, 30)).toBe(true);
+    expect([at(22, 30), at(38, 30), at(30, 22), at(30, 38)]).toEqual([true, true, true, true]);
+    expect([at(21.9, 30), at(38.1, 30), at(30, 21.9), at(30, 38.1)]).toEqual([false, false, false, false]);
+    expect(windowHolds({ top: 0, left: 0, bottom: -1, right: -1 }, { cell: 20, x: 0, y: 0 }, frame, big())).toBe(false);
+  });
+
+  it('lists the window\'s cells row by row, the start marked, each with the stop on it', () => {
+    const cells = windowCells(BOARD, { top: 0, left: 4, bottom: 1, right: 5 });
+    expect(cells.map(c => c.cell)).toEqual([[0, 4], [0, 5], [1, 4], [1, 5]]);
+    expect(cells.map(c => c.start)).toEqual([false, false, false, false]);
+    expect(cells.map(c => c.stops.map(s => s.id))).toEqual([[], ['collectible-1'], [], ['exit-ACB']]);
+    const corner = windowCells(BOARD, { top: 0, left: 0, bottom: 0, right: 1 });
+    expect(corner.map(c => c.start)).toEqual([true, false]);
+    expect(windowCells(BOARD, { top: 0, left: 0, bottom: 5, right: 5 })).toHaveLength(36);
+  });
+
+  it('keeps the blocks and zones over any of the window\'s cells', () => {
+    const marks = win => windowMarks(BOARD, win);
+    expect(marks({ top: 0, left: 0, bottom: 5, right: 5 })).toEqual({ blocks: [[2, 2]], zones: BOARD.zones });
+    expect(marks({ top: 3, left: 3, bottom: 5, right: 5 }).blocks).toEqual([[2, 2]]);
+    expect(marks({ top: 0, left: 0, bottom: 2, right: 2 }).blocks).toEqual([[2, 2]]);
+    expect(marks({ top: 4, left: 0, bottom: 5, right: 5 }).blocks).toEqual([]);
+    expect(marks({ top: 0, left: 4, bottom: 5, right: 5 }).blocks).toEqual([]);
+    expect(marks({ top: 0, left: 0, bottom: 1, right: 5 }).blocks).toEqual([]);
+    expect(marks({ top: 0, left: 0, bottom: 5, right: 1 }).blocks).toEqual([]);
+    expect(marks({ top: 1, left: 3, bottom: 1, right: 3 }).zones).toEqual(BOARD.zones);
+    expect(marks({ top: 2, left: 0, bottom: 5, right: 5 }).zones).toEqual([]);
+    expect(marks({ top: 0, left: 0, bottom: 0, right: 5 }).zones).toEqual([]);
+    expect(marks({ top: 0, left: 4, bottom: 5, right: 5 }).zones).toEqual([]);
+    expect(marks({ top: 0, left: 0, bottom: 5, right: 1 }).zones).toEqual([]);
+  });
+});
+
+describe('the little map', () => {
+  it('fits the whole maze in its size, by its longer side', () => {
+    const tall = minimapSize({ rows: 40, cols: 32 }, 112);
+    expect(tall.scale).toBe(2.8);
+    expect(tall.width).toBeCloseTo(89.6);
+    expect(tall.height).toBe(112);
+    expect(minimapSize({ rows: 50, cols: 100 }, 100)).toEqual({ scale: 1, width: 100, height: 50 });
+  });
+
+  it('draws its lines so many px wide however small a cell is on it, a stop at least half a cell', () => {
+    expect(minimapPens(2)).toEqual({ wall: 0.3, trail: 1, box: 0.75, dot: 1.25 });
+    expect(minimapPens(10).dot).toBe(0.5);
+  });
+
+  it('boxes what\'s on view', () => {
+    expect(minimapBox({ cell: 20, x: 3, y: 4 }, { width: 800, height: 400 })).toEqual({ x: 3, y: 4, width: 40, height: 20 });
+  });
+
+  it('shows every collectible, key, letter and exit — not the guides — those picked up faded', () => {
+    const stops = minimapStops(newMazePlay(BOARD), BOARD);
+    expect(stops).toHaveLength(12);
+    expect(stops[0]).toEqual({ x: 3.5, y: 1.5, kind: 'collectible', got: false });
+    expect(stops.map(s => s.kind)).not.toContain('guide');
+    expect(minimapStops(taps([[0, 1], [0, 2], [0, 3]]), BOARD).find(s => s.kind === 'letter' && s.x === 3.5)).toEqual({ x: 3.5, y: 0.5, kind: 'letter', got: true });
+    const ended = mazeBoard({ ...structuredClone(MAZE), letters: [], exits: [] });
+    expect(minimapStops(newMazePlay(ended), ended).at(-1)).toEqual({ x: 5.5, y: 5.5, kind: 'end', got: false });
+  });
+
+  it('draws the trail through each cell\'s centre', () => {
+    expect(minimapTrail([[0, 0], [0, 1], [1, 1]])).toBe('M0.5,0.5L1.5,0.5L1.5,1.5');
+    expect(minimapTrail([[2, 3]])).toBe('M3.5,2.5');
+  });
+
+  it('dragging the box moves the view with it, on the maze', () => {
+    const frame = { fit: 8, width: 800, height: 800 }, big = { rows: 100, cols: 100 };
+    expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 0, y: 0 }, { x: 5, y: -2.5 }, 2.5, frame, big)).toEqual({ cell: 20, x: 12, y: 9 });
+    expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 50, y: 50 }, { x: 0, y: 500 }, 1, frame, big)).toEqual({ cell: 20, x: 0, y: 60 });
   });
 });
