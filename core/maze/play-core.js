@@ -30,7 +30,7 @@ function sameCell(a, b) {
   return a[0] === b[0] && a[1] === b[1];
 }
 
-// The walls of the cells in a window — { top, left, bottom, right }, every side counted in — as
+// The walls of the cells in a patch — { top, left, bottom, right }, every side counted in — as
 // one path, counted in cells: each cell draws its north and west walls, and the bottom row and
 // right column the maze's edge too, so the whole maze draws every wall once. bits is each cell's
 // walls, [row][col].
@@ -50,7 +50,7 @@ export function wallPath(bits, win) {
   }).join('');
 }
 
-// The window holding every cell of a maze rows by cols.
+// The patch holding every cell of a maze rows by cols.
 function wholeMaze(rows, cols) {
   return { top: 0, left: 0, bottom: rows - 1, right: cols - 1 };
 }
@@ -355,7 +355,7 @@ export function solutionMarks(board) {
   };
 }
 
-// The solution side's detours in green, as a path: each step of them with a cell in the window.
+// The solution side's detours in green, as a path: each step of them with a cell in the patch.
 export function windowDetours(board, win) {
   return board.detours.filter(function (step) { return inWindow(win, step[0]) || inWindow(win, step[1]); })
     .map(function (step) { return 'M' + centre(step[0]) + 'L' + centre(step[1]); }).join('');
@@ -409,7 +409,7 @@ export function openView(frame, board) {
   return centreOn({ cell: cell, x: 0, y: 0 }, board.start, frame, board);
 }
 
-// The window resized, from the frame before to this one: a player looking at the whole maze still
+// The screen resized, from the frame before to this one: a player looking at the whole maze still
 // is; any other zoom stays as it was, as far as this frame's zoom runs. The view centres on here.
 export function refitView(view, before, frame, board, here) {
   var cell = { true: frame.fit, false: zoomedTo(view.cell, frame) }[view.cell === before.fit];
@@ -456,8 +456,8 @@ export function worldTransform(view) {
 }
 
 // ---- Drawing only what's on screen ----
-// The page draws only the cells in a window round the view — those on screen and 8 more each way,
-// so a move or a drag draws nothing new until it nears the window's edge — however big the maze.
+// The page draws only the cells in a patch round the view — those on screen and 8 more each way,
+// so a move or a drag draws nothing new until it nears the patch's edge — however big the maze.
 
 function inWindow(win, cell) {
   return cell[0] >= win.top && cell[0] <= win.bottom && cell[1] >= win.left && cell[1] <= win.right;
@@ -476,13 +476,13 @@ export function viewWindow(view, frame, board) {
   return cellsRound(view, frame, board, 8);
 }
 
-// Whether a window already drawn still holds every cell the view shows.
+// Whether a patch already drawn still holds every cell the view shows.
 export function windowHolds(win, view, frame, board) {
   var shows = cellsRound(view, frame, board, 0);
   return shows.top >= win.top && shows.left >= win.left && shows.bottom <= win.bottom && shows.right <= win.right;
 }
 
-// The window's cells, row by row: each its cell, whether it's the start, and the stop standing on
+// The patch's cells, row by row: each its cell, whether it's the start, and the stop standing on
 // it, if any — [] or [stop].
 export function windowCells(board, win) {
   var stops = new Map(board.stops.map(function (s) { return [s.cell.join(','), s]; }));
@@ -498,7 +498,7 @@ function overlaps(win, top, left, bottom, right) {
   return top <= win.bottom && bottom >= win.top && left <= win.right && right >= win.left;
 }
 
-// The blocks and zones over any of the window's cells.
+// The blocks and zones over any of the patch's cells.
 export function windowMarks(board, win) {
   return {
     blocks: board.blocks.filter(function (b) { return overlaps(win, b[0], b[1], b[0] + 1, b[1] + 1); }),
