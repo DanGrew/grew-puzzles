@@ -25,21 +25,20 @@
 .controls button, .controls select { font: 600 14px var(--font-body); height: 36px; padding: 0 14px; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
 .controls .filter-button[aria-expanded="true"] { background: var(--band); color: var(--band-fg); }
-/* The filter popup, over the tiles so they never move: a difficulty's name, underlined in its
-   colour, on the left; its types on the right, wrapping there; a pick fills in the row's colour. */
+/* The filter popup, over the tiles so they never move: each row's name on the left — Difficulty,
+   Type — and its picks on the right, wrapping there. A difficulty is underlined in its colour and
+   fills with it once picked; a type is plain, and fills in the band's green. */
 .filter-popup { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 10;
   width: max-content; max-width: min(560px, calc(100vw - 32px)); box-sizing: border-box; padding: 18px; background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
 .filter-rows { display: grid; grid-template-columns: max-content 1fr; gap: 12px 14px; align-items: start; }
 .filter-rows .types, .filter-rows .choices { display: flex; flex-wrap: wrap; gap: 8px; }
-/* Signed in, the Finished row comes last: its name, plain, and its two choices, a pick filled in the
-   band's own green — it's about the player, not a difficulty. */
+/* Signed in, the Finished row comes last, drawn as the Type row — it's about the player, not a
+   difficulty. */
 .filter-rows .row-name { display: flex; align-items: center; height: 36px; padding: 0 8px; font: 600 14px var(--font-body); }
-.controls .choice[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
-.controls .level { border-color: transparent; border-radius: 8px; padding: 0 8px;
-  text-decoration: underline 4px var(--tone); text-underline-offset: 7px; }
-.controls .level[aria-pressed="true"] { background: var(--tone); border-color: var(--line); }
-.controls .chip[aria-pressed="true"] { background: var(--tone); }
+.controls .choice[aria-pressed="true"], .controls .chip.types[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
+.controls .chip.levels { text-decoration: underline 4px var(--tone); text-underline-offset: 7px; }
+.controls .chip.levels[aria-pressed="true"] { background: var(--tone); }
 .filter-popup .clear { display: block; margin: 16px auto 0; border-style: dashed; }
 .controls [hidden], .filter-popup .clear[hidden] { display: none; }
 .sort { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }

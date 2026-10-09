@@ -57,8 +57,8 @@
 <script type="module" src="../ui/sign-in-ui.js"></script>
 <script type="module">
 import {
-  filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
-  toggleRow, filtersLabel, clearFilters, nothingPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
+  filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, togglePick,
+  filtersLabel, clearFilters, nothingPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
   columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn, noFilters,
 } from '../core/browse-core.js';
 import { placeName } from '../core/kind-core.js';
@@ -83,7 +83,7 @@ const railTiles = document.getElementById('rail-tiles');
 const railPrev = document.getElementById('rail-prev');
 const railNext = document.getElementById('rail-next');
 let items = [];
-// The types the place's filters offer — none in Collections.
+// The types the place's filters offer — none in Collections, which has no difficulties either.
 let types = [];
 // The owner's characters: each tile wears its puzzle's, shown only while Themed is on.
 let characters = [];
@@ -180,16 +180,20 @@ finishedCells[1].append(
   filter('choice', 'Not finished', s => finishedPressed(s, 'no'), s => toggleFinished(s, 'no')),
 );
 
-// A row is two cells: the difficulty's name and a chip per type, each pressed while every type it
-// stands for is picked.
+// A pick in a row: a difficulty wears its colour; a type is plain.
+function chip(pick) {
+  const b = filter(`chip ${pick.key}`, pick.value, s => picked(s, pick), s => togglePick(s, pick));
+  b.setAttribute('data-tone', pick.tone);
+  return b;
+}
+
+// A row is two cells: its name — Difficulty or Type — and its picks.
 function row(spec) {
   const name = document.createElement('div');
-  name.dataset.tone = spec.tone;
-  name.append(filter('level', spec.name, s => picked(s, spec.types), s => toggleRow(s, spec.types)));
+  name.append(part('row-name', spec.name));
   const chips = document.createElement('div');
   chips.className = 'types';
-  chips.dataset.tone = spec.tone;
-  chips.append(...spec.types.map(type => filter('chip', type, s => picked(s, [type]), s => toggleType(s, type))));
+  chips.append(...spec.picks.map(chip));
   return [name, chips];
 }
 
@@ -284,10 +288,10 @@ function load([index, mazes, published, owned]) {
   dressScene(randomCharacter(characters, Math.random));
   items = browseItems(puzzles, published.collections);
   state = browseState(location.search, options);
-  types = options[state.kind];
+  types = options[state.kind].types;
   document.getElementById('browse-title').textContent = placeName(state.kind);
   filterButton.hidden = noFilters(types, false);
-  rows.replaceChildren(...filterRows(state.kind, types).flatMap(row), ...finishedCells);
+  rows.replaceChildren(...filterRows(options[state.kind]).flatMap(row), ...finishedCells);
   FIRST_DRAWS[filtersByProgress(state)]();
   wireDone(items, tick);
 }
