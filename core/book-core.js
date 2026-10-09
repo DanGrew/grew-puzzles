@@ -1,7 +1,19 @@
 // The collection book's rules: what its title page says, and which puzzle each page after it
-// prints, in number order, headed with its number. The pages themselves are the play page's
+// prints, in number order, headed with its number — the number its character goes by, as on the
+// collection page. The pages themselves are the play page's
 // printout (ui/wordsearch/play-ui.js drawSheet) — nothing here says how a puzzle looks. Nothing
 // the book adds names a hidden ID or gives an answer: the answers stay on the site.
+// The print styles a book or a puzzle's page prints in, as the side bar lists them: Colour, Black
+// and white (mono), Plain.
+export const PRINT_STYLES = ['colour', 'mono', 'plain'];
+
+// The style a book's address asks for — Print book's choice on the collection page; Plain when
+// it names none the site has.
+export function printStyleOf(search) {
+  const style = new URLSearchParams(search).get('print');
+  return PRINT_STYLES.includes(style) ? style : 'plain';
+}
+
 export function bookView(collections, slug) {
   const collection = collections.find(c => c.slug === slug);
   const missing = { found: false, name: 'Collection not found', description: '', address: '', answers: '', back: '', pages: [] };
@@ -29,7 +41,7 @@ function prints(id) {
 function book(collection) {
   const pages = collection.puzzles.filter(p => prints(p.id))
     .sort((a, b) => a.number - b.number)
-    .map(({ id, number }) => ({ heading: `Puzzle ${number}`, search: `?id=${id}` }));
+    .map(({ id, number }) => ({ heading: `Puzzle ${number}`, number, search: `?id=${id}` }));
   return {
     found: true,
     name: collection.name,

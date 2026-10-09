@@ -1,10 +1,12 @@
-/* Themed — the owner's characters and their backgrounds, on screen only (printing themed is
-   TASK-46's). Every rule waits on :root[data-look="themed"], so Plain is the site exactly as it was,
-   and an image here loads only while Themed is on. A page's parts carry their character as CSS
-   images, set by ui/theme-ui.js: --scene, the page's background, and --figure, a character. The
-   placements are the owner's, from the product's docs/MOCKUP-THEMED.html (the play page, placed by
-   ui/wordsearch/play-ui.js) and MOCKUP-THEMED-PAGES.html (the landing tiles and the text pages). */
-.theme-figure, .name-tag { display: none; }
+/* Themed — the owner's characters and their backgrounds. On screen, every rule waits on
+   :root[data-look="themed"], so Plain is the site exactly as it was, and an image here loads only
+   while Themed is on. On paper, every rule waits on the print choice instead (the last block): Plain
+   prints today's sheet, whatever the look. A page's parts carry their character as CSS images, set
+   by ui/theme-ui.js: --scene, the page's background, and --figure, a character. The placements are
+   the owner's, from the product's docs/MOCKUP-THEMED.html (the play page, placed by
+   ui/wordsearch/play-ui.js), MOCKUP-THEMED-PAGES.html (the landing tiles and the text pages) and
+   MOCKUP-THEMED-PRINT.html (the printout and the book). */
+.theme-figure, .name-tag, .print-figure { display: none; }
 
 @media screen {
   /* The background fills the window behind everything, whatever the page's length. A character
@@ -85,4 +87,49 @@
 @media screen and (max-width: 1379px) {
   :root[data-look="themed"] .page-card .theme-figure { left: 300px; top: -70px; height: 120px; z-index: 2; }
   :root[data-look="themed"] .page-card .name-tag { left: 300px; top: calc(-70px + .52 * 120px); z-index: 3; }
+}
+
+/* Printed Colour or Black and white — the player's print choice (components/site-bar.js), never the
+   look: the puzzle's background, faint, to the paper's edge, and its character peering from behind a
+   card, no name label. The page sets no margin, so the background reaches the edge, and each sheet
+   keeps its own half inch inside, as the book does (styles/book.css) — lower by --print-rise where a
+   character's head needs the room. Whatever reaches past the paper's side is clipped there: left to
+   spill, it would have the browser shrink every page to fit it, the background falling short of the
+   paper's edge. The play page's background is fixed, so it comes out on every sheet; each book page
+   wears its own puzzle's, from the paper's corner, the book's 8.5 × 11 in. ui/wordsearch/play-ui.js
+   picks each sheet's spot and sets --paper-scene. Black and white is Colour in greys. The page with
+   no margin is styles/play.css's `themed`. */
+@media print {
+  :root:is([data-print="colour"], [data-print="mono"]) body { page: themed; }
+  :root:is([data-print="colour"], [data-print="mono"]) .wrap { overflow-x: clip; }
+  :root:is([data-print="colour"], [data-print="mono"]) .play-page .wrap { padding: calc(.5in + var(--print-rise, 0px)) .5in 0; }
+  :root:is([data-print="colour"], [data-print="mono"]) .grid-sheet,
+  :root:is([data-print="colour"], [data-print="mono"]) .sheets .sheet { padding-top: calc(.5in + var(--print-rise, 0px)); }
+
+  :root:is([data-print="colour"], [data-print="mono"]) .play-page::before,
+  :root:is([data-print="colour"], [data-print="mono"]) .sheets :is(.sheet, .grid-sheet)::before {
+    content: ''; position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .28;
+    background: var(--paper-scene, none) center 70% / cover no-repeat; }
+  :root:is([data-print="colour"], [data-print="mono"]) .sheets :is(.sheet, .grid-sheet)::before {
+    position: absolute; inset: auto; top: 0; left: -.5in; width: 8.5in; height: 11in; }
+
+  /* The card a character peers from holds it: behind the card and the title, centred on its spot,
+     turned. Paper has no flip, so the stage drops the screen's 3D, which would lift the card and
+     its character into a layer over the title. */
+  :root:is([data-print="colour"], [data-print="mono"]) :is(.card, aside, .print-card) { position: relative; }
+  :root:is([data-print="colour"], [data-print="mono"]) .stage { perspective: none; }
+  :root:is([data-print="colour"], [data-print="mono"]) .print-figure[data-spot] { display: block; position: absolute; z-index: -1;
+    aspect-ratio: 508 / 640; background: var(--figure, none) center / contain no-repeat; }
+  :root[data-print="mono"] .print-figure,
+  :root[data-print="mono"] .play-page::before,
+  :root[data-print="mono"] .sheets :is(.sheet, .grid-sheet)::before { filter: grayscale(1); }
+
+  /* Anything that sat straight on the paper sits on a white tag, so it reads over the background. */
+  :root:is([data-print="colour"], [data-print="mono"]) .play-head { width: fit-content; max-width: calc(100% - 48px); box-sizing: border-box;
+    margin-inline: auto; padding: 10px 24px; background: #fff; border: 2px solid #000; border-radius: 14px; box-shadow: 4px 4px 0 #000; }
+  :root:is([data-print="colour"], [data-print="mono"]) aside::after,
+  :root:is([data-print="colour"], [data-print="mono"]) :is(.sheet-number, .page-number) { width: fit-content;
+    padding: 2px 8px; background: #fff; border-radius: 6px; }
+  :root:is([data-print="colour"], [data-print="mono"]) aside::after { margin-left: auto; }
+  :root:is([data-print="colour"], [data-print="mono"]) .sheet-number { margin-inline: auto; }
 }

@@ -2,10 +2,11 @@
 // drawn by the play page's own printout (drawSheet), and the print dialog once every grid is
 // drawn. Every rule lives in core/book-core.js; how a puzzle's page looks is styles/play.css's.
 import { slugOf } from '../core/collection-core.js';
-import { bookView, pageNumbers } from '../core/book-core.js';
+import { bookView, pageNumbers, printStyleOf } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
-import { markPrintout, drawSheet, sizePrintedWords } from './wordsearch/play-ui.js';
-import { dressRandomScene } from './theme-ui.js';
+import { characterAt } from '../core/theme-core.js';
+import { markPrintout, drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
+import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
@@ -16,8 +17,10 @@ function bookEl(id) {
 }
 
 // Themed, the page behind the print dialog wears a background, as the collection page does — the
-// paper never does (styles/look.css is screen only).
+// paper never does (styles/look.css is screen only). The book prints in the style its address
+// names — Print book's pick on the collection page — every time it prints.
 export function openBook(search) {
+  document.documentElement.dataset.print = printStyleOf(search);
   bookEl('print-again').addEventListener('click', function () { window.print(); });
   var scene = dressRandomScene(Math.random, SCENE_WAIT);
   Promise.all([
@@ -47,17 +50,29 @@ function showMissing() {
 
 // Every puzzle file loads and every page is drawn before the dialog opens, its fonts and the
 // page's background too, so no page prints blank however many puzzles the collection holds — and,
-// the fonts in, each page's word columns are sized as the play page sizes its own.
+// the fonts in, each page's word columns are sized as the play page sizes its own. Printed Colour
+// or Black and white, each puzzle wears its character in number order, round again after the last,
+// as on the collection page, each page at a spot of its own picked again every time the book
+// prints, and every character's images are in before the dialog opens.
 function printBook(book, playPage, scene) {
   var template = sheetTemplate(playPage);
-  Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); }))
-    .then(function (puzzles) {
+  Promise.all([
+    Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); })),
+    withCharacters(function (characters) { return characters; }),
+  ])
+    .then(function (got) {
+      var puzzles = got[0];
       var boards = puzzles.map(function (puzzle) { return playBoard(puzzle); });
       var numbers = pageNumbers(boards);
-      bookEl('sheets').replaceChildren.apply(bookEl('sheets'), puzzles.map(function (puzzle, i) {
-        return sheet(template, book.pages[i].heading, puzzle, boards[i], numbers[i]);
-      }));
-      return Promise.all([document.fonts.ready, scene]);
+      var wearers = book.pages.map(function (page) { return characterAt(got[1], page.number); });
+      var pages = puzzles.map(function (puzzle, i) { return sheet(template, book.pages[i].heading, puzzle, boards[i], numbers[i]); });
+      var printout = function () {
+        pages.forEach(function (page, i) { dressPrintout(page.querySelector('main.play'), page, boards[i], wearers[i], true, Math.random); });
+      };
+      bookEl('sheets').replaceChildren.apply(bookEl('sheets'), pages);
+      printout();
+      window.addEventListener('beforeprint', printout);
+      return Promise.all([document.fonts.ready, scene].concat(wearers.map(printImages)));
     })
     .then(sizeBookWords)
     .then(showReady, showFailed);

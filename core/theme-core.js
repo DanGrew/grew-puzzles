@@ -36,6 +36,11 @@ export function sceneFile(character) {
   return [character].filter(Boolean).map(function (c) { return characterFile(c.scene); }).concat('')[0];
 }
 
+// Its figure as a file, the same way — for a printout to have on hand before it prints.
+export function figureFile(character) {
+  return [character].filter(Boolean).map(function (c) { return characterFile(c.figure); }).concat('')[0];
+}
+
 // A puzzle's number: the digits of its hidden ID.
 function idNumber(hiddenId) {
   return Number(hiddenId.split('-')[1]);
@@ -148,4 +153,123 @@ export function wordsCap(placement, phone) {
 // figure only, never its name label, which reads the right way round wherever it stands.
 export function figureTransform(placement) {
   return 'translate(-50%, -50%) rotate(' + placement.turn + 'deg)' + ['', ' scaleX(-1)'][Number(placement.flip)];
+}
+
+// ---- Printed Colour or Black and white (TASK-46) ----
+// Paper is measured at 96 px to the inch, as the browser prints it. A sheet keeps half an inch
+// inside the paper's edge; a printer reaches to a quarter inch of it.
+const PRINT_REACH = 24;
+
+// A printed sheet is one of three: a puzzle of one grid, its grid card over its words; a puzzle of
+// several grids' words sheet, its words card alone; or one of its grid sheets.
+// The paper a sheet is laid out on: the book's US Letter; the play page's whatever the player's
+// printer takes, so the narrower of A4 and Letter across, and the shorter down.
+export function printPaper(book) {
+  return [{ width: 794, height: 1056 }, { width: 816, height: 1056 }][Number(book)];
+}
+
+// A printed grid's cell, as styles/play.css's print rules size it: a one-grid sheet leaves its
+// words 105 mm down, a grid sheet of its own takes 200 mm; 14 pt at the least, and never wider
+// than the 7.5 in a sheet has across.
+export function printCell(cols, rows, paged) {
+  const down = [396.85, 755.91][Number(paged)];
+  return Math.min(Math.max(18.67, Math.min(36, 623.62 / cols, down / rows)), 720 / cols);
+}
+
+// The card a character peers from, across: the grid card — its cells, 14 px inside each side and
+// its 2 px outline — or, on a words sheet, the words card, the paper's whole width less its
+// half-inch edges.
+export function printCardWidth(sheet, cols, rows, paper) {
+  const grid = paged => cols * printCell(cols, rows, paged) + 32;
+  return { one: grid(false), grid: grid(true), words: paper.width - 96 }[sheet];
+}
+
+// How far down the paper that card's top sits, before any rise: the half-inch edge, the book's
+// puzzle number, the title on its white tag (a grid sheet's without the date), its 16 px, and on a
+// words sheet the 20 px the hidden grid card leaves. Measured from the printout itself, a title of
+// one line — a longer one only sits the card lower.
+export function printCardTop(sheet, numbered) {
+  return 48 + 29 * Number(numbered) + { one: 76 + 16, words: 76 + 16 + 20, grid: 57 + 16 }[sheet];
+}
+
+// The owner's four spots, handed back 2026-10-08 from the product's docs/MOCKUP-THEMED-PRINT.html,
+// on the one-grid sheet's 429 × 472 px grid card: the character's centre from the card's top-left
+// corner, its height, its turn (clockwise positive) and whether it's flipped to face right. On paper
+// it wears no name label, the owner's call 2026-10-09. Each is held from the card edges nearest it —
+// the right two from the card's right edge, the left two from its left, all from its top — so a
+// wider card, a Saga's words card or any grid's, keeps it as far from the corner.
+function printSpot(spot) {
+  return {
+    right: { x: 439, y: 188, height: 293, turn: 37, flip: true, far: 1 },
+    left: { x: -1, y: 171, height: 293, turn: -41, flip: false, far: 0 },
+    topRight: { x: 378, y: -13, height: 213, turn: -3, flip: true, far: 1 },
+    topLeft: { x: 49, y: -14, height: 213, turn: 12, flip: false, far: 0 }
+  }[spot];
+}
+
+// A spot on a card cardWidth across: its centre from the card's left, and from the edge it's held
+// from (far, 1 for the right edge), so the page can place it by that edge whatever the card's
+// printed width.
+export function printPlacement(spot, cardWidth) {
+  const s = printSpot(spot);
+  const fromEdge = s.x - s.far * 429;
+  return { spot, far: s.far, fromEdge, x: s.far * cardWidth + fromEdge, y: s.y, height: s.height, turn: s.turn, flip: s.flip };
+}
+
+// The box round a character's inked outline as it stands — sized, flipped, then turned as the page
+// draws it — from its centre. Its outline is a band down the image at a time, each its leftmost and
+// rightmost opaque edge across (content/characters/index.json); without one, the whole image.
+export function inkBox(outline, height, turn, flip) {
+  const bands = outline || [[0, 1]];
+  const width = height * 508 / 640, a = turn * Math.PI / 180, cos = Math.cos(a), sin = Math.sin(a);
+  const points = bands.flatMap((band, i) => [band].filter(Boolean).flatMap(b => [i, i + 1].flatMap(edge => b.map(f => {
+    const x = ([f, 1 - f][Number(flip)] - 0.5) * width, y = (edge / bands.length - 0.5) * height;
+    return [x * cos - y * sin, x * sin + y * cos];
+  }))));
+  return {
+    left: Math.min(...points.map(p => p[0])), right: Math.max(...points.map(p => p[0])),
+    top: Math.min(...points.map(p => p[1])), bottom: Math.max(...points.map(p => p[1]))
+  };
+}
+
+// How much lower a sheet starts so the character's head stays inside what a printer reaches.
+// frame is the sheet's paper, its card's width and its card's top on the paper.
+export function printRise(spot, frame, outline) {
+  const p = printPlacement(spot, frame.cardWidth);
+  return Math.max(0, PRINT_REACH - (frame.cardTop + p.y + inkBox(outline, p.height, p.turn, p.flip).top));
+}
+
+// Whether what shows of the character stays inside what a printer reaches across: at the sides,
+// only what stands past the card shows, and the room left on its nearer side is what counts.
+function printFits(spot, frame, outline) {
+  const p = printPlacement(spot, frame.cardWidth);
+  const ink = inkBox(outline, p.height, p.turn, p.flip);
+  const cardLeft = (frame.paper.width - frame.cardWidth) / 2, centre = cardLeft + p.x;
+  const whole = [centre + ink.left, centre + ink.right];
+  const shows = { right: [cardLeft + frame.cardWidth, whole[1]], left: [whole[0], cardLeft], topRight: whole, topLeft: whole }[spot];
+  return Math.min(shows[0], frame.paper.width - shows[1]) >= PRINT_REACH;
+}
+
+// The spots a sheet picks from: a one-grid sheet's all four, a Saga's sheets only the top corners —
+// those that fit across. A one-grid sheet never starts lower, which could push it onto a second
+// page: a spot that needs it is left out. None fits, and every one the sheet has is picked from.
+export function printChoices(sheet, frame, outline) {
+  const all = { one: ['right', 'left', 'topRight', 'topLeft'], words: ['topRight', 'topLeft'], grid: ['topRight', 'topLeft'] }[sheet];
+  const settled = { one: spot => printRise(spot, frame, outline) === 0, words: () => true, grid: () => true }[sheet];
+  const fit = all.filter(spot => printFits(spot, frame, outline) && settled(spot));
+  return [fit, all][Number(fit.length === 0)];
+}
+
+// Each time a sheet prints: a spot at random from its choices, and how to draw the character
+// there — its centre from the card edge it's held from — and the sheet's rise. No character — the
+// list couldn't be read — is judged as a whole image.
+export function printDress(sheet, frame, character, random) {
+  const outline = [character].filter(Boolean).map(c => c.outline)[0];
+  const choices = printChoices(sheet, frame, outline);
+  const spot = choices[Math.floor(random() * choices.length)];
+  const p = printPlacement(spot, frame.cardWidth);
+  return {
+    spot, left: 'calc(' + p.far * 100 + '% + ' + p.fromEdge + 'px)', top: p.y + 'px', height: p.height + 'px',
+    transform: figureTransform(p), rise: printRise(spot, frame, outline) + 'px'
+  };
 }

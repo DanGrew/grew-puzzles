@@ -3,7 +3,7 @@
 // look is on: styles/look.css shows them only while Themed is, so Plain never loads an image and
 // the site bar's switch (components/site-bar.js) changes the look without redressing anything.
 // Every rule is core/theme-core.js's.
-import { charactersFile, charactersOf, dressOf, sceneFile, randomCharacter } from '../core/theme-core.js';
+import { charactersFile, charactersOf, dressOf, sceneFile, figureFile, randomCharacter } from '../core/theme-core.js';
 
 // The characters, in the owner's order — none when the list can't be read, which dresses nothing.
 export function withCharacters(then) {
@@ -55,6 +55,35 @@ export function lookNow() {
 
 export function onLook(then) {
   document.addEventListener('grew-look', then);
+}
+
+// A print menu's pick: the page prints in its style — colour, mono or plain, on <html data-print>,
+// Plain until a pick — once what that style wears is loaded (load, a promise).
+export function printIn(style, load) {
+  document.documentElement.dataset.print = style;
+  return load().then(function () { window.print(); });
+}
+
+// Printed Colour or Black and white, a sheet's character and its background are loaded ahead, so
+// the print dialog has them when it draws the paper; Plain loads neither.
+export function printImages(character) {
+  var both = function () { return Promise.all([sceneFile(character), figureFile(character)].map(loadImage)); };
+  var loads = { plain: function () { return Promise.resolve(); }, colour: both, mono: both };
+  return loads[document.documentElement.dataset.print]();
+}
+
+// One printed sheet's character, behind the card it peers from, on the spot printDress picked
+// (core/theme-core.js), with no name label, and the sheet's rise on the element that starts it.
+// styles/look.css shows it only on paper, and only for Colour or Black and white.
+export function dressPrintSheet(card, start, character, dress) {
+  var figure = card.querySelector('.print-figure');
+  dressFigure(figure, character);
+  figure.dataset.spot = dress.spot;
+  figure.style.left = dress.left;
+  figure.style.top = dress.top;
+  figure.style.height = dress.height;
+  figure.style.transform = dress.transform;
+  start.style.setProperty('--print-rise', dress.rise);
 }
 
 // A text page: a background and a character, each picked fresh on every load and on their own,

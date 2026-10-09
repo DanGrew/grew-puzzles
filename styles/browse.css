@@ -63,11 +63,6 @@
 /* The collection page: its description under the heading, and each tile's number on its band, plain. */
 .collection-description, .collection-missing { text-align: center; margin: -8px auto 28px; max-width: 60ch; color: var(--muted); }
 .collection-missing a { color: var(--fg); }
-/* Print book: the whole collection as one printout, between the description and the tiles. */
-.collection-book { text-align: center; margin: -12px 0 28px; }
-.print-book { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; font: 600 14px var(--font-body); text-decoration: none;
-  color: var(--band-fg); background: var(--band); border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: var(--shadow); }
-.print-book:hover { transform: translate(-1px, -1px); }
 .tile.numbered::before { display: none; }
 .tile .number { font: 700 16px/1 var(--font-display); background: var(--tone); color: var(--fg); text-align: center;
   padding: 6px 0; border-bottom: var(--ow) solid var(--line); font-variant-numeric: tabular-nums; }

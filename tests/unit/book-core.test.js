@@ -1,4 +1,4 @@
-import { bookView, pageNumbers } from '../../core/book-core.js';
+import { bookView, pageNumbers, printStyleOf, PRINT_STYLES } from '../../core/book-core.js';
 
 const collections = () => [
   { slug: 'other', name: 'Other', description: 'Not this one.', created: '2026-10-01', puzzles: [{ id: 'WSCH-0001', number: 1 }] },
@@ -18,11 +18,11 @@ describe('book-core.js', () => {
     expect(book.answers).toBe("The answers are on the site: open Issue #1 in Collections, pick the puzzle's number, and flip its grid.");
   });
 
-  test('then one page per puzzle, in number order, each headed with its number', () => {
+  test('then one page per puzzle, in number order, each headed with its number — the number its character goes by', () => {
     expect(bookView(collections(), 'issue-1').pages).toEqual([
-      { heading: 'Puzzle 1', search: '?id=WSCH-0002' },
-      { heading: 'Puzzle 2', search: '?id=WSCH-0003' },
-      { heading: 'Puzzle 10', search: '?id=WSCH-0001' },
+      { heading: 'Puzzle 1', number: 1, search: '?id=WSCH-0002' },
+      { heading: 'Puzzle 2', number: 2, search: '?id=WSCH-0003' },
+      { heading: 'Puzzle 10', number: 10, search: '?id=WSCH-0001' },
     ]);
   });
 
@@ -32,8 +32,8 @@ describe('book-core.js', () => {
       puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0001', number: 3 }, { id: 'WSCH-0002', number: 1 }],
     }];
     expect(bookView(mixed, 'mixed').pages).toEqual([
-      { heading: 'Puzzle 1', search: '?id=WSCH-0002' },
-      { heading: 'Puzzle 3', search: '?id=WSCH-0001' },
+      { heading: 'Puzzle 1', number: 1, search: '?id=WSCH-0002' },
+      { heading: 'Puzzle 3', number: 3, search: '?id=WSCH-0001' },
     ]);
     const mazes = [{ slug: 'mazes', name: 'Mazes', description: '', created: '2026-10-08', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
     expect(bookView(mazes, 'mazes').pages).toEqual([]);
@@ -43,6 +43,13 @@ describe('book-core.js', () => {
     const { pages, ...added } = bookView(collections(), 'issue-1');
     expect(JSON.stringify(added)).not.toContain('WSCH');
     expect(pages.map(p => p.heading).join()).not.toContain('WSCH');
+  });
+
+  test('the book prints in the style its address names — Colour, Black and white or Plain — else Plain', () => {
+    expect(['colour', 'mono', 'plain'].map(s => printStyleOf(`?slug=issue-1&print=${s}`))).toEqual(['colour', 'mono', 'plain']);
+    expect(printStyleOf('?slug=issue-1')).toBe('plain');
+    expect(printStyleOf('?slug=issue-1&print=gold')).toBe('plain');
+    expect(PRINT_STYLES).toEqual(['colour', 'mono', 'plain']);
   });
 
   test('the book leads back to its collection, slug and all', () => {

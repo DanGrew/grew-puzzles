@@ -75,8 +75,8 @@ test('Print book on a collection\'s page opens the print dialog on its book, eve
   await serve(page, { slow: ['WSCH-0009'] });
   await catchPrint(page);
   await page.goto('/app/collection.html?slug=issue-1');
-  await page.locator('#print-book').click();
-  await expect(page).toHaveURL(/\/app\/book\.html\?slug=issue-1$/);
+  await page.locator('#site-side #book a', { hasText: 'Plain' }).click();
+  await expect(page).toHaveURL(/\/app\/book\.html\?slug=issue-1&print=plain$/);
   await expect.poll(() => page.evaluate(() => window.printed)).toEqual([[64, 64, 900]]);
   await expect(page).toHaveTitle('Issue #1 · Grew Puzzles');
 });
@@ -432,7 +432,7 @@ test('the real collections each make a book', async ({ page }) => {
   await catchPrint(page);
   await page.goto('/app/?kind=collections');
   await page.locator('.tiles .tile.collection').first().click();
-  await page.locator('#print-book').click();
+  await page.locator('#site-side #book a', { hasText: 'Colour' }).click();
   await expect(page.locator('#ready')).toBeVisible();
   await expect(sheets(page).first().locator('.sheet-number')).toHaveText('Puzzle 1');
   expect(await page.evaluate(() => window.printed.length)).toBe(1);

@@ -2,15 +2,16 @@
 // data-current="…">, and puts the side bar — the map of the site — down the page's left, the rest
 // of the page beside it. data-home is the landing page's path from the page; data-current names
 // the side bar entry this page belongs to — a kind (wordsearch, maze), collections, or a text
-// page. A page that puts its own [data-menu-entry] elements inside the header gets those first in
-// the side bar (the play page's Print). The kinds, each with its types, and Collections' count
-// are filled from the indexes by ui/side-bar-ui.js; Collections starts hidden until a collection
-// is found. How to play, Saving your progress, About us and Privacy follow — every page sits in
-// app/, beside them. After them, ending the side bar, the look: Themed or Plain, Themed until the
-// player picks Plain, kept in this browser. It sits on the page as <html data-look>, set here
-// before any page script runs; picking one tells the page with a grew-look event
-// (styles/look.css, ui/theme-ui.js). On a phone the side bar is a drawer, opened by the burger at
-// the bar's left (styles/site-bar.css).
+// page. The kinds, each with its types, and Collections' count are filled from the indexes by
+// ui/side-bar-ui.js; Collections starts hidden until a collection is found. How to play, Saving
+// your progress, About us and Privacy follow — every page sits in app/, beside them. After them,
+// the look: Themed or Plain, Themed until the player picks Plain, kept in this browser. It sits on
+// the page as <html data-look>, set here before any page script runs; picking one tells the page
+// with a grew-look event (styles/look.css, ui/theme-ui.js). A page that puts its own
+// [data-menu-entry] elements inside the header gets those last, ending the side bar — a page that
+// prints, its print menu: the play page's Print page, the collection page's Print book. Every page
+// starts printing Plain (<html data-print>), until its print menu says otherwise. On a phone the
+// side bar is a drawer, opened by the burger at the bar's left (styles/site-bar.css).
 (function () {
   var LOOK_KEY = 'grew-puzzles.look';
   var root = document.documentElement;
@@ -22,6 +23,7 @@
     try { return localStorage.getItem(LOOK_KEY); } catch (e) { return null; }
   }
   root.dataset.look = { plain: 'plain' }[storedLook()] || 'themed';
+  root.dataset.print = 'plain';
 
   bar.innerHTML =
     '<button class="burger" type="button" aria-expanded="false" aria-controls="site-side" aria-label="Menu">' +
@@ -34,7 +36,6 @@
   side.id = 'site-side';
   side.setAttribute('aria-label', 'Site');
   side.innerHTML =
-    '<div class="side-own"></div>' +
     '<div class="side-kinds"></div>' +
     '<a class="kind side-collections" data-mark="collections" data-query="?kind=collections" hidden>Collections<small class="count"></small></a>' +
     '<hr>' +
@@ -46,7 +47,8 @@
       '<span class="look-name">Look</span>' +
       '<button type="button" data-look="themed">Themed</button>' +
       '<button type="button" data-look="plain">Plain</button>' +
-    '</div>';
+    '</div>' +
+    '<div class="side-own"></div>';
   var ownSlot = side.querySelector('.side-own');
   var look = side.querySelector('.look');
   var burger = bar.querySelector('.burger');

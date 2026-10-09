@@ -34,14 +34,14 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
-  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, ending the side bar`, async ({ page }) => {
+  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
     const look = page.locator('#site-side .look');
     await expect(look.locator('button')).toHaveText(['Themed', 'Plain']);
     await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(look.locator('button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.locator('#site-side > *').last()).toHaveClass(/\blook\b/);
+    await expect(page.locator('#site-side > *').nth(-2)).toHaveClass(/\blook\b/);
   });
 }
 
@@ -217,7 +217,7 @@ test('Themed loads only the pair on screen', async ({ page }) => {
   expect(asked.map(u => u.split('/').pop()).sort()).toEqual([CHARACTERS[6].scene, CHARACTERS[6].figure].sort());
 });
 
-test('the printout stays plain, Themed or not', async ({ page }) => {
+test('Themed on screen, the printout stays plain while Print is Plain', async ({ page }) => {
   await openPlay(page, 'WSCH-0007');
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('#theme-figure')).toBeHidden();

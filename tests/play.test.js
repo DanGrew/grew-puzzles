@@ -211,10 +211,10 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-test('the side bar holds Print first, then the site\'s map, How to play its page — the only one', async ({ page }) => {
+test('the side bar holds the site\'s map, then Print page last, How to play its page — the only one', async ({ page }) => {
   await open(page);
   await expect(page.locator('.play-head button')).toHaveCount(0);
-  await expect(page.locator('#site-side .side-own > *')).toHaveText(['Print']);
+  await expect(page.locator('#site-side .side-own .print-name')).toHaveText(['Print page']);
   const pages = page.locator('#site-side .page');
   await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Privacy']);
   await expect(pages.first()).toHaveAttribute('href', 'how-to-play.html');
@@ -1160,20 +1160,20 @@ async function printedBoxes(page) {
     grid: await box('#grid'), words: await box('#words-list') };
 }
 
-test('Print in the side bar opens the browser\'s print dialog', async ({ page }) => {
-  await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed += 1; }; });
+test('each of Print page\'s styles in the side bar opens the browser\'s print dialog, in that style', async ({ page }) => {
+  await page.addInitScript(() => { window.printed = []; window.print = () => { window.printed.push(document.documentElement.dataset.print); }; });
   await open(page);
-  await page.locator('#site-side #print').click();
-  expect(await page.evaluate(() => window.printed)).toBe(1);
+  for (const style of ['colour', 'mono', 'plain']) await page.locator(`#site-side #print button[data-print="${style}"]`).click();
+  await expect.poll(() => page.evaluate(() => window.printed)).toEqual(['colour', 'mono', 'plain']);
 });
 
-test('on a phone, Print in the drawer opens the print dialog and closes the drawer', async ({ page }) => {
+test('on a phone, Print page in the drawer opens the print dialog and closes the drawer', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed += 1; }; });
   await open(page);
   await page.locator('.site .burger').click();
-  await page.locator('#site-side #print').click();
-  expect(await page.evaluate(() => window.printed)).toBe(1);
+  await page.locator('#site-side #print button[data-print="plain"]').click();
+  await expect.poll(() => page.evaluate(() => window.printed)).toBe(1);
   await expect(page.locator('#site-side')).toBeHidden();
 });
 

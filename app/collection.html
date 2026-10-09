@@ -14,13 +14,19 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="collections"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="collections">
+    <div class="print-menu" data-menu-entry id="book" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print book</span>
+      <a data-print="colour">Colour</a>
+      <a data-print="mono">Black and white</a>
+      <a data-print="plain">Plain</a>
+    </div>
+  </header>
   <main aria-labelledby="collection-title">
     <div class="browse-head">
       <h1 id="collection-title"></h1>
     </div>
     <p class="collection-description" id="description"></p>
-    <p class="collection-book" id="book" hidden><a class="print-book" id="print-book">Print book</a></p>
     <p class="collection-missing" id="missing" hidden>There's no collection at this address. <a href="index.html?kind=collections">See all collections</a>.</p>
     <ul class="tiles" id="tiles"></ul>
   </main>
@@ -81,7 +87,7 @@ function show([index, mazes, published, owned]) {
   document.getElementById('collection-title').textContent = view.name;
   document.getElementById('description').textContent = view.description;
   document.getElementById('description').hidden = !view.found;
-  document.getElementById('print-book').href = view.book;
+  document.querySelectorAll('#book a').forEach(a => { a.href = view.book[a.dataset.print]; });
   document.getElementById('book').hidden = !view.found;
   document.getElementById('missing').hidden = view.found;
   tiles = view.tiles;

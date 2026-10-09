@@ -12,10 +12,15 @@
 <link rel="stylesheet" href="../styles/play.css">
 <link rel="stylesheet" href="../styles/look.css">
 </head>
-<body>
+<body class="play-page">
 <div class="wrap">
   <header class="site" data-site-bar data-home="index.html" data-current="wordsearch">
-    <button type="button" data-menu-entry id="print">Print</button>
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name">
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="colour">Colour</button>
+      <button type="button" data-print="mono">Black and white</button>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
   </header>
 
   <header class="play-head">
@@ -34,6 +39,8 @@
     <div class="col">
       <div class="stage" id="stage">
         <div class="card" id="card">
+          <!-- Printed Colour or Black and white, the character peering from behind this card (styles/look.css). -->
+          <span class="print-figure" aria-hidden="true"></span>
           <div class="face front-face" id="front">
             <div class="band" id="label"></div>
             <div class="tabs" id="tabs" role="tablist" aria-label="Pages"></div>
@@ -75,6 +82,7 @@
     <!-- Where the list sits under or beside the grid: always before the printed grids. -->
     <div class="words-home" id="words-home">
       <aside id="words-list">
+        <span class="print-figure" aria-hidden="true"></span>
         <div class="words-box">
           <div class="list-head">
             <h2>Words</h2>
@@ -95,7 +103,7 @@
 
     <!-- A puzzle of several grids prints each one on a sheet of its own, after the words. -->
     <div class="print-grids" id="print-grids"></div>
-    <template id="grid-sheet"><section class="grid-sheet"><header class="play-head"><h1></h1></header><div class="face print-face"><div class="band"></div><div class="grid"></div></div></section></template>
+    <template id="grid-sheet"><section class="grid-sheet"><header class="play-head"><h1></h1></header><div class="print-card"><span class="print-figure" aria-hidden="true"></span><div class="face print-face"><div class="band"></div><div class="grid"></div></div></div></section></template>
   </main>
 
   <!-- A word's entry, opened by tapping a marked word in the list (ui/wordsearch/entry-ui.js);
