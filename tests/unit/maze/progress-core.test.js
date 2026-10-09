@@ -89,6 +89,12 @@ describe('signing in mid-maze', () => {
     });
   });
 
+  it('one who has moved without finding anything keeps their place, and saves it', () => {
+    const walked = presses(['S']);
+    expect(syncRows('MAZE-0001', walked, BOARD)).toEqual({ place: [row(2, 0)], found: [] });
+    expect(joinedMaze(walked, saved()).trail).toEqual(walked.trail);
+  });
+
   it('one back at the start with something found has stirred too, and keeps their own', () => {
     const back = taps([[0, 1], [0, 2], [0, 3], [0, 0]]);
     expect(syncRows('MAZE-0001', back, BOARD)).toEqual({ place: [row(0, 0)], found: [row(0, 3)] });

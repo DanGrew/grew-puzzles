@@ -97,6 +97,20 @@ describe('coming back to a saved maze', () => {
     const open = { rows: 1, cols: 2, start: [0, 0], bits: [[5, 7]], stops: [] };
     expect(resumedMaze(open, [0, 1], []).trail).toEqual([[0, 0], [0, 1]]);
     expect(resumedMaze(open, [0, -1], []).trail).toEqual([[0, 0]]);
+    const wide = { rows: 1, cols: 1, start: [0, 0], bits: [[0]], stops: [] };
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(cell => {
+      expect(resumedMaze(wide, cell, []).trail).toEqual([[0, 0]]);
+    });
+  });
+
+  it('a big maze\'s trail comes back whole: every step to the next open cell, from the start to the player', () => {
+    const hundred = mazeBoard(structuredClone(require('../../fixtures/MAZE-0003.json')));
+    const trail = resumedMaze(hundred, [50, 50], []).trail;
+    expect([trail.length, trail[0], trail[trail.length - 1]]).toEqual([167, [0, 0], [50, 50]]);
+    trail.slice(1).forEach((cell, i) => {
+      expect(Math.abs(cell[0] - trail[i][0]) + Math.abs(cell[1] - trail[i][1])).toBe(1);
+      expect(tapMaze({ ...newMazePlay(hundred), trail: trail.slice(0, i + 1) }, cell, hundred).trail).toHaveLength(i + 2);
+    });
   });
 
   it('a found cell with nothing on it ticks nothing', () => {

@@ -280,13 +280,14 @@ function cellKey(cell) {
   return cell[0] + ',' + cell[1];
 }
 
-// Every cell the start reaches, each with the cell it's reached from — the start from none — a
-// cell at a time, never more steps than the maze has cells.
+// Every cell the start reaches, each with the cell it's reached from — a cell at a time, never
+// more steps than the maze has cells. The start is reached back from its first neighbour, which
+// the route never follows: it stops at the start.
 function reached(board) {
-  var from = new Map([[cellKey(board.start), board.start]]);
+  var from = new Map();
   var order = [board.start];
   Array.from({ length: board.rows * board.cols }).forEach(function (_, i) {
-    order.slice(i, i + 1).forEach(function (here) {
+    [order[i]].filter(Boolean).forEach(function (here) {
       openSides(board, here).map(function (side) { return stepOf(here, side); })
         .filter(function (next) { return inWindow({ top: 0, left: 0, bottom: board.rows - 1, right: board.cols - 1 }, next) && !from.has(cellKey(next)); })
         .forEach(function (next) { from.set(cellKey(next), here); order.push(next); });
