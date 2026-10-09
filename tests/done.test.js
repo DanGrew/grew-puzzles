@@ -77,6 +77,8 @@ async function standInForSupabase(context, table) {
     if (url.pathname === '/auth/v1/user') return route.fulfill({ headers: CORS, json: PLAYER });
     if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
+    // The ticks read the player's maze finds too — none here; maze-saving.test.js's.
+    if (url.pathname === '/rest/v1/maze_found' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
     if (url.pathname !== '/rest/v1/progress' || !token.includes('.')) {
       table.strays.push(`${request.method()} ${url.pathname}`);
       return route.abort();
@@ -738,7 +740,8 @@ test('signed out, Filters has no Finished row', async ({ context }) => {
   await openFilters(page);
   await page.waitForTimeout(300);
   await expect(page.locator('#filters .choice')).toHaveCount(2);
-  await expect(page.locator('#filters .choice:visible, #filters .row-name:visible')).toHaveCount(0);
+  await expect(page.locator('#filters .choice:visible, #filters .finished-cell:visible')).toHaveCount(0);
+  await expect(page.locator('#filters .row-name:visible')).toHaveText(['Difficulty', 'Type']);
   expect(table.reads).toEqual([]);
 });
 

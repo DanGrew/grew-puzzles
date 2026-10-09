@@ -62,7 +62,7 @@ test('the side bar lists each kind with its count and its types, then Collection
   await expect(side(page).locator('.page').last()).toHaveAttribute('href', 'privacy.html');
 });
 
-test('each type\'s dot is its difficulty\'s colour, a maze type its own kind\'s', async ({ page }) => {
+test('each wordsearch type\'s dot is its difficulty\'s colour; each maze type\'s its own shade of blue to violet', async ({ page }) => {
   await serve(page);
   await page.goto('/app/');
   const dot = (kind, type) => side(page).locator('.types').nth(kind).locator('.type', { hasText: type }).locator('.dot')
@@ -70,8 +70,9 @@ test('each type\'s dot is its difficulty\'s colour, a maze type its own kind\'s'
   expect(await dot(0, 'Vanilla')).toBe('rgb(159, 216, 174)');
   expect(await dot(0, 'Saga')).toBe('rgb(245, 220, 114)');
   expect(await dot(0, 'Mirra?e')).toBe('rgb(241, 154, 154)');
-  expect(await dot(1, 'Keys')).toBe('rgb(246, 180, 122)');
-  expect(await dot(1, 'Keylecticodes')).toBe('rgb(241, 154, 154)');
+  expect(await dot(1, 'Vanilla')).toBe('rgb(179, 220, 247)');
+  expect(await dot(1, 'Keys')).toBe('rgb(177, 149, 234)');
+  expect(await dot(1, 'Keylecticodes')).toBe('rgb(133, 89, 209)');
 });
 
 test('Mazes with no mazes yet counts 0 and lists no types; Collections hides with no collections', async ({ page }) => {

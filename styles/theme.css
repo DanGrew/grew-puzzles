@@ -11,10 +11,19 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 24px; padding-block: 16px 56px; }
 /* Each difficulty's colour — green, yellow, orange, red as it gets harder, collections blue — one
    light family, a line per difficulty. Which difficulty a type is lives in core/kind-core.js; a
-   tile's strip, its filter row and its side bar dot all read their colour from here. */
+   tile's strip, its Difficulty pick and a wordsearch type's side bar dot all read their colour
+   from here. */
 [data-tone="Easy"] { --tone: #9fd8ae; }
 [data-tone="Medium"] { --tone: #f5dc72; }
 [data-tone="Hard"] { --tone: #f6b47a; }
 [data-tone="Extreme"] { --tone: #f19a9a; }
 [data-tone="Collection"] { --tone: #9cc6ef; }
+/* Each maze type's own shade for its side bar dot, light blue to deep violet — a shade a type,
+   never a difficulty, as each maze's difficulty is its own. Which type wears which lives in
+   core/kind-core.js. */
+[data-tone="Sky"] { --tone: #b3dcf7; }
+[data-tone="Azure"] { --tone: #7fb2ee; }
+[data-tone="Periwinkle"] { --tone: #8f98ef; }
+[data-tone="Lavender"] { --tone: #b195ea; }
+[data-tone="Violet"] { --tone: #8559d1; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

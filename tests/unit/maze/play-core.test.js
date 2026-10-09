@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
-  mazeUrl, wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
+  mazeUrl, mazeFile, resumedMaze, foundCells,
+  wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
   windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
@@ -46,6 +47,79 @@ describe('finding the maze a play URL names', () => {
       '?id=MAZE-0001x', '?id=../MAZE-0001'].forEach(search => {
       expect(() => mazeUrl(search)).toThrow('No such puzzle');
     });
+  });
+
+  it('a maze\'s file, by its hidden ID', () => {
+    expect(mazeFile('MAZE-0042')).toBe('../content/puzzles/maze/MAZE-0042.json');
+  });
+});
+
+describe('coming back to a saved maze', () => {
+  const presses = (list, play) => list.reduce((p, press) => padMaze(p, press, BOARD), play || newMazePlay(BOARD));
+  const resumed = play => resumedMaze(BOARD, trailEnd(play), foundCells(play, BOARD));
+
+  it('comes back exactly as the pad left it: the trail, where Back goes, and the ticks', () => {
+    const left = presses(['S', 'S', 'E']);
+    expect(left.trail).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [3, 1]]);
+    expect(resumed(left)).toEqual({ trail: left.trail, got: ['letter-B'], events: [], locked: [], runs: [1, 3, 4, 5] });
+  });
+
+  it('the trail is the one route to the player\'s cell, whatever branches were tried and backed out of', () => {
+    const wandered = taps([[0, 1], [0, 2], [0, 3], [0, 2], [0, 1], [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1]]);
+    expect(wandered.trail).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1]]);
+    expect(resumed(wandered).trail).toEqual(wandered.trail);
+  });
+
+  it('things found down a branch backed out of stay ticked; those on the trail are ticked found or not', () => {
+    const back = resumedMaze(BOARD, [4, 1], [[0, 3]]);
+    expect(back.got).toEqual(['guide-0', 'letter-C']);
+    expect(back.trail).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1]]);
+  });
+
+  it('Back goes back a run at a time: to each junction, dead end or thing on the checklist the trail passed', () => {
+    const far = resumedMaze(BOARD, [5, 5], []);
+    expect(far.trail).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1], [4, 2], [4, 3], [5, 3], [5, 4], [5, 5]]);
+    expect(far.runs).toEqual([1, 3, 4, 5, 6, 7, 11]);
+    expect(padMaze(far, 'back', BOARD).trail).toEqual(far.trail.slice(0, 7));
+  });
+
+  it('the start comes back as the start alone, one run', () => {
+    expect(resumedMaze(BOARD, [0, 0], [])).toEqual(newMazePlay(BOARD));
+  });
+
+  it('a cell no route reaches — inside a block, or off the maze — comes back at the start, the finds still ticked', () => {
+    [[2, 2], [9, 9], [-1, 0]].forEach(cell => {
+      expect(resumedMaze(BOARD, cell, [[0, 5]])).toEqual({ trail: [[0, 0]], got: ['collectible-1'], events: [], locked: [], runs: [1] });
+    });
+  });
+
+  it('never steps off the maze, even where its edge is open', () => {
+    const open = { rows: 1, cols: 2, start: [0, 0], bits: [[5, 7]], stops: [] };
+    expect(resumedMaze(open, [0, 1], []).trail).toEqual([[0, 0], [0, 1]]);
+    expect(resumedMaze(open, [0, -1], []).trail).toEqual([[0, 0]]);
+    const wide = { rows: 1, cols: 1, start: [0, 0], bits: [[0]], stops: [] };
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(cell => {
+      expect(resumedMaze(wide, cell, []).trail).toEqual([[0, 0]]);
+    });
+  });
+
+  it('a big maze\'s trail comes back whole: every step to the next open cell, from the start to the player', () => {
+    const hundred = mazeBoard(structuredClone(require('../../fixtures/MAZE-0003.json')));
+    const trail = resumedMaze(hundred, [50, 50], []).trail;
+    expect([trail.length, trail[0], trail[trail.length - 1]]).toEqual([167, [0, 0], [50, 50]]);
+    trail.slice(1).forEach((cell, i) => {
+      expect(Math.abs(cell[0] - trail[i][0]) + Math.abs(cell[1] - trail[i][1])).toBe(1);
+      expect(tapMaze({ ...newMazePlay(hundred), trail: trail.slice(0, i + 1) }, cell, hundred).trail).toHaveLength(i + 2);
+    });
+  });
+
+  it('a found cell with nothing on it ticks nothing', () => {
+    expect(resumedMaze(BOARD, [0, 0], [[1, 1], [4, 4]]).got).toEqual([]);
+  });
+
+  it('what\'s found is saved as its cells, in the checklist\'s order', () => {
+    expect(foundCells({ got: ['exit-CBA', 'key-1', 'guide-0'] }, BOARD)).toEqual([[4, 1], [2, 1], [5, 5]]);
+    expect(foundCells(newMazePlay(BOARD), BOARD)).toEqual([]);
   });
 });
 
@@ -507,13 +581,14 @@ describe('the view', () => {
   const frame = { fit: 8, width: 800, height: 800 };
 
   it('a maze opens whole when its cells can be tapped so', () => {
-    expect(openView({ fit: 20, width: 640, height: 800 }, { rows: 40, cols: 32, start: [20, 16] })).toEqual({ cell: 20, x: 0, y: 0 });
-    expect(openView({ fit: 10, width: 1000, height: 1000 }, big())).toEqual({ cell: 10, x: 0, y: 0 });
+    expect(openView({ fit: 20, width: 640, height: 800 }, { rows: 40, cols: 32 }, [20, 16])).toEqual({ cell: 20, x: 0, y: 0 });
+    expect(openView({ fit: 10, width: 1000, height: 1000 }, big(), [50, 50])).toEqual({ cell: 10, x: 0, y: 0 });
   });
 
-  it('a maze too big for that opens zoomed in on the start, cells 20px across', () => {
-    expect(openView(frame, big())).toEqual({ cell: 20, x: 30.5, y: 30.5 });
-    expect(openView({ fit: 9.9, width: 990, height: 990 }, big()).cell).toBe(20);
+  it('a maze too big for that opens zoomed in on the player, cells 20px across', () => {
+    expect(openView(frame, big(), [50, 50])).toEqual({ cell: 20, x: 30.5, y: 30.5 });
+    expect(openView(frame, big(), [50, 40])).toEqual({ cell: 20, x: 20.5, y: 30.5 });
+    expect(openView({ fit: 9.9, width: 990, height: 990 }, big(), [50, 50]).cell).toBe(20);
   });
 
   it('keeps a cell in the frame\'s centre, as near as the maze\'s edges let it', () => {
