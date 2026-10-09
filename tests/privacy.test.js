@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The Privacy page, in the owner's words (the product's docs/CONTENT.md, Privacy), reached from the
-// burger menu on every page. The puzzles' own email stands in for *[puzzles email]*.
+// side bar on every page. The puzzles' own email stands in for *[puzzles email]*.
 const EMAIL = 'grew.studio.media@gmail.com';
 const WORDS = [
   ['Your privacy', 'You don\'t need an account to play — every puzzle is free and open to everyone. If you\'d like your progress saved, you can sign in with Google.'],
@@ -17,10 +17,9 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
-  test(`on ${address}, Privacy is the burger menu's last page, which opens the Privacy page`, async ({ page, baseURL }) => {
+  test(`on ${address}, Privacy is the side bar's last page, which opens the Privacy page`, async ({ page, baseURL }) => {
     await page.goto(address);
-    await page.locator('.site .burger').click();
-    const last = page.locator('#site-menu > a:visible').last();
+    const last = page.locator('#site-side .page').last();
     await expect(last).toHaveText('Privacy');
     await last.click();
     await expect(page).toHaveURL(`${baseURL}/app/privacy.html`);
@@ -44,10 +43,9 @@ test('the puzzles\' email is a link that starts an email to it', async ({ page }
   await expect(link).toHaveAttribute('href', `mailto:${EMAIL}`);
 });
 
-test('on the Privacy page, Privacy is the menu\'s current entry', async ({ page }) => {
+test('on the Privacy page, Privacy is the side bar\'s current entry', async ({ page }) => {
   await page.goto('/app/privacy.html');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu [aria-current]')).toHaveText(['Privacy']);
+  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['Privacy']);
 });
 
 test('on the narrowest phone the Privacy page reads without scrolling sideways', async ({ page }) => {

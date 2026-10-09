@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The About us page, in the owner's words (the product's docs/CONTENT.md, About us), reached from
-// the burger menu on every page.
+// the side bar on every page.
 const WORDS = [
   ['Thank you!', 'Thank you for playing our puzzles! We hope they bring a little joy and fun to your day.'],
   ['About us', 'We\'re a little family working on being creative together. We take inspiration from our home and our family, and our love of dinosaurs and animals – our four-year-old can\'t get enough of them!'],
@@ -14,10 +14,9 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
-  test(`on ${address}, the burger menu holds About us, which opens the About us page`, async ({ page, baseURL }) => {
+  test(`on ${address}, the side bar holds About us, which opens the About us page`, async ({ page, baseURL }) => {
     await page.goto(address);
-    await page.locator('.site .burger').click();
-    const about = page.locator('#site-menu > *:visible', { hasText: 'About us' });
+    const about = page.locator('#site-side .page', { hasText: 'About us' });
     await expect(about).toHaveCount(1);
     await about.click();
     await expect(page).toHaveURL(`${baseURL}/app/about.html`);
@@ -33,10 +32,9 @@ test('the About us page is worded exactly as the owner wrote it, a heading to ea
   await expect(page.locator('main a')).toHaveCount(0);
 });
 
-test('on the About us page, About us is the menu\'s current entry', async ({ page }) => {
+test('on the About us page, About us is the side bar\'s current entry', async ({ page }) => {
   await page.goto('/app/about.html');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu [aria-current]')).toHaveText(['About us']);
+  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['About us']);
 });
 
 test('the About us page wears the site bar, and its words sit on the card with a character, Themed', async ({ page }) => {
@@ -49,8 +47,7 @@ test('the About us page wears the site bar, and its words sit on the card with a
 
 test('Plain, the About us page shows no character', async ({ page }) => {
   await page.goto('/app/about.html');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main p')).toHaveCount(WORDS.length);

@@ -62,24 +62,30 @@ test.describe('a maze on the landing page', () => {
     await page.route('**/content/collections/index.json', r => r.fulfill({ status: 404 }));
   });
 
-  test('shows as a tile like any other, its type under its title, in its difficulty\'s colour', async ({ page }) => {
-    await page.goto('/app/');
+  test('shows under Mazes as a tile like any other, its type under its title, in its difficulty\'s colour', async ({ page }) => {
+    await page.goto('/app/?kind=maze');
     const tile = page.locator('.tile', { hasText: 'Everything corner' });
     await expect(tile).toBeVisible();
     await expect(tile.locator('.line').first()).toHaveText('Keylecticodes');
     await expect(tile).toHaveAttribute('data-tone', 'Extreme');
-    await expect(page.locator('#total')).toHaveText('2 puzzles');
+    await expect(page.locator('#total')).toHaveText('1 puzzle');
+  });
+
+  test('the landing page opens on the wordsearches alone; the maze waits under Mazes', async ({ page }) => {
+    await page.goto('/app/');
+    await expect(page.locator('#browse-title')).toHaveText('Wordsearches');
+    await expect(page.locator('.tile .name')).toHaveText(['Farmyard']);
   });
 
   test('its type sits in the filters under its difficulty', async ({ page }) => {
-    await page.goto('/app/');
+    await page.goto('/app/?kind=maze');
     await page.click('#filter-button');
     await expect(page.locator('.types[data-tone="Extreme"] .chip')).toHaveText(['Keylecticodes']);
   });
 
   test('tapping it opens its maze play page: the maze in the grid card, the checklist beside it', async ({ page }) => {
     await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: MAZE }));
-    await page.goto('/app/');
+    await page.goto('/app/?kind=maze');
     await page.locator('.tile', { hasText: 'Everything corner' }).click();
     await expect(page).toHaveURL(/\/app\/maze\.html\?id=MAZE-0001$/);
     await expect(page.locator('#title')).toHaveText('Everything corner');
@@ -294,7 +300,8 @@ for (const query of ['', '?id=', '?id=WSCH-0007', '?id=../MAZE-0001']) {
     await page.route('**/content/puzzles/**', route => { fetched.push(route.request().url()); return route.abort(); });
     await page.goto('/app/maze.html' + query);
     await expect(page.locator('#missing')).toBeVisible();
-    expect(fetched).toEqual([]);
+    // Only the side bar's indexes, never a maze file.
+    expect(fetched.filter(url => !/\/content\/puzzles\/\w+\/index\.json$/.test(url))).toEqual([]);
   });
 }
 

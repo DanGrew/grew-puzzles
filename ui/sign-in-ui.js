@@ -1,4 +1,4 @@
-// Sign-in, in the site bar of every page. Signed out, a Sign in button beside the burger, opening a
+// Sign-in, in the site bar of every page. Signed out, a Sign in button at the bar's right, opening a
 // card that holds Google's own "Sign in with Google" button; Google's window opens over the page and
 // the player never leaves it. Signed in, the player's picture, opening a menu with their email,
 // Sign out, and Delete my account — which asks once, on the site's own card, then removes the
@@ -46,7 +46,7 @@ account.innerHTML =
     '</div>' +
   '</div>' +
   '<p class="deleted-note" role="status" hidden>Your account is deleted.</p>';
-document.querySelector('[data-site-bar] .menu').before(account);
+document.querySelector('[data-site-bar]').append(account);
 
 var signIn = account.querySelector('.sign-in');
 var card = account.querySelector('.sign-in-card');
@@ -210,8 +210,8 @@ avatar.addEventListener('click', function () {
 });
 picture.addEventListener('error', showInitial);
 
-// Captured, so a click anywhere else closes the card, the menu or the question — the burger's own
-// click included. The note that the account is deleted goes at the next click anywhere at all.
+// Captured, so a click anywhere else closes the card, the menu or the question — the burger's and
+// the side bar's own clicks included. The note that the account is deleted goes at the next click anywhere at all.
 document.addEventListener('click', function (e) {
   setNote(false);
   [setCard, setPanel, setConfirm].filter(function () { return !account.contains(e.target); })

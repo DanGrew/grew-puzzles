@@ -117,7 +117,7 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html']) {
-  test(`signed out, ${address} shows Sign in beside the burger, and nothing leaves the site`, async ({ page, context, baseURL }) => {
+  test(`signed out, ${address} shows Sign in at the site bar's right, and nothing leaves the site`, async ({ page, context, baseURL }) => {
     const asked = await standInForGoogle(context);
     const left = leavingTheSite(page, baseURL);
     await page.goto(address);
@@ -126,9 +126,10 @@ for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.
     await expect(avatar(page)).toBeHidden();
     await expect(card(page)).toBeHidden();
     const button = await signIn(page).boundingBox();
-    const burger = await page.locator('.site .burger').boundingBox();
-    expect(button.x + button.width).toBeLessThan(burger.x);
-    expect(Math.abs((button.y + button.height / 2) - (burger.y + burger.height / 2))).toBeLessThan(1);
+    const bar = await page.locator('.site').boundingBox();
+    const brand = await page.locator('.site .brand').boundingBox();
+    expect(Math.abs((button.x + button.width) - (bar.x + bar.width))).toBeLessThan(1);
+    expect(Math.abs((button.y + button.height / 2) - (brand.y + brand.height / 2))).toBeLessThan(1);
     await page.waitForLoadState('networkidle');
     expect(left).toEqual([]);
     expect(asked).toEqual({ google: [], tokens: [], signIns: [], signOuts: 0, other: [] });
@@ -136,7 +137,7 @@ for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.
 }
 
 for (const width of [320, 360]) {
-  test(`at ${width}px wide, the name, Sign in and burger still sit on one line`, async ({ page, context }) => {
+  test(`at ${width}px wide, the burger, the name and Sign in still sit on one line`, async ({ page, context }) => {
     await standInForGoogle(context);
     await page.setViewportSize({ width, height: 600 });
     await page.goto('/app/');
@@ -281,7 +282,7 @@ test('with Google out of reach, the card says so and the puzzle plays as normal'
   await expect(page.locator('#count')).toHaveText('1/8');
 });
 
-test('the card closes on Sign in again, a click elsewhere, Escape, or the burger', async ({ page, context }) => {
+test('the card closes on Sign in again, a click elsewhere, Escape, or a press in the side bar', async ({ page, context }) => {
   await standInForGoogle(context);
   await page.goto('/app/');
 
@@ -302,9 +303,9 @@ test('the card closes on Sign in again, a click elsewhere, Escape, or the burger
   await expect(signIn(page)).toBeFocused();
 
   await signIn(page).click();
-  await page.locator('.site .burger').click();
+  await page.locator('#site-side .look-name').click();
   await expect(card(page)).toBeHidden();
-  await expect(page.locator('#site-menu')).toBeVisible();
+  await expect(page.locator('#site-side')).toBeVisible();
 });
 
 test('the picture opens a menu: Signed in as their email, Sign out, and Delete my account', async ({ page, context }) => {
@@ -322,7 +323,7 @@ test('the picture opens a menu: Signed in as their email, Sign out, and Delete m
   await expect(menu.locator('button')).toHaveText(['Sign out', 'Delete my account']);
 });
 
-test('the account menu closes on the picture again, a click elsewhere, Escape, or the burger', async ({ page, context }) => {
+test('the account menu closes on the picture again, a click elsewhere, Escape, or a press in the side bar', async ({ page, context }) => {
   await standInForGoogle(context);
   await signInFrom(page, '/app/');
   const menu = page.locator('#account-menu');
@@ -343,12 +344,23 @@ test('the account menu closes on the picture again, a click elsewhere, Escape, o
   await expect(avatar(page)).toBeFocused();
 
   await avatar(page).click();
-  await page.locator('.site .burger').click();
+  await page.locator('#site-side .look-name').click();
   await expect(menu).toBeHidden();
-  await expect(page.locator('#site-menu')).toBeVisible();
+  await expect(page.locator('#site-side')).toBeVisible();
+});
 
+test('on a phone, a tap on the picture while the drawer is open only closes the drawer; the next opens its menu', async ({ page, context }) => {
+  await standInForGoogle(context);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInFrom(page, '/app/');
+  const menu = page.locator('#account-menu');
+  await page.locator('.site .burger').click();
+  await expect(page.locator('#site-side')).toBeVisible();
+  const picture = await avatar(page).boundingBox();
+  await page.mouse.click(picture.x + picture.width / 2, picture.y + picture.height / 2);
+  await expect(page.locator('#site-side')).toBeHidden();
+  await expect(menu).toBeHidden();
   await avatar(page).click();
-  await expect(page.locator('#site-menu')).toBeHidden();
   await expect(menu).toBeVisible();
 });
 

@@ -158,17 +158,19 @@ test('the ✓ sits in the tile\'s top-right corner, in the band\'s ink, on a dis
   served.puzzles[3].type = 'Mirra?e';
   const rows = [1, 2, 3, 4, 5].flatMap(n => finishedRows(id(n)));
   await site(context, { served, collections: [collection('issue', [id(1)])], table: progressTable(rows) });
-  const page = await landing(context);
-  await expect.poll(() => tickedTitles(page)).toHaveLength(6);
-  for (const t of await page.locator('#tiles .tile').all()) {
-    const box = await t.boundingBox();
-    const mark = await t.evaluate(el => {
-      const s = getComputedStyle(el, '::after');
-      return { color: s.color, background: s.backgroundColor, top: parseFloat(s.top), right: parseFloat(s.right), width: parseFloat(s.width) };
-    });
-    expect(mark).toMatchObject({ color: 'rgb(15, 42, 36)', background: 'rgb(255, 255, 255)' });
-    expect(mark.top).toBeLessThan(box.height / 4);
-    expect(mark.right).toBeLessThan(box.width / 4);
+  for (const [address, count] of [['/app/', 5], ['/app/?kind=collections', 1]]) {
+    const page = await landing(context, address);
+    await expect.poll(() => tickedTitles(page)).toHaveLength(count);
+    for (const t of await page.locator('#tiles .tile').all()) {
+      const box = await t.boundingBox();
+      const mark = await t.evaluate(el => {
+        const s = getComputedStyle(el, '::after');
+        return { color: s.color, background: s.backgroundColor, top: parseFloat(s.top), right: parseFloat(s.right), width: parseFloat(s.width) };
+      });
+      expect(mark).toMatchObject({ color: 'rgb(15, 42, 36)', background: 'rgb(255, 255, 255)' });
+      expect(mark.top).toBeLessThan(box.height / 4);
+      expect(mark.right).toBeLessThan(box.width / 4);
+    }
   }
 });
 
@@ -209,9 +211,11 @@ for (const look of ['themed', 'plain']) {
 
     const home = await landing(context);
     await expect(tile(home, 'Puzzle 2')).toHaveAttribute('data-done', 'true');
-    await expect(tile(home, 'done')).toHaveAttribute('data-done', 'true');
     expect(await tickOnTop(tile(home, 'Puzzle 2'))).toBe(true);
-    expect(await tickOnTop(tile(home, 'done'))).toBe(true);
+
+    const shelf = await landing(context, '/app/?kind=collections');
+    await expect(tile(shelf, 'done')).toHaveAttribute('data-done', 'true');
+    expect(await tickOnTop(tile(shelf, 'done'))).toBe(true);
   });
 }
 
@@ -221,7 +225,6 @@ test('switching to Plain on a themed collection page keeps every ✓ on top of i
   await expect(tile(page, 'Puzzle 3')).toHaveAttribute('data-done', 'true');
   const onTop = () => Promise.all(['Puzzle 1', 'Puzzle 2', 'Puzzle 3'].map(t => tickOnTop(tile(page, t))));
   expect(await onTop()).toEqual([true, false, true]);
-  await page.getByRole('button', { name: 'Menu' }).click();
   await page.getByRole('button', { name: 'Plain' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
   expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 3']);
@@ -301,7 +304,7 @@ test('filtering, sorting and paging keep each ✓ on its own puzzle\'s tile', as
 test('a collection\'s own tile wears a ✓ once every puzzle in it is finished, and none while any isn\'t', async ({ context }) => {
   const collections = [collection('done', [id(1), id(2)]), collection('half', [id(2), id(3)]), collection('fresh', [id(3)])];
   await site(context, { collections, table: progressTable([...finishedRows(id(1)), ...finishedRows(id(2)), ...startedRows(id(3))]) });
-  const page = await landing(context, '/app/?type=Collections');
+  const page = await landing(context, '/app/?kind=collections');
   await expect(tile(page, 'done')).toHaveAttribute('data-done', 'true');
   expect(await tickedTitles(page)).toEqual(['done']);
 });
@@ -618,14 +621,14 @@ test('signed in, the popup\'s last row is Finished, holding Finished and Not fin
   expect(await left(cells.last())).toBe(await left(cells.nth(1)));
 });
 
-test('Finished shows only the ✓ tiles, a finished collection too, and the total counts only those', async ({ context }) => {
+test('Finished shows only the ✓ tiles, and the total counts only those', async ({ context }) => {
   await finishedSite(context);
   const page = await landing(context);
   await openFilters(page);
   await choice(page, 'Finished').click();
-  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 2', 'pair']);
-  expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 2', 'pair']);
-  await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 2']);
+  expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 2']);
+  await expect(page.locator('#total')).toHaveText('2 puzzles');
   await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'true');
   await expect(choice(page, 'Finished')).toHaveCSS('background-color', 'rgb(31, 111, 92)');
   await expect(page).toHaveURL(/\/app\/\?finished=yes$/);
@@ -636,9 +639,22 @@ test('Not finished shows every tile without a ✓, a started puzzle among them',
   const page = await landing(context);
   await openFilters(page);
   await choice(page, 'Not finished').click();
-  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4', 'trio']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4']);
   expect(await tickedTitles(page)).toEqual([]);
-  await expect(page.locator('#total')).toHaveText('2 puzzles · 1 collection');
+  await expect(page.locator('#total')).toHaveText('2 puzzles');
+});
+
+test('in Collections, signed in, Filters holds only the Finished row, and Finished shows the finished collections', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context, '/app/?kind=collections');
+  await expect(page.locator('#filter-button')).toBeVisible();
+  await openFilters(page);
+  await expect(page.locator('#filters .chip')).toHaveCount(0);
+  await choice(page, 'Finished').click();
+  await expect(shownNames(page)).toHaveText(['pair']);
+  await choice(page, 'Not finished').click();
+  await expect(shownNames(page)).toHaveText(['trio']);
+  await expect(page).toHaveURL(/\/app\/\?kind=collections&finished=no$/);
 });
 
 test('picking one then the other swaps them; pressing the picked one again shows every tile', async ({ context }) => {
@@ -649,10 +665,10 @@ test('picking one then the other swaps them; pressing the picked one again shows
   await choice(page, 'Not finished').click();
   await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'false');
   await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'true');
-  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4', 'trio']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 3', 'Puzzle 4']);
   await choice(page, 'Not finished').click();
   await expect(choice(page, 'Not finished')).toHaveAttribute('aria-pressed', 'false');
-  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 2', 'Puzzle 4', 'pair', 'trio']);
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 2', 'Puzzle 4']);
   await expect(page).toHaveURL(/\/app\/$/);
   await expect(choice(page, 'Not finished')).toBeFocused();
 });
@@ -680,7 +696,7 @@ test('Finished counts on the Filters button, and Clear filters unpicks it with t
   await page.locator('#clear').click();
   await expect(page.locator('#filter-button')).toHaveText('Filters');
   await expect(page.locator('#filters [aria-pressed="true"]')).toHaveCount(0);
-  await expect(shownNames(page)).toHaveCount(6);
+  await expect(shownNames(page)).toHaveCount(4);
   await expect(page).toHaveURL(/\/app\/$/);
 });
 
@@ -711,7 +727,7 @@ test('a shared address with Finished opens, signed out, on every tile, as if it 
   await finishedSite(context, { signedIn: false });
   const page = await context.newPage();
   await page.goto('/app/?finished=no');
-  await expect(shownNames(page)).toHaveCount(6);
+  await expect(shownNames(page)).toHaveCount(4);
   await expect(page.locator('#filter-button')).toHaveText('Filters');
   await expect(page).toHaveURL(/\/app\/$/);
 });
@@ -731,10 +747,10 @@ test('signing out with Finished picked takes the row away and brings every tile 
   const page = await landing(context);
   await openFilters(page);
   await choice(page, 'Finished').click();
-  await expect(shownNames(page)).toHaveCount(3);
+  await expect(shownNames(page)).toHaveCount(2);
   await page.keyboard.press('Escape');
   await signOut(page);
-  await expect(shownNames(page)).toHaveCount(6);
+  await expect(shownNames(page)).toHaveCount(4);
   await expect(page.locator('#filter-button')).toHaveText('Filters');
   await expect(page).toHaveURL(/\/app\/$/);
   await openFilters(page);

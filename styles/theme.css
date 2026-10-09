@@ -8,5 +8,13 @@
 }
 
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; }
-.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 24px; padding-block: 16px 56px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding-inline: 24px; padding-block: 16px 56px; }
+/* Each difficulty's colour — green, yellow, orange, red as it gets harder, collections blue — one
+   light family, a line per difficulty. Which difficulty a type is lives in core/kind-core.js; a
+   tile's strip, its filter row and its side bar dot all read their colour from here. */
+[data-tone="Easy"] { --tone: #9fd8ae; }
+[data-tone="Medium"] { --tone: #f5dc72; }
+[data-tone="Hard"] { --tone: #f6b47a; }
+[data-tone="Extreme"] { --tone: #f19a9a; }
+[data-tone="Collection"] { --tone: #9cc6ef; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

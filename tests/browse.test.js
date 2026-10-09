@@ -29,9 +29,10 @@ test('the site opens straight onto the browse grid, with no intro', async ({ pag
   await expect(page.locator('#total')).toHaveText('3 puzzles');
   await expect(page.locator('.tiles .tile')).toHaveCount(3);
   // The heading, the filter and sort row, the grid and the pager — nothing else; signed out, the
-  // Continue playing rail never shows.
-  await expect(page.locator('main > :not([hidden])')).toHaveCount(4);
+  // Continue playing rail never shows, and the phone's Wordsearches | Mazes switch is a phone's alone.
+  await expect(page.locator('main > :not([hidden]):not(.kind-switch)')).toHaveCount(4);
   await expect(page.locator('main > #rail')).toBeHidden();
+  await expect(page.locator('main > .kind-switch')).toBeHidden();
 });
 
 test('a tile shows the title, with its type and created date small beneath — no number, no hidden ID', async ({ page }) => {
@@ -112,11 +113,10 @@ test('clicking a tile opens that puzzle\'s play page at its hidden ID', async ({
   await expect(page).toHaveURL(/\/app\/play\.html\?id=WSCH-0006$/);
 });
 
-test('Wordsearches in the burger menu brings you back to the grid', async ({ page }) => {
+test('Wordsearches in the side bar brings you back to the grid', async ({ page }) => {
   await serve(page, index(3));
-  await page.goto('/app/');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu').getByText('Wordsearches').click();
+  await page.goto('/app/?kind=maze');
+  await page.locator('#site-side .kind', { hasText: 'Wordsearches' }).click();
   await expect(page).toHaveURL(/\/app\/index\.html$/);
   await expect(page.locator('.tiles .tile')).toHaveCount(3);
 });
@@ -305,15 +305,15 @@ test('a difficulty\'s name picks its whole row, then the rest of it, then unpick
   await expect(page).toHaveURL(/\?type=Vanilla&type=Saga&type=Wildcards$/);
 });
 
-test('Collections has its own row after Extreme with nothing on the left; Clear filters sits at the bottom while something is picked', async ({ page }) => {
+test('the rows end at Extreme, with no Collections row; Clear filters sits at the bottom while something is picked', async ({ page }) => {
   await serve(page, graded(), [issue()]);
   await page.goto('/app/');
   await openFilters(page);
-  expect((await rowsOf(page)).slice(-2)).toEqual([['Extreme', ['Mirra?e']], ['', ['Collections']]]);
+  expect((await rowsOf(page)).slice(-1)).toEqual([['Extreme', ['Mirra?e']]]);
+  await expect(chip(page, 'Collections')).toHaveCount(0);
   await expect(popup(page).locator('.level:visible')).toHaveCount(4);
   await expect(page.locator('#clear')).toBeHidden();
-  await chip(page, 'Collections').click();
-  await expect(chip(page, 'Collections')).toHaveCSS('background-color', STRIP.blue);
+  await chip(page, 'Mirra?e').click();
   await expect(page.locator('#clear')).toBeVisible();
   const clear = await page.locator('#clear').boundingBox();
   const rows = await popup(page).locator('.filter-rows').boundingBox();
@@ -321,7 +321,7 @@ test('Collections has its own row after Extreme with nothing on the left; Clear 
   await page.locator('#clear').click();
   await expect(page.locator('#clear')).toBeHidden();
   await expect(popup(page)).toBeVisible();
-  await expect(page.locator('#total')).toHaveText('6 puzzles · 1 collection');
+  await expect(page.locator('#total')).toHaveText('6 puzzles');
 });
 
 test('a difficulty with no type has no row, and a type with no difficulty sits under Easy, in green', async ({ page }) => {
@@ -341,7 +341,7 @@ test('on a phone the popup fits the screen, its columns side by side, each name 
   served.puzzles.push(...['Alphabet Soup', 'Backwards', 'Crossover', 'Diagonals'].map((type, i) => ({
     hiddenId: `WSCH-01${i}0`, type, created: '2026-02-01', title: type,
   })));
-  await serve(page, served, [issue()]);
+  await serve(page, served);
   await page.goto('/app/');
   await openFilters(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
@@ -355,8 +355,8 @@ test('on a phone the popup fits the screen, its columns side by side, each name 
     return { name: { top: name.top, right: name.right }, left: column.left, right: column.right,
       first: types.querySelector('.chip').getBoundingClientRect().top };
   }));
-  expect(rows).toHaveLength(5);
-  rows.slice(0, 4).forEach(row => {
+  expect(rows).toHaveLength(4);
+  rows.forEach(row => {
     expect(row.left).toBeGreaterThanOrEqual(row.name.right);
     expect(row.right).toBeLessThanOrEqual(box.x + box.width);
     expect(Math.abs(row.name.top - row.first)).toBeLessThan(1);
@@ -445,27 +445,27 @@ function sorted() {
 const listed = page => page.locator('.tiles .tile').evaluateAll(tiles => tiles.map(t =>
   `${t.querySelector('.detail .line').textContent} ${t.querySelector('.name').textContent}`));
 
-test('a plain address opens easiest first, each difficulty by type then title A to Z, collections last', async ({ page }) => {
+test('a plain address opens easiest first, each difficulty by type then title A to Z, wordsearches alone', async ({ page }) => {
   await serve(page, sorted(), [issue()]);
   await page.goto('/app/');
   await expect(page.locator('#sort')).toHaveValue('difficulty');
   await expect(page.locator('#dir')).toHaveText('Easiest first');
-  await expect(page.locator('.tiles .tile')).toHaveCount(9);
+  await expect(page.locator('.tiles .tile')).toHaveCount(8);
   expect(await listed(page)).toEqual([
     'Vanilla Apples', 'Vanilla Cars', 'Saga Birds', 'Saga Cars', 'Wildcards Apples', 'Wildcards Birds',
-    'Missing Apples', 'Mirra?e Apples', 'The first book, remade. Issue #1',
+    'Missing Apples', 'Mirra?e Apples',
   ]);
   await expect(page).toHaveURL(/\/app\/$/);
 });
 
-test('flipped, collections come first, then Extreme down to Easy, still by type then title A to Z', async ({ page }) => {
+test('flipped, Extreme comes first down to Easy, still by type then title A to Z', async ({ page }) => {
   await serve(page, sorted(), [issue()]);
   await page.goto('/app/');
   await page.locator('#dir').click();
   await expect(page.locator('#dir')).toHaveText('Hardest first');
   await expect(page).toHaveURL(/\/app\/\?dir=asc$/);
   expect(await listed(page)).toEqual([
-    'The first book, remade. Issue #1', 'Mirra?e Apples', 'Missing Apples',
+    'Mirra?e Apples', 'Missing Apples',
     'Saga Birds', 'Saga Cars', 'Wildcards Apples', 'Wildcards Birds', 'Vanilla Apples', 'Vanilla Cars',
   ]);
 });
@@ -551,54 +551,47 @@ function issue() {
 }
 const collectionTiles = page => page.locator('.tiles .tile.collection');
 
-test('a collection tile sits among the puzzles, with its name, description and type breakdown', async ({ page }) => {
+test('a collection tile shows under Collections, with its name, description and type breakdown — never among the wordsearches', async ({ page }) => {
   const fileRequests = await serve(page, mixed(6), [issue()]);
   await page.goto('/app/?sort=date');
-  await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 5', 'Issue #1', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 5', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
+  await expect(collectionTiles(page)).toHaveCount(0);
+  await page.goto('/app/?kind=collections');
+  await expect(page.locator('#browse-title')).toHaveText('Collections');
   const tile = collectionTiles(page);
   await expect(tile).toHaveCount(1);
   await expect(tile.locator('.name')).toHaveText('Issue #1');
   await expect(tile.locator('.detail .line')).toHaveText(['The first book, remade.', '2 Vanilla · 1 Missing']);
-  await expect(page.locator('#total')).toHaveText('6 puzzles · 1 collection');
+  await expect(page.locator('#total')).toHaveText('1 collection');
   expect(fileRequests).toEqual([]);
 });
 
-test('a puzzle shows once in browse, however many collections hold it', async ({ page }) => {
+test('a puzzle shows once among the wordsearches, however many collections hold it', async ({ page }) => {
   const again = { ...issue(), slug: 'again', name: 'Again', puzzles: [{ id: 'WSCH-0001', number: 1 }] };
   await serve(page, mixed(4), [issue(), again]);
   await page.goto('/app/?sort=date');
-  await expect(page.locator('.tiles .tile:not(.collection) .name')).toHaveText(['Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
-  await expect(collectionTiles(page).locator('.name')).toHaveText(['Again', 'Issue #1']);
+  await expect(tileNames(page)).toHaveText(['Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
   await expect(page.locator('.tiles .tile .number')).toHaveCount(0);
+  await page.goto('/app/?kind=collections&sort=title&dir=asc');
+  await expect(tileNames(page)).toHaveText(['Again', 'Issue #1']);
 });
 
-test('the Collections filter comes after the types and shows only collections; a type shows none', async ({ page }) => {
+test('Collections has nothing to filter signed out, so it shows no Filters button, only the sort', async ({ page }) => {
   await serve(page, mixed(6), [issue()]);
-  await page.goto('/app/');
-  await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e', 'Collections']);
-  await pick(page, 'Collections');
+  await page.goto('/app/?kind=collections');
   await expect(tileNames(page)).toHaveText(['Issue #1']);
-  await expect(page.locator('#total')).toHaveText('1 collection');
-  await expect(page).toHaveURL(/\/app\/\?type=Collections$/);
-  await pick(page, 'Collections');
-  await pick(page, 'Vanilla');
-  await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 4']);
-  await expect(collectionTiles(page)).toHaveCount(0);
+  await expect(filterButton(page)).toBeHidden();
+  await expect(page.locator('#sort')).toBeVisible();
 });
 
-test('collections sort by name among titles, together as Collection by type, and by created date', async ({ page }) => {
-  const served = mixed(6);
-  served.puzzles[0].title = 'Apples';
-  await serve(page, served, [issue()]);
-  await page.goto('/app/?sort=title&dir=asc');
-  await expect(tileNames(page)).toHaveText(['Apples', 'Issue #1', 'Puzzle 2', 'Puzzle 3', 'Puzzle 4', 'Puzzle 5', 'Puzzle 6']);
-  await page.locator('#sort').selectOption('type');
-  // Collection, then Mirra?e, Missing and Vanilla, each newest first.
-  await expect(tileNames(page)).toHaveText(['Issue #1', 'Puzzle 6', 'Puzzle 3', 'Puzzle 5', 'Puzzle 2', 'Puzzle 4', 'Apples']);
+test('collections sort by name and by created date', async ({ page }) => {
+  const later = { ...issue(), slug: 'atlas', name: 'Atlas', created: '2026-01-09' };
+  await serve(page, mixed(6), [issue(), later]);
+  await page.goto('/app/?kind=collections&sort=title&dir=asc');
+  await expect(tileNames(page)).toHaveText(['Atlas', 'Issue #1']);
   await page.locator('#sort').selectOption('date');
   await expect(page.locator('#dir')).toHaveText('Oldest first');
-  // Puzzle 5 shares the collection's day, and a tie goes to the puzzle.
-  await expect(tileNames(page)).toHaveText(['Apples', 'Puzzle 2', 'Puzzle 3', 'Puzzle 4', 'Puzzle 5', 'Issue #1', 'Puzzle 6']);
+  await expect(tileNames(page)).toHaveText(['Issue #1', 'Atlas']);
 });
 
 test('a link from before collections opens as it always did', async ({ page }) => {
@@ -608,30 +601,29 @@ test('a link from before collections opens as it always did', async ({ page }) =
   await expect(tileNames(page)).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4', 'Puzzle 6', 'Puzzle 7', 'Puzzle 9']);
 });
 
-test('with no collections, there is no Collections filter and none in the menu', async ({ page }) => {
+test('with no collections, Collections is not in the side bar, and an old Collections address opens on the wordsearches', async ({ page }) => {
   await serve(page, mixed(3));
   await page.goto('/app/?type=Collections');
   await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e']);
   await expect(filterButton(page)).toHaveText('Filters');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'How to play', 'Saving your progress', 'About us', 'Privacy']);
+  await expect(page.locator('#site-side .kind:visible')).toHaveText([/^Wordsearches/, /^Mazes/]);
 });
 
-test('Collections in the burger menu opens the landing page filtered to collections', async ({ page }) => {
+test('Collections in the side bar opens every collection, marked current', async ({ page }) => {
   await serve(page, mixed(6), [issue()]);
   await page.goto('/app/');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu a:visible')).toHaveText(['Wordsearches', 'Collections', 'How to play', 'Saving your progress', 'About us', 'Privacy']);
-  await page.locator('#site-menu').getByText('Collections').click();
-  await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
-  await expect(chip(page, 'Collections')).toHaveAttribute('aria-pressed', 'true');
+  const collections = page.locator('#site-side .kind', { hasText: 'Collections' });
+  await expect(collections).toHaveText('Collections1');
+  await collections.click();
+  await expect(page).toHaveURL(/\/app\/index\.html\?kind=collections$/);
+  await expect(collections).toHaveAttribute('aria-current', 'page');
   await expect(tileNames(page)).toHaveText(['Issue #1']);
 });
 
 test('tapping a collection tile opens its collection page', async ({ page }) => {
   await serve(page, mixed(6), [issue()]);
-  await page.goto('/app/');
+  await page.goto('/app/?kind=collections');
   await collectionTiles(page).click();
   await expect(page).toHaveURL(/\/app\/collection\.html\?slug=issue-1$/);
   await expect(page.locator('#collection-title')).toHaveText('Issue #1');
@@ -665,7 +657,7 @@ function everyType() {
 test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blue', async ({ page }) => {
   await serve(page, everyType(), [{ ...issue(), created: '2025-12-31' }]);
   await page.goto('/app/');
-  await expect(page.locator('.tiles .tile')).toHaveCount(8);
+  await expect(page.locator('.tiles .tile')).toHaveCount(7);
   expect(await strips(page)).toEqual([
     { title: 'Puzzle 1', type: 'Brand New', strip: STRIP.green },
     { title: 'Puzzle 7', type: 'Vanilla', strip: STRIP.green },
@@ -674,8 +666,9 @@ test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blu
     { title: 'Puzzle 4', type: 'Missing', strip: STRIP.orange },
     { title: 'Puzzle 3', type: 'Repeats', strip: STRIP.orange },
     { title: 'Puzzle 2', type: 'Mirra?e', strip: STRIP.red },
-    { title: 'Issue #1', type: 'The first book, remade.', strip: STRIP.blue },
   ]);
+  await page.goto('/app/?kind=collections');
+  expect(await strips(page)).toEqual([{ title: 'Issue #1', type: 'The first book, remade.', strip: STRIP.blue }]);
 });
 
 test('the tile green is lighter than the band green, which the heading keeps; a picked type takes the tile green', async ({ page }) => {
@@ -698,9 +691,10 @@ test('a collection tile and a Saga tile are the same card as every other — no 
     return { shadow: s.boxShadow, border: s.border, radius: s.borderRadius };
   });
   const plain = await look(page.locator('.tiles .tile[data-type="Vanilla"]'));
-  expect(await look(collectionTiles(page))).toEqual(plain);
   expect(await look(page.locator('.tiles .tile[data-type="Saga"]'))).toEqual(plain);
   expect(plain.shadow).toBe('rgb(15, 42, 36) 5px 5px 0px 0px');
+  await page.goto('/app/?kind=collections');
+  expect(await look(collectionTiles(page))).toEqual(plain);
 });
 
 test('filtering, sorting and paging leave every tile its type\'s colour', async ({ page }) => {
@@ -717,8 +711,5 @@ test('filtering, sorting and paging leave every tile its type\'s colour', async 
   await pick(page, 'Mirra?e');
   await expect(tileTypes(page)).toHaveText(Array(10).fill('Mirra?e'));
   await coloured();
-  await pick(page, 'Collections');
-  await expect(page.locator('#total')).toHaveText('10 puzzles · 1 collection');
-  await coloured();
-  expect(new Set((await strips(page)).map(t => t.strip))).toEqual(new Set([STRIP.red, STRIP.blue]));
+  expect(new Set((await strips(page)).map(t => t.strip))).toEqual(new Set([STRIP.red]));
 });

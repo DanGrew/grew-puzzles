@@ -25,19 +25,29 @@ describe('collection-core.js', () => {
       found: true, name: 'Issue #1', description: 'The first book.', book: 'book.html?slug=issue-1',
       tiles: [
         {
-          number: '1', title: 'Flowers', type: 'Missing', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
+          number: '1', title: 'Flowers', type: 'Missing', place: 'wordsearch', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
           href: 'play.html?id=WSCH-0002', ids: ['WSCH-0002'],
         },
         {
-          number: '2', title: 'Birds', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '3 Oct 2026'],
+          number: '2', title: 'Birds', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla', '3 Oct 2026'],
           href: 'play.html?id=WSCH-0003', ids: ['WSCH-0003'],
         },
         {
-          number: '10', title: 'Farm Animals', type: 'Vanilla', tone: 'Easy', lines: ['Vanilla', '1 Oct 2026'],
+          number: '10', title: 'Farm Animals', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla', '1 Oct 2026'],
           href: 'play.html?id=WSCH-0001', ids: ['WSCH-0001'],
         },
       ],
     });
+  });
+
+  test('a collection holding both kinds shows each puzzle as its own kind, a maze opening the maze page', () => {
+    const mixed = [{ slug: 'mixed', name: 'Mixed', description: '', created: '2026-10-04',
+      puzzles: [{ id: 'WSCH-0001', number: 1 }, { id: 'MAZE-0001', number: 2 }] }];
+    const puzzles = [...index(), { hiddenId: 'MAZE-0001', type: 'Keys', created: '2026-10-04', title: 'Locked Out' }];
+    expect(collectionView(mixed, puzzles, 'mixed').tiles.map(t => [t.place, t.tone, t.href])).toEqual([
+      ['wordsearch', 'Easy', 'play.html?id=WSCH-0001'],
+      ['maze', 'Hard', 'maze.html?id=MAZE-0001'],
+    ]);
   });
 
   test('Print book opens the collection\'s book, slug and all', () => {

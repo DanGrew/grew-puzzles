@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The Saving your progress page, in the owner's words (the product's docs/CONTENT.md, Saving your
-// progress), reached from the burger menu on every page, after How to play.
+// progress), reached from the side bar on every page, after How to play.
 const WORDS = [
   'Sign in with Google and we\'ll save your progress as you play: every word, the moment you find it! Close the page, come back tomorrow, and pick up right where you left off.',
   'Play anywhere. Start a puzzle on your phone and finish it on your laptop! Sign in with the same Google account and your finds will be waiting. Playing on two at once? Just reopen the puzzle on the other one to catch up.',
@@ -16,12 +16,11 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
-  test(`on ${address}, the burger menu holds Saving your progress after How to play, which opens its page`, async ({ page, baseURL }) => {
+  test(`on ${address}, the side bar holds Saving your progress after How to play, which opens its page`, async ({ page, baseURL }) => {
     await page.goto(address);
-    await page.locator('.site .burger').click();
-    const pages = await page.locator('#site-menu > a:visible').allTextContents();
+    const pages = await page.locator('#site-side .page').allTextContents();
     expect(pages.slice(-4)).toEqual(['How to play', 'Saving your progress', 'About us', 'Privacy']);
-    await page.locator('#site-menu > a:visible', { hasText: 'Saving your progress' }).click();
+    await page.locator('#site-side .page', { hasText: 'Saving your progress' }).click();
     await expect(page).toHaveURL(`${baseURL}/app/saving.html`);
     await expect(page.locator('h1')).toHaveText('Saving your progress');
   });
@@ -38,10 +37,9 @@ test('the Saving your progress page is worded exactly as the owner wrote it, eac
   await expect(page.locator('main img')).toHaveCount(0);
 });
 
-test('on the Saving your progress page, Saving your progress is the menu\'s current entry', async ({ page }) => {
+test('on the Saving your progress page, Saving your progress is the side bar\'s current entry', async ({ page }) => {
   await page.goto('/app/saving.html');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu [aria-current]')).toHaveText(['Saving your progress']);
+  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['Saving your progress']);
 });
 
 test('How to play keeps to the puzzle types, with nothing about saving', async ({ page }) => {
@@ -62,8 +60,7 @@ for (const [device, width, height] of [['a phone', 375, 700], ['a desktop', 1280
 
 test('Plain, the Saving your progress page shows no character', async ({ page }) => {
   await page.goto('/app/saving.html');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main p')).toHaveCount(WORDS.length);

@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="maze"></header>
 
   <header class="play-head">
     <h1 id="title"></h1>
@@ -111,6 +111,7 @@
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
 <script type="module">
 import { openMazePage } from '../ui/maze/play-ui.js';
 openMazePage(location.search);

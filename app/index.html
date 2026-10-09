@@ -14,8 +14,9 @@
 </head>
 <body>
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="wordsearches"></header>
+  <header class="site" data-site-bar data-home="index.html"></header>
   <main aria-labelledby="browse-title">
+    <nav class="kind-switch" aria-label="Kinds"></nav>
     <div class="browse-head">
       <h1 id="browse-title">Wordsearches</h1>
       <span id="total"></span>
@@ -58,8 +59,11 @@
 import {
   filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, toggleType,
   toggleRow, filtersLabel, clearFilters, nothingPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
-  columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn,
+  columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn, noFilters,
 } from '../core/browse-core.js';
+import { placeName } from '../core/kind-core.js';
+import { markPlace } from '../ui/side-bar-ui.js';
+import { kindPicture } from '../ui/kind-picture-ui.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 import { tileCharacter, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
 import { dressScene, dressFigure } from '../ui/theme-ui.js';
@@ -79,6 +83,7 @@ const railTiles = document.getElementById('rail-tiles');
 const railPrev = document.getElementById('rail-prev');
 const railNext = document.getElementById('rail-next');
 let items = [];
+// The types the place's filters offer — none in Collections.
 let types = [];
 // The owner's characters: each tile wears its puzzle's, shown only while Themed is on.
 let characters = [];
@@ -112,7 +117,7 @@ function card(item) {
   const figure = part('theme-figure', '');
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, tileCharacter(characters, item));
-  a.append(figure, part('name', item.title), detail);
+  a.append(figure, kindPicture(item.place), part('name', item.title), detail);
   return a;
 }
 
@@ -175,14 +180,12 @@ finishedCells[1].append(
   filter('choice', 'Not finished', s => finishedPressed(s, 'no'), s => toggleFinished(s, 'no')),
 );
 
-// A row is two cells: the difficulty's name — none for Collections — and a chip per type, each
-// pressed while every type it stands for is picked.
+// A row is two cells: the difficulty's name and a chip per type, each pressed while every type it
+// stands for is picked.
 function row(spec) {
   const name = document.createElement('div');
   name.dataset.tone = spec.tone;
-  const level = filter('level', spec.name, s => picked(s, spec.types), s => toggleRow(s, spec.types));
-  level.hidden = !spec.name;
-  name.append(level);
+  name.append(filter('level', spec.name, s => picked(s, spec.types), s => toggleRow(s, spec.types)));
   const chips = document.createElement('div');
   chips.className = 'types';
   chips.dataset.tone = spec.tone;
@@ -194,6 +197,7 @@ function show(page) {
   const list = browseList(items, state, done);
   document.getElementById('total').textContent = totalLabel(list);
   painters.forEach(paint => paint());
+  markPlace(state.kind, state.types);
   filterButton.textContent = filtersLabel(state);
   clear.hidden = nothingPicked(state);
   sort.value = state.sort;
@@ -256,6 +260,7 @@ function tick(progress) {
   done = progress.done;
   state = withSignIn(state, progress.signedIn);
   finishedCells.forEach(cell => { cell.hidden = !progress.signedIn; });
+  filterButton.hidden = noFilters(types, progress.signedIn);
   redraw();
   playing = railItems(items, progress.playing);
   showRail(0);
@@ -266,19 +271,23 @@ function tick(progress) {
 const RETURNS = { true: () => withDone(items, tick), false: () => {} };
 window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 
-// The site bar's Collections entry shows only while a collection exists. An address with a Finished
-// choice draws no tiles until the progress arrives, so none ever show only to drop out.
+// An address with a Finished choice draws no tiles until the progress arrives, so none ever show
+// only to drop out.
 const FIRST_DRAWS = { true: () => {}, false: () => show(1) };
 
+// The page is one place — a kind, or Collections — named by its address; the side bar and the
+// phone's switch go to another by opening its address.
 function load([index, mazes, published, owned]) {
   const puzzles = index.puzzles.concat(mazes.puzzles);
+  const options = filterOptions(puzzles);
   characters = owned;
   dressScene(randomCharacter(characters, Math.random));
   items = browseItems(puzzles, published.collections);
-  types = filterOptions(puzzles, published.collections);
-  document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
-  state = browseState(location.search, types);
-  rows.replaceChildren(...filterRows(types).flatMap(row), ...finishedCells);
+  state = browseState(location.search, options);
+  types = options[state.kind];
+  document.getElementById('browse-title').textContent = placeName(state.kind);
+  filterButton.hidden = noFilters(types, false);
+  rows.replaceChildren(...filterRows(state.kind, types).flatMap(row), ...finishedCells);
   FIRST_DRAWS[filtersByProgress(state)]();
   wireDone(items, tick);
 }

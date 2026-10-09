@@ -211,22 +211,23 @@ test('finding the last word pops the board and sparkles', async ({ page }) => {
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-test('the menu holds Print, then How to play — the site\'s page, the only one', async ({ page }) => {
+test('the side bar holds Print first, then the site\'s map, How to play its page — the only one', async ({ page }) => {
   await open(page);
   await expect(page.locator('.play-head button')).toHaveCount(0);
-  await page.locator('.site .burger').click();
-  const entries = page.locator('#site-menu > *');
-  await expect(entries).toHaveText(['Print', 'How to play', 'Saving your progress', 'About us', 'Privacy', /^Look/]);
-  await expect(entries.nth(1)).toHaveAttribute('href', 'how-to-play.html');
+  await expect(page.locator('#site-side .side-own > *')).toHaveText(['Print']);
+  const pages = page.locator('#site-side .page');
+  await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Privacy']);
+  await expect(pages.first()).toHaveAttribute('href', 'how-to-play.html');
   await expect(page.locator('[popover]#help')).toHaveCount(0);
 });
 
-test('the brand is the one way back to the puzzles: no All puzzles link, no Wordsearches entry', async ({ page }) => {
+test('the way back to the puzzles is the brand or the side bar\'s Wordsearches, marked current — no All puzzles link', async ({ page }) => {
   await open(page);
   await expect(page.locator('.site .brand')).toHaveAttribute('href', 'index.html');
   await expect(page.getByRole('link', { name: 'All puzzles', exact: true })).toHaveCount(0);
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu')).not.toContainText('Wordsearches');
+  const wordsearches = page.locator('#site-side .kind').first();
+  await expect(wordsearches).toHaveAttribute('href', 'index.html');
+  await expect(wordsearches).toHaveAttribute('aria-current', 'page');
 });
 
 // ---- A puzzle with a missing word ----
@@ -933,20 +934,26 @@ test('in Right on a screen too narrow for the columns beside the grid, the list 
 // The fixture 25 columns wide, as a Mirrorise grid is: a grid card wider than the site's 1080px page.
 const WIDE_25_PUZZLE = { ...PUZZLE, grids: [{ rows: PUZZLE.grids[0].rows.map(row => row.repeat(4).slice(0, 25)) }] };
 
+// The play area reaches from the column beside the side bar to the window's 24px edge: a window
+// this wide gives it 1352px, and 2056px 1392px.
+const ROOMY = 1976;
+const ROOMIER = 2056;
+
 test('in Right a 25-column grid has its words beside it whenever the window is wide enough for both', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.setViewportSize({ width: ROOMY, height: 900 });
   await openWords(page, 'right', WIDE_25_PUZZLE);
   const stage = await box(page, '.stage');
   expect(stage.width).toBeGreaterThan(1080);
   const aside = await box(page, 'aside');
   expect(aside.x).toBeGreaterThan(stage.x + stage.width);
   expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
-  expect(aside.x + aside.width).toBeLessThanOrEqual(1400);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1400);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(ROOMY);
+  expect(stage.x).toBeGreaterThan((await box(page, '#site-side')).x + (await box(page, '#site-side')).width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(ROOMY);
 });
 
 // A Mirrorise-size puzzle: 25 × 35 letters and 140 words, too many to sit beside the grid at
-// its own letter size on a 1440px screen.
+// its own letter size in a 1392px play area.
 const MIRRORISE_SIZE_PUZZLE = {
   ...LONG_PUZZLE,
   grids: [{ rows: Array.from({ length: 35 }, (_, r) => PUZZLE.grids[0].rows[r % 8].repeat(4).slice(0, 25)) }],
@@ -955,7 +962,7 @@ const MIRRORISE_SIZE_PUZZLE = {
 const letterSize = page => page.locator('#grid .cell').first().evaluate(c => c.getBoundingClientRect().width);
 
 test('in Right a big grid\'s words shrink to 13px, then its letters, until the words fit beside it', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.setViewportSize({ width: ROOMIER, height: 900 });
   await openWords(page, 'bottom', MIRRORISE_SIZE_PUZZLE);
   const own = await letterSize(page);
   await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
@@ -971,8 +978,8 @@ test('in Right a big grid\'s words shrink to 13px, then its letters, until the w
   expect(aside.x).toBeGreaterThan(stage.x + stage.width);
   expect(Math.abs(aside.y - stage.y)).toBeLessThan(1);
   expect(Math.abs(aside.height - stage.height)).toBeLessThan(1);
-  expect(aside.x + aside.width).toBeLessThanOrEqual(1440);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1440);
+  expect(aside.x + aside.width).toBeLessThanOrEqual(ROOMIER);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(ROOMIER);
   for (const word of await wordBoxes(page)) expect(word.right).toBeLessThanOrEqual(aside.x + aside.width);
   expectEven(columnsOf(await wordBoxes(page)));
 
@@ -990,9 +997,12 @@ test('in Right a list a little too wide shrinks its words, and the grid keeps it
   const stage = await box(page, '.stage');
   const aside = await box(page, 'aside');
   await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
-  // A window a few pixels narrower than grid, gap and words need, with the page's 24px edges.
+  // A window a few pixels narrower than grid, gap and words need, from the column beside the side
+  // bar to the window's 24px edge. Up to 1320px wide the column starts at the same place.
   const needed = aside.x + aside.width - stage.x;
-  await page.setViewportSize({ width: Math.floor(needed + 48 - 4), height: 900 });
+  await page.setViewportSize({ width: 1300, height: 900 });
+  const column = (await box(page, '.site-main')).x;
+  await page.setViewportSize({ width: Math.floor(column + needed + 24 - 4), height: 900 });
   await expect(async () => {
     const size = parseFloat(await page.locator('#words li').first().evaluate(li => getComputedStyle(li).fontSize));
     expect(size).toBeLessThan(16);
@@ -1092,7 +1102,7 @@ test('a repeated word stays put as its count of copies found grows', async ({ pa
 
 // ---- On a phone ----
 
-test('on a phone the page is the screen wide: burger top-right, title, date and bar centred on the screen', async ({ browser }) => {
+test('on a phone the page is the screen wide: burger top-left, title, date and bar centred on the screen', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   await open(page, null, WIDE_PUZZLE);
@@ -1104,7 +1114,7 @@ test('on a phone the page is the screen wide: burger top-right, title, date and 
     expect(Math.abs(centre(await page.locator(selector).boundingBox()) - screen / 2)).toBeLessThan(2);
   }
   const burger = await page.locator('.site .burger').boundingBox();
-  expect(burger.x + burger.width).toBeGreaterThan(screen - 40);
+  expect(burger.x).toBeLessThan(40);
   expect(burger.y).toBeLessThan(60);
   await context.close();
 });
@@ -1123,7 +1133,8 @@ for (const query of ['', '?id=7', '?collection=vanilla&id=7', '?id=../index']) {
     await page.route('**/content/**', route => { fetched.push(route.request().url()); return route.abort(); });
     await page.goto('/app/play.html' + query);
     await expect(page.locator('#title')).toHaveText('Puzzle not found');
-    expect(fetched).toEqual([]);
+    // Only the side bar's indexes, never a puzzle file.
+    expect(fetched.filter(url => !/\/content\/(puzzles\/\w+|collections)\/index\.json$/.test(url))).toEqual([]);
   });
 }
 
@@ -1149,13 +1160,21 @@ async function printedBoxes(page) {
     grid: await box('#grid'), words: await box('#words-list') };
 }
 
-test('Print in the menu opens the browser\'s print dialog and closes the menu', async ({ page }) => {
+test('Print in the side bar opens the browser\'s print dialog', async ({ page }) => {
+  await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed += 1; }; });
+  await open(page);
+  await page.locator('#site-side #print').click();
+  expect(await page.evaluate(() => window.printed)).toBe(1);
+});
+
+test('on a phone, Print in the drawer opens the print dialog and closes the drawer', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed += 1; }; });
   await open(page);
   await page.locator('.site .burger').click();
-  await page.locator('#site-menu > *', { hasText: 'Print' }).click();
+  await page.locator('#site-side #print').click();
   expect(await page.evaluate(() => window.printed)).toBe(1);
-  await expect(page.locator('#site-menu')).toBeHidden();
+  await expect(page.locator('#site-side')).toBeHidden();
 });
 
 for (const layout of ['bottom', 'right', 'overlay']) {
@@ -1847,10 +1866,11 @@ test('on a Saga every page\'s grid is at the size picked, and switching tabs nev
 test('the title, the site bar, the bands\' headings, the tabs and the corner buttons stay their size at every size', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await openSaga(page, 'bottom');
-  // The grid band's width is the card's; its heading's size is what stays.
+  // The grid band's width is the card's; its heading's size is what stays — to a hundredth of a px,
+  // past which the browser's sub-pixel placing beside the side bar is noise.
   const sizes = () => page.evaluate(() => ['#title', '.site', '#label', '.list-head h2', '#tabs .tab', '#flip', '#words-layout', '#text-size'].map(s => {
-    const e = document.querySelector(s), r = e.getBoundingClientRect();
-    return [s, getComputedStyle(e).fontSize, { '#label': 0 }[s] ?? r.width, r.height];
+    const e = document.querySelector(s), r = e.getBoundingClientRect(), px = n => Math.round(n * 100) / 100;
+    return [s, getComputedStyle(e).fontSize, px({ '#label': 0 }[s] ?? r.width), px(r.height)];
   }));
   const normal = await sizes();
   for (const label of ['Tiny', 'Huge']) {

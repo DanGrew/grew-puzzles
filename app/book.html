@@ -35,7 +35,7 @@
       <p class="book-hint" id="hint">To save it as a PDF, print from Chrome, pick Save as PDF and keep the default settings.</p>
     </div>
     <p class="book-status" id="failed" hidden>The book couldn't be put together. <a href="">Try again</a>.</p>
-    <p class="book-status" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
+    <p class="book-status" id="missing" hidden>There's no collection at this address. <a href="index.html?kind=collections">See all collections</a>.</p>
   </main>
   <div class="sheets" id="sheets"></div>
 </div>
@@ -45,6 +45,7 @@
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
 <script type="module">
 import { openBook } from '../ui/book-ui.js';
 openBook(location.search);

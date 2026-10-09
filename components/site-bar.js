@@ -1,12 +1,16 @@
 // The site bar every page shares: fills <header class="site" data-site-bar data-home="…"
-// data-current="…">. data-home is the landing page's path from the page; data-current names
-// the menu entry this page belongs to. A page that puts its own [data-menu-entry] elements
-// inside the header gets those as its menu, in place of the site's sections. Collections — the
-// landing page filtered to collections — starts hidden: a page that knows a collection exists
-// shows it. How to play, Saving your progress, About us and Privacy follow the page's own entries — every page sits
-// in app/, beside them. After them, ending every menu, the look: Themed or Plain, Themed until the player picks Plain,
-// kept in this browser. It sits on the page as <html data-look>, set here before any page script
-// runs; picking one tells the page with a grew-look event (styles/look.css, ui/theme-ui.js).
+// data-current="…">, and puts the side bar — the map of the site — down the page's left, the rest
+// of the page beside it. data-home is the landing page's path from the page; data-current names
+// the side bar entry this page belongs to — a kind (wordsearch, maze), collections, or a text
+// page. A page that puts its own [data-menu-entry] elements inside the header gets those first in
+// the side bar (the play page's Print). The kinds, each with its types, and Collections' count
+// are filled from the indexes by ui/side-bar-ui.js; Collections starts hidden until a collection
+// is found. How to play, Saving your progress, About us and Privacy follow — every page sits in
+// app/, beside them. After them, ending the side bar, the look: Themed or Plain, Themed until the
+// player picks Plain, kept in this browser. It sits on the page as <html data-look>, set here
+// before any page script runs; picking one tells the page with a grew-look event
+// (styles/look.css, ui/theme-ui.js). On a phone the side bar is a drawer, opened by the burger at
+// the bar's left (styles/site-bar.css).
 (function () {
   var LOOK_KEY = 'grew-puzzles.look';
   var root = document.documentElement;
@@ -20,50 +24,52 @@
   root.dataset.look = { plain: 'plain' }[storedLook()] || 'themed';
 
   bar.innerHTML =
-    '<a class="brand" data-query="">Grew Puzzles</a>' +
-    '<div class="menu">' +
-      '<button class="burger" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Menu">' +
-        '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>' +
-      '</button>' +
-      '<nav class="menu-panel" id="site-menu" aria-label="Site" hidden>' +
-        '<a data-entry="wordsearches" data-query="">Wordsearches</a>' +
-        '<a data-entry="collections" data-query="?type=Collections" hidden>Collections</a>' +
-      '</nav>' +
+    '<button class="burger" type="button" aria-expanded="false" aria-controls="site-side" aria-label="Menu">' +
+      '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5.5h14M3 10h14M3 14.5h14"/></svg>' +
+    '</button>' +
+    '<a class="brand" data-query="">Grew Puzzles</a>';
+
+  var side = document.createElement('nav');
+  side.className = 'side';
+  side.id = 'site-side';
+  side.setAttribute('aria-label', 'Site');
+  side.innerHTML =
+    '<div class="side-own"></div>' +
+    '<div class="side-kinds"></div>' +
+    '<a class="kind side-collections" data-mark="collections" data-query="?kind=collections" hidden>Collections<small class="count"></small></a>' +
+    '<hr>' +
+    '<a class="page" data-mark="how-to-play" href="how-to-play.html">How to play</a>' +
+    '<a class="page" data-mark="saving" href="saving.html">Saving your progress</a>' +
+    '<a class="page" data-mark="about" href="about.html">About us</a>' +
+    '<a class="page" data-mark="privacy" href="privacy.html">Privacy</a>' +
+    '<div class="look" role="group" aria-label="Look">' +
+      '<span class="look-name">Look</span>' +
+      '<button type="button" data-look="themed">Themed</button>' +
+      '<button type="button" data-look="plain">Plain</button>' +
     '</div>';
-
+  var ownSlot = side.querySelector('.side-own');
+  var look = side.querySelector('.look');
   var burger = bar.querySelector('.burger');
-  var panel = bar.querySelector('.menu-panel');
-  var howTo = document.createElement('a');
-  howTo.dataset.entry = 'how-to-play';
-  howTo.href = 'how-to-play.html';
-  howTo.textContent = 'How to play';
-  var saving = document.createElement('a');
-  saving.dataset.entry = 'saving';
-  saving.href = 'saving.html';
-  saving.textContent = 'Saving your progress';
-  var about = document.createElement('a');
-  about.dataset.entry = 'about';
-  about.href = 'about.html';
-  about.textContent = 'About us';
-  var privacy = document.createElement('a');
-  privacy.dataset.entry = 'privacy';
-  privacy.href = 'privacy.html';
-  privacy.textContent = 'Privacy';
-  var look = document.createElement('div');
-  look.className = 'look';
-  look.setAttribute('role', 'group');
-  look.setAttribute('aria-label', 'Look');
-  look.innerHTML = '<span class="look-name">Look</span>' +
-    '<button type="button" data-look="themed">Themed</button>' +
-    '<button type="button" data-look="plain">Plain</button>';
-
   own.forEach(function (entry) {
-    entry.addEventListener('click', function () { setMenu(false); });
+    entry.addEventListener('click', function () { setSide(false); });
   });
-  if (own.length) panel.replaceChildren.apply(panel, own);
-  panel.append(howTo, saving, about, privacy, look);
+  ownSlot.append.apply(ownSlot, own);
+  ownSlot.hidden = own.length === 0;
 
-  // The menu stays open on a pick, so the player sees the page change under it.
+  // The side bar, then the page beside it: everything the page put after its site bar.
+  var scrim = document.createElement('div');
+  scrim.className = 'side-scrim';
+  var body = document.createElement('div');
+  body.className = 'site-body';
+  var main = document.createElement('div');
+  main.className = 'site-main';
+  var rest = [];
+  for (var next = bar.nextSibling; next; next = next.nextSibling) rest.push(next);
+  main.append.apply(main, rest);
+  body.append(side, scrim, main);
+  bar.after(body);
+
+  // The look stays as picked, so the player sees the page change beside it.
   function showLook() {
     look.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.look === root.dataset.look)); });
   }
@@ -77,29 +83,28 @@
   });
   showLook();
 
-  bar.querySelectorAll('.brand, [data-query]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
-  bar.querySelectorAll('[data-entry="' + bar.dataset.current + '"]').forEach(function (a) {
-    a.setAttribute('aria-current', 'page');
-  });
+  bar.querySelectorAll('.brand').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
+  side.querySelectorAll('[data-query]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
 
-  function setMenu(open) {
-    panel.hidden = !open;
+  // The drawer, on a phone: the burger opens and closes it; a press outside it, or Escape, closes it.
+  function setSide(open) {
+    side.toggleAttribute('data-open', open);
     burger.setAttribute('aria-expanded', String(open));
   }
 
   function closeAndFocus() {
-    setMenu(false);
+    setSide(false);
     burger.focus();
   }
 
   burger.addEventListener('click', function (e) {
     e.stopPropagation();
-    setMenu(panel.hidden);
+    setSide(!side.hasAttribute('data-open'));
   });
-  panel.addEventListener('click', function (e) { e.stopPropagation(); });
-  document.addEventListener('click', function () { setMenu(false); });
-  // Escape is the menu's only while it is open — closed, the key belongs to the rest of the page.
+  side.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', function () { setSide(false); });
+  // Escape is the drawer's only while it is open — closed, the key belongs to the rest of the page.
   document.addEventListener('keydown', function (e) {
-    [closeAndFocus].filter(function () { return e.key === 'Escape' && !panel.hidden; }).forEach(function (f) { f(); });
+    [closeAndFocus].filter(function () { return e.key === 'Escape' && side.hasAttribute('data-open'); }).forEach(function (f) { f(); });
   });
 })();
