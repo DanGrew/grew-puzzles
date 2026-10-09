@@ -1,3 +1,49 @@
 {
-  "puzzles": []
+  "puzzles": [
+    {
+      "hiddenId": "MAZE-0001",
+      "type": "Vanilla",
+      "created": "2026-10-09",
+      "title": "Vanilla 001",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0002",
+      "type": "Vanilla",
+      "created": "2026-10-09",
+      "title": "Vanilla 002",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0003",
+      "type": "Vanilla",
+      "created": "2026-10-09",
+      "title": "Vanilla Blind 001",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0004",
+      "type": "Vanilla",
+      "created": "2026-10-09",
+      "title": "Vanilla Blind 002",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0005",
+      "type": "Vanilla",
+      "created": "2026-10-10",
+      "title": "Vanilla Blind 003",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    }
+  ]
 }
