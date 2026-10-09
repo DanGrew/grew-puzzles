@@ -15,6 +15,8 @@
 @media (max-width: 760px) {
   .play.maze #checklist-card { width: 100%; }
 }
+/* Saved progress's slip (play.css) sits under the checklist, in the card's column. */
+.play.maze #checklist-card > .save-line { margin-top: 14px; }
 
 /* The frame: the grid card's window onto the maze, sized by ui/maze/play-ui.js (--frame-w,
    --frame-h). The maze sits behind it at the player's zoom (--cell), moved so they stay in the

@@ -77,6 +77,8 @@ async function standIn(context, db) {
     if (db.offline) return route.abort('internetdisconnected');
     if (url.pathname === '/rest/v1/rpc/delete_account') return deleteAccount(route, db, claims(token).sub);
     if (url.pathname === '/rest/v1/progress') return progress(route, db, claims(token).sub);
+    // The ticks read the player's maze finds too — none here; maze-saving.test.js's.
+    if (url.pathname === '/rest/v1/maze_found' && request.method() === 'GET') return route.fulfill({ headers: CORS, json: [] });
     db.strays.push(`${request.method()} ${url.pathname}`);
     return route.abort();
   });
