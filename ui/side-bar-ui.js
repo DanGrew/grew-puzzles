@@ -26,8 +26,9 @@ function link(className, entry) {
 
 // A type's dot, in its difficulty's colour — a maze type has none.
 function dot(tone) {
-  var span = part('span', 'dot', '');
-  span.dataset.tone = tone;
+  var span = document.createElement('span');
+  span.className = 'dot';
+  span.setAttribute('data-tone', tone);
   return span;
 }
 

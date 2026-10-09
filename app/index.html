@@ -183,7 +183,7 @@ finishedCells[1].append(
 // A pick in a row: a difficulty wears its colour; a type is plain.
 function chip(pick) {
   const b = filter(`chip ${pick.key}`, pick.value, s => picked(s, pick), s => togglePick(s, pick));
-  b.dataset.tone = pick.tone;
+  b.setAttribute('data-tone', pick.tone);
   return b;
 }
 
