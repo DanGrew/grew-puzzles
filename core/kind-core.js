@@ -90,7 +90,7 @@ export function sideBar(puzzles, collections) {
 
 // What a page is current for: its place, and — with one type picked there — that type too.
 export function sideMarks(place, types) {
-  return [place, ...types.slice(0, 1).filter(() => types.length === 1).map(t => `${place}:${t}`)];
+  return [place, ...types.filter(() => types.length === 1).map(t => `${place}:${t}`)];
 }
 
 // An entry's aria-current: the page it's current for, or not.
