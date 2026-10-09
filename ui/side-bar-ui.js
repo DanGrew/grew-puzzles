@@ -1,5 +1,5 @@
 // The side bar's kinds (components/site-bar.js): Wordsearches and Mazes, each with its puzzle count
-// and its types beneath, a dot in each wordsearch type's difficulty colour, then Collections' count — read
+// and its types beneath, a dot in each type's difficulty colour, then Collections' count — read
 // from the indexes, never a puzzle file (core/kind-core.js). The landing page's Wordsearches |
 // Mazes switch, shown on a phone, is filled from the same map. An entry is marked current for the
 // page's place: the page's own data-current, or — on the landing page, whose place is its address —
@@ -24,17 +24,10 @@ function link(className, entry) {
   return a;
 }
 
-// A type's dot, in its difficulty's colour — a maze type has none.
-function dot(tone) {
-  var span = document.createElement('span');
-  span.className = 'dot';
-  span.setAttribute('data-tone', tone);
-  return span;
-}
-
 function typeEntry(type) {
   var a = link('type', type);
-  a.prepend.apply(a, type.dots.map(dot));
+  a.dataset.tone = type.tone;
+  a.prepend(part('span', 'dot', ''));
   var li = document.createElement('li');
   li.append(a);
   return li;
