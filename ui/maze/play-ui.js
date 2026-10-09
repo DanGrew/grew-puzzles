@@ -2,14 +2,16 @@
 // play-core's board, and wires the taps, the control pad and its keys, the zoom, the little map,
 // the flip, the checklist and the completion pop. Every rule lives in core/maze/play-core.js;
 // nothing here decides anything. Only the cells in a window round the view are ever drawn, so a
-// maze of any size plays.
+// maze of any size plays. Saving the player's place and finds is ui/maze/progress-ui.js.
 import {
-  mazeUrl, mazeBoard, newMazePlay, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist,
+  mazeUrl, mazeBoard, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, wallPath, mazeFrame,
   openView, refitView, centreOn, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow,
   windowHolds, windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
 } from '../../core/maze/play-core.js';
+import { joinedMaze } from '../../core/maze/progress-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
+import { withSavedMaze, wireMazeProgress, saveMove } from './progress-ui.js';
 import { characterFor, isPhone } from '../../core/theme-core.js';
 import { withCharacters, dressFigure } from '../theme-ui.js';
 import { wireFlip, celebrate } from '../card-ui.js';
@@ -34,12 +36,17 @@ function mazeEl(id) {
 
 function noop() {}
 
+// A signed-in player's maze waits for what they saved, so it first draws as they left it.
 export function openMazePage(search) {
+  var id = new URLSearchParams(search).get('id');
   Promise.resolve(search)
     .then(mazeUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(showMaze, showMissing);
+    .then(function (puzzle) {
+      var board = mazeBoard(puzzle);
+      withSavedMaze(id, board, function (play) { showMaze(id, board, play); });
+    }, showMissing);
 }
 
 function showMissing() {
@@ -50,17 +57,16 @@ function showMissing() {
 }
 
 // The maze on its own play page: the maze in the grid card, its solution on the card's back, the
-// control pad and the checklist where a wordsearch's words would be. Its hidden ID only picks its
-// character.
-function showMaze(puzzle) {
-  var board = mazeBoard(puzzle);
-  var play = newMazePlay(board);
+// control pad and the checklist where a wordsearch's words would be — play, as the player left it,
+// already in place, so nothing pops in and a maze finished before doesn't celebrate again. Its
+// hidden ID picks its character, and is what it's saved under.
+function showMaze(id, board, play) {
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The window of cells drawn: none, until the first view.
   var shown = { top: 0, left: 0, bottom: -1, right: -1 };
-  // The first frame opens the maze; every one after refits it.
-  var fitView = function (v, before, next) { return openView(next, board); };
+  // The first frame opens the maze on the player; every one after refits it.
+  var fitView = function (v, before, next, b, here) { return openView(next, board, here); };
   var minimap = minimapSize(board, MAZE_MINIMAP_SIZE);
   var mapWalls = document.createElement('canvas');
   var minimapMove = noop;
@@ -84,12 +90,13 @@ function showMaze(puzzle) {
   drawSolution(mazeEl('solution-lines'), solutionMarks(board));
   checklist(play, board).forEach(function () { mazeEl('checklist').appendChild(checklistLine()); });
   mazeEl('play').hidden = false;
-  dressMaze(new URLSearchParams(location.search).get('id'));
+  dressMaze(id);
   wireFlip(function () { mazeEl('pad').inert = mazeEl('card').classList.contains('flipped'); });
   wirePad();
   wireZoom();
   wireMinimap();
   wireSize();
+  wireMazeProgress(id, board, function () { return play; }, joinSaved);
   render(trailDraw(play, play));
 
   function onTap(cell) {
@@ -100,13 +107,24 @@ function showMaze(puzzle) {
     move(padMaze(play, press, board));
   }
 
-  // Every move keeps the player in the centre, gliding there, at the zoom it's at.
+  // Every move is saved as the trail stops, signed in, and sets off what it set off.
   function move(next) {
+    saveMove(id, board, play, next);
+    show(next);
+    play.events.forEach(function (e) { MAZE_EVENTS[e](); });
+  }
+
+  // Signed in mid-maze: the maze saved elsewhere joins the one on screen.
+  function joinSaved(saved) {
+    show(joinedMaze(play, saved));
+  }
+
+  // The play keeps the player in the centre, gliding there, at the zoom it's at.
+  function show(next) {
     var draw = trailDraw(play, next);
     play = next;
     showView(centreOn(view, trailEnd(play), frame, board), true);
     render(draw);
-    play.events.forEach(function (e) { MAZE_EVENTS[e](); });
   }
 
   // The trail — its new steps drawn on, cutting short any still drawing — where the player stands,

@@ -82,8 +82,9 @@ async function standInForGoogle(context, { agree = true, user = PLAYER, reachabl
       asked.signOuts += 1;
       return route.fulfill({ status: 204, headers: CORS });
     }
-    // A signed-in page reads the player's saved lines for its ticks — none here; done.test.js's.
-    if (url.pathname === '/rest/v1/progress') return route.fulfill({ headers: CORS, json: [] });
+    // A signed-in page reads the player's saved lines and maze finds for its ticks — none here;
+    // done.test.js's and maze-saving.test.js's.
+    if (['/rest/v1/progress', '/rest/v1/maze_found'].includes(url.pathname)) return route.fulfill({ headers: CORS, json: [] });
     asked.other.push(url.href);
     return route.abort();
   });

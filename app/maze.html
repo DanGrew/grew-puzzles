@@ -105,6 +105,14 @@
         </div>
         <ul class="checklist" id="checklist"></ul>
       </div>
+      <!-- Signed out, the invitation to sign in; signed in, a note while the maze isn't saved. -->
+      <div class="save-line" id="save-line" role="status" hidden>
+        <p class="slip" id="save-hint" hidden>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15.5H5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 14.3 7 4 4 0 0 1 15 15.5h-1"/><path d="M10 16.5V10M7.5 12.3 10 9.8l2.5 2.5"/></svg>
+          <span><button class="sign-in-link" id="save-sign-in" type="button">Sign in</button> to save your progress — or just play.</span>
+        </p>
+        <p class="slip slip-note" id="save-note" hidden><span class="dot" aria-hidden="true"></span>Progress not saved — reconnecting</p>
+      </div>
     </aside>
   </main>
 </div>

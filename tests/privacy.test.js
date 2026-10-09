@@ -6,7 +6,7 @@ const EMAIL = 'grew.studio.media@gmail.com';
 const WORDS = [
   ['Your privacy', 'You don\'t need an account to play — every puzzle is free and open to everyone. If you\'d like your progress saved, you can sign in with Google.'],
   ['No tricks', `There are no tricks and no money-making here. We literally just use your email to save your progress, with Supabase, the service we use for our database. If you have any questions or concerns, please reach out at ${EMAIL}.`],
-  ['What we keep', 'Only your email address and the words you\'ve found in each puzzle, with when you found them. We use them for one thing: saving your progress so you can pick up where you left off, on any device.'],
+  ['What we keep', 'Only your email address, the words you\'ve found in each puzzle and what you\'ve found in each maze, with when you found them, and where you are in each maze. We use them for one thing: saving your progress so you can pick up where you left off, on any device.'],
   ['Who else sees it', 'Nobody. Sign-in is handled by Google, and your progress is stored with Supabase. We don\'t sell anything, show ads, or track you.'],
   ['Deleting it', 'Tap your picture, then Delete my account. Everything we keep about you is removed for good.'],
 ];

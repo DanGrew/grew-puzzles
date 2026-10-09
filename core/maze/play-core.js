@@ -12,7 +12,11 @@ import { dayLabel } from '../day-core.js';
 export function mazeUrl(search) {
   var id = new URLSearchParams(search).get('id');
   if (!/^MAZE-[0-9]{4,}$/.test(id)) throw new Error('No such puzzle');
-  return '../content/puzzles/maze/' + id + '.json';
+  return mazeFile(id);
+}
+
+export function mazeFile(hiddenId) {
+  return '../content/puzzles/maze/' + hiddenId + '.json';
 }
 
 // ---- The board ----
@@ -266,6 +270,68 @@ export function padKey(key) {
   return { true: '', false: press }[key.altKey || key.ctrlKey || key.metaKey || key.shiftKey];
 }
 
+// ---- Coming back ----
+// A saved maze comes back as the player left it from just the cell they were on and the cells of
+// what they'd found (core/maze/progress-core.js). In a perfect maze the trail is the one route
+// from the start to that cell, so it's walked again by the walls — to where the player already
+// was, never further, so it solves nothing.
+
+function cellKey(cell) {
+  return cell[0] + ',' + cell[1];
+}
+
+// Every cell the start reaches, each with the cell it's reached from — the start from none — a
+// cell at a time, never more steps than the maze has cells.
+function reached(board) {
+  var from = new Map([[cellKey(board.start), board.start]]);
+  var order = [board.start];
+  Array.from({ length: board.rows * board.cols }).forEach(function (_, i) {
+    order.slice(i, i + 1).forEach(function (here) {
+      openSides(board, here).map(function (side) { return stepOf(here, side); })
+        .filter(function (next) { return inWindow({ top: 0, left: 0, bottom: board.rows - 1, right: board.cols - 1 }, next) && !from.has(cellKey(next)); })
+        .forEach(function (next) { from.set(cellKey(next), here); order.push(next); });
+    });
+  });
+  return from;
+}
+
+// The route from the start to a cell, the start first: back from the cell, a step at a time, to
+// the start. A cell the start doesn't reach — one off the maze, or inside a block — has none.
+function routeTo(board, cell) {
+  var from = reached(board);
+  var back = [cell].filter(function (c) { return from.has(cellKey(c)); });
+  Array.from({ length: from.size }).forEach(function () {
+    back.slice(-1).filter(function (c) { return !sameCell(c, board.start); })
+      .forEach(function (c) { back.push(from.get(cellKey(c))); });
+  });
+  return back.reverse();
+}
+
+// Where a run along the trail would have stopped — each junction, dead end, or anything on the
+// checklist — and its end: so Back goes back a run at a time, as it did before.
+function runEnds(board, trail) {
+  var stops = trail.slice(1, -1).map(function (cell, i) { return { cell: cell, length: i + 2 }; })
+    .filter(function (at) { return openSides(board, at.cell).length !== 2 || board.stops.some(function (s) { return sameCell(s.cell, at.cell); }); })
+    .map(function (at) { return at.length; });
+  return [1].concat(stops, [trail.length].filter(function (length) { return length > 1; }));
+}
+
+// The play as it was left: the trail to the player's cell — the start alone if no route reaches
+// it — and everything found ticked: the stops on the found cells, and those on the trail, which
+// the player stepped on getting there.
+export function resumedMaze(board, cell, found) {
+  var route = routeTo(board, cell);
+  var trail = { true: route, false: [board.start] }[route.length > 0];
+  var on = function (cells, stop) { return cells.some(function (c) { return sameCell(c, stop.cell); }); };
+  var got = board.stops.filter(function (s) { return on(found, s) || on(trail, s); }).map(function (s) { return s.id; });
+  return { trail: trail, got: got, events: [], locked: [], runs: runEnds(board, trail) };
+}
+
+// The cells of everything found, in the checklist's order — what a find saves.
+export function foundCells(play, board) {
+  return board.stops.filter(function (s) { return play.got.includes(s.id); }).map(function (s) { return s.cell; });
+}
+
 // How a move draws the trail: the steps already drawn, of the trail's steps all told — a trail's
 // steps are a cell long each, so they're its length in cells — and how long the new ones take,
 // ms. A move back has nothing new to draw. from is the dash offset the drawing starts at.
@@ -398,11 +464,11 @@ export function centreOn(view, cell, frame, board) {
   }, frame, board);
 }
 
-// A maze opens whole, unless that leaves its cells too small to tap: then zoomed in on the start,
-// cells 20px across.
-export function openView(frame, board) {
+// A maze opens whole, unless that leaves its cells too small to tap: then zoomed in on here — the
+// start, or where a saved maze was left — cells 20px across.
+export function openView(frame, board, here) {
   var cell = { true: frame.fit, false: 20 }[frame.fit >= 10];
-  return centreOn({ cell: cell, x: 0, y: 0 }, board.start, frame, board);
+  return centreOn({ cell: cell, x: 0, y: 0 }, here, frame, board);
 }
 
 // The screen resized, from the frame before to this one: a player looking at the whole maze still
