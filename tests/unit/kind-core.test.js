@@ -1,15 +1,15 @@
 import {
-  COLLECTIONS, kinds, kindOf, places, placeName, difficultyOf, difficulties, typesOf, placeParams, sideBar, sideMarks, markOf,
+  COLLECTIONS, kinds, kindOf, places, placeName, difficultyOf, difficulties, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
 } from '../../core/kind-core.js';
 
 const puzzle = (hiddenId, type) => ({ hiddenId, type, created: '2026-10-08', title: hiddenId });
 const collection = name => ({ slug: name.toLowerCase(), name, description: '', created: '2026-10-08', puzzles: [] });
 
 describe('kind-core.js', () => {
-  test('the kinds, in the side bar\'s order: Wordsearches, then Mazes, each with its prefix and play page', () => {
+  test('the kinds, in the side bar\'s order: Wordsearches, then Mazes, each with its prefix and play page — only a wordsearch\'s type sets its level', () => {
     expect(kinds()).toEqual([
-      { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html' },
-      { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+      { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html', typeLevels: true },
+      { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html', typeLevels: false },
     ]);
   });
 
@@ -48,6 +48,23 @@ describe('kind-core.js', () => {
     expect(difficulties()).toEqual(['Easy', 'Medium', 'Hard', 'Extreme']);
   });
 
+  test('a puzzle\'s difficulty is the one saved with it, or with none saved its type\'s level', () => {
+    expect(puzzleDifficulty({ ...puzzle('MAZE-0001', 'Vanilla'), difficulty: 'Hard' })).toBe('Hard');
+    expect(puzzleDifficulty(puzzle('MAZE-0001', 'Keys'))).toBe('Hard');
+    expect(puzzleDifficulty(puzzle('MAZE-0001', 'Keylecticodes'))).toBe('Extreme');
+    expect(puzzleDifficulty(puzzle('WSCH-0001', 'Saga'))).toBe('Medium');
+  });
+
+  test('a kind\'s difficulties are its puzzles\', once each, Easy to Extreme', () => {
+    const index = [
+      { ...puzzle('MAZE-0001', 'Vanilla'), difficulty: 'Extreme' }, puzzle('MAZE-0002', 'Keys'), puzzle('MAZE-0003', 'Keys'),
+      puzzle('WSCH-0001', 'Vanilla'),
+    ];
+    expect(levelsOf('maze', index)).toEqual(['Hard', 'Extreme']);
+    expect(levelsOf('wordsearch', index)).toEqual(['Easy']);
+    expect(levelsOf('collections', index)).toEqual([]);
+  });
+
   test('a kind\'s types are its puzzles\', once each, easiest first and A to Z within a difficulty', () => {
     const index = [
       puzzle('WSCH-0001', 'Mirra?e'), puzzle('WSCH-0002', 'Wildcards'), puzzle('WSCH-0003', 'Vanilla'),
@@ -72,7 +89,7 @@ describe('kind-core.js', () => {
     expect(placeParams('collections', []).toString()).toBe('kind=collections');
   });
 
-  test('the side bar lists each kind with its count and its types, each with its tone and address', () => {
+  test('the side bar lists each kind with its count and its types, each with its address — a wordsearch type a dot in its tone, a maze type none', () => {
     const index = [puzzle('WSCH-0001', 'Saga'), puzzle('WSCH-0002', 'Vanilla'), puzzle('MAZE-0001', 'Vanilla'), puzzle('MAZE-0002', 'Keys'),
       puzzle('MAZE-0003', 'Keys')];
     expect(sideBar(index, [collection('Issue')])).toEqual({
@@ -80,15 +97,15 @@ describe('kind-core.js', () => {
         {
           mark: 'wordsearch', name: 'Wordsearches', count: '2', query: '',
           types: [
-            { mark: 'wordsearch:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?type=Vanilla' },
-            { mark: 'wordsearch:Saga', name: 'Saga', tone: 'Medium', query: '?type=Saga' },
+            { mark: 'wordsearch:Vanilla', name: 'Vanilla', dots: ['Easy'], query: '?type=Vanilla' },
+            { mark: 'wordsearch:Saga', name: 'Saga', dots: ['Medium'], query: '?type=Saga' },
           ],
         },
         {
           mark: 'maze', name: 'Mazes', count: '3', query: '?kind=maze',
           types: [
-            { mark: 'maze:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?kind=maze&type=Vanilla' },
-            { mark: 'maze:Keys', name: 'Keys', tone: 'Hard', query: '?kind=maze&type=Keys' },
+            { mark: 'maze:Vanilla', name: 'Vanilla', dots: [], query: '?kind=maze&type=Vanilla' },
+            { mark: 'maze:Keys', name: 'Keys', dots: [], query: '?kind=maze&type=Keys' },
           ],
         },
       ],

@@ -77,10 +77,11 @@ test.describe('a maze on the landing page', () => {
     await expect(page.locator('.tile .name')).toHaveText(['Farmyard']);
   });
 
-  test('its type sits in the filters under its difficulty', async ({ page }) => {
+  test('its difficulty and its type each sit in the filters, saved before the pick so at its type\'s level', async ({ page }) => {
     await page.goto('/app/?kind=maze');
     await page.click('#filter-button');
-    await expect(page.locator('.types[data-tone="Extreme"] .chip')).toHaveText(['Keylecticodes']);
+    await expect(page.locator('#filters .chip.levels')).toHaveText(['Extreme']);
+    await expect(page.locator('#filters .chip.types')).toHaveText(['Keylecticodes']);
   });
 
   test('tapping it opens its maze play page: the maze in the grid card, the checklist beside it', async ({ page }) => {

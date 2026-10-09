@@ -738,7 +738,8 @@ test('signed out, Filters has no Finished row', async ({ context }) => {
   await openFilters(page);
   await page.waitForTimeout(300);
   await expect(page.locator('#filters .choice')).toHaveCount(2);
-  await expect(page.locator('#filters .choice:visible, #filters .row-name:visible')).toHaveCount(0);
+  await expect(page.locator('#filters .choice:visible, #filters .finished-cell:visible')).toHaveCount(0);
+  await expect(page.locator('#filters .row-name:visible')).toHaveText(['Difficulty', 'Type']);
   expect(table.reads).toEqual([]);
 });
 

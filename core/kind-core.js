@@ -8,11 +8,12 @@
 export const COLLECTIONS = 'collections';
 
 // Every kind, in the side bar's order: its address name, what players call it, its hidden IDs'
-// prefix and its play page.
+// prefix, its play page, and whether its type sets a puzzle's difficulty — a wordsearch's does; a
+// maze's difficulty is the owner's call on each maze, so a maze type has no one level.
 export function kinds() {
   return [
-    { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html' },
-    { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+    { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html', typeLevels: true },
+    { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html', typeLevels: false },
   ];
 }
 
@@ -32,10 +33,10 @@ export function placeName(place) {
   return new Map([...kinds().map(k => [k.kind, k.name]), [COLLECTIONS, 'Collections']]).get(place);
 }
 
-// How hard each kind's types are — the one place it is written. A tile's strip, the type's filter
-// row and its side bar dot all take their colour from it, a colour per difficulty in
-// styles/theme.css. Vanilla, and any type not listed here, is Easy, so a new type never ships
-// uncoloured.
+// How hard each kind's types are — the one place it is written. A wordsearch's tile strip and its
+// type's side bar dot take their colour from it, a colour per difficulty in styles/theme.css; a
+// maze's is only its level until the owner saves one of its own (puzzleDifficulty). Vanilla, and
+// any type not listed here, is Easy, so a new type never ships uncoloured.
 export function difficultyOf(kind, type) {
   const difficulty = new Map([
     ['wordsearch:Saga', 'Medium'], ['wordsearch:Wildcards', 'Medium'], ['wordsearch:Missing', 'Hard'],
@@ -45,9 +46,21 @@ export function difficultyOf(kind, type) {
   return difficulty.get(`${kind}:${type}`) ?? 'Easy';
 }
 
-// Every difficulty, easiest first: the filter rows' order, the side bar's, and the Difficulty sort's.
+// Every difficulty, easiest first: the Difficulty filter's order, and the Difficulty sort's.
 export function difficulties() {
   return ['Easy', 'Medium', 'Hard', 'Extreme'];
+}
+
+// A puzzle's difficulty: the one the owner saved with it in its index entry, or — none saved, as
+// every wordsearch and a maze saved before the pick — its type's.
+export function puzzleDifficulty(puzzle) {
+  return puzzle.difficulty ?? difficultyOf(kindOf(puzzle.hiddenId), puzzle.type);
+}
+
+// The difficulties a kind's puzzles have, easiest first.
+export function levelsOf(kind, puzzles) {
+  const held = puzzles.filter(p => kindOf(p.hiddenId) === kind).map(puzzleDifficulty);
+  return difficulties().filter(d => held.includes(d));
 }
 
 // The types a kind's puzzles have, once each — never a hand-kept list — easiest first, A to Z
@@ -72,16 +85,22 @@ function query(params) {
   return text ? `?${text}` : '';
 }
 
+// The dot beside a type in the side bar, in its difficulty's tone — only where the type sets the
+// difficulty, so a maze type has none.
+function typeDots(kind, type) {
+  return kinds().filter(k => k.kind === kind && k.typeLevels).map(() => difficultyOf(kind, type));
+}
+
 // The side bar's map of the site: each kind with its puzzle count, then its types, each with its
-// difficulty's tone, opening that kind filtered to that type alone; then Collections, with its
-// count, shown only while a collection exists. Each entry's mark is what it's current for.
+// dot, opening that kind filtered to that type alone; then Collections, with its count, shown only
+// while a collection exists. Each entry's mark is what it's current for.
 export function sideBar(puzzles, collections) {
   return {
     kinds: kinds().map(k => ({
       mark: k.kind, name: k.name, count: String(puzzles.filter(p => kindOf(p.hiddenId) === k.kind).length),
       query: query(placeParams(k.kind, [])),
       types: typesOf(k.kind, puzzles).map(type => ({
-        mark: `${k.kind}:${type}`, name: type, tone: difficultyOf(k.kind, type), query: query(placeParams(k.kind, [type])),
+        mark: `${k.kind}:${type}`, name: type, dots: typeDots(k.kind, type), query: query(placeParams(k.kind, [type])),
       })),
     })),
     collections: { count: String(collections.length), query: query(placeParams(COLLECTIONS, [])), hidden: collections.length === 0 },

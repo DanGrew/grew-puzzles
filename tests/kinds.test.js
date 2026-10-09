@@ -8,9 +8,16 @@ const puzzle = (kind, n, type, title) => ({ hiddenId: `${kind}-${String(n).padSt
 const WORDSEARCHES = [
   puzzle('WSCH', 1, 'Vanilla', 'Farmyard'), puzzle('WSCH', 2, 'Saga', 'Long Story'), puzzle('WSCH', 3, 'Mirra?e', 'Mirror'),
 ];
+// A maze's index entry carries the difficulty the owner saved and its size (TASK-111) — Plain Path
+// a Vanilla saved as Hard. Key Keeper was saved before either, so it has neither.
+const saved = (difficulty, width, height) => ({ difficulty, width, height });
 const MAZES = [
-  puzzle('MAZE', 1, 'Vanilla', 'Plain Path'), puzzle('MAZE', 2, 'Collectibles', 'Gold Rush'), puzzle('MAZE', 3, 'Code Breaker', 'Secret Code'),
-  puzzle('MAZE', 4, 'Keys', 'Locked Out'), puzzle('MAZE', 5, 'Keylecticodes', 'Grand Finale'), puzzle('MAZE', 6, 'Keys', 'Key Keeper'),
+  { ...puzzle('MAZE', 1, 'Vanilla', 'Plain Path'), ...saved('Hard', 100, 100) },
+  { ...puzzle('MAZE', 2, 'Collectibles', 'Gold Rush'), ...saved('Medium', 32, 40) },
+  { ...puzzle('MAZE', 3, 'Code Breaker', 'Secret Code'), ...saved('Medium', 32, 40) },
+  { ...puzzle('MAZE', 4, 'Keys', 'Locked Out'), ...saved('Hard', 48, 60) },
+  { ...puzzle('MAZE', 5, 'Keylecticodes', 'Grand Finale'), ...saved('Extreme', 32, 40) },
+  puzzle('MAZE', 6, 'Keys', 'Key Keeper'),
 ];
 
 async function serve(page) {
@@ -42,7 +49,7 @@ test('the landing page opens on the Wordsearches grid, Wordsearches highlighted,
   await expect(side(page).locator('.kind').first()).toHaveCSS('background-color', 'rgb(31, 111, 92)');
 });
 
-test('Mazes in the side bar shows only mazes, and Filters lists only the maze types, Vanilla to Keylecticodes, in their difficulty rows', async ({ page }) => {
+test('Mazes in the side bar shows only mazes, and Filters offers their difficulties and only the maze types, in one list', async ({ page }) => {
   const fileRequests = await serve(page);
   await page.goto('/app/');
   await side(page).locator('.kind', { hasText: 'Mazes' }).click();
@@ -52,7 +59,7 @@ test('Mazes in the side bar shows only mazes, and Filters lists only the maze ty
   await expect(current(page)).toHaveText(['Mazes6']);
   await page.locator('#filter-button').click();
   expect(await rowsOf(page)).toEqual([
-    ['Easy', ['Vanilla']], ['Medium', ['Code Breaker', 'Collectibles']], ['Hard', ['Keys']], ['Extreme', ['Keylecticodes']],
+    ['Difficulty', ['Medium', 'Hard', 'Extreme']], ['Type', ['Vanilla', 'Code Breaker', 'Collectibles', 'Keys', 'Keylecticodes']],
   ]);
   expect(fileRequests).toEqual([]);
 });
@@ -98,6 +105,62 @@ test('an address naming a kind and a type opens on exactly that, so a link to "M
   await page.locator('#filter-button').click();
   await expect(page.locator('#filters .chip[aria-pressed="true"]')).toHaveText(['Keys']);
   await expect(current(page)).toHaveText(['Mazes6', 'Keys']);
+});
+
+test('a Vanilla maze the owner saved as Hard wears Hard\'s colour; a maze saved before the pick wears its type\'s', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/?kind=maze');
+  const strip = title => page.locator('#tiles .tile', { hasText: title }).evaluate(el => getComputedStyle(el, '::before').backgroundColor);
+  expect(await strip('Plain Path')).toBe('rgb(246, 180, 122)');
+  expect(await strip('Key Keeper')).toBe('rgb(246, 180, 122)');
+  expect(await strip('Gold Rush')).toBe('rgb(245, 220, 114)');
+});
+
+test('picking Hard shows every Hard maze, whatever its type; Hard and Vanilla only the Hard Vanilla one; neither, every maze', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.goto('/app/?kind=maze&sort=title&dir=asc');
+  await page.locator('#filter-button').click();
+  const pickOf = name => page.locator('#filters').getByRole('button', { name, exact: true });
+  await pickOf('Hard').click();
+  await expect(names(page)).toHaveText(['Key Keeper', 'Locked Out', 'Plain Path']);
+  await pickOf('Vanilla').click();
+  await expect(names(page)).toHaveText(['Plain Path']);
+  await expect(page).toHaveURL(/\?kind=maze&type=Vanilla&difficulty=Hard&sort=title&dir=asc$/);
+  await page.locator('#clear').click();
+  await expect(names(page)).toHaveCount(6);
+  expect(fileRequests).toEqual([]);
+});
+
+test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/?kind=maze');
+  await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Key Keeper', 'Locked Out', 'Plain Path', 'Grand Finale']);
+});
+
+test('every maze tile reads its size under its type; one saved before the size has none', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/?kind=maze');
+  const lines = title => page.locator('#tiles .tile', { hasText: title }).locator('.detail .line');
+  await expect(lines('Plain Path')).toHaveText(['Vanilla', '100×100', '1 Oct 2026']);
+  await expect(lines('Locked Out')).toHaveText(['Keys', '48×60', '4 Oct 2026']);
+  await expect(lines('Key Keeper')).toHaveText(['Keys', '6 Oct 2026']);
+  await page.goto('/app/');
+  await expect(page.locator('#tiles .tile').first().locator('.detail .line')).toHaveText(['Vanilla', '1 Oct 2026']);
+});
+
+test('an address naming a difficulty, a type or both opens on exactly that', async ({ browser }) => {
+  const page = await (await browser.newContext()).newPage();
+  await serve(page);
+  await page.goto('/app/?kind=maze&difficulty=Hard');
+  await expect(names(page)).toHaveText(['Key Keeper', 'Locked Out', 'Plain Path']);
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 1');
+  await page.goto('/app/?kind=maze&type=Vanilla&difficulty=Hard');
+  await expect(names(page)).toHaveText(['Plain Path']);
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 2');
+  await page.locator('#filter-button').click();
+  await expect(page.locator('#filters [aria-pressed="true"]')).toHaveText(['Hard', 'Vanilla']);
+  await page.goto('/app/?kind=maze&difficulty=Easy');
+  await expect(names(page)).toHaveCount(6);
 });
 
 test('an address naming a type its kind lacks, or a kind the site lacks, falls back to that kind\'s whole grid', async ({ page }) => {
