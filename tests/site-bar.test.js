@@ -105,15 +105,22 @@ test('each page marks its own place: the play page Wordsearches, the maze page M
   await expect(current()).toHaveText(['Collections1']);
 });
 
-test('on the play page its own Print comes first, above the kinds', async ({ page }) => {
+test('a page that prints ends its side bar with its print menu, under the look: Print page on the play page, Print book on a collection', async ({ page }) => {
   await serve(page);
-  await page.goto('/app/play.html?id=WSCH-0007');
-  await expect(side(page).locator('.side-own > *')).toHaveText(['Print']);
-  const print = await side(page).locator('#print').boundingBox();
-  const kinds = await side(page).locator('.kind').first().boundingBox();
-  expect(print.y).toBeLessThan(kinds.y);
-  await page.goto('/app/about.html');
-  await expect(side(page).locator('.side-own')).toBeHidden();
+  for (const [address, name] of [['/app/play.html?id=WSCH-0007', 'Print page'], ['/app/collection.html?slug=issue-1', 'Print book']]) {
+    await page.goto(address);
+    const menu = side(page).locator('.side-own .print-menu');
+    await expect(menu).toBeVisible();
+    await expect(menu.locator('.print-name')).toHaveText(name);
+    await expect(menu.locator('> :not(.print-name)')).toHaveText(['Colour', 'Black and white', 'Plain']);
+    await expect(side(page).locator('> *:visible').last()).toHaveClass(/\bside-own\b/);
+    expect((await menu.boundingBox()).y).toBeGreaterThan((await side(page).locator('.look').boundingBox()).y);
+  }
+  for (const address of ['/app/', '/app/maze.html?id=MAZE-0001', '/app/about.html', '/app/collection.html?slug=nope']) {
+    await page.goto(address);
+    await expect(side(page).locator('.side-own')).toBeHidden();
+    await expect(page.locator('.print-menu:visible')).toHaveCount(0);
+  }
 });
 
 test.describe('on a phone', () => {

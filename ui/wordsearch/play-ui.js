@@ -8,10 +8,12 @@ import {
   playReach
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
-import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
+import {
+  characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap, dressOf, printPaper, printCardWidth, printCardTop, printDress
+} from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { wireEntries } from './entry-ui.js';
-import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook } from '../theme-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook, printIn, printImages, dressPrintSheet } from '../theme-ui.js';
 import { wireFlip, celebrate } from '../card-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -28,12 +30,18 @@ var PLAY_SIZE_KEY = 'grew-puzzles.text-size';
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
 
+// What printing the puzzle's sheet in a style needs loaded first: nothing, until its character is
+// known (dressPuzzle).
+var printLoad = function () { return Promise.resolve(); };
+
 function playEl(id) {
   return document.getElementById(id);
 }
 
 export function openPlayPage(search) {
-  playEl('print').addEventListener('click', function () { window.print(); });
+  playEl('print').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { printIn(b.dataset.print, printLoad); });
+  });
   Promise.resolve(search)
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
@@ -107,6 +115,27 @@ function measurePiece(line, piece) {
   return line.getBoundingClientRect().width;
 }
 
+// Printed Colour or Black and white, every sheet of a puzzle wears its character, peering from
+// behind its card at a spot picked at random each time it prints (core/theme-core.js printDress), on
+// its background, faint (styles/look.css): a puzzle of one grid from its grid card; one of several
+// from its words card on the words sheet, and from each grid on its own sheet. play is the puzzle's
+// main.play — the play page's own, or a copy of it in the book; start holds the first sheet's rise
+// and background — the play page's root, or the book page.
+export function dressPrintout(play, start, board, character, book, random) {
+  start.style.setProperty('--paper-scene', dressOf(character).scene);
+  var sheets = {
+    false: [{ sheet: 'one', card: play.querySelector('.card'), start: start }],
+    true: [{ sheet: 'words', card: play.querySelector('aside'), start: start }].concat(Array.from(play.querySelectorAll('.grid-sheet'), function (grid) {
+      return { sheet: 'grid', card: grid.querySelector('.print-card'), start: grid };
+    }))
+  }[String(board.sheets.length > 0)];
+  sheets.forEach(function (s) {
+    var paper = printPaper(book);
+    var frame = { paper: paper, cardWidth: printCardWidth(s.sheet, board.cols, board.rows, paper), cardTop: printCardTop(s.sheet, book) };
+    dressPrintSheet(s.card, s.start, character, printDress(s.sheet, frame, character, random));
+  });
+}
+
 // The puzzle side of one grid. It shows a wildcard's ?, never its letter — in its label too.
 function drawPuzzleGrid(grid, page, onCell) {
   grid.replaceChildren();
@@ -150,7 +179,7 @@ function showPuzzle(opened, found) {
   var play = restoredPlay(found);
   document.title = board.title + ' · Grew Puzzles';
   drawSheet(playEl, board, onTap);
-  dressPuzzle(opened.id);
+  dressPuzzle(opened.id, board);
   playEl('solution-label').textContent = board.solutionLabel;
   // The tabs sit on both sides of the card, so a page can be picked whichever way it faces.
   drawTabs(playEl('tabs'), board.tabs, showPage);
@@ -207,14 +236,20 @@ function showPuzzle(opened, found) {
 }
 
 // Themed: the puzzle wears its own character, its background behind the page, in its own
-// template — the same every visit. Plain shows none of it (styles/look.css).
-function dressPuzzle(hiddenId) {
+// template — the same every visit. Plain shows none of it (styles/look.css). Its printout wears the
+// same character whatever the look, on a spot picked again every time it prints, its images loaded
+// before the dialog opens when Print page's pick is Colour or Black and white.
+function dressPuzzle(hiddenId, board) {
   playEl('play').dataset.template = templateFor(hiddenId);
   withCharacters(function (characters) {
     var character = characterFor(characters, hiddenId);
+    var printout = function () { dressPrintout(playEl('play'), document.documentElement, board, character, false, Math.random); };
     dressScene(character);
     dressFigure(playEl('theme-figure'), character);
     dressName(playEl('name-tag'), character);
+    printout();
+    window.addEventListener('beforeprint', printout);
+    printLoad = function () { return printImages(character); };
   });
 }
 

@@ -27,16 +27,21 @@
 .side .page { padding: 8px 18px; font-size: 14px; }
 .side .page[aria-current="page"] { font-weight: 700; }
 .side [hidden] { display: none; }
-/* A page's own entries come first, over a rule (the play page's Print). */
-.side-own { display: grid; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--rule); }
-.side-own > * { padding: 8px 18px; font: 600 14px var(--font-body); color: var(--fg); text-align: left; background: none; border: 0; cursor: pointer; }
-.side-own > *:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
-/* The look, ending the side bar: Themed or Plain as two pills, the one on filled in the band's green. */
+/* The look: Themed or Plain as two pills, the one on filled in the band's green. */
 .side .look { display: flex; align-items: center; gap: 8px; padding: 10px 18px 4px; font-size: 14px; }
 .look-name { margin-right: auto; }
 .look button { height: 30px; padding: 0 10px; font: 600 13px var(--font-display); color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
 .look button[aria-pressed="true"] { background: var(--band); color: var(--band-fg); }
+/* A page's own entries end the side bar, under a rule: a page that prints, its print menu — named as a kind is, its
+   styles under it as a kind's types are. */
+.side-own { display: grid; padding-top: 8px; margin-top: 12px; border-top: 1px solid var(--rule); }
+.side-own:not(:has(> :not([hidden]))) { display: none; }
+.print-menu { display: grid; }
+.print-name { padding: 10px 18px; font: 700 15px var(--font-display); }
+.print-menu > :not(.print-name) { padding: 6px 18px 6px 32px; font: 14px var(--font-body); color: var(--fg); text-align: left; text-decoration: none;
+  background: none; border: 0; cursor: pointer; }
+.print-menu > :not(.print-name):hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .side-scrim { display: none; }
 
 /* A phone: no side bar beside the page — the burger opens it as a drawer from the left, over a scrim. */

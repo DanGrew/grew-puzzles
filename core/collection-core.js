@@ -4,6 +4,7 @@
 // Reads only the indexes' entries — never a puzzle file.
 import { tileDetail, playHref } from './browse-core.js';
 import { kindOf, difficultyOf } from './kind-core.js';
+import { PRINT_STYLES } from './book-core.js';
 
 export function slugOf(search) {
   return new URLSearchParams(search).get('slug');
@@ -13,7 +14,7 @@ export function slugOf(search) {
 // An address naming no collection the site holds gets a page saying so, with no tiles.
 export function collectionView(collections, puzzles, slug) {
   const collection = collections.find(c => c.slug === slug);
-  const missing = { found: false, name: 'Collection not found', description: '', book: '', tiles: [] };
+  const missing = { found: false, name: 'Collection not found', description: '', book: Object.fromEntries(PRINT_STYLES.map(style => [style, ''])), tiles: [] };
   return collection ? found(collection, puzzles) : missing;
 }
 
@@ -25,7 +26,9 @@ function found(collection, puzzles) {
       number: String(number), title: byId.get(id).title, type: byId.get(id).type, place: kindOf(id),
       tone: difficultyOf(kindOf(id), byId.get(id).type), lines: tileDetail(byId.get(id)), href: playHref(id), ids: [id],
     }));
-  // Print book opens the whole collection as one printout (app/book.html).
-  const book = `book.html?slug=${encodeURIComponent(collection.slug)}`;
+  // Print book opens the whole collection as one printout (app/book.html), in the print style picked
+  // under it in the side bar: Colour, Black and white or Plain.
+  const address = `book.html?slug=${encodeURIComponent(collection.slug)}`;
+  const book = Object.fromEntries(PRINT_STYLES.map(style => [style, `${address}&print=${style}`]));
   return { found: true, name: collection.name, description: collection.description, book, tiles };
 }

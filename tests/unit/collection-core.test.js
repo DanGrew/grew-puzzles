@@ -22,7 +22,8 @@ describe('collection-core.js', () => {
 
   test('a collection page shows its name and description, then its puzzles in number order, numbered', () => {
     expect(collectionView(collections(), index(), 'issue-1')).toEqual({
-      found: true, name: 'Issue #1', description: 'The first book.', book: 'book.html?slug=issue-1',
+      found: true, name: 'Issue #1', description: 'The first book.',
+      book: { colour: 'book.html?slug=issue-1&print=colour', mono: 'book.html?slug=issue-1&print=mono', plain: 'book.html?slug=issue-1&print=plain' },
       tiles: [
         {
           number: '1', title: 'Flowers', type: 'Missing', place: 'wordsearch', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
@@ -50,9 +51,9 @@ describe('collection-core.js', () => {
     ]);
   });
 
-  test('Print book opens the collection\'s book, slug and all', () => {
+  test('Print book opens the collection\'s book, slug and all, in each print style', () => {
     const odd = [{ slug: 'a b&c', name: 'Odd', description: '', created: '2026-10-03', puzzles: [] }];
-    expect(collectionView(odd, index(), 'a b&c').book).toBe('book.html?slug=a%20b%26c');
+    expect(collectionView(odd, index(), 'a b&c').book.mono).toBe('book.html?slug=a%20b%26c&print=mono');
   });
 
   test('showing a collection leaves its published order as it was', () => {
@@ -62,7 +63,7 @@ describe('collection-core.js', () => {
   });
 
   test('an address naming no collection the site holds says so, with no tiles', () => {
-    const missing = { found: false, name: 'Collection not found', description: '', book: '', tiles: [] };
+    const missing = { found: false, name: 'Collection not found', description: '', book: { colour: '', mono: '', plain: '' }, tiles: [] };
     expect(collectionView(collections(), index(), 'nope')).toEqual(missing);
     expect(collectionView(collections(), index(), null)).toEqual(missing);
     expect(collectionView([], index(), 'issue-1')).toEqual(missing);

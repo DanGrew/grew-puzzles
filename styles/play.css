@@ -236,6 +236,10 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    but never so small its letters (half the cell) print under 7 pt, KDP's smallest text, unless
    the grid would then be wider than 7.5 in, the book's page less its 0.5 in edges. */
 @page { margin: 12mm; }
+/* Printed Colour or Black and white, the sheet's background reaches the paper's edge: no margin,
+   each sheet keeping its own half inch inside (styles/look.css). Ahead of the book's own page, so
+   that one stays the book's. */
+@page themed { margin: 0; }
 /* A printed word's type, and the room before its count — shared by paper and by the unseen line
    the page measures each printed word on, so a column is sized in the type it prints in. */
 :root { --print-word-size: 13px; --print-count-gap: 6px; }
