@@ -87,10 +87,10 @@ function query(params) {
 
 // A type's side bar dot: a wordsearch type's in its difficulty's tone; a maze type's in its own
 // shade, light blue to deep violet, telling the types apart without claiming a difficulty — each
-// maze's is its own. A maze type not listed takes the first shade.
+// maze's is its own. Vanilla, and any maze type not listed here, is Sky.
 export function dotTone(kind, type) {
   const shades = new Map([
-    ['Vanilla', 'Sky'], ['Collectibles', 'Azure'], ['Code Breaker', 'Periwinkle'], ['Keys', 'Lavender'], ['Keylecticodes', 'Violet'],
+    ['Collectibles', 'Azure'], ['Code Breaker', 'Periwinkle'], ['Keys', 'Lavender'], ['Keylecticodes', 'Violet'],
   ]);
   const tones = { wordsearch: () => difficultyOf(kind, type), maze: () => shades.get(type) ?? 'Sky' };
   return tones[kind]();
