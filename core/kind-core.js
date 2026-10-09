@@ -32,9 +32,10 @@ export function placeName(place) {
   return new Map([...kinds().map(k => [k.kind, k.name]), [COLLECTIONS, 'Collections']]).get(place);
 }
 
-// How hard each kind's types are — the one place it is written. A type's side bar dot and a
-// wordsearch's tile strip take their colour from it, a colour per difficulty in styles/theme.css;
-// a maze's strip is only its type's until the owner saves one of its own (puzzleDifficulty). Vanilla, and
+// How hard each kind's types are — the one place it is written. A wordsearch type's side bar dot
+// and a wordsearch's tile strip take their colour from it, a colour per difficulty in
+// styles/theme.css; a maze's strip is only its type's until the owner saves one of its own
+// (puzzleDifficulty). Vanilla, and
 // any type not listed here, is Easy, so a new type never ships uncoloured.
 export function difficultyOf(kind, type) {
   const difficulty = new Map([
@@ -84,8 +85,19 @@ function query(params) {
   return text ? `?${text}` : '';
 }
 
+// A type's side bar dot: a wordsearch type's in its difficulty's tone; a maze type's in its own
+// shade, light blue to deep violet, telling the types apart without claiming a difficulty — each
+// maze's is its own. A maze type not listed takes the first shade.
+export function dotTone(kind, type) {
+  const shades = new Map([
+    ['Vanilla', 'Sky'], ['Collectibles', 'Azure'], ['Code Breaker', 'Periwinkle'], ['Keys', 'Lavender'], ['Keylecticodes', 'Violet'],
+  ]);
+  const tones = { wordsearch: () => difficultyOf(kind, type), maze: () => shades.get(type) ?? 'Sky' };
+  return tones[kind]();
+}
+
 // The side bar's map of the site: each kind with its puzzle count, then its types, each with its
-// difficulty's tone, opening that kind filtered to that type alone; then Collections, with its
+// dot's tone, opening that kind filtered to that type alone; then Collections, with its
 // count, shown only while a collection exists. Each entry's mark is what it's current for.
 export function sideBar(puzzles, collections) {
   return {
@@ -93,7 +105,7 @@ export function sideBar(puzzles, collections) {
       mark: k.kind, name: k.name, count: String(puzzles.filter(p => kindOf(p.hiddenId) === k.kind).length),
       query: query(placeParams(k.kind, [])),
       types: typesOf(k.kind, puzzles).map(type => ({
-        mark: `${k.kind}:${type}`, name: type, tone: difficultyOf(k.kind, type), query: query(placeParams(k.kind, [type])),
+        mark: `${k.kind}:${type}`, name: type, tone: dotTone(k.kind, type), query: query(placeParams(k.kind, [type])),
       })),
     })),
     collections: { count: String(collections.length), query: query(placeParams(COLLECTIONS, [])), hidden: collections.length === 0 },

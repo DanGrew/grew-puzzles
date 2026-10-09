@@ -1,5 +1,5 @@
 import {
-  COLLECTIONS, kinds, kindOf, places, placeName, difficultyOf, difficulties, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
+  COLLECTIONS, kinds, kindOf, places, placeName, difficultyOf, difficulties, dotTone, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
 } from '../../core/kind-core.js';
 
 const puzzle = (hiddenId, type) => ({ hiddenId, type, created: '2026-10-08', title: hiddenId });
@@ -89,7 +89,16 @@ describe('kind-core.js', () => {
     expect(placeParams('collections', []).toString()).toBe('kind=collections');
   });
 
-  test('the side bar lists each kind with its count and its types, each with its tone and address', () => {
+  test('a wordsearch type\'s dot is its difficulty\'s tone; a maze type\'s its own shade, blue to violet', () => {
+    expect(['Vanilla', 'Saga', 'Missing', 'Mirra?e'].map(t => dotTone('wordsearch', t))).toEqual(['Easy', 'Medium', 'Hard', 'Extreme']);
+    expect(['Vanilla', 'Collectibles', 'Code Breaker', 'Keys', 'Keylecticodes'].map(t => dotTone('maze', t)))
+      .toEqual(['Sky', 'Azure', 'Periwinkle', 'Lavender', 'Violet']);
+    expect(dotTone('maze', 'Brand New')).toBe('Sky');
+    expect(dotTone('maze', 'Mirra?e')).toBe('Sky');
+    expect(dotTone('maze', 'constructor')).toBe('Sky');
+  });
+
+  test('the side bar lists each kind with its count and its types, each with its dot\'s tone and address', () => {
     const index = [puzzle('WSCH-0001', 'Saga'), puzzle('WSCH-0002', 'Vanilla'), puzzle('MAZE-0001', 'Vanilla'), puzzle('MAZE-0002', 'Keys'),
       puzzle('MAZE-0003', 'Keys')];
     expect(sideBar(index, [collection('Issue')])).toEqual({
@@ -104,8 +113,8 @@ describe('kind-core.js', () => {
         {
           mark: 'maze', name: 'Mazes', count: '3', query: '?kind=maze',
           types: [
-            { mark: 'maze:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?kind=maze&type=Vanilla' },
-            { mark: 'maze:Keys', name: 'Keys', tone: 'Hard', query: '?kind=maze&type=Keys' },
+            { mark: 'maze:Vanilla', name: 'Vanilla', tone: 'Sky', query: '?kind=maze&type=Vanilla' },
+            { mark: 'maze:Keys', name: 'Keys', tone: 'Lavender', query: '?kind=maze&type=Keys' },
           ],
         },
       ],
