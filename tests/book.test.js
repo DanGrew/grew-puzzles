@@ -344,7 +344,7 @@ test('an address naming no collection says so, leads back to the collections, an
   await expect(page.locator('#status')).toBeHidden();
   expect(await page.evaluate(() => window.printed)).toEqual([]);
   await page.locator('#missing a').click();
-  await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
+  await expect(page).toHaveURL(/\/app\/index\.html\?kind=collections$/);
 });
 
 // Themed or Plain (BUG-73): the page behind the print dialog wears the look the player picked, as
@@ -430,7 +430,7 @@ test('Themed, the printed book has no background and no character on any page', 
 
 test('the real collections each make a book', async ({ page }) => {
   await catchPrint(page);
-  await page.goto('/app/?type=Collections');
+  await page.goto('/app/?kind=collections');
   await page.locator('.tiles .tile.collection').first().click();
   await page.locator('#print-book').click();
   await expect(page.locator('#ready')).toBeVisible();

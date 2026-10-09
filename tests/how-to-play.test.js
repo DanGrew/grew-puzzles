@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 // The How to play page, in the owner's words (the product's docs/CONTENT.md, How to play): one
 // section per type, each beside its picture (tooling's tools/grew-puzzles-how-to-play) and at its
-// own address, reached from the burger menu on every page.
+// own address, reached from the side bar on every page.
 const TYPES = [
   ['vanilla', 'Vanilla', 'Vanilla wordsearches', 'A nice calming wordsearch. No tricks, no challenges; just a normal puzzle: find the words in the list. Words can run in any direction, including diagonally. Of course, they can overlap, but rest assured that words within words (like \'grape\' within \'grapefruit\') appear as two separate words in the grid.', 'A Vanilla wordsearch, with the word BULLOCK found in the grid.'],
   ['missing-words', 'Missing words', 'Missing words wordsearches', 'This is the first type of challenge! The word list includes one or more words that aren\'t in the puzzle… You might have been looking so hard for a word that isn\'t actually in the puzzle! What fun!', 'A Missing words wordsearch with every word found; the leftover words in the list aren\'t in the grid.'],
@@ -18,10 +18,9 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
-  test(`on ${address}, the burger menu holds How to play, which opens the How to play page`, async ({ page, baseURL }) => {
+  test(`on ${address}, the side bar holds How to play, which opens the How to play page`, async ({ page, baseURL }) => {
     await page.goto(address);
-    await page.locator('.site .burger').click();
-    const entry = page.locator('#site-menu > a:visible', { hasText: 'How to play' });
+    const entry = page.locator('#site-side .page', { hasText: 'How to play' });
     await expect(entry).toHaveCount(1);
     await entry.click();
     await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html`);
@@ -88,10 +87,9 @@ test('on a phone each picture sits above its words', async ({ page }) => {
   }
 });
 
-test('on the How to play page, How to play is the menu\'s current entry', async ({ page }) => {
+test('on the How to play page, How to play is the side bar\'s current entry', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
-  await page.locator('.site .burger').click();
-  await expect(page.locator('#site-menu [aria-current]')).toHaveText(['How to play']);
+  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['How to play']);
 });
 
 test('the How to play page wears the site bar, and its words sit on the card with a character, Themed', async ({ page }) => {
@@ -104,8 +102,7 @@ test('the How to play page wears the site bar, and its words sit on the card wit
 
 test('Plain, the How to play page shows no character', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main section')).toHaveCount(TYPES.length);

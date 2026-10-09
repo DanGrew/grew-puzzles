@@ -32,15 +32,16 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
    card's size; the list is --word-cols columns, each --word-w or wider, every word placed down
    its column. Bottom: the grid card's width at most, growing down. Right: the grid card's height
    exactly, growing into more columns. Overlay: the card's size, filling its height first,
-   scrolling down. The grid and its words may use the whole window, past the page's 1080px — a
-   wide grid keeps its words beside it whenever the window has room for both: --view-w is the
-   window's width, less the page's 24px edges. A word never breaks onto two lines. The grid's
+   scrolling down. The grid and its words may reach past the page's column to the window's 24px
+   edges, never over the side bar — a wide grid keeps its words beside it whenever the window has
+   room for both: --reach-left and --reach-right are the margins that take it there (play-core's
+   playReach). A word never breaks onto two lines. The grid's
    letters are --fit-cell and the words' text --word-size: in Right, when the words need the
    room, the text shrinks first and then the letters; .cell-size, unseen, is the page's own
    letter size. A repeated word's count is sized with its word. */
 .cell-size { position: absolute; width: var(--cell); height: 0; visibility: hidden; pointer-events: none; }
 @media screen {
-  .play[data-sits] { margin-inline: min(0px, calc((100% - var(--view-w)) / 2 + 24px)); }
+  .play[data-sits] { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
   .play[data-sits] .stage { --cell: var(--fit-cell); }
   .play[data-sits] .words-box { box-sizing: border-box; display: flex; flex-direction: column; }
   .play[data-sits] ul.words { flex: 1 1 auto; min-height: 0; align-content: start; }

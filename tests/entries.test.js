@@ -55,8 +55,9 @@ test('a site with no entries file marks nothing, and opens nothing else', async 
   await expect(page.locator('#words li.has-entry')).toHaveCount(0);
   await word(page, 'Cat').click();
   await expect(popup(page)).toBeHidden();
-  // Beside the puzzle (and the look's characters), the one entries file, once.
-  expect(fetched.filter(path => path.includes('/content/') && !path.includes('/content/characters/')))
+  // Beside the puzzle (and the look's characters, and the side bar's indexes), the one entries file, once.
+  const sideBar = /^\/content\/(puzzles\/\w+|collections)\/index\.json$/;
+  expect(fetched.filter(path => path.includes('/content/') && !path.includes('/content/characters/') && !sideBar.test(path)))
     .toEqual(['/content/puzzles/wordsearch/WSCH-0007.json', '/content/entries/index.json']);
 });
 

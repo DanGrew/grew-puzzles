@@ -1,63 +1,46 @@
-// The browse grid's rules: which tiles show — every puzzle once, and every collection as a tile of
-// its own — their order and paging, what each tile, filter and pager button says, and how the
-// filter and sort ride in the page address — and the Continue playing rail above them, a set at a
-// time. Reads only the indexes' entries — never a puzzle file.
+// The browse grid's rules: which tiles show — a kind's puzzles, each once, or every collection as a
+// tile of its own — their order and paging, what each tile, filter and pager button says, and how
+// the place, filter and sort ride in the page address — and the Continue playing rail above them,
+// a set at a time. Reads only the indexes' entries — never a puzzle file.
 import { dayLabel } from './day-core.js';
 import { tileDone } from './wordsearch/done-core.js';
+import { COLLECTIONS, kinds, kindOf, places, difficultyOf, difficulties, typesOf, placeParams } from './kind-core.js';
 
 export const PER_PAGE = 24;
 
-// The filter that shows only collection tiles; a collection sorts by type as COLLECTION_TYPE.
-export const COLLECTIONS = 'Collections';
+// A collection tile's type and tone: it sorts by type as COLLECTION_TYPE.
 export const COLLECTION_TYPE = 'Collection';
 
 function idNumber(hiddenId) {
   return Number(hiddenId.split('-')[1]);
 }
 
-// Newest first: by created date, then — the same day — the later hidden ID, a puzzle before a
-// collection, and two collections by name.
+// Newest first: by created date, then — the same day — the later hidden ID, and two collections by
+// name.
 function newer(a, b) {
   return b.created.localeCompare(a.created) || b.rank - a.rank || a.title.localeCompare(b.title);
 }
 
-// Every type at least one puzzle has, once each, A to Z — never a hand-kept list.
-export function typesOf(puzzles) {
-  return [...new Set(puzzles.map(p => p.type))].sort();
+// The types each place's filters offer: each kind's own, and none for Collections.
+export function filterOptions(puzzles) {
+  return Object.fromEntries(places().map(place => [place, typesOf(place, puzzles)]));
 }
 
-// The filters an address may pick: Collections first while a collection exists, then each
-// puzzle type.
-export function filterOptions(puzzles, collections) {
-  return [...(collections.length > 0 ? [COLLECTIONS] : []), ...typesOf(puzzles)];
+// Whether a place has nothing to filter: no types, and — nobody signed in — no Finished row.
+export function noFilters(types, signedIn) {
+  return types.length === 0 && !signedIn;
 }
 
-// How hard each type is — the one place it is written. A tile's strip and the type's filter row
-// both take their colour from it, a colour per difficulty in styles/browse.css. Vanilla, and any
-// type not listed here, is Easy, so a new type never ships uncoloured. The maze's types sit beside
-// the wordsearch's by name alone: the two Vanillas are both Easy, so the name agrees until the
-// table knows each type's kind (TASK-96).
-export function difficultyOf(type) {
-  const difficulty = new Map([
-    ['Saga', 'Medium'], ['Wildcards', 'Medium'], ['Missing', 'Hard'], ['Repeats', 'Hard'], ['Mirra?e', 'Extreme'],
-    ['Collectibles', 'Medium'], ['Code Breaker', 'Medium'], ['Keys', 'Hard'], ['Keylecticodes', 'Extreme'],
-  ]);
-  return difficulty.get(type) ?? 'Easy';
-}
-
-// Every tone, easiest first, then collections: the filter rows' order, and the Difficulty sort's.
+// Every tone, easiest first, then collections: the Difficulty sort's order.
 function tones() {
-  return ['Easy', 'Medium', 'Hard', 'Extreme', COLLECTION_TYPE];
+  return [...difficulties(), COLLECTION_TYPE];
 }
 
-// The filter popup: a row per difficulty, Easy to Extreme, holding its types A to Z — a
-// difficulty with none has no row — then Collections on a row of its own, with no name. Each
-// row's tone names its colour.
-export function filterRows(types) {
-  const rowOf = type => (type === COLLECTIONS ? COLLECTION_TYPE : difficultyOf(type));
-  const named = { [COLLECTION_TYPE]: '' };
-  return tones()
-    .map(tone => ({ name: named[tone] ?? tone, tone, types: types.filter(t => rowOf(t) === tone) }))
+// The filter popup: a row per difficulty, Easy to Extreme, holding the kind's types A to Z — a
+// difficulty with none has no row. Each row's tone names its colour.
+export function filterRows(kind, types) {
+  return difficulties()
+    .map(tone => ({ name: tone, tone, types: types.filter(t => difficultyOf(kind, t) === tone).sort() }))
     .filter(row => row.types.length > 0);
 }
 
@@ -117,44 +100,47 @@ export function collectionHref(slug) {
   return `collection.html?slug=${encodeURIComponent(slug)}`;
 }
 
-// Every tile browse can show, as one list: a puzzle by its own title, type and date, in its
-// difficulty's tone, and a collection by its name, as the type Collection, in the collections'
-// tone, and its created date. A collection's puzzles are never tiles here — each puzzle shows
-// once, however many collections hold it. ids are the puzzles a tile stands for — finished, all of
-// them, it's ticked (core/wordsearch/done-core.js).
+// Every tile browse can show, as one list: a puzzle in its kind's place, by its own title, type
+// and date, in its difficulty's tone, and a collection in Collections, by its name, as the type
+// Collection, in the collections' tone, and its created date. A collection's puzzles are never
+// tiles there — each puzzle shows once, in its kind, however many collections hold it. ids are the
+// puzzles a tile stands for — finished, all of them, it's ticked (core/wordsearch/done-core.js).
 export function browseItems(puzzles, collections) {
   return [
     ...puzzles.map(p => ({
-      ...p, kind: 'puzzle', filter: p.type, tone: difficultyOf(p.type), rank: idNumber(p.hiddenId), href: playHref(p.hiddenId),
-      lines: tileDetail(p), ids: [p.hiddenId],
+      ...p, kind: 'puzzle', place: kindOf(p.hiddenId), tone: difficultyOf(kindOf(p.hiddenId), p.type), rank: idNumber(p.hiddenId),
+      href: playHref(p.hiddenId), lines: tileDetail(p), ids: [p.hiddenId],
     })),
     ...collections.map(c => ({
-      kind: 'collection', title: c.name, type: COLLECTION_TYPE, filter: COLLECTIONS, tone: COLLECTION_TYPE, created: c.created,
+      kind: 'collection', place: COLLECTIONS, title: c.name, type: COLLECTION_TYPE, tone: COLLECTION_TYPE, created: c.created,
       rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)], ids: c.puzzles.map(({ id }) => id),
     })),
   ];
 }
 
-// The filter and sort a page address asks for. A filter the page doesn't offer, or a sort or
-// direction it doesn't have, falls back as if it were never asked: everything, difficulty, easiest
-// first. A Finished choice — finished=yes or finished=no — holds only once someone is found signed in.
-export function browseState(search, types) {
+// The place, filter and sort a page address asks for. A place the site doesn't have is the first,
+// Wordsearches; a type the place doesn't offer, or a sort or direction the page doesn't have, falls
+// back as if it were never asked: everything, difficulty, easiest first. options are each place's
+// types (filterOptions). A Finished choice — finished=yes or finished=no — holds only once someone
+// is found signed in.
+export function browseState(search, options) {
   const params = new URLSearchParams(search);
+  const kind = places().find(p => p === params.get('kind')) ?? places()[0];
   const sort = params.get('sort');
   const finished = params.get('finished');
   return {
-    types: types.filter(t => params.getAll('type').includes(t)),
+    kind,
+    types: options[kind].filter(t => params.getAll('type').includes(t)),
     finished: ['yes', 'no'].includes(finished) ? finished : '',
     sort: ['date', 'title', 'type'].includes(sort) ? sort : 'difficulty',
     dir: params.get('dir') === 'asc' ? 'asc' : 'desc',
   };
 }
 
-// The address's query for a state: each picked type, a Finished choice, and the sort and direction
-// only when they aren't the default — so the plain landing page keeps its plain address.
+// The address's query for a state: the place, each picked type, a Finished choice, and the sort and
+// direction only when they aren't the default — so the plain landing page keeps its plain address.
 export function browseSearch(state) {
-  const params = new URLSearchParams();
-  state.types.forEach(t => params.append('type', t));
+  const params = placeParams(state.kind, state.types);
   if (state.finished !== '') params.set('finished', state.finished);
   if (state.sort !== 'difficulty') params.set('sort', state.sort);
   if (state.dir !== 'desc') params.set('dir', state.dir);
@@ -162,17 +148,18 @@ export function browseSearch(state) {
   return query ? `?${query}` : '';
 }
 
-// The tiles a state shows, in its order. No filter picked shows every tile; picked types widen,
-// since a tile matches exactly one — its puzzle's type, or Collections. A Finished choice narrows
-// whatever the types show to the tiles wearing a ✓ — or not — for the puzzles done so far: it's a
-// question about the player, not the puzzle. Ties fall back to newest first, whichever way the
-// sort runs.
+// The tiles a state shows, in its order: only its place's. No type picked shows every tile there;
+// picked types widen, since a tile matches exactly one — its puzzle's type. A Finished choice
+// narrows whatever the types show to the tiles wearing a ✓ — or not — for the puzzles done so far:
+// it's a question about the player, not the puzzle. Ties fall back to newest first, whichever way
+// the sort runs.
 export function browseList(items, state, done) {
   const [first, ...within] = sortOrder(state.sort);
   const sign = state.dir === 'asc' ? 1 : -1;
   const finished = { '': () => true, yes: p => tileDone(p, done), no: p => !tileDone(p, done) }[state.finished];
   return items
-    .filter(p => state.types.length === 0 || state.types.includes(p.filter))
+    .filter(p => p.place === state.kind)
+    .filter(p => state.types.length === 0 || state.types.includes(p.type))
     .filter(finished)
     .sort((a, b) => within.reduce((d, order) => d || order(a, b), sign * first(a, b)) || newer(a, b));
 }
@@ -241,10 +228,9 @@ export function tileDetail(puzzle) {
   return [puzzle.type, dayLabel(puzzle.created)];
 }
 
-// A puzzle's play page, by its kind's prefix: a maze plays on its own page, a wordsearch on the
-// play page.
+// A puzzle's play page, its kind's: a maze plays on its own page, a wordsearch on the play page.
 export function playHref(hiddenId) {
-  const page = { MAZE: 'maze.html' }[hiddenId.split('-')[0]] ?? 'play.html';
+  const page = kinds().find(k => k.kind === kindOf(hiddenId)).page;
   return `${page}?id=${encodeURIComponent(hiddenId)}`;
 }
 

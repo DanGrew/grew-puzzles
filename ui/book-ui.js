@@ -37,7 +37,6 @@ function showTitlePage(book) {
   bookEl('answers').textContent = book.answers;
   bookEl('address').textContent = book.address;
   bookEl('back').href = book.back;
-  document.querySelector('[data-entry="collections"]').hidden = !book.found;
 }
 
 function showMissing() {

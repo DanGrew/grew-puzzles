@@ -81,7 +81,8 @@
   :root[data-look="themed"] .page-card .name-tag { left: calc(818px - .01 * 230px); top: calc(362px + .56 * 230px); }
 }
 
-@media screen and (max-width: 1099px) {
+/* Beside the side bar, the card's right has room for the character only from 1380px wide. */
+@media screen and (max-width: 1379px) {
   :root[data-look="themed"] .page-card .theme-figure { left: 300px; top: -70px; height: 120px; z-index: 2; }
   :root[data-look="themed"] .page-card .name-tag { left: 300px; top: calc(-70px + .52 * 120px); z-index: 3; }
 }

@@ -348,6 +348,16 @@ export function saveTextSize(write, size) {
   return storeChoice(write, size);
 }
 
+// How far the play area reaches past the page's column on each side, as the margins that take it
+// there: to the screen's 24px edge on the right, and on the left too while there's no side bar
+// beside the column — beside one, it starts where the column does, never over the side bar.
+// column is the column's left and right across the screen, sideWidth the side bar's, 0 when it's
+// not on show.
+export function playReach(screenWidth, column, sideWidth) {
+  const left = sideWidth > 0 ? column.left : 24;
+  return { left: Math.min(0, left - column.left), right: Math.min(0, column.right - (screenWidth - 24)) };
+}
+
 // ---- How the words fill their card ----
 // The list reads like the paper: down each column, then on to the next, no column more than one
 // word longer than another. Its card takes its size from the grid card: under it, never wider and

@@ -1,22 +1,28 @@
 const { test, expect } = require('@playwright/test');
 
-// Stand-in indexes: the collection page reads only the wordsearch index and the collections
-// index, so both are served in place of the real ones — no puzzle file is ever needed.
+// Stand-in indexes: the collection page reads only the indexes — both kinds' and the collections'
+// — so each is served in place of the real one; no puzzle file is ever needed.
 const puzzles = [
   { hiddenId: 'WSCH-0001', type: 'Vanilla', created: '2026-01-01', title: 'Farm Animals' },
   { hiddenId: 'WSCH-0002', type: 'Missing', created: '2026-01-02', title: 'Flowers' },
   { hiddenId: 'WSCH-0003', type: 'Vanilla', created: '2026-01-03', title: 'Birds' },
 ];
+const mazes = [{ hiddenId: 'MAZE-0001', type: 'Keys', created: '2026-01-04', title: 'Locked Out' }];
 const issue = {
   slug: 'issue-1', name: 'Issue #1', description: 'The first book, remade.', created: '2026-01-05',
   puzzles: [{ id: 'WSCH-0002', number: 1 }, { id: 'WSCH-0003', number: 2 }, { id: 'WSCH-0001', number: 3 }],
+};
+const mixed = {
+  slug: 'mixed', name: 'Mixed Bag', description: 'A bit of both.', created: '2026-01-06',
+  puzzles: [{ id: 'WSCH-0001', number: 1 }, { id: 'MAZE-0001', number: 2 }],
 };
 
 async function serve(page) {
   const fileRequests = [];
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles } }));
-  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue] } }));
-  await page.route(/\/puzzles\/.*WSCH-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.fulfill({ json: {} }); });
+  await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: mazes } }));
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, mixed] } }));
+  await page.route(/\/puzzles\/.*(WSCH|MAZE)-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.fulfill({ json: {} }); });
   return fileRequests;
 }
 
@@ -95,8 +101,8 @@ test('tapping a numbered tile opens that puzzle on the play page', async ({ page
 test('a copied collection address opens the same collection elsewhere', async ({ browser }) => {
   const first = await browser.newPage();
   await serve(first);
-  await first.goto('/app/');
-  await first.locator('.tiles .tile.collection').click();
+  await first.goto('/app/?kind=collections');
+  await first.locator('.tiles .tile.collection', { hasText: 'Issue #1' }).click();
   await expect(first.locator('#collection-title')).toHaveText('Issue #1');
   const address = first.url();
   const elsewhere = await (await browser.newContext()).newPage();
@@ -115,21 +121,35 @@ test('an address naming no collection says so, and leads back to the collections
   await expect(page.locator('#print-book')).toBeHidden();
   await expect(tiles(page)).toHaveCount(0);
   await page.locator('#missing a').click();
-  await expect(page).toHaveURL(/\/app\/index\.html\?type=Collections$/);
+  await expect(page).toHaveURL(/\/app\/index\.html\?kind=collections$/);
 });
 
-test('the burger menu on a collection page holds Wordsearches, Collections, How to play, About us and Privacy, Collections current', async ({ page }) => {
+test('the side bar on a collection page has Collections current, leading back to every collection', async ({ page }) => {
   await serve(page);
   await page.goto('/app/collection.html?slug=issue-1');
-  await page.locator('.site .burger').click();
-  const entries = page.locator('#site-menu a:visible');
-  await expect(entries).toHaveText(['Wordsearches', 'Collections', 'How to play', 'Saving your progress', 'About us', 'Privacy']);
-  await expect(entries.nth(1)).toHaveAttribute('aria-current', 'page');
-  await expect(entries.nth(1)).toHaveAttribute('href', 'index.html?type=Collections');
+  const kinds = page.locator('#site-side .kind');
+  await expect(kinds).toHaveText(['Wordsearches3', 'Mazes1', 'Collections2']);
+  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['Collections2']);
+  await expect(kinds.nth(2)).toHaveAttribute('href', 'index.html?kind=collections');
+});
+
+test('a collection holding both kinds lists all its puzzles, each its own kind\'s picture, a maze opening the maze page', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.goto('/app/collection.html?slug=mixed');
+  await expect(tiles(page).locator('.name')).toHaveText(['Farm Animals', 'Locked Out']);
+  await expect(tiles(page).nth(1)).toHaveAttribute('href', 'maze.html?id=MAZE-0001');
+  await expect(tiles(page).nth(1).locator('.number')).toHaveCSS('background-color', 'rgb(246, 180, 122)');
+  const pictures = await tiles(page).locator('.pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
+  expect(pictures).toHaveLength(2);
+  expect(pictures[0]).toContain('<text');
+  expect(pictures[1]).not.toContain('<text');
+  await page.goto('/app/?kind=collections');
+  await expect(page.locator('.tiles .tile.collection')).toHaveCount(2);
+  expect(fileRequests).toEqual([]);
 });
 
 test('the real collections load, each with its puzzles numbered from 1', async ({ page }) => {
-  await page.goto('/app/?type=Collections');
+  await page.goto('/app/?kind=collections');
   await page.locator('.tiles .tile.collection').first().click();
   await expect(page).toHaveURL(/collection\.html\?slug=/);
   await expect(tiles(page).locator('.number').first()).toHaveText('1');

@@ -4,6 +4,17 @@
   box-shadow: var(--shadow); padding: 10px 20px; }
 .browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
 .browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
+/* On a phone, with no side bar beside the grid, a Wordsearches | Mazes switch above it, the current kind filled. */
+.kind-switch { display: none; }
+@media (max-width: 759px) {
+  .kind-switch { display: flex; margin: 0 0 20px; background: var(--surface); border: var(--ow) solid var(--line);
+    border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+  .kind-switch a { flex: 1; display: flex; justify-content: center; align-items: baseline; gap: 6px; padding: 11px 12px;
+    font: 700 15px var(--font-display); color: var(--fg); text-decoration: none; white-space: nowrap; }
+  .kind-switch a + a { border-left: var(--ow) solid var(--line); }
+  .kind-switch a[aria-current="page"] { background: var(--band); color: var(--band-fg); }
+  .kind-switch .count { font: 400 13px var(--font-body); opacity: .8; }
+}
 /* The Continue playing rail, signed in, above the filters: one row of the browse grid's own tiles,
    column for column, its heading on the left and ‹ › on the right, drawn as the pager's. */
 .rail { margin: 0 0 28px; }
@@ -36,15 +47,13 @@
 .tile { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; transition: transform .15s; }
 .tile:hover { transform: translate(-2px, -2px); }
-/* Each difficulty's colour — green, yellow, orange, red as it gets harder, collections blue — one
-   light family, a line per difficulty. Which difficulty a type is lives in core/browse-core.js;
-   a tile's strip and its filter row both read their colour from here. */
-[data-tone="Easy"] { --tone: #9fd8ae; }
-[data-tone="Medium"] { --tone: #f5dc72; }
-[data-tone="Hard"] { --tone: #f6b47a; }
-[data-tone="Extreme"] { --tone: #f19a9a; }
-[data-tone="Collection"] { --tone: #9cc6ef; }
+/* Each difficulty's colour is styles/theme.css's. */
 .tile::before { content: ''; height: 10px; background: var(--tone); border-bottom: var(--ow) solid var(--line); }
+/* A puzzle tile's picture, its kind's own (ui/kind-picture-ui.js), between its strip and its title; a collection's
+   tile has none. */
+.tile .pic { display: grid; place-items: center; padding: 14px 18px 0; color: var(--fg); }
+.tile .pic:empty { display: none; }
+.tile .pic svg { width: 100%; max-width: 96px; height: auto; display: block; }
 .tile .name { font: 600 17px/1.25 var(--font-display); padding: 16px 16px 6px; text-wrap: balance; text-align: center;
   flex: 1; display: grid; place-items: center; min-height: 2.5em; }
 .tile .detail { display: flex; flex-direction: column; font-size: 13px; line-height: 1.35; color: var(--muted); text-align: center;

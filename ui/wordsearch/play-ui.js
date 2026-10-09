@@ -4,7 +4,8 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
-  printedCount, printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
+  printedCount, printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  playReach
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import { characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap } from '../../core/theme-core.js';
@@ -372,12 +373,15 @@ function wireWordsFit() {
 
 // The page measured for play-core's wordsFit, and its answer drawn: where the list sits, the grid
 // card's size for the words card to take, the grid's letter size and the words' text size, and
-// each word's column and row. The play area is the window wide (styles/play.css), so the page is
-// measured once it is. The words are measured at the page's own text size, as revealed, the
-// boldest they get.
+// each word's column and row. The play area reaches past the page's column to the window's edges,
+// never over the side bar (play-core's playReach, styles/play.css), so the page is measured once it
+// does. The words are measured at the page's own text size, as revealed, the boldest they get.
 function layoutWords() {
   var play = playEl('play'), list = playEl('words'), box = list.parentElement;
-  play.style.setProperty('--view-w', document.documentElement.clientWidth + 'px');
+  var reach = playReach(document.documentElement.clientWidth, play.parentElement.getBoundingClientRect(),
+    playEl('site-side').getBoundingClientRect().width);
+  play.style.setProperty('--reach-left', reach.left + 'px');
+  play.style.setProperty('--reach-right', reach.right + 'px');
   var card = playEl('stage').getBoundingClientRect(), cell = playEl('grid').firstElementChild.getBoundingClientRect().width;
   var cols = Number(play.style.getPropertyValue('--cols')), rows = Number(play.style.getPropertyValue('--rows'));
   list.classList.add('measuring');

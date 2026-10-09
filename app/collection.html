@@ -21,18 +21,20 @@
     </div>
     <p class="collection-description" id="description"></p>
     <p class="collection-book" id="book" hidden><a class="print-book" id="print-book">Print book</a></p>
-    <p class="collection-missing" id="missing" hidden>There's no collection at this address. <a href="index.html?type=Collections">See all collections</a>.</p>
+    <p class="collection-missing" id="missing" hidden>There's no collection at this address. <a href="index.html?kind=collections">See all collections</a>.</p>
     <ul class="tiles" id="tiles"></ul>
   </main>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
 <script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
 <script type="module">
 import { slugOf, collectionView } from '../core/collection-core.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 import { characterAt, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
 import { dressScene, dressFigure } from '../ui/theme-ui.js';
+import { kindPicture } from '../ui/kind-picture-ui.js';
 
 // The puzzles the player has finished — none until they're looked up, and never signed out — and
 // each tile's ✓, repainted as they arrive.
@@ -50,7 +52,7 @@ function part(className, text) {
 }
 
 // A numbered tile: the collection's number on its band, in its difficulty's colour, then the puzzle's
-// tile as browse shows it.
+// tile as browse shows it, its kind's picture and all.
 function tile(spec) {
   const a = document.createElement('a');
   a.className = 'tile numbered';
@@ -62,7 +64,7 @@ function tile(spec) {
   const figure = part('theme-figure', '');
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, characterAt(characters, Number(spec.number)));
-  a.append(figure, part('number', spec.number), part('name', spec.title), detail);
+  a.append(figure, part('number', spec.number), kindPicture(spec.place), part('name', spec.title), detail);
   ticks.push(() => paintDone(a, spec, done));
   paintDone(a, spec, done);
   const li = document.createElement('li');
@@ -70,10 +72,11 @@ function tile(spec) {
   return li;
 }
 
-function show([index, published, owned]) {
+// A collection holds puzzles of any kind, so both indexes are read.
+function show([index, mazes, published, owned]) {
   characters = owned;
   dressScene(randomCharacter(characters, Math.random));
-  const view = collectionView(published.collections, index.puzzles, slugOf(location.search));
+  const view = collectionView(published.collections, index.puzzles.concat(mazes.puzzles), slugOf(location.search));
   document.title = `${view.name} · Grew Puzzles`;
   document.getElementById('collection-title').textContent = view.name;
   document.getElementById('description').textContent = view.description;
@@ -81,7 +84,6 @@ function show([index, published, owned]) {
   document.getElementById('print-book').href = view.book;
   document.getElementById('book').hidden = !view.found;
   document.getElementById('missing').hidden = view.found;
-  document.querySelector('[data-entry="collections"]').hidden = published.collections.length === 0;
   tiles = view.tiles;
   document.getElementById('tiles').replaceChildren(...tiles.map(tile));
   wireDone(tiles, tick);
@@ -100,6 +102,7 @@ window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 
 Promise.all([
   fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
+  fetch('../content/puzzles/maze/index.json').then(r => r.json()).catch(() => ({ puzzles: [] })),
   fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
   fetch(charactersFile()).then(r => r.json()).then(charactersOf).catch(() => []),
 ]).then(show);

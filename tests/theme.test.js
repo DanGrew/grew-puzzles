@@ -34,25 +34,23 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
-  test(`the menu on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, ending the menu`, async ({ page }) => {
+  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, ending the side bar`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
-    await page.locator('.site .burger').click();
-    const look = page.locator('#site-menu .look');
+    const look = page.locator('#site-side .look');
     await expect(look.locator('button')).toHaveText(['Themed', 'Plain']);
     await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(look.locator('button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'false');
-    await expect(page.locator('#site-menu > *').last()).toHaveClass(/\blook\b/);
+    await expect(page.locator('#site-side > *').last()).toHaveClass(/\blook\b/);
   });
 }
 
-test('a pick is kept going to another page and coming back tomorrow, and the menu stays open on it', async ({ page }) => {
+test('a pick is kept going to another page and coming back tomorrow, and the side bar stays on it', async ({ page }) => {
   await page.goto('/app/privacy.html');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
-  await expect(page.locator('#site-menu')).toBeVisible();
-  await expect(page.locator('#site-menu .look button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#site-side')).toBeVisible();
+  await expect(page.locator('#site-side .look button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'true');
   await page.goto('/app/index.html');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
   await page.reload();
@@ -66,8 +64,7 @@ test('a page that cannot read or store the look opens Themed, and still switches
   });
   await page.goto('/app/privacy.html');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
 });
 
@@ -122,12 +119,11 @@ test('switching to Plain mid-puzzle gives the words back the grid card\'s width;
   await page.setViewportSize({ width: 1400, height: 1000 });
   await openPlay(page, 'WSCH-0007', 'bottom');
   const narrow = (await page.locator('aside').boundingBox()).width;
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect.poll(async () => (await page.locator('aside').boundingBox()).width).toBeCloseTo((await page.locator('.stage').boundingBox()).width, 0);
-  await page.locator('#site-menu .look button[data-look="themed"]').click();
+  await page.locator('#site-side .look button[data-look="themed"]').click();
   await expect.poll(async () => (await page.locator('aside').boundingBox()).width).toBeCloseTo(narrow, 0);
 });
 
@@ -181,8 +177,7 @@ test('under the grid, a long word list scrolls in a words card no taller than th
   const figure = await page.locator('#theme-figure').boundingBox();
   expect(Math.abs((await page.locator('.words-box').boundingBox()).height - figure.height)).toBeLessThan(2);
   expect(await page.locator('ul.words').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
-  await page.locator('.site .burger').click();
-  await page.locator('#site-menu .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look button[data-look="plain"]').click();
   await expect.poll(async () => (await page.locator('.words-box').boundingBox()).height).toBeGreaterThan(1000);
 });
 
@@ -243,7 +238,7 @@ test('each landing tile wears its puzzle\'s character in the corner, a collectio
   expect(await sceneOf(page)).toMatch(/content\/characters\/[a-z]+-bg\.webp/);
   await expect(page.locator('.tiles .tile .name-tag')).toHaveCount(0);
 
-  await page.goto('/app/index.html?type=Collections');
+  await page.goto('/app/index.html?kind=collections');
   expect(await css(page.locator('.tiles .tile').first().locator('.theme-figure'), 'background-image')).toBe(url(CHARACTERS[0].figure));
 });
 

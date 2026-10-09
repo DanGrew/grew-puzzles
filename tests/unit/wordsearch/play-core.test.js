@@ -3,7 +3,8 @@ import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, printedCount, printedPieces, printedColumnWidth, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize
+  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  playReach
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -855,5 +856,24 @@ describe('a puzzle reopened with saved finds', () => {
     expect(newFinds(before, taps([[4, 2], [2, 2]], before))).toEqual([at('Cat')]);
     expect(newFinds(before, taps([[4, 2]], before))).toEqual([]);
     expect(newFinds(before, before)).toEqual([]);
+  });
+});
+
+describe('playReach — the play area past the page column, never over the side bar', () => {
+  it('with no side bar on show it reaches both window edges, 24px in, as wide on each side', () => {
+    expect(playReach(1600, { left: 164, right: 1436 }, 0)).toEqual({ left: -140, right: -140 });
+  });
+
+  it('beside the side bar it starts where the column does, reaching only to the right edge', () => {
+    expect(playReach(1400, { left: 288, right: 1360 }, 220)).toEqual({ left: 0, right: -16 });
+  });
+
+  it('a column already at the window\'s edges reaches no further', () => {
+    expect(playReach(390, { left: 24, right: 366 }, 0)).toEqual({ left: 0, right: 0 });
+    expect(playReach(390, { left: 30, right: 360 }, 0)).toEqual({ left: -6, right: -6 });
+  });
+
+  it('never reaches back inside the column', () => {
+    expect(playReach(390, { left: 10, right: 380 }, 0)).toEqual({ left: 0, right: 0 });
   });
 });
