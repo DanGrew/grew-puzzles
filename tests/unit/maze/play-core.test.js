@@ -113,6 +113,15 @@ describe('coming back to a saved maze', () => {
     });
   });
 
+  it('tells apart two cells whose row and column run together the same — 1,10 and 11,0 — each coming back by its own route', () => {
+    const open = { rows: 12, cols: 11, start: [0, 0], bits: Array.from({ length: 12 }, () => Array(11).fill(0)), stops: [] };
+    [[1, 10], [11, 0]].forEach(cell => {
+      const trail = resumedMaze(open, cell, []).trail;
+      expect([trail.length, trail[0], trail[trail.length - 1]]).toEqual([12, [0, 0], cell]);
+      trail.slice(1).forEach((step, i) => expect(Math.abs(step[0] - trail[i][0]) + Math.abs(step[1] - trail[i][1])).toBe(1));
+    });
+  });
+
   it('a found cell with nothing on it ticks nothing', () => {
     expect(resumedMaze(BOARD, [0, 0], [[1, 1], [4, 4]]).got).toEqual([]);
   });
