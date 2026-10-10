@@ -5,7 +5,8 @@ import {
   wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
-  windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
+  windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
+  collectedSteps, collectedDash, windowSteps, minimapCollected
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -430,6 +431,88 @@ describe('what the board shows', () => {
   });
 });
 
+describe('the dashed paths to everything found', () => {
+  const step = (from, to) => [from, to];
+  const route = cells => cells.slice(1).map((cell, i) => step(cells[i], cell));
+  const TO_KEY = [[0, 0], [1, 0], [2, 0], [2, 1]];
+  const TO_COLLECTIBLE = [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5]];
+
+  it('nothing found, nothing dashed', () => {
+    expect(collectedSteps(newMazePlay(BOARD), BOARD)).toEqual([]);
+  });
+
+  it('runs from the start to Key 1, picked up down a side branch, once the trail walks back out', () => {
+    const out = taps([[1, 0], [2, 0], [2, 1], [2, 0], [3, 0]]);
+    expect(out.trail).toEqual([[0, 0], [1, 0], [2, 0], [3, 0]]);
+    expect(collectedSteps(out, BOARD)).toEqual([step([2, 0], [2, 1])]);
+    expect(collectedSteps(taps([[0, 0]], out), BOARD)).toEqual(route(TO_KEY));
+  });
+
+  it('dashes every corridor on the way to anything found once, however many routes share it', () => {
+    const both = taps([[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5], [0, 0]]);
+    expect(both.got).toEqual(['letter-C', 'exit-ACB', 'collectible-1']);
+    expect(collectedSteps(both, BOARD)).toEqual(route(TO_COLLECTIBLE));
+    const split = taps([[1, 0], [2, 0], [2, 1], [2, 0], [3, 0], [3, 1], [0, 0]]);
+    expect(collectedSteps(split, BOARD)).toEqual(route(TO_KEY).concat([step([2, 0], [3, 0]), step([3, 0], [3, 1])]));
+  });
+
+  it('leaves out every step the trail walks: the trail covers them', () => {
+    const both = taps([[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5], [1, 5], [1, 4], [0, 4], [0, 3]]);
+    expect(collectedSteps(both, BOARD)).toEqual(route(TO_COLLECTIBLE.slice(3)));
+    expect(collectedSteps(taps([[0, 4], [1, 4], [1, 5], [0, 5]], both), BOARD)).toEqual([]);
+  });
+
+  it('backing out, by Back or by tapping an earlier cell, keeps the dashes to everything found', () => {
+    const there = taps([[1, 0], [2, 0], [2, 1]]);
+    expect(collectedSteps(padMaze(there, 'back', BOARD), BOARD)).toEqual(route(TO_KEY).slice(2));
+    expect(collectedSteps(taps([[0, 0]], there), BOARD)).toEqual(route(TO_KEY));
+  });
+
+  it('never dashes a dead end walked into with nothing found in it', () => {
+    expect(collectedSteps(taps([[1, 0], [2, 0], [2, 1], [1, 1], [0, 0]]), BOARD)).toEqual(route(TO_KEY));
+    expect(collectedSteps(taps([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [0, 0]]), BOARD)).toEqual([]);
+  });
+
+  it('counts an exit stepped on, as everything ticked does', () => {
+    expect(collectedSteps(resumedMaze(BOARD, [0, 0], [[3, 4]]), BOARD)).toEqual(route(OTHER_EXITS));
+  });
+
+  it('comes back with a saved maze, from its finds alone', () => {
+    expect(collectedSteps(resumedMaze(BOARD, [3, 0], [[2, 1]]), BOARD)).toEqual([step([2, 0], [2, 1])]);
+  });
+
+  it('a big maze\'s paths run a cell a step, joined up, back to the start', () => {
+    const hundred = mazeBoard(structuredClone(require('../../fixtures/MAZE-0003.json')));
+    const found = hundred.stops.map(s => s.cell);
+    const all = collectedSteps(resumedMaze(hundred, [0, 0], found), hundred);
+    const ends = new Set(all.map(s => s[1].join(',')));
+    // Every cell keeps its own place in the search, so every find has its route: row 1 column 11
+    // is never mistaken for row 11 column 1.
+    found.forEach(cell => expect(ends.has(cell.join(','))).toBe(true));
+    all.forEach(([from, to]) => {
+      expect(Math.abs(from[0] - to[0]) + Math.abs(from[1] - to[1])).toBe(1);
+      expect(ends.has(from.join(',')) || (from[0] === 0 && from[1] === 0)).toBe(true);
+    });
+    expect(ends.size).toBe(all.length);
+  });
+
+  it('dashes a cell long, centred on each cell and each step\'s middle, so they keep in step through junctions', () => {
+    const dash = collectedDash();
+    expect(dash).toEqual({ array: [0.1, 0.4], offset: 0.05 });
+    expect(1 / (dash.array[0] + dash.array[1])).toBe(2);
+    expect(dash.offset).toBe(dash.array[0] / 2);
+  });
+
+  it('draws each step with a cell in the window, and only those', () => {
+    const steps = [step([0, 0], [0, 1]), step([4, 2], [5, 2]), step([5, 2], [5, 3])];
+    expect(windowSteps(steps, { top: 0, left: 0, bottom: 5, right: 5 })).toBe('M0.5,0.5L1.5,0.5M2.5,4.5L2.5,5.5M2.5,5.5L3.5,5.5');
+    expect(windowSteps(steps, { top: 0, left: 1, bottom: 0, right: 1 })).toBe('M0.5,0.5L1.5,0.5');
+    expect(windowSteps(steps, { top: 0, left: 0, bottom: 0, right: 0 })).toBe('M0.5,0.5L1.5,0.5');
+    expect(windowSteps(steps, { top: 5, left: 3, bottom: 5, right: 3 })).toBe('M2.5,5.5L3.5,5.5');
+    expect(windowSteps(steps, { top: 1, left: 0, bottom: 3, right: 5 })).toBe('');
+  });
+});
+
 describe('the control pad', () => {
   const play = (trail, runs, got = []) => ({ trail, got, events: [], locked: [], runs });
 
@@ -758,7 +841,7 @@ describe('the little map', () => {
   });
 
   it('draws its lines so many px wide however small a cell is on it, a stop at least half a cell', () => {
-    expect(minimapPens(2)).toEqual({ wall: 0.3, trail: 1, box: 0.75, dot: 1.25 });
+    expect(minimapPens(2)).toEqual({ wall: 0.3, trail: 1, collected: 0.5, box: 0.75, dot: 1.25 });
     expect(minimapPens(10).dot).toBe(0.5);
   });
 
@@ -774,6 +857,11 @@ describe('the little map', () => {
     expect(minimapStops(taps([[0, 1], [0, 2], [0, 3]]), BOARD).find(s => s.kind === 'letter' && s.x === 3.5)).toEqual({ x: 3.5, y: 0.5, kind: 'letter', got: true });
     const ended = mazeBoard({ ...structuredClone(MAZE), letters: [], exits: [] });
     expect(minimapStops(newMazePlay(ended), ended).at(-1)).toEqual({ x: 5.5, y: 5.5, kind: 'end', got: false });
+  });
+
+  it('draws the dashed paths, every step, wherever the view is', () => {
+    expect(minimapCollected([[[0, 0], [0, 1]], [[4, 2], [5, 2]]])).toBe('M0.5,0.5L1.5,0.5M2.5,4.5L2.5,5.5');
+    expect(minimapCollected([])).toBe('');
   });
 
   it('draws the trail through each cell\'s centre', () => {

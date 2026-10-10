@@ -7,7 +7,8 @@ import {
   mazeUrl, mazeBoard, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, wallPath, mazeFrame,
   openView, refitView, centreOn, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow,
-  windowHolds, windowCells, windowMarks, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
+  windowHolds, windowCells, windowMarks, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
+  collectedSteps, collectedDash, windowSteps, minimapCollected
 } from '../../core/maze/play-core.js';
 import { joinedMaze } from '../../core/maze/progress-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
@@ -69,6 +70,9 @@ function showMaze(id, board, play) {
   var view = { cell: 1, x: 0, y: 0 };
   // The window of cells drawn: none, until the first view.
   var shown = { top: 0, left: 0, bottom: -1, right: -1 };
+  // The dashed paths to everything found, worked out again with every move.
+  var collected = collectedSteps(play, board);
+  var dash = collectedDash();
   // The first frame opens the maze on the player; every one after refits it.
   var fitView = function (v, before, next, b, here) { return openView(next, board, here); };
   // The little map: Small until the player picks another size, fitted to its room on every resize.
@@ -93,6 +97,8 @@ function showMaze(id, board, play) {
   mazeEl('play').style.setProperty('--cols', board.cols);
   mazeEl('play').style.setProperty('--rows', board.rows);
   ['lines', 'solution-lines'].forEach(function (id) { mazeEl(id).setAttribute('viewBox', '0 0 ' + board.cols + ' ' + board.rows); });
+  mazeEl('collected').setAttribute('stroke-dasharray', dash.array.join(' '));
+  mazeEl('collected').setAttribute('stroke-dashoffset', dash.offset);
   drawSolution(mazeEl('solution-lines'), solutionMarks(board));
   checklist(play, board).forEach(function () { mazeEl('checklist').appendChild(checklistLine()); });
   mazeEl('play').hidden = false;
@@ -133,11 +139,13 @@ function showMaze(id, board, play) {
     render(draw);
   }
 
-  // The trail — its new steps drawn on, cutting short any still drawing — where the player stands,
-  // the stops picked up or stepped on, the open zones, the checklist and its count, the pad, and
-  // the little map.
+  // The trail — its new steps drawn on, cutting short any still drawing — the dashed paths, where
+  // the player stands, the stops picked up or stepped on, the open zones, the checklist and its
+  // count, the pad, and the little map.
   function render(draw) {
     var trail = mazeEl('trail'), here = trailEnd(play), state = padState(play, board);
+    collected = collectedSteps(play, board);
+    mazeEl('collected').setAttribute('d', windowSteps(collected, shown));
     trail.setAttribute('points', trailPoints(play.trail));
     trail.setAttribute('stroke-dasharray', draw.total + ' ' + draw.total);
     mazeEl('lines').style.setProperty('--from', draw.from);
@@ -206,13 +214,14 @@ function showMaze(id, board, play) {
   }
 
   // The cells in a window round the view, on both sides of the card, with their blocks, zones and
-  // walls, and the solution's detours.
+  // walls, the dashed paths on the front, and the solution's detours on the back.
   function drawWindow() {
     var marks;
     shown = viewWindow(view, frame, board);
     marks = windowMarks(board, shown);
     fillWindow(mazeEl('grid'), mazeEl('marks'), mazeEl('walls'), marks, tapCell);
     fillWindow(mazeEl('solution-grid'), mazeEl('solution-marks'), mazeEl('solution-walls'), marks, plainCell);
+    mazeEl('collected').setAttribute('d', windowSteps(collected, shown));
     mazeEl('detours').setAttribute('d', windowDetours(board, shown));
     markStops();
   }
@@ -328,7 +337,8 @@ function showMaze(id, board, play) {
     walls.stroke(new Path2D(board.walls));
   }
 
-  // The whole maze, the trail, the stops — those picked up faded — and the box round the view.
+  // The whole maze, the dashed paths under the trail, the trail, the stops — those picked up faded
+  // — and the box round the view.
   function drawMinimap() {
     var canvas = mazeEl('minimap'), map = canvas.getContext('2d'), ratio = window.devicePixelRatio;
     var pens = minimapPens(minimap.scale), box = minimapBox(view, frame);
@@ -340,6 +350,11 @@ function showMaze(id, board, play) {
     map.lineCap = 'round';
     map.lineJoin = 'round';
     map.strokeStyle = mazeInk('--select');
+    map.lineWidth = pens.collected;
+    map.setLineDash(dash.array);
+    map.lineDashOffset = dash.offset;
+    map.stroke(new Path2D(minimapCollected(collected)));
+    map.setLineDash([]);
     map.lineWidth = pens.trail;
     map.stroke(new Path2D(minimapTrail(play.trail)));
     minimapStops(play, board).forEach(function (stop) {
