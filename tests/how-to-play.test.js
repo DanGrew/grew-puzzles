@@ -17,7 +17,7 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html']) {
   test(`on ${address}, the side bar holds How to play, which opens the How to play page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const entry = page.locator('#site-side .page', { hasText: 'How to play' });

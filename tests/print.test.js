@@ -51,7 +51,7 @@ const onPaper = page => page.emulateMedia({ media: 'print' });
 const figure = page => page.locator('#card .print-figure');
 const scene = page => before(page.locator('body'), 'background-image');
 
-for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'book.html?slug=issue-1-remake', 'about.html', 'privacy.html']) {
+for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'book.html?slug=issue-1-remake', 'about.html', 'feedback.html', 'privacy.html']) {
   test(`${path.split(/[.?]/)[0]} prints Plain until a print menu says otherwise, and no side bar carries a print setting of its own`, async ({ page }) => {
     await page.addInitScript(() => { window.print = () => {}; });
     await page.goto('/app/' + path);

@@ -4,7 +4,7 @@
 // the side bar entry this page belongs to — a kind (wordsearch, maze), collections, or a text
 // page. The kinds, each with its types, and Collections' count are filled from the indexes by
 // ui/side-bar-ui.js; Collections starts hidden until a collection is found. How to play, Saving
-// your progress, About us and Privacy follow — every page sits in app/, beside them. After them,
+// your progress, About us, Feedback and Privacy follow — every page sits in app/, beside them. After them,
 // the look: Themed or Plain, Themed until the player picks Plain, kept in this browser. It sits on
 // the page as <html data-look>, set here before any page script runs; picking one tells the page
 // with a grew-look event (styles/look.css, ui/theme-ui.js). A page that puts its own
@@ -42,6 +42,7 @@
     '<a class="page" data-mark="how-to-play" href="how-to-play.html">How to play</a>' +
     '<a class="page" data-mark="saving" href="saving.html">Saving your progress</a>' +
     '<a class="page" data-mark="about" href="about.html">About us</a>' +
+    '<a class="page" data-mark="feedback" href="feedback.html">Feedback</a>' +
     '<a class="page" data-mark="privacy" href="privacy.html">Privacy</a>' +
     '<div class="look" role="group" aria-label="Look">' +
       '<span class="look-name">Look</span>' +
