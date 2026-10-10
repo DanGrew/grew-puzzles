@@ -107,13 +107,21 @@ button.maze-cell:focus-visible { outline: 2px solid var(--select); outline-offse
 .exit-right { fill: var(--maze-exit); }
 .exit-wrong { fill: none; stroke: var(--maze-exit); stroke-width: .09; stroke-linecap: round; }
 
-/* The checklist: a line per thing to find, ticked as it's found — a count beside a group, ✓ or ✗
-   beside an exit stepped on. */
+/* The checklist: a line per thing to find, ticked as it's found — a box each beside a group, a
+   key's numbered, wrapping under one another rather than widening the card; ✓ or ✗ beside an exit
+   stepped on. */
 ul.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-ul.checklist li { display: flex; align-items: baseline; gap: 8px; font-size: 16px; transition: color .3s; }
+ul.checklist li { display: flex; align-items: baseline; gap: 8px; min-width: 0; font-size: 16px; transition: color .3s; }
 ul.checklist li.done { color: var(--muted); }
 ul.checklist li.done .line-text { text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
-ul.checklist .progress { font-size: .8125em; color: var(--muted); font-variant-numeric: tabular-nums; }
+ul.checklist .line-text { flex: none; }
+ul.checklist .boxes { display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 0; min-width: 16px; contain: inline-size; align-self: center; }
+ul.checklist .boxes:empty { display: none; }
+ul.checklist .box { box-sizing: border-box; display: grid; place-items: center; width: 16px; height: 16px;
+  border: 2px solid var(--line); border-radius: 3px; font-size: 10px; font-weight: 700; line-height: 1;
+  font-variant-numeric: tabular-nums; color: var(--fg); transition: background .3s, border-color .3s, color .3s; }
+ul.checklist .box.ticked { background: var(--band); border-color: var(--band); color: var(--band-fg); }
+ul.checklist .box.ticked:empty::before { content: "✓"; }
 ul.checklist .mark { font-weight: 700; }
 ul.checklist li[data-mark="✓"] .mark { color: var(--band); }
 ul.checklist li[data-mark="✗"] .mark { color: var(--maze-exit); }
