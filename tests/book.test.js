@@ -140,9 +140,12 @@ async function printout(page, scope) {
   return {
     title: await at('h1').textContent(), ident: await at('.ident').textContent(), label: await at('.front-face .band').textContent(),
     letters: await page.locator(`${scope} .front-face .cell`).allTextContents(),
-    // The words as printed: the word itself and its count, never the screen's progress beside it.
+    // The words as printed, a line per copy or one with a box per copy, every box empty.
     words: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => li.firstChild.textContent)),
-    counts: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => getComputedStyle(li, '::after').content)),
+    boxes: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => Array.from(li.querySelectorAll('.box'), b => {
+      const r = b.getBoundingClientRect();
+      return [Math.round(r.width), Math.round(r.height), getComputedStyle(b).backgroundColor];
+    }))),
     columns: await at('ul.words').evaluate(el => getComputedStyle(el).columnWidth),
     mark: await at('aside').evaluate(el => getComputedStyle(el, '::after').content),
     grid: await size('.front-face .grid'), card: await size('.front-face'), list: await size('.words-box'),
@@ -169,12 +172,13 @@ test('apart from its number, each page is exactly that puzzle\'s own printout', 
   }
 });
 
-test('a Repeats puzzle\'s book page carries its Cup ×5 exactly as its own printout does', async ({ page, browser }) => {
+test('a Repeats puzzle\'s book page carries Cup\'s five empty boxes exactly as its own printout does', async ({ page, browser }) => {
   await openBook(page, {}, 'repeats');
   await page.emulateMedia({ media: 'print' });
-  const counts = i => page.locator(`.sheet:nth-child(${i}) ul.words li`).evaluateAll(lis => lis.map(li => getComputedStyle(li, '::after').content));
-  expect(await counts(1)).toEqual(['none', '"×5"', 'none']);
-  expect(await counts(2)).toEqual(Array(8).fill('none'));
+  const boxes = i => page.locator(`.sheet:nth-child(${i}) ul.words li`).evaluateAll(lis => lis.map(li => li.querySelectorAll('.box').length));
+  expect(await boxes(1)).toEqual([0, 5, 0]);
+  expect(await boxes(2)).toEqual(Array(8).fill(0));
+  expect(await page.locator('.sheet:nth-child(1) ul.words li').evaluateAll(lis => lis.map(li => getComputedStyle(li, '::after').content))).toEqual(Array(3).fill('none'));
   const play = await browser.newPage();
   await play.route('**/content/puzzles/wordsearch/WSCH-0011.json', r => r.fulfill({ json: CUPS }));
   await play.goto('/app/play.html?id=WSCH-0011');
@@ -182,6 +186,25 @@ test('a Repeats puzzle\'s book page carries its Cup ×5 exactly as its own print
   await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
   await play.emulateMedia({ media: 'print' });
   expect(await printout(page, '.sheet:nth-child(1)')).toEqual(await printout(play, 'body'));
+  await play.close();
+});
+
+test('a Mirra?e puzzle\'s book page lists Cup on five lines exactly as its own printout does', async ({ page, browser }) => {
+  const mirrage = { ...CUPS, type: 'Mirra?e' };
+  await serve(page);
+  await page.route('**/content/puzzles/wordsearch/WSCH-0011.json', r => r.fulfill({ json: mirrage }));
+  await catchPrint(page);
+  await page.goto('/app/book.html?slug=repeats');
+  await expect(page.locator('#ready')).toBeVisible();
+  await page.emulateMedia({ media: 'print' });
+  const book = await printout(page, '.sheet:nth-child(1)');
+  expect(book.words).toEqual(['Cow', 'Cup', 'Cup', 'Cup', 'Cup', 'Cup', 'Hen']);
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/wordsearch/WSCH-0011.json', r => r.fulfill({ json: mirrage }));
+  await play.goto('/app/play.html?id=WSCH-0011');
+  await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
+  await play.emulateMedia({ media: 'print' });
+  expect(book).toEqual(await printout(play, 'body'));
   await play.close();
 });
 
