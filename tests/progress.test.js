@@ -223,20 +223,36 @@ const REPEATS = {
   grids: [{ rows: ['CUPTCUPL', 'PUCHENRT', 'CTLCOWLR', 'URTLRTRL', 'PLRTCUPT', 'TRLRTLRL', 'LTRTLRTR', 'RLTLRTLR'] }]
 };
 
-test('in a Repeats puzzle, the two copies found of five come back — those two lined through, and 2/5', async ({ context }) => {
+const boxStates = page => page.locator('#words li').nth(1).locator('.box').evaluateAll(bs => bs.map(b => b.classList.contains('ticked')));
+
+test('in a Repeats puzzle, the two copies found of five come back — those two lined through, and two of Cup\'s five boxes ticked', async ({ context }) => {
   const table = await playing(context, { puzzle: REPEATS });
   const page = await open(context);
   await find(page, [[1, 2], [1, 0]], [[4, 4], [4, 6]]);
-  await expect(page.locator('#words li').nth(1).locator('.progress')).toHaveText('2/5');
+  await expect.poll(() => boxStates(page)).toEqual([true, true, false, false, false]);
   const drawn = await page.locator('#overlay').innerHTML();
   await expect.poll(() => table.rows.length).toBe(2);
   await page.close();
 
   const later = await open(context);
-  await expect(later.locator('#words li').nth(1).locator('.progress')).toHaveText('2/5');
+  await expect.poll(() => boxStates(later)).toEqual([true, true, false, false, false]);
   await expect(later.locator('#words li').nth(1)).not.toHaveClass(/done/);
   await expect(count(later)).toHaveText('2/7');
   expect(await later.locator('#overlay').innerHTML()).toBe(drawn);
+});
+
+test('in a Mirra?e puzzle, the two copies found of five come back as Cup\'s first two lines struck', async ({ context }) => {
+  const table = await playing(context, { puzzle: { ...REPEATS, type: 'Mirra?e' } });
+  const page = await open(context);
+  await find(page, [[1, 2], [1, 0]], [[4, 4], [4, 6]]);
+  await expect.poll(() => table.rows.length).toBe(2);
+  await page.close();
+
+  const later = await open(context);
+  await expect(later.locator('#words li')).toHaveText(['Cow', 'Cup', 'Cup', 'Cup', 'Cup', 'Cup', 'Hen']);
+  await expect(crossedOff(later)).toHaveText(['Cup', 'Cup']);
+  expect(await later.locator('#words li').evaluateAll(lis => lis.map(li => li.classList.contains('done')))).toEqual([false, true, true, false, false, false, false]);
+  await expect(count(later)).toHaveText('2/7');
 });
 
 // The fixture as a 3-page Saga — the play page's own, told apart by the bottom-right letter.

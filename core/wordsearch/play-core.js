@@ -233,60 +233,54 @@ export function playMarks(play, words) {
 // each is marked. The screen, the solution side, the printout and the book only draw it.
 // A line is { kind, text, parts }: kind names how its parts are drawn (ui/wordsearch/play-ui.js);
 // text is what the line reads; parts are the words it stands for, each with every copy of it in
-// the file, by index, and what paper prints beside it. Every line today is a word line — one
-// listed word, a missing one too, whatever its copies. A line of several words, or one marked once
-// a page, is one more kind, its parts each marked as below.
+// the file, by index, and how many of those copies found strike it. One mark per thing to find, so
+// the list shows exactly what's left, on screen and on paper (the owner's call, 2026-10-10). A line
+// of several words, or one marked once a page, is one more kind, its parts each marked as below.
 
-// One line per word, where it first appears: a word with several copies is listed once in the
-// file per copy. printed: on paper, a word of several copies says how many to find, as the
-// generator names it — Sheep ×45 — whatever was found on screen; a word of one copy, a missing one
-// too, says nothing. progressWidth: how wide its progress is with every copy found, in characters,
-// so a find never moves the word. shown: the word as the list shows it (boardWord).
-export function wordLines(words) {
+// A word's lines sit together where it first appears — a word with several copies is listed once
+// in the file per copy. A word of one copy, a missing one too, is a word line. On a Repeats puzzle a
+// word of several copies is one boxes line, a box per copy; on any other type it is a copy line per
+// copy, the first struck by the first copy found, whichever it is, the next by the next. type is the
+// puzzle's, as its file names it. Each part's shown is the word as the list shows it (boardWord).
+export function wordLines(words, type) {
   var texts = words.map(function (w) { return w.text; });
-  return texts.filter(function (text, i) { return texts.indexOf(text) === i; }).map(function (text) {
+  return texts.filter(function (text, i) { return texts.indexOf(text) === i; }).flatMap(function (text) {
     var copies = texts.map(function (_, i) { return i; }).filter(function (i) { return texts[i] === text; });
-    var part = {
-      text: text, shown: words[copies[0]].shown, copies: copies,
-      printed: { true: '×' + copies.length, false: '' }[copies.length > 1],
-      progressWidth: copiesProgress(copies.length, copies.length).length
-    };
-    return { kind: 'word', text: text, parts: [part] };
+    var word = { text: text, shown: words[copies[0]].shown, copies: copies };
+    return { true: repeatedLines(word, type), false: [line('word', word, 1)] }[copies.length > 1];
   });
 }
 
+function repeatedLines(word, type) {
+  var copyLines = word.copies.map(function (_, k) { return line('copy', word, k + 1); });
+  return { true: [line('boxes', word, word.copies.length)], false: copyLines }[type === 'Repeats'];
+}
+
+function line(kind, word, strikes) {
+  return { kind: kind, text: word.text, parts: [{ text: word.text, shown: word.shown, copies: word.copies, strikes: strikes }] };
+}
+
 // How every line is marked as the play stands, part by part, in the lines' order.
-// done: every copy found; progress: copies found out of all of them; revealed: a missing word shown
-// red — once every placed word is found, or while the solution shows (flipped); flipping back hides
-// it again until the puzzle is done.
-export function lineMarks(play, words, flipped) {
+// done: struck, once as many of its word's copies are found as strike it; ticked: how many of its
+// word's copies are found, so a boxes line ticks a box per copy, left to right in the order found;
+// revealed: a missing word shown red — once every placed word is found, or while the solution shows
+// (flipped); flipping back hides it again until the puzzle is done.
+export function lineMarks(play, words, flipped, type) {
   var reveal = flipped || solved(play.found, words);
-  return wordLines(words).map(function (line) {
+  return wordLines(words, type).map(function (line) {
     return { kind: line.kind, parts: line.parts.map(function (part) { return partMarks(part, play.found, words, reveal); }) };
   });
 }
 
 function partMarks(part, found, words, reveal) {
-  var isFound = function (i) { return found.includes(i); };
-  return {
-    done: part.copies.every(isFound),
-    revealed: words[part.copies[0]].missing && reveal,
-    progress: copiesProgress(part.copies.filter(isFound).length, part.copies.length)
-  };
-}
-
-// Copies found out of all of them, for a word of more than one copy only.
-function copiesProgress(found, copies) {
-  return { true: found + '/' + copies, false: '' }[copies > 1];
+  var ticked = part.copies.filter(function (i) { return found.includes(i); }).length;
+  return { done: ticked >= part.strikes, revealed: words[part.copies[0]].missing && reveal, ticked: ticked };
 }
 
 // A printed line, as the pieces it may wrap between: a line wraps only at a space, never inside a
-// word or between a word and its count, so the count rides on the last word.
-export function printedPieces(text, copies) {
-  var words = text.split(' ');
-  return words.map(function (word, i) {
-    return { text: word, copies: { true: copies, false: '' }[i === words.length - 1] };
-  });
+// word.
+export function printedPieces(text) {
+  return text.split(' ');
 }
 
 // Paper's column, in whole pixels: as wide as the list's widest piece, so no word runs into the
@@ -302,6 +296,7 @@ export function printedColumnWidth(pieceWidths) {
 // lines is each printed line, measured in paper's own type: its width on one line, and how many
 // pieces it may wrap into (printedPieces). type is that type's line height and the list's widest
 // piece (printedColumnWidth). Back come the scale to print the words at and the gap under each.
+// A boxes line is a Repeats puzzle's, of one grid, so it is never on a words sheet of its own.
 export function printedSpread(lines, type, book) {
   var room = printedRoom(book);
   var scales = Array.from({ length: 11 }, function (_, i) { return (30 - i) / 20; });

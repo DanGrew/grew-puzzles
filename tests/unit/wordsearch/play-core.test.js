@@ -16,9 +16,8 @@ beforeEach(() => {
   WORDS = BOARD.words;
 });
 const at = text => WORDS.findIndex(w => w.text === text);
-// Each line's one word's marks: every line today is a word line, of one part.
+// Each line's one word's marks: every line today, a word, copy or boxes line, is of one part.
 const wordMarks = (play, words, flipped) => lineMarks(play, words, flipped).map(line => line.parts[0]);
-const printed = words => wordLines(words).map(line => line.parts[0].printed);
 
 function taps(cells, play) {
   return cells.reduce((p, cell) => tap(p, cell, WORDS), play || newPlay());
@@ -270,14 +269,15 @@ describe('what the board shows', () => {
 
   it('crosses off found words in the list', () => {
     expect(wordMarks(taps([[4, 2], [2, 2]]), WORDS, false).slice(0, 2)).toEqual([
-      { done: true, revealed: false, progress: '' }, { done: false, revealed: false, progress: '' }
+      { done: true, revealed: false, ticked: 1 }, { done: false, revealed: false, ticked: 0 }
     ]);
   });
 
-  it('lists each word once, with no progress, when every word has one copy', () => {
+  it('lists each word once, a word line each, when every word has one copy — on a Repeats puzzle too', () => {
     expect(wordLines(WORDS).map(line => line.parts[0].copies)).toEqual([[0], [1], [2], [3], [4], [5], [6], [7]]);
     expect(wordLines(WORDS).map(line => line.text)).toEqual(WORDS.map(w => w.text));
-    expect(wordMarks(solvedPlay(WORDS, 0), WORDS, false).filter(item => item.progress !== '')).toEqual([]);
+    expect(wordLines(WORDS, 'Repeats')).toEqual(wordLines(WORDS));
+    expect(wordLines(WORDS).filter(line => line.kind !== 'word')).toEqual([]);
   });
 
   it('shows no word red in a puzzle with none missing, solved or flipped', () => {
@@ -300,12 +300,9 @@ describe('paper\'s word columns', () => {
     expect(printedColumnWidth([])).toBe(0);
   });
 
-  it('measure a line a word at a time, since it may wrap at a space, its count kept on its last word', () => {
-    expect(printedPieces('Central African Republic', '')).toEqual([
-      { text: 'Central', copies: '' }, { text: 'African', copies: '' }, { text: 'Republic', copies: '' }
-    ]);
-    expect(printedPieces('Royal blue', '×5')).toEqual([{ text: 'Royal', copies: '' }, { text: 'blue', copies: '×5' }]);
-    expect(printedPieces('Parasaurolophus', '×5')).toEqual([{ text: 'Parasaurolophus', copies: '×5' }]);
+  it('measure a line a word at a time, since it may wrap at a space', () => {
+    expect(printedPieces('Central African Republic')).toEqual(['Central', 'African', 'Republic']);
+    expect(printedPieces('Parasaurolophus')).toEqual(['Parasaurolophus']);
   });
 });
 
@@ -369,8 +366,8 @@ describe('a puzzle with a missing word', () => {
     expect(MISSING[0].missing).toBe(false);
   });
 
-  it('prints no count beside any word, the missing one included', () => {
-    expect(printed(MISSING)).toEqual(['', '', '', '', '', '', '', '', '']);
+  it('lists every word on a word line of its own, the missing one included', () => {
+    expect(wordLines(MISSING, 'Missing').map(line => line.kind)).toEqual(Array(9).fill('word'));
   });
 
   it('counts only the placed words', () => {
@@ -399,7 +396,7 @@ describe('a puzzle with a missing word', () => {
   it('turns the missing word red once every placed word is found', () => {
     const list = wordMarks(solvedPlay(MISSING, 0), MISSING, false);
     expect(wordLines(MISSING)[goat()].text).toBe('Goat');
-    expect(list[goat()]).toEqual({ done: false, revealed: true, progress: '' });
+    expect(list[goat()]).toEqual({ done: false, revealed: true, ticked: 0 });
     expect(list.filter(item => item.revealed)).toHaveLength(1);
   });
 
@@ -493,19 +490,19 @@ describe('a puzzle with repeated words', () => {
   const find = (cells, play) => cells.reduce((p, cell) => tap(p, cell, REPEATS), play || newPlay());
   const cups = () => [1, 2, 3, 4, 5];
 
-  it('lists a repeated word once, where it first appears, holding every copy', () => {
-    expect(wordLines(REPEATS)).toEqual([
-      { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', shown: 'Cow', copies: [0], printed: '', progressWidth: 0 }] },
-      { kind: 'word', text: 'Cup', parts: [{ text: 'Cup', shown: 'Cup', copies: [1, 2, 3, 4, 5], printed: '×5', progressWidth: 3 }] },
-      { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', shown: 'Hen', copies: [6], printed: '', progressWidth: 0 }] }
+  it('lists a Repeats word once, where it first appears, as a boxes line holding every copy', () => {
+    expect(wordLines(REPEATS, 'Repeats')).toEqual([
+      { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', shown: 'Cow', copies: [0], strikes: 1 }] },
+      { kind: 'boxes', text: 'Cup', parts: [{ text: 'Cup', shown: 'Cup', copies: [1, 2, 3, 4, 5], strikes: 5 }] },
+      { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', shown: 'Hen', copies: [6], strikes: 1 }] }
     ]);
   });
 
-  it('shows 0/5 beside Cup at the start, and the other words as before', () => {
-    expect(lineMarks(newPlay(), REPEATS, false)).toEqual([
-      { kind: 'word', parts: [{ done: false, revealed: false, progress: '' }] },
-      { kind: 'word', parts: [{ done: false, revealed: false, progress: '0/5' }] },
-      { kind: 'word', parts: [{ done: false, revealed: false, progress: '' }] }
+  it('shows Cup\'s boxes all empty at the start, and the other words as before', () => {
+    expect(lineMarks(newPlay(), REPEATS, false, 'Repeats')).toEqual([
+      { kind: 'word', parts: [{ done: false, revealed: false, ticked: 0 }] },
+      { kind: 'boxes', parts: [{ done: false, revealed: false, ticked: 0 }] },
+      { kind: 'word', parts: [{ done: false, revealed: false, ticked: 0 }] }
     ]);
   });
 
@@ -515,20 +512,20 @@ describe('a puzzle with repeated words', () => {
     expect(find([[0, 4], [0, 6], [0, 0], [0, 2]]).found).toEqual([2, 1]);
   });
 
-  it('reads 1/5 after one copy, and finding that same copy again changes nothing', () => {
-    const one = find([[0, 0], [0, 2]]);
-    expect(wordMarks(one, REPEATS, false)[1]).toEqual({ done: false, revealed: false, progress: '1/5' });
-    const again = find([[0, 0], [0, 2]], one);
-    expect(again.found).toEqual([1]);
+  it('ticks a box per copy found, whichever copy, and finding that same copy again changes nothing', () => {
+    const one = find([[2, 0], [4, 0]]);
+    expect(lineMarks(one, REPEATS, false, 'Repeats')[1].parts[0]).toEqual({ done: false, revealed: false, ticked: 1 });
+    const again = find([[2, 0], [4, 0]], one);
+    expect(again.found).toEqual([4]);
     expect(again.events).toEqual([]);
     expect(countLabel(again, REPEATS)).toBe('1/7');
   });
 
-  it('crosses Cup off only once every copy is found', () => {
+  it('strikes Cup only once every box is ticked', () => {
     const four = { picked: [], found: [1, 2, 3, 4], events: [], page: 0 };
-    expect(wordMarks(four, REPEATS, false)[1]).toEqual({ done: false, revealed: false, progress: '4/5' });
+    expect(lineMarks(four, REPEATS, false, 'Repeats')[1].parts[0]).toEqual({ done: false, revealed: false, ticked: 4 });
     const all = find([[4, 4], [4, 6]], four);
-    expect(wordMarks(all, REPEATS, false)[1]).toEqual({ done: true, revealed: false, progress: '5/5' });
+    expect(lineMarks(all, REPEATS, false, 'Repeats')[1].parts[0]).toEqual({ done: true, revealed: false, ticked: 5 });
   });
 
   it('counts every copy in the overall count', () => {
@@ -546,14 +543,27 @@ describe('a puzzle with repeated words', () => {
     expect(playMarks(solvedPlay(REPEATS, 0), REPEATS).found).toHaveLength(7);
   });
 
-  it('prints Cup ×5, and the other words as before', () => {
-    expect(printed(REPEATS)).toEqual(['', '×5', '']);
+  it('gives Sheep ×45 one line of 45 boxes', () => {
+    const sheep = Array.from({ length: 45 }, (_, i) => ({ text: 'Sheep', grid: 0, cells: [[i, 0]] }));
+    expect(wordLines(sheep, 'Repeats')).toEqual([{ kind: 'boxes', text: 'Sheep', parts: [{ text: 'Sheep', copies: sheep.map((_, i) => i), strikes: 45 }] }]);
   });
 
-  it('prints the count of every copy, however many were found on screen', () => {
-    const sheep = Array.from({ length: 45 }, (_, i) => ({ text: 'Sheep', grid: 0, cells: [[i, 0]] }));
-    expect(printed(sheep)).toEqual(['×45']);
-    expect(wordLines(sheep)[0].parts[0].progressWidth).toBe('45/45'.length);
+  it('on any other type, lists Cup once per copy, its lines together where it first appears', () => {
+    ['Mirra?e', 'Saga', 'Vanilla', undefined].forEach(type => {
+      expect(wordLines(REPEATS, type)).toEqual([
+        { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', shown: 'Cow', copies: [0], strikes: 1 }] },
+        ...[1, 2, 3, 4, 5].map(n => ({ kind: 'copy', text: 'Cup', parts: [{ text: 'Cup', shown: 'Cup', copies: cups(), strikes: n }] })),
+        { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', shown: 'Hen', copies: [6], strikes: 1 }] }
+      ]);
+    });
+  });
+
+  it('on any other type, strikes Cup\'s lines top first, one per copy found, whichever copy', () => {
+    const struck = play => lineMarks(play, REPEATS, false, 'Mirra?e').map(line => line.parts[0].done);
+    expect(struck(newPlay())).toEqual([false, false, false, false, false, false, false]);
+    expect(struck(find([[4, 4], [4, 6]]))).toEqual([false, true, false, false, false, false, false]);
+    expect(struck({ picked: [], found: [5, 2, 0], events: [], page: 0 })).toEqual([true, true, true, false, false, false, false]);
+    expect(struck({ picked: [], found: [0, 1, 2, 3, 4, 5, 6], events: [], page: 0 })).toEqual([true, true, true, true, true, true, true]);
   });
 });
 

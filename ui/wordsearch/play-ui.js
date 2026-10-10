@@ -31,7 +31,11 @@ var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
 // Each kind of line in the word list (play-core's wordLines): how it's drawn once, for the screen
 // and paper alike, and how its marks (play-core's lineMarks) show as the play goes.
-var PLAY_LINES = { word: { draw: drawWordLine, mark: markWordLine } };
+var PLAY_LINES = {
+  word: { draw: drawWordLine, mark: markWordLine },
+  copy: { draw: drawWordLine, mark: markWordLine },
+  boxes: { draw: drawBoxesLine, mark: markBoxesLine }
+};
 
 // What printing the puzzle's sheet in a style needs loaded first: nothing, until its character is
 // known (dressPuzzle).
@@ -70,7 +74,7 @@ export function drawSheet(part, board, onCell) {
   part('play').style.setProperty('--letters', board.letters);
   part('play').dataset.paged = String(board.sheets.length > 0);
   drawPuzzleGrid(part('grid'), board.grids[0], onCell);
-  wordLines(board.words).forEach(function (line) {
+  wordLines(board.words, board.label).forEach(function (line) {
     part('words').appendChild(PLAY_LINES[line.kind].draw(line));
   });
   board.sheets.forEach(function (label, i) {
@@ -79,23 +83,23 @@ export function drawSheet(part, board, onCell) {
   part('play').hidden = false;
 }
 
-// Paper's word columns, sized to the list's widest word, a count on its word: each piece a line
-// may wrap between, and each whole line, is measured on an unseen line in the printout's own type
+// Paper's word columns, sized to the list's widest word: each piece a line may wrap between, and
+// each whole line, is measured on an unseen line in the printout's own type
 // (styles/play.css, .print-measure), carrying the puzzle's own letters — on the page itself, since
 // the puzzle may not show (Overlay's closed list, the book's pages on screen) and paper's layout is
-// never the screen's. On a words sheet of its own, the words then spread
-// to fill it (play-core's printedSpread) — book says whether it's the book's page. Run once the
-// fonts are in, so the type is the real one.
+// never the screen's. On a words sheet of its own, the words then spread to fill it (play-core's
+// printedSpread) — book says whether it's the book's page. Run once the fonts are in, so the type
+// is the real one.
 export function sizePrintedWords(list, book) {
   var line = document.createElement('span');
   line.className = 'print-measure';
   line.style.setProperty('--letters', list.closest('.play').style.getPropertyValue('--letters'));
   document.body.appendChild(line);
   var pieces = Array.from(list.children, function (li) {
-    return printedPieces(li.firstChild.textContent, li.dataset.copies).map(function (piece) { return measurePiece(line, piece); });
+    return printedPieces(li.firstChild.textContent).map(function (piece) { return measurePiece(line, piece); });
   });
   var lines = Array.from(list.children, function (li, i) {
-    return { width: measurePiece(line, { text: li.firstChild.textContent, copies: li.dataset.copies }), pieces: pieces[i].length };
+    return { width: measurePiece(line, li.firstChild.textContent), pieces: pieces[i].length };
   });
   var column = printedColumnWidth(pieces.flat()), height = line.getBoundingClientRect().height;
   var spread = printedSpread(lines, { line: height, column: column }, book);
@@ -106,23 +110,15 @@ export function sizePrintedWords(list, book) {
   list.style.setProperty('--print-spread-gap', spread.gap + 'px');
 }
 
-function measurePiece(line, piece) {
-  line.textContent = piece.text;
-  line.dataset.copies = piece.copies;
+function measurePiece(line, text) {
+  line.textContent = text;
   return line.getBoundingClientRect().width;
 }
 
-// A word line: the word, its progress beside it on screen only, held at its widest; on paper its
-// count of copies takes the progress's place (styles/play.css draws it from the attribute).
+// A word line, or one copy's line of a repeated word: the word, struck once found.
 function drawWordLine(line) {
-  var word = line.parts[0];
   var li = document.createElement('li');
-  var progress = document.createElement('span');
-  li.textContent = word.shown;
-  li.dataset.copies = word.printed;
-  progress.className = 'progress';
-  progress.style.minWidth = word.progressWidth + 'ch';
-  li.appendChild(progress);
+  li.textContent = line.parts[0].shown;
   return li;
 }
 
@@ -130,7 +126,30 @@ function markWordLine(li, marks) {
   var word = marks.parts[0];
   li.classList.toggle('done', word.done);
   li.classList.toggle('revealed', word.revealed);
-  li.querySelector('.progress').textContent = word.progress;
+}
+
+// A Repeats word's line: the word, then a box per copy wrapping under it (styles/play.css), on
+// screen and on paper alike; paper's are always empty.
+function drawBoxesLine(line) {
+  var word = line.parts[0];
+  var li = document.createElement('li'), text = document.createElement('span'), boxes = document.createElement('span');
+  li.className = 'boxes-line';
+  text.className = 'line-text';
+  text.textContent = word.shown;
+  boxes.className = 'boxes';
+  word.copies.forEach(function () {
+    var box = document.createElement('span');
+    box.className = 'box';
+    boxes.appendChild(box);
+  });
+  li.append(text, boxes);
+  return li;
+}
+
+function markBoxesLine(li, marks) {
+  var word = marks.parts[0];
+  markWordLine(li, marks);
+  Array.from(li.querySelector('.boxes').children, function (box, i) { box.classList.toggle('ticked', i < word.ticked); });
 }
 
 // Printed Colour or Black and white, every sheet of a puzzle wears its character, peering from
@@ -209,7 +228,7 @@ function showPuzzle(opened, found) {
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
   // The words that have an entry are marked once the entries arrive; the grid never waits on them.
-  wireEntries(opened.groups, wordLines(board.words));
+  wireEntries(opened.groups, wordLines(board.words, board.label));
 
   // Signed in mid-puzzle: what was saved for this puzzle elsewhere joins the board.
   function joinSaved(found) {
@@ -240,7 +259,7 @@ function showPuzzle(opened, found) {
 
   function render() {
     drawMarks(playEl('overlay'), board, playMarks(play, board.words));
-    lineMarks(play, board.words, playEl('card').classList.contains('flipped')).forEach(function (marks, i) {
+    lineMarks(play, board.words, playEl('card').classList.contains('flipped'), board.label).forEach(function (marks, i) {
       PLAY_LINES[marks.kind].mark(playEl('words').children[i], marks);
     });
     playEl('count').textContent = countLabel(play, board.words);
