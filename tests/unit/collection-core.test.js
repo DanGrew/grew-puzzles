@@ -26,15 +26,15 @@ describe('collection-core.js', () => {
       book: { colour: 'book.html?slug=issue-1&print=colour', mono: 'book.html?slug=issue-1&print=mono', plain: 'book.html?slug=issue-1&print=plain' },
       tiles: [
         {
-          number: '1', title: 'Flowers', type: 'Missing', place: 'wordsearch', tone: 'Hard', lines: ['Missing', '2 Oct 2026'],
+          number: '1', title: 'Flowers', type: 'Missing', place: 'wordsearch', tone: 'Hard', lines: ['Missing'],
           href: 'play.html?id=WSCH-0002', ids: ['WSCH-0002'],
         },
         {
-          number: '2', title: 'Birds', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla', '3 Oct 2026'],
+          number: '2', title: 'Birds', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla'],
           href: 'play.html?id=WSCH-0003', ids: ['WSCH-0003'],
         },
         {
-          number: '10', title: 'Farm Animals', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla', '1 Oct 2026'],
+          number: '10', title: 'Farm Animals', type: 'Vanilla', place: 'wordsearch', tone: 'Easy', lines: ['Vanilla'],
           href: 'play.html?id=WSCH-0001', ids: ['WSCH-0001'],
         },
       ],
@@ -49,6 +49,12 @@ describe('collection-core.js', () => {
       ['wordsearch', 'Easy', 'play.html?id=WSCH-0001'],
       ['maze', 'Hard', 'maze.html?id=MAZE-0001'],
     ]);
+  });
+
+  test('a maze\'s tile wears the difficulty saved with it, as on the landing page and its own page', () => {
+    const mazes = [{ slug: 'mazes', name: 'Mazes', description: '', created: '2026-10-04', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
+    const puzzles = [{ hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-04', title: 'Plain Path', difficulty: 'Hard' }];
+    expect(collectionView(mazes, puzzles, 'mazes').tiles[0].tone).toBe('Hard');
   });
 
   test('Print book opens the collection\'s book, slug and all, in each print style', () => {

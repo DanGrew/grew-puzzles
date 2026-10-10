@@ -156,11 +156,17 @@ describe('the walls', () => {
 });
 
 describe('the board', () => {
-  it('carries the title, the date as players read it, and the type as its band', () => {
+  it('carries the title, its difficulty and its code — no date — and the type as its band', () => {
     expect(BOARD.title).toBe('Everything corner');
-    expect(BOARD.created).toBe('8 Oct 2026');
+    expect(BOARD.difficulty).toBe('Extreme');
+    expect(BOARD.code).toBe('MAZE-0001');
     expect(BOARD.label).toBe('Keylecticodes');
     expect(BOARD.solutionLabel).toBe('Keylecticodes · Solution');
+    expect(JSON.stringify({ ...BOARD, walls: '' })).not.toContain('2026');
+  });
+
+  it('a maze\'s difficulty is the one saved with it, its tile\'s, over its type\'s', () => {
+    expect(mazeBoard({ ...structuredClone(MAZE), difficulty: 'Hard' }).difficulty).toBe('Hard');
   });
 
   it('is the maze\'s size, its walls read per cell, its blocks and its start', () => {

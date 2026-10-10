@@ -14,7 +14,7 @@ import {
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { wireEntries } from './entry-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook, printIn, printImages, dressPrintSheet } from '../theme-ui.js';
-import { wireFlip, celebrate } from '../card-ui.js';
+import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_LAYOUT_KEY = 'grew-puzzles.words-layout';
@@ -46,29 +46,21 @@ export function openPlayPage(search) {
     .then(puzzleUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(function (puzzle) { return markPrintout(playEl, puzzle); })
     .then(function (puzzle) { return { id: puzzle.hiddenId, board: playBoard(puzzle), groups: puzzle.wordGroups }; })
     .then(function (opened) {
       withSavedFinds(opened.id, opened.board.words, function (found) { showPuzzle(opened, found); });
     }, showMissing);
 }
 
-// The hidden ID never reaches the board on screen: only the printout carries it, small under the
-// words card, to match a sheet to its puzzle (styles/play.css draws it from this attribute).
-// part finds a part of the page by its id: the play page's own, or a copy of it in the book.
-export function markPrintout(part, puzzle) {
-  part('words-list').setAttribute('data-hidden-id', puzzle.hiddenId);
-  return puzzle;
-}
-
-// The printout's side of a puzzle — its title and date, the puzzle grid under its type band, and
-// its words — drawn into the parts part finds. The play page draws it into itself, each cell
-// tapping onCell; the book (ui/book-ui.js) draws it into each copy of the play page it prints, so
-// the printout and the book's pages are one layout. A puzzle of several grids prints its words
-// alone first, then each grid on a sheet of its own (styles/play.css, data-paged).
+// The printout's side of a puzzle — its title and the line under it, the puzzle grid under its
+// type band, and its words — drawn into the parts part finds: the play page's own, or a copy of
+// it in the book. The play page draws it into itself,
+// each cell tapping onCell; the book (ui/book-ui.js) draws it into each copy of the play page it
+// prints, so the printout and the book's pages are one layout. A puzzle of several grids prints
+// its words alone first, then each grid on a sheet of its own (styles/play.css, data-paged).
 export function drawSheet(part, board, onCell) {
   part('title').textContent = board.title;
-  part('created').textContent = board.created;
+  drawIdent(part, board);
   part('label').textContent = board.label;
   part('play').style.setProperty('--cols', board.cols);
   part('play').style.setProperty('--rows', board.rows);
@@ -172,8 +164,7 @@ function showMissing() {
 }
 
 // The puzzle, its saved finds already in place: the grid first draws with them, so none pops in,
-// and a puzzle finished before doesn't celebrate again. Its hidden ID is for saving alone — the
-// board on screen never carries it.
+// and a puzzle finished before doesn't celebrate again.
 function showPuzzle(opened, found) {
   var board = opened.board;
   var play = restoredPlay(found);

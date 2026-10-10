@@ -36,7 +36,8 @@ test('a collection page shows its name and description, then its puzzles in numb
   await expect(page.locator('#description')).toHaveText('The first book, remade.');
   await expect(tiles(page).locator('.number')).toHaveText(['1', '2', '3']);
   await expect(tiles(page).locator('.name')).toHaveText(['Flowers', 'Birds', 'Farm Animals']);
-  await expect(tiles(page).first().locator('.detail .line')).toHaveText(['Missing', '2 Jan 2026']);
+  await expect(tiles(page).first().locator('.detail .line')).toHaveText(['Missing']);
+  await expect(page.locator('#tiles')).not.toContainText('2026');
   const description = await page.locator('#description').boundingBox();
   const grid = await page.locator('#tiles').boundingBox();
   expect(description.y + description.height).toBeLessThanOrEqual(grid.y);

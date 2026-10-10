@@ -115,12 +115,19 @@ test('a site with no mazes shows its wordsearches as before', async ({ page }) =
   await expect(page.locator('#total')).toHaveText('1 puzzle');
 });
 
-test('the start is highlighted, the trail sets off from it, and the date sits under the title', async ({ page }) => {
+test('the start is highlighted, the trail sets off from it, and its difficulty and code sit under the title, no date', async ({ page }) => {
   await open(page);
-  await expect(page.locator('#created')).toHaveText('8 Oct 2026');
+  await expect(page.locator('#ident')).toHaveText('Extreme · MAZE-0001');
+  await expect(page.locator('.play-head')).not.toContainText('2026');
   await expect(cell(page, 0, 0)).toHaveClass(/\bstart\b/);
   await expect(page.locator('#grid .start')).toHaveCount(1);
   expect(await trail(page)).toEqual([[0, 0]]);
+});
+
+test('a maze shows the difficulty saved with it under its title, in that difficulty\'s colour, as its tile does', async ({ page }) => {
+  await open(page, { maze: { ...MAZE, difficulty: 'Hard' } });
+  await expect(page.locator('#ident')).toHaveText('Hard · MAZE-0001');
+  await expect(page.locator('#difficulty')).toHaveCSS('background-color', 'rgb(246, 180, 122)');
 });
 
 test('tapping the open cell next to the trail\'s end extends the trail there', async ({ page }) => {
