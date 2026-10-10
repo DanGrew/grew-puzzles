@@ -7,7 +7,14 @@
 
 .play-head { min-width: 0; text-align: center; margin-bottom: 40px; }
 .play-head h1 { font-family: var(--font-display); font-weight: var(--dw); font-size: 30px; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
-.play-head .created { margin: 4px 0 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* The line under the title: the puzzle's difficulty on a pill in its colour, the tile strip's,
+   then its code — Easy · WSCH-0042. The pill stays inline, so the line is as tall as the date's
+   was and the printout's measured sheet (core/theme-core.js) holds. */
+.play-head .ident { margin: 4px 0 0; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.play-head .ident[hidden] { display: none; }
+.play-head .difficulty { padding: 1px 8px; border: 1.5px solid var(--line); border-radius: 999px;
+  background: var(--tone); color: var(--fg); font-weight: 600; }
+.play-head .code { letter-spacing: .04em; }
 .missing { text-align: center; }
 .missing a { color: var(--fg); }
 
@@ -230,7 +237,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
 
 /* Print — Print in the menu, or the browser's own: one clean page, A4 or Letter, in the site's
    index-card look turned black and white — black outlines, hard shadows, black bands. Title and
-   date, the grid card with its type band, the words card beneath, read down each column. The
+   the difficulty and code under it, the grid card with its type band, the words card beneath, read down each column. The
    printout is always the blank puzzle — whatever is flipped, found, selected or laid out on
    screen. The cell is sized so the grid leaves the words room, however many rows and columns —
    but never so small its letters (half the cell) print under 7 pt, KDP's smallest text, unless
@@ -258,7 +265,9 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
 
   .play-head { margin: 0 0 16px; }
   .play-head h1 { font-size: 26px; }
-  .play-head .created { font-size: 12px; }
+  .play-head .ident { font-size: 12px; }
+  /* Plain paper is black and white: the pill keeps its outline, never its colour. */
+  .play-head .difficulty { background: none; }
   .play, .play[data-words] { flex-flow: column; align-items: center; gap: 20px; }
   .col { max-width: none; margin: 0; padding: 0; overflow: visible; }
   .card, .card.flipped { transform: none; transform-style: flat; transition: none; }
@@ -282,11 +291,6 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
      progress; a word of one copy has none. Drawn from the attribute, so it's never page text. */
   ul.words li::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }
   ul.words li[data-copies=""]::after { content: none; }
-
-  /* The hidden ID, small under the words card's corner: matches a sheet to its puzzle. Paper only —
-     drawn from the attribute, so it's never page text on screen. */
-  aside::after { content: attr(data-hidden-id); display: block; margin-top: 9px; text-align: right;
-    font: 400 8pt var(--font-body); letter-spacing: .06em; }
 
   /* A puzzle of several grids: the first sheet is the title and the words card alone, however the
      screen shows them, the card the page's full width, a long list's room to spread; then each

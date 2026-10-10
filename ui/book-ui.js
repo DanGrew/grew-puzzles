@@ -5,7 +5,7 @@ import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers, printStyleOf } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { characterAt } from '../core/theme-core.js';
-import { markPrintout, drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
+import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
@@ -65,7 +65,7 @@ function printBook(book, playPage, scene) {
       var boards = puzzles.map(function (puzzle) { return playBoard(puzzle); });
       var numbers = pageNumbers(boards);
       var wearers = book.pages.map(function (page) { return characterAt(got[1], page.number); });
-      var pages = puzzles.map(function (puzzle, i) { return sheet(template, book.pages[i].heading, puzzle, boards[i], numbers[i]); });
+      var pages = boards.map(function (board, i) { return sheet(template, book.pages[i].heading, board, numbers[i]); });
       var printout = function () {
         pages.forEach(function (page, i) { dressPrintout(page.querySelector('main.play'), page, boards[i], wearers[i], true, Math.random); });
       };
@@ -106,13 +106,12 @@ function sheetTemplate(playPage) {
 // runs on over a page per grid, each headed with the puzzle's number too. Every page carries its
 // page number at the foot, on its outer side. Each copy then drops the play page's ids, which
 // belong to the play page alone.
-function sheet(template, heading, puzzle, board, numbers) {
+function sheet(template, heading, board, numbers) {
   var page = template.cloneNode(true);
   var part = function (id) { return page.querySelector('#' + id); };
   var number = page.querySelector('.sheet-number');
   var pageNumber = page.querySelector('.page-number');
   number.textContent = heading;
-  markPrintout(part, puzzle);
   drawSheet(part, board, function () {});
   page.querySelectorAll('.grid-sheet').forEach(function (grid) {
     grid.prepend(number.cloneNode(true));

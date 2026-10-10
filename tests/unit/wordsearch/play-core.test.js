@@ -63,12 +63,18 @@ describe('the board', () => {
     expect(wordCells(PUZZLE.words[0])).toEqual([[4, 2], [3, 2], [2, 2]]);
   });
 
-  it('heads the board with its title and created date, and labels it with the type alone', () => {
+  it('heads the board with its title, its difficulty and its code — no date — and labels it with the type alone', () => {
     expect(BOARD.title).toBe('Farm Kitchen');
-    expect(BOARD.created).toBe('2 Oct 2026');
+    expect(BOARD.difficulty).toBe('Easy');
+    expect(BOARD.code).toBe('WSCH-0007');
     expect(BOARD.label).toBe('Vanilla');
     expect(BOARD.solutionLabel).toBe('Vanilla · Solution');
-    expect(JSON.stringify(BOARD)).not.toContain('WSCH');
+    expect(JSON.stringify(BOARD)).not.toContain('2026');
+  });
+
+  it('a wordsearch\'s difficulty is its type\'s, as its tile\'s strip is', () => {
+    expect(playBoard({ ...PUZZLE, type: 'Missing' }).difficulty).toBe('Hard');
+    expect(playBoard({ ...PUZZLE, type: 'Mirra?e' }).difficulty).toBe('Extreme');
   });
 
   it('shows a type name exactly as written', () => {

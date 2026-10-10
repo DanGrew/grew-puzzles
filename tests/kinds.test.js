@@ -137,15 +137,15 @@ test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes', as
   await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Key Keeper', 'Locked Out', 'Plain Path', 'Grand Finale']);
 });
 
-test('every maze tile reads its size under its type; one saved before the size has none', async ({ page }) => {
+test('every maze tile reads its size under its type, and no date; one saved before the size has none', async ({ page }) => {
   await serve(page);
   await page.goto('/app/?kind=maze');
   const lines = title => page.locator('#tiles .tile', { hasText: title }).locator('.detail .line');
-  await expect(lines('Plain Path')).toHaveText(['Vanilla', '100×100', '1 Oct 2026']);
-  await expect(lines('Locked Out')).toHaveText(['Keys', '48×60', '4 Oct 2026']);
-  await expect(lines('Key Keeper')).toHaveText(['Keys', '6 Oct 2026']);
+  await expect(lines('Plain Path')).toHaveText(['Vanilla', '100×100']);
+  await expect(lines('Locked Out')).toHaveText(['Keys', '48×60']);
+  await expect(lines('Key Keeper')).toHaveText(['Keys']);
   await page.goto('/app/');
-  await expect(page.locator('#tiles .tile').first().locator('.detail .line')).toHaveText(['Vanilla', '1 Oct 2026']);
+  await expect(page.locator('#tiles .tile').first().locator('.detail .line')).toHaveText(['Vanilla']);
 });
 
 test('an address naming a difficulty, a type or both opens on exactly that', async ({ browser }) => {
@@ -177,11 +177,13 @@ test('every puzzle tile shows its kind\'s picture between its strip and its titl
   const fileRequests = await serve(page);
   const pictures = () => page.locator('#tiles .tile .pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
   await page.goto('/app/');
+  await expect(names(page)).toHaveCount(3);
   const grids = await pictures();
   expect(grids).toHaveLength(3);
   expect(new Set(grids).size).toBe(1);
   expect(grids[0]).toContain('<text');
   await page.goto('/app/?kind=maze');
+  await expect(names(page)).toHaveCount(6);
   const mazes = await pictures();
   expect(mazes).toHaveLength(6);
   expect(new Set(mazes).size).toBe(1);

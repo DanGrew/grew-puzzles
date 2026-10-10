@@ -3,7 +3,7 @@
 // ui/maze/play-ui.js. The maze file and its walk are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md:
 // the site only reads them — walls, stops, zones and the saved solution — and never solves or
 // checks anything itself.
-import { dayLabel } from '../day-core.js';
+import { puzzleDifficulty } from '../kind-core.js';
 
 // ---- Finding the maze ----
 
@@ -90,14 +90,16 @@ function mainPath(walk) {
   }, []);
 }
 
-// The maze's type is the board's only label on screen, as a wordsearch's is.
+// The maze's type is the board's only label on screen, as a wordsearch's is; under its title, its
+// difficulty — its own saved one, else its type's, as its tile shows — and its code.
 export function mazeBoard(puzzle) {
   var walk = walkCells(puzzle), main = mainPath(walk);
   var onMain = function (cell) { return main.some(function (m) { return sameCell(m, cell); }); };
   var bits = puzzle.walls.map(function (row) { return row.split('').map(function (d) { return parseInt(d, 16); }); });
   return {
     title: puzzle.title,
-    created: dayLabel(puzzle.created),
+    difficulty: puzzleDifficulty(puzzle),
+    code: puzzle.hiddenId,
     label: puzzle.type,
     solutionLabel: puzzle.type + ' · Solution',
     cols: puzzle.width,
