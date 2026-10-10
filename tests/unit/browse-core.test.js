@@ -3,6 +3,7 @@ import {
   browseState, browseSearch, browseList, pageCount, pageOf, clearFilters, nothingPicked,
   withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons, filterRows, picked, togglePick,
   filtersLabel, railItems, columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn,
+  inPlace,
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
@@ -291,6 +292,29 @@ describe('browse-core.js', () => {
     expect(withSignIn(state, true)).toBe(state);
     expect(withSignIn(state, false)).toEqual({ ...state, finished: '' });
     expect(state.finished).toBe('yes');
+  });
+
+  test('a plain press on a link to the landing page stays on it, /app/ and /app/index.html alike', () => {
+    const plain = { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false };
+    const here = 'http://site/app/?type=Saga';
+    expect(inPlace('http://site/app/index.html?kind=maze', here, plain)).toBe('true');
+    expect(inPlace('http://site/app/index.html', 'http://site/app/index.html?kind=maze', plain)).toBe('true');
+    expect(inPlace('http://site/app/', here, plain)).toBe('true');
+    expect(inPlace('http://site/app/play.html?id=WSCH-0001', here, plain)).toBe('false');
+    expect(inPlace('http://site/app/how-to-play.html', here, plain)).toBe('false');
+    expect(inPlace('http://site/index.html', here, plain)).toBe('false');
+    // Only a page named exactly index.html, at the end of the path, is the folder's own page.
+    expect(inPlace('http://site/app/index.htmlx', 'http://site/app/x', plain)).toBe('false');
+    expect(inPlace('http://site/app/index-html', here, plain)).toBe('false');
+  });
+
+  test('a press asking for a new tab or window, or not the main button, is left to the browser', () => {
+    const plain = { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false };
+    const href = 'http://site/app/index.html?kind=maze', here = 'http://site/app/';
+    ['ctrlKey', 'metaKey', 'shiftKey', 'altKey'].forEach(key => {
+      expect(inPlace(href, here, { ...plain, [key]: true })).toBe('false');
+    });
+    expect(inPlace(href, here, { ...plain, button: 1 })).toBe('false');
   });
 
   test('an address picks Finished or Not finished; anything else is no choice', () => {
