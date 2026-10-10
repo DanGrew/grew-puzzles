@@ -194,6 +194,38 @@ test('each print picks one of the four spots at random, and the next print can p
   ]);
 });
 
+// TASK-114: a Kids puzzle's grid card prints 1.5× a Vanilla's; its character peers from that card's
+// own edges, as the print rules reckon it.
+test('a Kids puzzle\'s character peers from its bigger grid card\'s edges, as the print rules reckon it', async ({ page }) => {
+  await printing(page, 'colour');
+  await drawing(page);
+  await openPlay(page, 'WSCH-0012', require('./fixtures/WSCH-0012.json'));
+  await onPaper(page);
+  const card = await box(page.locator('#card'));
+  expect(Math.round(card.width)).toBe(8 * 54 + 32);
+  await printWith(page, 0);
+  await expect(figure(page)).toHaveAttribute('data-spot', 'right');
+  const f = await box(figure(page));
+  expect(Math.round(f.x + f.width / 2 - card.x)).toBe(Math.round(card.width + 10));
+});
+
+test('a Kids grid wide enough to leave the character no room at the paper\'s sides prints it only over a top corner', async ({ page }) => {
+  const kids = require('./fixtures/WSCH-0012.json');
+  const wide = { ...kids, grids: [{ rows: kids.grids[0].rows.map(row => row + 'ABCD') }] };
+  await printing(page, 'colour');
+  await drawing(page);
+  await openPlay(page, 'WSCH-0012', wide);
+  await onPaper(page);
+  // 1.5× a Vanilla's 36px would run past 165 mm, so each cell is 165 mm over 12.
+  expect(Math.abs((await box(page.locator('#card'))).width - (623.62 + 32))).toBeLessThan(1);
+  const spots = [];
+  for (const draw of [0, 0.3, 0.5, 0.99]) {
+    await printWith(page, draw);
+    spots.push(await figure(page).getAttribute('data-spot'));
+  }
+  expect(spots).toEqual(['topRight', 'topRight', 'topLeft', 'topLeft']);
+});
+
 test('Print page dresses the sheet again before the dialog opens', async ({ page }) => {
   await printing(page, 'colour');
   await drawing(page);

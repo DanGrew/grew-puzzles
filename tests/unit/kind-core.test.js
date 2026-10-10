@@ -44,8 +44,17 @@ describe('kind-core.js', () => {
     expect(difficultyOf('wordsearch', 'constructor')).toBe('Easy');
   });
 
-  test('the difficulties run Easy to Extreme', () => {
-    expect(difficulties()).toEqual(['Easy', 'Medium', 'Hard', 'Extreme']);
+  test('the difficulties run Easy to Extreme, then Kids', () => {
+    expect(difficulties()).toEqual(['Easy', 'Medium', 'Hard', 'Extreme', 'Kids']);
+  });
+
+  test('a Kids wordsearch is filed under Kids, its side bar dot in Kids\' own tone', () => {
+    expect(difficultyOf('wordsearch', 'Kids')).toBe('Kids');
+    expect(dotTone('wordsearch', 'Kids')).toBe('Kids');
+    expect(levelsOf('wordsearch', [puzzle('WSCH-0001', 'Kids'), puzzle('WSCH-0002', 'Mirra?e'), puzzle('WSCH-0003', 'Vanilla')]))
+      .toEqual(['Easy', 'Extreme', 'Kids']);
+    expect(typesOf('wordsearch', [puzzle('WSCH-0001', 'Kids'), puzzle('WSCH-0002', 'Mirra?e'), puzzle('WSCH-0003', 'Vanilla')]))
+      .toEqual(['Vanilla', 'Mirra?e', 'Kids']);
   });
 
   test('a puzzle\'s difficulty is the one saved with it, or with none saved its type\'s level', () => {

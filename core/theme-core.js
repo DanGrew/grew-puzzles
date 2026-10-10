@@ -170,17 +170,19 @@ export function printPaper(book) {
 
 // A printed grid's cell, as styles/play.css's print rules size it: a one-grid sheet leaves its
 // words 105 mm down, a grid sheet of its own takes 200 mm; 14 pt at the least, and never wider
-// than the 7.5 in a sheet has across.
-export function printCell(cols, rows, paged) {
+// than the 7.5 in a sheet has across. Big letters (letters, play-core's playBoard) grow it by
+// that much, the grid no wider than the words' 165 mm unless a Vanilla's already is.
+export function printCell(cols, rows, paged, letters) {
   const down = [396.85, 755.91][Number(paged)];
-  return Math.min(Math.max(18.67, Math.min(36, 623.62 / cols, down / rows)), 720 / cols);
+  const cell = Math.max(18.67, Math.min(36, 623.62 / cols, down / rows));
+  return Math.min(cell * letters, Math.max(cell, 623.62 / cols), 720 / cols);
 }
 
 // The card a character peers from, across: the grid card — its cells, 14 px inside each side and
 // its 2 px outline — or, on a words sheet, the words card, the paper's whole width less its
 // half-inch edges.
-export function printCardWidth(sheet, cols, rows, paper) {
-  const grid = paged => cols * printCell(cols, rows, paged) + 32;
+export function printCardWidth(sheet, cols, rows, letters, paper) {
+  const grid = paged => cols * printCell(cols, rows, paged, letters) + 32;
   return { one: grid(false), grid: grid(true), words: paper.width - 96 }[sheet];
 }
 

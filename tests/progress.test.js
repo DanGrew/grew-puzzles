@@ -157,6 +157,25 @@ test('signed in, three words found come back exactly once the tab is closed and 
   expect(table.saves).toHaveLength(3);
 });
 
+// TASK-114: a Kids puzzle saves and restores its finds as any wordsearch does.
+test('signed in, a Kids puzzle\'s finds are saved as lines and come back on reopening, its words in capitals', async ({ context }) => {
+  const KIDS = { ...require('./fixtures/WSCH-0012.json'), hiddenId: 'WSCH-0007' };
+  const table = await playing(context, { puzzle: KIDS });
+  const page = await open(context);
+  await find(page, [[1, 0], [1, 2]], [[2, 0], [4, 0]]);
+  await expect.poll(() => table.rows.length).toBe(2);
+  expect(table.rows).toEqual([
+    { user_id: PLAYER.id, puzzle: 'WSCH-0007', page: 0, start_row: 1, start_col: 0, direction: 'E' },
+    { user_id: PLAYER.id, puzzle: 'WSCH-0007', page: 0, start_row: 2, start_col: 0, direction: 'S' },
+  ]);
+  await page.close();
+
+  const later = await open(context);
+  await expect(count(later)).toHaveText('2/8');
+  await expect(foundLines(later)).toHaveCount(2);
+  await expect(crossedOff(later)).toHaveText(['COW', 'PIG']);
+});
+
 test('the grid waits for the saved finds, and first shows with them already in place', async ({ context }) => {
   const table = await playing(context);
   await find(await open(context), CAT, COW);

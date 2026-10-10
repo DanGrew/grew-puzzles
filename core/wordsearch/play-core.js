@@ -33,10 +33,12 @@ export function wordCells(word) {
 
 // A missing word is listed but sits in no grid, so it has no cells and no line; a placed word sits
 // in the grid its own grid names, and its line — page, start cell and direction — is what a find
-// of it saves (core/progress-core.js).
-function boardWord(w) {
+// of it saves (core/progress-core.js). text is the word as written, which its entry is found by;
+// shown is how the list shows it — in capitals when the file asks for them (capitals), spaces and
+// hyphens kept: ICE CREAM.
+function boardWord(w, capitals) {
   return {
-    text: w.word, missing: Boolean(w.missing), grid: w.grid,
+    text: w.word, shown: { true: w.word.toUpperCase(), false: w.word }[capitals], missing: Boolean(w.missing), grid: w.grid,
     cells: w.missing ? [] : wordCells(w),
     line: w.missing ? null : { page: w.grid, row: w.start.row, col: w.start.col, direction: w.direction }
   };
@@ -76,10 +78,14 @@ function pageNames(count, name) {
 // The type is the board's only label on screen: shown exactly as written, in the grid's header
 // band. Under the title, its difficulty — the one its tile shows (puzzleDifficulty) — and its
 // code, the hidden ID, so a player can name it. Every grid is the same size, so the first one
-// sizes them all.
+// sizes them all. letters is how big the grid's letters and the words are against a Vanilla's:
+// 1.5× when the file asks for big letters (bigLetters), on screen at every text size and on paper.
+// A page shows what the file carries — never what its type is called.
 export function playBoard(puzzle) {
   var count = puzzle.grids.length;
+  var capitals = Boolean(puzzle.capitals);
   return {
+    letters: { true: 1.5, false: 1 }[Boolean(puzzle.bigLetters)],
     title: puzzle.title,
     difficulty: puzzleDifficulty(puzzle),
     code: puzzle.hiddenId,
@@ -90,7 +96,7 @@ export function playBoard(puzzle) {
     sheets: pageNames(count, function (n, of) { return puzzle.type + ' · Page ' + n + ' of ' + of; }),
     rows: puzzle.grids[0].rows.length,
     cols: puzzle.grids[0].rows[0].length,
-    words: puzzle.words.map(boardWord)
+    words: puzzle.words.map(function (w) { return boardWord(w, capitals); })
   };
 }
 
@@ -235,13 +241,13 @@ export function playMarks(play, words) {
 // file per copy. printed: on paper, a word of several copies says how many to find, as the
 // generator names it — Sheep ×45 — whatever was found on screen; a word of one copy, a missing one
 // too, says nothing. progressWidth: how wide its progress is with every copy found, in characters,
-// so a find never moves the word.
+// so a find never moves the word. shown: the word as the list shows it (boardWord).
 export function wordLines(words) {
   var texts = words.map(function (w) { return w.text; });
   return texts.filter(function (text, i) { return texts.indexOf(text) === i; }).map(function (text) {
     var copies = texts.map(function (_, i) { return i; }).filter(function (i) { return texts[i] === text; });
     var part = {
-      text: text, copies: copies,
+      text: text, shown: words[copies[0]].shown, copies: copies,
       printed: { true: '×' + copies.length, false: '' }[copies.length > 1],
       progressWidth: copiesProgress(copies.length, copies.length).length
     };
@@ -382,12 +388,17 @@ export function textScale(size) {
   return textSizeLetters()[size] / textSizeLetters().normal;
 }
 
-// The text-size menu, smallest first: each size, its name, its ratio and whether it's the one
-// picked.
+// A puzzle's letters at a size: the size's ratio, times how big the puzzle's own letters are
+// (playBoard's letters) — a Kids puzzle's Normal is 1.5× a Vanilla's.
+export function boardScale(size, letters) {
+  return textScale(size) * letters;
+}
+
+// The text-size menu, smallest first: each size, its name and whether it's the one picked.
 export function textSizeMenu(picked) {
   var labels = { tiny: 'Tiny', small: 'Small', normal: 'Normal', large: 'Large', huge: 'Huge' };
   return Object.keys(textSizeLetters()).map(function (size) {
-    return { size: size, label: labels[size], scale: textScale(size), picked: size === picked };
+    return { size: size, label: labels[size], picked: size === picked };
   });
 }
 
@@ -430,13 +441,15 @@ export function playReach(screenWidth, column, sideWidth) {
 // colGap/rowGap; the grid's gridCols × gridRows letters at the page's own naturalCell size, and
 // the grid card's band, tabs and edges round them (cardChromeWidth/cardChromeHeight); the words
 // card's own chromeWidth/chromeHeight round its list; the page's pageWidth and pageGap between
-// grid and list; the player's text size as its scale; and room, what the words card leaves the
-// character beside it under the grid at full size (theme-core's wordsRoom), 0 when there's none.
+// grid and list; the player's text size as its scale (boardScale); the puzzle's own letters
+// (playBoard's); and room, what the words card leaves the character beside it under the grid at
+// full size (theme-core's wordsRoom), 0 when there's none.
 // sits is where the list goes; cell the grid's letter size, and cardWidth × cardHeight its card
 // at that size; wordSize the words' text size; columns how many, wordWidth each column's, and
 // places each word's [row, column], from 1; room the room left beside the words under the grid,
 // shrunk with the grid card.
-export function wordsFit(layout, m) {
+export function wordsFit(layout, measured) {
+  var m = Object.assign({}, measured, { naturalCell: wholeCell(measured) });
   var fit = { bottom: underFit, right: besideFit, overlay: overFit }[layout](m);
   var card = gridCard(m, fit.cell);
   var words = wordsAt(m, fit.wordSize);
@@ -445,6 +458,14 @@ export function wordsFit(layout, m) {
     sits: fit.sits, cell: fit.cell, wordSize: fit.wordSize, cardWidth: card.width, cardHeight: card.height,
     columns: columns, wordWidth: words.wordWidth, places: wordPlaces(m.count, columns), room: roomAt(m, card)
   };
+}
+
+// The page's own letter size, but big letters (m.letters over 1) shrink, in whole pixels, until
+// the grid card fits the page's width — a Kids grid whole on a phone, no zooming — never below a
+// Vanilla's letters at the same size, where a grid too wide still scrolls as a Vanilla's does.
+function wholeCell(m) {
+  var across = Math.floor((m.pageWidth - m.cardChromeWidth) / m.gridCols);
+  return Math.min(m.naturalCell, Math.max(across, m.naturalCell / m.letters));
 }
 
 // The room beside the words under the grid, shrinking with the grid card as the character does.

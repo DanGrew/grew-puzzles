@@ -1,0 +1,33 @@
+{
+  "hiddenId": "WSCH-0012",
+  "type": "Kids",
+  "created": "2026-10-10",
+  "title": "Little Farm",
+  "wordGroups": ["farm-animals"],
+  "words": [
+    { "word": "Cow", "grid": 0, "start": { "row": 1, "col": 0 }, "direction": "E", "length": 3 },
+    { "word": "Duck", "grid": 0, "start": { "row": 3, "col": 1 }, "direction": "E", "length": 4 },
+    { "word": "Goat", "grid": 0, "start": { "row": 4, "col": 2 }, "direction": "E", "length": 4 },
+    { "word": "Hen", "grid": 0, "start": { "row": 1, "col": 4 }, "direction": "E", "length": 3 },
+    { "word": "Ice cream", "grid": 0, "start": { "row": 0, "col": 0 }, "direction": "E", "length": 8 },
+    { "word": "Lamb", "grid": 0, "start": { "row": 2, "col": 1 }, "direction": "E", "length": 4 },
+    { "word": "Pig", "grid": 0, "start": { "row": 2, "col": 0 }, "direction": "S", "length": 3 },
+    { "word": "Sheep", "grid": 0, "start": { "row": 5, "col": 1 }, "direction": "E", "length": 5 }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "ICECREAM",
+        "COWXHENQ",
+        "PLAMBZRT",
+        "IDUCKSOM",
+        "GZGOATLN",
+        "TSHEEPWE",
+        "BNRKFLDW",
+        "YZXQVJMP"
+      ]
+    }
+  ],
+  "capitals": true,
+  "bigLetters": true
+}

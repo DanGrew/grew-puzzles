@@ -550,6 +550,19 @@ describe('browse-core.js', () => {
     expect(by(['Hard'], ['Missing'])).toEqual([id(2)]);
   });
 
+  // TASK-114: Kids is the last difficulty — its filter pick after Extreme, its tiles last easiest first.
+  test('sorted by difficulty, Kids puzzles come last easiest first, and first hardest first', () => {
+    const index = [
+      { hiddenId: id(1), type: 'Kids', created: '2026-10-01', title: 'a' },
+      { hiddenId: id(2), type: 'Mirra?e', created: '2026-10-02', title: 'b' },
+      { hiddenId: id(3), type: 'Vanilla', created: '2026-10-03', title: 'c' },
+    ];
+    expect(shown(index, { finished: '', types: [], sort: 'difficulty', dir: 'desc' })).toEqual([id(3), id(2), id(1)]);
+    expect(shown(index, { finished: '', types: [], sort: 'difficulty', dir: 'asc' })).toEqual([id(1), id(2), id(3)]);
+    expect(filterOptions(index).wordsearch.levels).toEqual(['Easy', 'Extreme', 'Kids']);
+    expect(filterRows(filterOptions(index).wordsearch)[0].picks.map(p => p.tone)).toEqual(['Easy', 'Extreme', 'Kids']);
+  });
+
   test('sorted by difficulty, a maze saved as Hard sits among the Hard puzzles', () => {
     const index = [
       { hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-01', title: 'a', difficulty: 'Hard' },

@@ -178,6 +178,30 @@ test('a Repeats puzzle\'s book page carries its Cup ×5 exactly as its own print
   await play.close();
 });
 
+// TASK-114: a Kids puzzle's book page has its big letters and its capitals word list.
+test('a Kids puzzle\'s book page is exactly its own printout: big letters and its words in capitals', async ({ page, browser }) => {
+  const KIDS = require('./fixtures/WSCH-0012.json');
+  const kids = { slug: 'kids', name: 'Kids', description: 'For little ones.', created: '2026-10-10', puzzles: [{ id: 'WSCH-0012', number: 1 }] };
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [kids] } }));
+  await page.route('**/content/puzzles/wordsearch/WSCH-0012.json', r => r.fulfill({ json: KIDS }));
+  await catchPrint(page);
+  await page.goto('/app/book.html?slug=kids');
+  await expect(page.locator('#ready')).toBeVisible();
+  await page.emulateMedia({ media: 'print' });
+  const book = await printout(page, '.sheet:nth-child(1)');
+  expect(book.words).toEqual(['COW', 'DUCK', 'GOAT', 'HEN', 'ICE CREAM', 'LAMB', 'PIG', 'SHEEP']);
+  expect(book.grid).toEqual([8 * 54, 8 * 54]);
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/wordsearch/WSCH-0012.json', r => r.fulfill({ json: KIDS }));
+  await play.goto('/app/play.html?id=WSCH-0012');
+  await expect(play.locator('#grid .cell').first()).toBeVisible();
+  await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
+  await play.emulateMedia({ media: 'print' });
+  expect(book).toEqual(await printout(play, 'body'));
+  await play.close();
+});
+
 test('a Saga\'s words page in the book is its own printout\'s words sheet: its words as large, as far apart, in the same columns', async ({ page, browser }) => {
   await openBook(page, {}, 'sagas');
   await page.emulateMedia({ media: 'print' });

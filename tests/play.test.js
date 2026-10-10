@@ -1992,3 +1992,86 @@ test('a Saga prints its words and each grid\'s sheet the same at every size', as
   await pickSize(page, 'Huge');
   expect(await printed()).toEqual(normal);
 });
+
+// ---- Kids (TASK-114): big letters and a capitals word list, from what the file carries ----
+
+const KIDS = require('./fixtures/WSCH-0012.json');
+const KIDS_WORDS = ['COW', 'DUCK', 'GOAT', 'HEN', 'ICE CREAM', 'LAMB', 'PIG', 'SHEEP'];
+
+async function openKids(page, layout = 'bottom') {
+  await openSized(page, layout, { ...KIDS, hiddenId: 'WSCH-0007' });
+}
+
+test('a Kids puzzle at Normal draws its letters and words 1.5× a Vanilla\'s at Normal', async ({ page }) => {
+  await openKids(page);
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'normal');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '33px');
+  expect((await cell(page, 0, 0).boundingBox()).width).toBe(66);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '24px');
+});
+
+test('Tiny to Huge scale a Kids puzzle\'s letters and words from its own Normal, the menu\'s "Aa" at the letters each gives', async ({ page }) => {
+  await openKids(page);
+  for (const [label, [letters]] of Object.entries(SIZES)) {
+    await pickSize(page, label);
+    await expect(cell(page, 0, 0)).toHaveCSS('font-size', letters * 1.5 + 'px');
+    expect(await fontSize(page.locator('#words li').first())).toBeCloseTo(Math.max(11, 16 * letters / 22 * 1.5), 2);
+  }
+  await sizeButton(page).click();
+  expect(await sizeMenu(page).locator('.aa').evaluateAll(as => as.map(a => parseFloat(getComputedStyle(a).fontSize)))).toEqual([15, 22.5, 33, 40.5, 48]);
+});
+
+test('a Kids puzzle lists its words in capitals as written, spaces kept, and finding one crosses it off', async ({ page }) => {
+  await openKids(page);
+  await expect(page.locator('#words li')).toHaveText(KIDS_WORDS);
+  await tapAll(page, [[0, 0], [0, 7]]);
+  await expect(page.locator('#words li.done')).toHaveText(['ICE CREAM']);
+  await expect(page.locator('#count')).toHaveText('1/8');
+});
+
+test('a Vanilla puzzle keeps its letters and its words as written', async ({ page }) => {
+  await openSized(page, 'bottom');
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '22px');
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '16px');
+  await expect(page.locator('#words li', { hasText: 'Ice' })).toHaveText('Ice cream');
+});
+
+for (const width of [390, 320]) {
+  test(`on a ${width}px phone a Kids puzzle's whole grid fits the screen's width, no zooming, its letters bigger than a Vanilla's`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await open(page, null, { ...KIDS, hiddenId: 'WSCH-0007' });
+    await page.evaluate(() => document.fonts.ready);
+    await expect(page.locator('#play')).toHaveAttribute('data-sits', 'overlay');
+    const stage = await box(page, '.stage');
+    expect(stage.x).toBeGreaterThanOrEqual(0);
+    expect(stage.x + stage.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    expect(await page.locator('.col').evaluate(col => col.scrollWidth - col.clientWidth)).toBe(0);
+    expect(await fontSize(cell(page, 0, 0))).toBeGreaterThan(13);
+  });
+}
+
+test('a Kids puzzle prints its letters and words 1.5× a Vanilla\'s, its words in capitals, the same at every size', async ({ page }) => {
+  await openKids(page);
+  const normal = await printedBoxes(page);
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '27px');
+  expect((await box(page, '#grid')).width).toBe(8 * 54);
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '19.5px');
+  await expect(page.locator('#words li')).toHaveText(KIDS_WORDS);
+  await page.emulateMedia({ media: 'screen' });
+  await pickSize(page, 'Tiny');
+  expect(await printedBoxes(page)).toEqual(normal);
+});
+
+test('a Kids puzzle\'s printed words keep to their columns, sized in the big type they print in', async ({ page }) => {
+  await openKids(page);
+  await page.emulateMedia({ media: 'print' });
+  const column = parseFloat(await page.locator('#words').evaluate(l => l.style.getPropertyValue('--print-word-w')));
+  const widest = Math.max(...await page.locator('#words li').evaluateAll(lis => lis.map(li => {
+    const range = document.createRange();
+    range.selectNodeContents(li.firstChild);
+    return range.getBoundingClientRect().width;
+  })));
+  expect(column).toBeGreaterThanOrEqual(Math.floor(widest));
+  expect(column).toBeLessThan(widest + 2);
+});
