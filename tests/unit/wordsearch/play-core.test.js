@@ -302,6 +302,11 @@ describe('a words sheet of its own', () => {
     expect(printedSpread(lines(150, 50, 1), type(60), true)).toEqual({ scale: 1.15, gap: 7.4 });
   });
 
+  it('keeps a size whose gap comes out exactly paper\'s least, 3px scaled with its type', () => {
+    // A 1.5px line: two of them at 1.5× are 4.5px, exactly 3px at 1.5×.
+    expect(printedSpread(lines(1, 50, 1), { line: 1.5, column: 60 }, false)).toEqual({ scale: 1.5, gap: 4.5 });
+  });
+
   it('never prints smaller than paper\'s type, nor closer than its 3px, however long the list', () => {
     expect(printedSpread(lines(400, 50, 1), type(60), false)).toEqual({ scale: 1, gap: 3 });
   });
