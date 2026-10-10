@@ -96,7 +96,8 @@
    character's head needs the room. Whatever reaches past the paper's side is clipped there: left to
    spill, it would have the browser shrink every page to fit it, the background falling short of the
    paper's edge. The play page's background is fixed, so it comes out on every sheet; each book page
-   wears its own puzzle's, from the paper's corner, the book's 8.5 × 11 in. ui/wordsearch/play-ui.js
+   wears its own puzzle's, from the paper's corner, the book's 8.625 × 11.25 in with its bleed
+   (styles/book.css). ui/wordsearch/play-ui.js
    picks each sheet's spot and sets --paper-scene. Black and white is Colour in greys. The page with
    no margin is styles/play.css's `themed`. */
 @media print {
@@ -104,14 +105,15 @@
   :root:is([data-print="colour"], [data-print="mono"]) .wrap { overflow-x: clip; }
   :root:is([data-print="colour"], [data-print="mono"]) .play-page .wrap { padding: calc(.5in + var(--print-rise, 0px)) .5in 0; }
   :root:is([data-print="colour"], [data-print="mono"]) .grid-sheet,
-  :root:is([data-print="colour"], [data-print="mono"]) .sheets .sheet { padding-top: calc(.5in + var(--print-rise, 0px)); }
+  :root:is([data-print="colour"], [data-print="mono"]) .sheets .sheet { padding-top: calc(.5in + var(--bleed, 0px) + var(--print-rise, 0px)); }
 
   :root:is([data-print="colour"], [data-print="mono"]) .play-page::before,
   :root:is([data-print="colour"], [data-print="mono"]) .sheets :is(.sheet, .grid-sheet)::before {
     content: ''; position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: .28;
     background: var(--paper-scene, none) center 70% / cover no-repeat; }
   :root:is([data-print="colour"], [data-print="mono"]) .sheets :is(.sheet, .grid-sheet)::before {
-    position: absolute; inset: auto; top: 0; left: -.5in; width: 8.5in; height: 11in; }
+    position: absolute; inset: auto; top: 0; left: calc(-.5in - var(--page-shift, 0px));
+    width: calc(8.5in + var(--bleed, 0px)); height: calc(11in + 2 * var(--bleed, 0px)); }
 
   /* The card a character peers from holds it: behind the card and the title, centred on its spot,
      turned. Paper has no flip, so the stage drops the screen's 3D, which would lift the card and

@@ -26,17 +26,30 @@
    inside the page, 0.5 in up from the foot, on the outer side: even on the left, odd on the
    right. The title page is page 1 and the copyright page 2, neither numbered. */
 @page { size: 8.5in 11in; margin: 0; }
+/* Printed Colour or Black and white, the book is a KDP bleed interior: --bleed, an eighth of an inch,
+   more paper past the trim on each page's outer side, top and foot — none at the spine — for the
+   background to run off. The trim keeps today's book where it was: an odd page's from the paper's
+   top-left corner plus the bleed's top, an even page's moved over by the bleed too (--page-shift,
+   from its page number's side), so every word keeps today's half inch inside the trim. Plain sets
+   no bleed, and is today's 8.5×11 in book. */
+@page themed { size: 8.625in 11.25in; }
 @media print {
-  .wrap { padding: 0 .5in; }
+  :root:is([data-print="colour"], [data-print="mono"]) { --bleed: .125in; }
+  .wrap { padding: 0 calc(.5in + var(--bleed, 0px)) 0 .5in; }
   .book-status { display: none; }
-  .title-page { margin: 50mm auto 0; }
-  .copyright-page { display: block; break-before: page; padding: 7.5in .5in 0; font: 9pt/1.5 var(--font-body); }
+  .title-page { margin: calc(50mm + var(--bleed, 0px)) auto 0; }
+  .copyright-page { display: block; break-before: page; padding: calc(7.5in + var(--bleed, 0px)) .5in 0; font: 9pt/1.5 var(--font-body);
+    position: relative; left: var(--bleed, 0px); }
+  .sheets :is(.sheet, .grid-sheet):has(> .page-number[data-side="left"]) { --page-shift: var(--bleed, 0px); }
+  .sheets :is(.sheet, .grid-sheet):has(> .page-number[data-side="right"]) { --page-shift: 0px; }
+  .sheets .sheet { --sheet-shift: var(--page-shift, 0px); left: var(--sheet-shift); }
+  .sheets .grid-sheet { left: calc(var(--page-shift, 0px) - var(--sheet-shift, 0px)); }
   .copyright-page p { margin: 0 0 1em; }
   .sheets { display: block; }
   .sheet { break-before: page; }
   .sheet, .grid-sheet { position: relative; padding-top: .5in; }
   .sheet .print-grids { align-self: stretch; }
-  .page-number { position: absolute; top: 10.3in; margin: 0; font: 600 11pt var(--font-display); font-variant-numeric: tabular-nums; }
+  .page-number { position: absolute; top: calc(10.3in + var(--bleed, 0px)); margin: 0; font: 600 11pt var(--font-display); font-variant-numeric: tabular-nums; }
   .page-number[data-side="left"] { left: 0; }
   .page-number[data-side="right"] { right: 0; }
 }

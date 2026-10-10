@@ -292,12 +292,19 @@ const issue = {
   puzzles: [{ id: 'WSCH-0008', number: 13 }, { id: 'WSCH-0007', number: 1 }, { id: 'WSCH-0010', number: 2 }],
 };
 
-// The book in a style, as Print book's link on the collection page opens it.
+// The book's paper, in px: printed Colour or Black and white, KDP's bleed page — an eighth of an inch
+// (12 px) more past the trim on the outer side, top and foot; Plain, US Letter.
+const BLEED = 12;
+const PAPER = { colour: [828, 1080], mono: [828, 1080] };
+const LETTER = [816, 1056];
+
+// The book in a style, as Print book's link on the collection page opens it, on a window its paper wide.
 async function openBook(page, style) {
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue] } }));
   await page.route(/\/puzzles\/wordsearch\/WSCH-\d+\.json$/, r => r.fulfill({ json: FILES[r.request().url().match(/(WSCH-\d+)\.json$/)[1]] }));
   await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed++; window.dispatchEvent(new Event('beforeprint')); }; });
-  await page.setViewportSize({ width: 816, height: 1056 });
+  const [width, height] = PAPER[style] || LETTER;
+  await page.setViewportSize({ width, height });
   await page.goto(`/app/book.html?slug=issue-1&print=${style}`);
   await expect(page.locator('#ready')).toBeVisible();
 }
@@ -312,10 +319,109 @@ test('the book\'s puzzles wear their characters in number order, round again aft
     expect(await before(sheets.nth(i), 'background-image')).toBe(url(wearing[i].scene));
     expect(await css(sheets.nth(i).locator('.print-figure:visible').first(), 'background-image')).toBe(url(wearing[i].figure));
   }
-  // Each page's background, from the paper's corner, the book's 8.5 × 11 in.
-  expect(await before(sheets.first(), 'width')).toBe('816px');
-  expect(await before(sheets.first(), 'height')).toBe('1056px');
-  expect(Math.round((await box(sheets.first().locator('.card'))).y - (await box(sheets.first())).y)).toBe(169);
+  // Each page's background, the whole of the book's 8.625 × 11.25 in bleed page; the card a bleed
+  // lower than on today's 8.5 × 11 in page, where it sat 169 px down.
+  expect(await before(sheets.first(), 'width')).toBe('828px');
+  expect(await before(sheets.first(), 'height')).toBe('1080px');
+  expect(Math.round((await box(sheets.first().locator('.card'))).y - (await box(sheets.first())).y)).toBe(169 + BLEED);
+});
+
+// ---- The book as a KDP bleed interior (TASK-47) ----
+// Each page's size in a saved PDF, in points.
+const pdfPages = async page => [...(await page.pdf({ preferCSSPageSize: true })).toString('latin1')
+  .matchAll(/\/Type\s*\/Page[^s][\s\S]*?\/MediaBox\s*\[([^\]]*)\]/g)].map(m => m[1].trim().split(/\s+/).map(Number));
+
+// Every page of the book, as the paper has them: the title page, the copyright page, then each puzzle
+// page — Puzzle 1, the Saga's words and its three grids, Puzzle 13 — each with its page number's side,
+// the outer one, and its trim on the paper in px: an even page's moved over by the bleed, every page's
+// down by it. A Saga's words page holds only what isn't on one of its grid pages.
+const bookPages = page => page.evaluate(bleed => {
+  const rect = el => el.getBoundingClientRect();
+  const top = el => rect(el).top + scrollY;
+  const trim = (pageTop, side) => ({ left: side === 'left' ? bleed : 0, top: pageTop + bleed, right: (side === 'left' ? bleed : 0) + 816, bottom: pageTop + bleed + 1056 });
+  const words = (el, selector) => [...el.querySelectorAll(selector)].filter(w => w.offsetParent !== null && (el.classList.contains('grid-sheet') || !w.closest('.grid-sheet')));
+  const ink = el => words(el, '.sheet-number, .play-head, .front-face .cell, .print-face .cell, .band, ul.words li, aside, .page-number')
+    .map(w => { const r = rect(w); return { what: w.className || w.tagName, left: r.left, right: r.right, top: r.top + scrollY, bottom: r.bottom + scrollY }; });
+  const puzzlePages = [...document.querySelectorAll('.sheets .sheet, .sheets .grid-sheet')].map(el => {
+    const side = el.querySelector(':scope > .page-number').dataset.side;
+    return { number: el.querySelector(':scope > .page-number').textContent, side, trim: trim(top(el), side), ink: ink(el),
+      scene: { left: rect(el).left + parseFloat(getComputedStyle(el, '::before').left), top: parseFloat(getComputedStyle(el, '::before').top),
+        width: getComputedStyle(el, '::before').width, height: getComputedStyle(el, '::before').height } };
+  });
+  return puzzlePages;
+}, BLEED);
+
+for (const [style, ink] of [['colour', 'colour'], ['mono', 'black ink']]) {
+  test(`a book saved ${style === 'colour' ? 'Colour' : 'Black and white'} is a KDP bleed interior for ${ink}: every page 8.625 × 11.25 in`, async ({ page }) => {
+    await openBook(page, style);
+    // The title and copyright pages, Puzzle 1, the Saga's four, then Puzzle 13: 8.625 × 11.25 in each,
+    // as near as Chrome saves it. Chrome sizes a PDF page in 300ths of an inch, and 8.625 in falls
+    // between two, so it saves 621.12 pt — 0.04 mm over, never short (the owner's call, 2026-10-10).
+    expect(await pdfPages(page)).toEqual(Array(8).fill([0, 0, 621.12, 810]));
+  });
+}
+
+test('a book saved Plain is today\'s KDP book: every page 8.5 × 11 in, no bleed', async ({ page }) => {
+  await openBook(page, 'plain');
+  expect(await pdfPages(page)).toEqual(Array(8).fill([0, 0, 612, 792]));
+});
+
+test('printed Colour, each puzzle page\'s background runs over the whole page, past the trim on its outer side, top and foot', async ({ page }) => {
+  await openBook(page, 'colour');
+  await onPaper(page);
+  const pages = await bookPages(page);
+  expect(pages.map(p => [p.number, p.side])).toEqual([['3', 'right'], ['4', 'left'], ['5', 'right'], ['6', 'left'], ['7', 'right'], ['8', 'left']]);
+  // From the paper's top-left corner to its far edges — on an odd page the bleed is its right, on an
+  // even one its left: the background covers both, so no white rim at either.
+  for (const p of pages) expect(p.scene).toEqual({ left: 0, top: 0, width: '828px', height: '1080px' });
+});
+
+for (const style of ['colour', 'mono']) {
+  test(`printed ${style}, every letter, word, number and hidden ID on a puzzle page sits 0.375 in inside the trim at its outer side, top and foot, and 0.5 in from the spine`, async ({ page }) => {
+    await openBook(page, style);
+    await onPaper(page);
+    const pages = await bookPages(page);
+    const safe = 0.375 * 96, spine = 0.5 * 96;
+    for (const p of pages) {
+      expect(p.ink.length).toBeGreaterThan(0);
+      for (const w of p.ink) {
+        const outer = p.side === 'left' ? w.left - p.trim.left : p.trim.right - w.right;
+        const inner = p.side === 'left' ? p.trim.right - w.right : w.left - p.trim.left;
+        expect({ page: p.number, what: w.what, outer: outer >= safe, spine: inner >= spine, top: w.top - p.trim.top >= safe, foot: p.trim.bottom - w.bottom >= safe })
+          .toEqual({ page: p.number, what: w.what, outer: true, spine: true, top: true, foot: true });
+      }
+    }
+  });
+}
+
+// Where the title and copyright pages' words sit on their page's trim, and what they wear.
+async function frontPages(page, style) {
+  await openBook(page, style);
+  await onPaper(page);
+  const bleed = PAPER[style] ? BLEED : 0;
+  return page.evaluate(b => {
+    const at = el => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top + scrollY }; };
+    const copyright = document.getElementById('copyright-page');
+    const words = [...document.querySelectorAll('#title-page h1, #title-page p, #copyright-page p')].map(el => {
+      // The title page is page 1, odd: its trim from the paper's corner, down by the bleed. The copyright
+      // page is page 2, even, starting a page of its own: its trim from that page's top, and over by the bleed too.
+      const p = at(el);
+      return copyright.contains(el) ? [p.x - b, p.y - at(copyright).y - b] : [p.x, p.y - b];
+    });
+    const dressed = [...document.querySelectorAll('#title-page, #copyright-page, #title-page *, #copyright-page *')]
+      .filter(el => el.matches('.print-figure') || getComputedStyle(el, '::before').backgroundImage !== 'none');
+    return { words: words.map(([x, y]) => [Math.round(x), Math.round(y)]), dressed: dressed.length };
+  }, bleed);
+}
+
+test('printed Colour or Black and white, the title and copyright pages are today\'s — white, no background, no character, their words where they sit — only on the bigger page', async ({ page, browser }) => {
+  const plain = await frontPages(page, 'plain');
+  expect(plain.dressed).toBe(0);
+  for (const style of ['colour', 'mono']) {
+    const fresh = await browser.newPage();
+    expect(await frontPages(fresh, style)).toEqual(plain);
+    await fresh.close();
+  }
 });
 
 test('each book page picks its own spot, a Saga\'s only the top corners, and printing again picks afresh', async ({ page }) => {
