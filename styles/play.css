@@ -45,7 +45,8 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
    playReach). A word never breaks onto two lines. The grid's
    letters are --fit-cell and the words' text --word-size: in Right, when the words need the
    room, the text shrinks first and then the letters; .cell-size, unseen, is the page's own
-   letter size. A repeated word's count is sized with its word. */
+   letter size. A Repeats word's boxes wrap under it, across its column — in Bottom and Overlay
+   the card's width when it is the list's one line — never widening it. */
 .cell-size { position: absolute; width: var(--cell); height: 0; visibility: hidden; pointer-events: none; }
 @media screen {
   .play[data-sits] { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
@@ -55,6 +56,7 @@ aside { width: 100%; max-width: calc(var(--cell) * var(--cols) + 32px); }
   .play[data-sits] ul.words li { width: max-content; white-space: nowrap; }
   .play[data-sits] ul.words.measuring li { font-weight: 700; }
   .play[data-sits] ul.words:not(.measuring) li { font-size: var(--word-size); }
+  .play[data-sits] ul.words:not(.measuring) li.boxes-line { width: auto; justify-self: stretch; }
   .play[data-sits="bottom"] { flex-flow: column; align-items: center; }
   .play[data-sits="bottom"] aside { flex: none; width: min(var(--card-w), 100%); max-width: none; }
   .play[data-sits="bottom"] ul.words, .play[data-sits="overlay"] ul.words { grid-template-columns: repeat(var(--word-cols), minmax(var(--word-w), 1fr)); }
@@ -140,9 +142,17 @@ ul.words li { font-size: 16px; position: relative; width: fit-content; justify-s
 ul.words li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
 /* A missing word, revealed: red, deeper than the line red so it reads on the white card. */
 ul.words li.revealed { color: var(--reveal); font-weight: 700; }
-/* A repeated word's progress, beside it: copies found out of all of them. */
-ul.words li .progress { display: inline-block; margin-left: 6px; font-size: .8125em; color: var(--muted); font-variant-numeric: tabular-nums; }
-ul.words li .progress:empty { display: none; }
+/* A Repeats word: a box per copy under it, ticked left to right as copies are found, wrapping onto
+   more rows rather than widening its column, which is at least six boxes wide; the word is struck
+   once every box is. Boxes take the word's size, so the text size scales them too. */
+ul.words li.boxes-line.done { text-decoration: none; }
+ul.words li.boxes-line.done .line-text { text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
+ul.words .boxes { display: flex; flex-wrap: wrap; justify-content: center; gap: .25em; margin-top: .3em;
+  min-width: calc(6em + 5 * .25em); contain: inline-size; }
+ul.words .box { box-sizing: border-box; display: grid; place-items: center; width: 1em; height: 1em; line-height: 1;
+  border: 2px solid var(--line); border-radius: 3px; color: var(--fg); transition: background .3s, border-color .3s, color .3s; }
+ul.words .box.ticked { background: var(--band); border-color: var(--band); color: var(--band-fg); }
+ul.words .box.ticked::before { content: "✓"; font-size: .65em; font-weight: 700; }
 /* A word with an entry: a dotted underline in the accent, drawn as a background so it takes no
    room and survives the line through a found word. Tapping it opens its popup. */
 ul.words li.has-entry { cursor: pointer; border-radius: 4px;
@@ -247,19 +257,17 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    each sheet keeping its own half inch inside (styles/look.css). Ahead of the book's own page, so
    that one stays the book's. */
 @page themed { margin: 0; }
-/* A printed word's type, and the room before its count — shared by paper and by the unseen line
-   the page measures each printed word on, so a column is sized in the type it prints in. */
-:root { --print-word-size: 13px; --print-count-gap: 6px; }
+/* A printed word's type — shared by paper and by the unseen line the page measures each printed
+   word on, so a column is sized in the type it prints in. */
+:root { --print-word-size: 13px; }
 .print-measure { position: absolute; top: 0; left: -10000px; visibility: hidden; white-space: nowrap;
   font: 400 var(--print-word-size) var(--font-body); }
-.print-measure::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }
-.print-measure[data-copies=""]::after { content: none; }
 @media print {
   :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff; --wild: #000;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .play { --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, ul.words li .progress,
+  .site, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count,
   .word-popup, .word-popup:popover-open { display: none; }
   ul.words li.has-entry { background: none; }
 
@@ -276,9 +284,10 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
 
   /* The words come home beneath the grid from wherever they sat, open or closed, as wide as the
      grid's widest — 165 mm — so a long list runs to more columns rather than off the page. Each
-     column is 88px, or the list's widest word where that's wider, a count on its word
-     (--print-word-w, measured by ui/wordsearch/play-ui.js), so no word runs into the next; a
-     longer line of several words wraps at a space. */
+     column is 88px, or the list's widest word where that's wider (--print-word-w, measured by
+     ui/wordsearch/play-ui.js), so no word runs into the next; a longer line of several words wraps
+     at a space. A word of several copies is on as many lines, or on a Repeats puzzle one line with
+     its boxes under it across the whole card, every box empty whatever was found on screen. */
   .stage > aside { position: static; margin-top: 20px; }
   .play[data-words][data-list] aside { display: block; }
   aside { width: 165mm; max-width: none; }
@@ -287,10 +296,11 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   ul.words, .stage > aside ul.words { display: block; columns: max(88px, var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
     font-size: var(--print-word-size); text-align: center; color: var(--fg); text-decoration: none; }
-  /* A repeated word's count of copies, after it on its line — Sheep ×45 — never the screen's
-     progress; a word of one copy has none. Drawn from the attribute, so it's never page text. */
-  ul.words li::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }
-  ul.words li[data-copies=""]::after { content: none; }
+  ul.words li.done .line-text { text-decoration: none; }
+  ul.words li.boxes-line { column-span: all; }
+  ul.words .boxes { min-width: 0; gap: 3px; margin-top: 4px; }
+  ul.words .box, ul.words .box.ticked { width: 12px; height: 12px; border: 1.5px solid var(--line); background: none; }
+  ul.words .box.ticked::before { content: none; }
 
   /* A puzzle of several grids: the first sheet is the title and the words card alone, however the
      screen shows them, the card the page's full width, a long list's room to spread; then each
@@ -301,14 +311,13 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .tabs { display: none; }
   .play[data-paged="true"] .card { display: none; }
   .play[data-paged="true"] aside, .play[data-paged="true"] .col, .play[data-paged="true"] .stage { width: 100%; }
-  /* The words sheet's words fill it: their type, its line, columns and count's room scaled by
+  /* The words sheet's words fill it: their type, its line and columns scaled by
      --print-spread, each line --print-spread-gap above the next (play-core's printedSpread, set by
      ui/wordsearch/play-ui.js, which measures paper's line as --print-line); a puzzle of one grid
      keeps paper's own. The line is set, not left to the font, so it scales exactly as reckoned. */
   .play[data-paged="true"] ul.words { columns: calc(max(88px, var(--print-word-w, 0px)) * var(--print-spread, 1)); }
   .play[data-paged="true"] ul.words li { font-size: calc(var(--print-word-size) * var(--print-spread, 1));
     line-height: calc(var(--print-line) * var(--print-spread, 1)); margin-bottom: var(--print-spread-gap, 3px); }
-  .play[data-paged="true"] ul.words li::after { margin-left: calc(var(--print-count-gap) * var(--print-spread, 1)); }
   .play[data-paged="true"] .print-grids { display: block; --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .grid-sheet { break-before: page; display: flex; flex-direction: column; align-items: center; }
   .print-face { width: max-content; }

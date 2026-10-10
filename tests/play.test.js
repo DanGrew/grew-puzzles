@@ -410,11 +410,12 @@ const CUP_PUZZLE = {
   ]
 };
 const sheepCell = (page, r, c) => page.locator('#grid .cell').nth(r * SHEEP_COLS + c);
-const progress = (page, word) => page.locator('#words li', { hasText: word }).locator('.progress');
-// Each listed word as the paper reads it: the word, then its count of copies when it carries one.
+const boxes = (page, word) => page.locator('#words li', { hasText: word }).locator('.box');
+const ticked = (page, word) => page.locator('#words li', { hasText: word }).locator('.box.ticked');
+// Each listed line as the paper reads it: its word alone — a count never follows it.
 const printedLines = page => page.locator('#words li').evaluateAll(lis => lis.map(li => {
-  const count = getComputedStyle(li, '::after').content;
-  return li.firstChild.textContent + (count === 'none' ? '' : ' ' + JSON.parse(count));
+  if (getComputedStyle(li, '::after').content !== 'none') throw new Error('a count follows ' + li.textContent);
+  return li.firstChild.textContent;
 }));
 // Once the fonts are in, the page sizes paper's word columns.
 const columnsSized = page => expect(page.locator('#words')).toHaveAttribute('style', /--print-word-w/);
@@ -451,61 +452,100 @@ async function findSheep(page, ends) {
   for (const [r, c] of ends) await sheepCell(page, r, c).click();
 }
 
-test('a Sheep ×45 puzzle lists Sheep once with 0/45 beside it, and says Repeats in the band', async ({ page }) => {
+test('a Sheep ×45 puzzle lists Sheep once with 45 empty boxes wrapping under it, no 0/45, and says Repeats in the band', async ({ page }) => {
   await openRepeats(page, SHEEP_PUZZLE);
   await expect(page.locator('#label')).toHaveText('Repeats');
   await expect(page.locator('#words li')).toHaveCount(1);
-  await expect(page.locator('#words li')).toHaveText('Sheep0/45');
-  await expect(progress(page, 'Sheep')).toBeVisible();
+  await expect(page.locator('#words li')).toHaveText('Sheep');
+  await expect(boxes(page, 'Sheep')).toHaveCount(45);
+  await expect(ticked(page, 'Sheep')).toHaveCount(0);
   await expect(page.locator('#count')).toHaveText('0/45');
+  // The boxes wrap onto rows of their own under Sheep, inside the words card.
+  const laid = await page.locator('#words li').evaluate(li => {
+    const word = li.querySelector('.line-text').getBoundingClientRect(), card = li.closest('.words-box').getBoundingClientRect();
+    const rects = Array.from(li.querySelectorAll('.box'), b => b.getBoundingClientRect());
+    return {
+      rows: new Set(rects.map(r => Math.round(r.top))).size,
+      under: rects.every(r => r.top >= word.bottom),
+      inside: rects.every(r => r.left >= card.left && r.right <= card.right)
+    };
+  });
+  expect(laid.rows).toBeGreaterThan(1);
+  expect(laid.under).toBe(true);
+  expect(laid.inside).toBe(true);
 });
 
-test('one copy of Sheep is lined through and reads 1/45; finding that copy again changes nothing', async ({ page }) => {
+for (const layout of ['right', 'overlay']) {
+  test(`Sheep's 45 boxes wrap inside the words card in ${layout} too`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await open(page, null, SHEEP_PUZZLE);
+    if (layout === 'overlay') await page.locator('#words-toggle').click();
+    await expect(boxes(page, 'Sheep')).toHaveCount(45);
+    const inside = await page.locator('#words li').evaluate(li => {
+      const card = li.closest('.words-box').getBoundingClientRect();
+      return Array.from(li.querySelectorAll('.box'), b => b.getBoundingClientRect()).every(r => r.left >= card.left && r.right <= card.right && r.bottom <= card.bottom);
+    });
+    expect(inside).toBe(true);
+  });
+}
+
+test('one copy of Sheep ticks the first box; finding that copy again changes nothing', async ({ page }) => {
   await openRepeats(page, SHEEP_PUZZLE);
   await findSheep(page, SHEEP_ENDS[4]);
   await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
-  await expect(progress(page, 'Sheep')).toHaveText('1/45');
+  await expect(ticked(page, 'Sheep')).toHaveCount(1);
+  await expect(boxes(page, 'Sheep').first()).toHaveClass(/ticked/);
   await expect(page.locator('#words li')).not.toHaveClass(/done/);
   await expect(page.locator('#count')).toHaveText('1/45');
 
   await findSheep(page, SHEEP_ENDS[4]);
   await expect(page.locator('#overlay line.mark-found')).toHaveCount(1);
-  await expect(progress(page, 'Sheep')).toHaveText('1/45');
+  await expect(ticked(page, 'Sheep')).toHaveCount(1);
   await expect(page.locator('#count')).toHaveText('1/45');
 });
 
-test('finding all 45 copies crosses Sheep off and sparkles', async ({ page }) => {
+test('the boxes tick left to right, whichever copies are found', async ({ page }) => {
+  await openRepeats(page, SHEEP_PUZZLE);
+  await findSheep(page, SHEEP_ENDS[44]);
+  await findSheep(page, SHEEP_ENDS[20]);
+  await findSheep(page, SHEEP_ENDS[0]);
+  const states = await boxes(page, 'Sheep').evaluateAll(bs => bs.map(b => b.classList.contains('ticked')));
+  expect(states).toEqual([true, true, true, ...Array(42).fill(false)]);
+});
+
+test('finding all 45 copies ticks every box, strikes Sheep through and sparkles', async ({ page }) => {
   await openRepeats(page, SHEEP_PUZZLE);
   for (const ends of SHEEP_ENDS.slice(0, -1)) await findSheep(page, ends);
-  await expect(progress(page, 'Sheep')).toHaveText('44/45');
+  await expect(ticked(page, 'Sheep')).toHaveCount(44);
   await expect(page.locator('#words li')).not.toHaveClass(/done/);
   await expect(page.locator('#complete')).toBeHidden();
 
   await findSheep(page, SHEEP_ENDS[44]);
-  await expect(progress(page, 'Sheep')).toHaveText('45/45');
+  await expect(ticked(page, 'Sheep')).toHaveCount(45);
   await expect(page.locator('#words li')).toHaveClass(/done/);
+  await expect(page.locator('#words li .line-text')).toHaveCSS('text-decoration-line', 'line-through');
   await expect(page.locator('#overlay line.mark-found')).toHaveCount(45);
   await expect(page.locator('#complete')).toBeVisible();
   await expect(page.locator('#board .spark')).toHaveCount(28);
 });
 
-test('Cup with 5 copies shows 0/5, the other words show as before, and the count covers every copy', async ({ page }) => {
+test('Cup with 5 copies carries 5 boxes, the other words none, and the count covers every copy', async ({ page }) => {
   await openRepeats(page, CUP_PUZZLE);
-  await expect(page.locator('#words li')).toHaveText(['Cow', 'Cup0/5', 'Hen']);
-  await expect(progress(page, 'Cup')).toBeVisible();
-  await expect(progress(page, 'Cow')).toBeHidden();
-  await expect(progress(page, 'Hen')).toBeHidden();
+  await expect(page.locator('#words li')).toHaveText(['Cow', 'Cup', 'Hen']);
+  await expect(boxes(page, 'Cup')).toHaveCount(5);
+  await expect(page.locator('#words .box')).toHaveCount(5);
   await expect(page.locator('#count')).toHaveText('0/7');
 
   await tapAll(page, [[1, 2], [1, 0]]);
   await tapAll(page, [[2, 3], [2, 5]]);
-  await expect(progress(page, 'Cup')).toHaveText('1/5');
+  await expect(ticked(page, 'Cup')).toHaveCount(1);
   await expect(page.locator('#words li', { hasText: 'Cow' })).toHaveClass(/done/);
   await expect(page.locator('#words li', { hasText: 'Cup' })).not.toHaveClass(/done/);
   await expect(page.locator('#count')).toHaveText('2/7');
 });
 
-test('the solution lines through every copy; flipping back, the found copies are intact', async ({ page }) => {
+test('the solution lines through every copy; flipping back, the found copies\' boxes are intact', async ({ page }) => {
   await openRepeats(page, SHEEP_PUZZLE);
   await findSheep(page, SHEEP_ENDS[0]);
   await findSheep(page, SHEEP_ENDS[7]);
@@ -515,47 +555,43 @@ test('the solution lines through every copy; flipping back, the found copies are
 
   await page.locator('#flip').click();
   await expect(page.locator('#overlay line.mark-found')).toHaveCount(2);
-  await expect(progress(page, 'Sheep')).toHaveText('2/45');
+  await expect(ticked(page, 'Sheep')).toHaveCount(2);
   await expect(page.locator('#count')).toHaveText('2/45');
 });
 
-test('a puzzle where every word has one copy shows no progress beside any word', async ({ page }) => {
+test('a puzzle where every word has one copy shows no boxes and lists each word once', async ({ page }) => {
   await openIn(page, 'bottom');
-  await expect(page.locator('#words li .progress')).toHaveCount(8);
-  for (const p of await page.locator('#words li .progress').all()) await expect(p).toBeHidden();
-  await tapAll(page, [[4, 2], [2, 2]]);
-  for (const p of await page.locator('#words li .progress').all()) await expect(p).toBeHidden();
+  await expect(page.locator('#words .box')).toHaveCount(0);
+  await expect(page.locator('#words li')).toHaveText(['Cat', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
 });
 
-test('the printout leaves the progress off, as it does the count', async ({ page }) => {
+test('a printed Sheep puzzle lists Sheep once with its 45 boxes empty across the card, and no ×45', async ({ page }) => {
+  await openRepeats(page, SHEEP_PUZZLE);
+  for (const ends of SHEEP_ENDS.slice(0, 12)) await findSheep(page, ends);
+  await expect(ticked(page, 'Sheep')).toHaveCount(12);
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Sheep']);
+  await expect(boxes(page, 'Sheep')).toHaveCount(45);
+  for (const box of await boxes(page, 'Sheep').all()) {
+    await expect(box).toBeVisible();
+    await expect(box).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    expect(await box.evaluate(b => getComputedStyle(b, '::before').content)).toBe('none');
+  }
+  await expect(page.locator('#words li')).toHaveCSS('text-decoration-line', 'none');
+  // Wider than any one of paper's columns: the boxes line takes the card's whole width.
+  const widths = await page.locator('#words').evaluate(ul => ({ line: ul.firstElementChild.getBoundingClientRect().width, list: ul.clientWidth }));
+  expect(widths.line).toBeGreaterThan(widths.list - 2);
+  const rows = await boxes(page, 'Sheep').evaluateAll(bs => new Set(bs.map(b => Math.round(b.getBoundingClientRect().top))).size);
+  expect(rows).toBeLessThanOrEqual(3);
+});
+
+test('a printed Cup puzzle reads Cow, Cup with five empty boxes, and Hen', async ({ page }) => {
   await openRepeats(page, CUP_PUZZLE);
   await tapAll(page, [[1, 2], [1, 0]]);
   await page.emulateMedia({ media: 'print' });
-  await expect(progress(page, 'Cup')).toBeHidden();
-  await expect(page.locator('#words li', { hasText: 'Cup' })).toBeVisible();
-});
-
-test('a printed Sheep puzzle lists Sheep once, as Sheep ×45', async ({ page }) => {
-  await openRepeats(page, SHEEP_PUZZLE);
-  await page.emulateMedia({ media: 'print' });
-  expect(await printedLines(page)).toEqual(['Sheep ×45']);
-});
-
-test('a printed Cup puzzle reads Cup ×5 on its one line, and Cow and Hen as before', async ({ page }) => {
-  await openRepeats(page, CUP_PUZZLE);
-  await page.emulateMedia({ media: 'print' });
-  expect(await printedLines(page)).toEqual(['Cow', 'Cup ×5', 'Hen']);
-  const heights = await page.locator('#words li').evaluateAll(lis => lis.map(li => li.getBoundingClientRect().height));
-  expect(new Set(heights).size).toBe(1);
-});
-
-test('printed after finding copies on screen, the sheet still reads Sheep ×45, never the progress', async ({ page }) => {
-  await openRepeats(page, SHEEP_PUZZLE);
-  for (const ends of SHEEP_ENDS.slice(0, 12)) await findSheep(page, ends);
-  await expect(progress(page, 'Sheep')).toHaveText('12/45');
-  await page.emulateMedia({ media: 'print' });
-  expect(await printedLines(page)).toEqual(['Sheep ×45']);
-  await expect(progress(page, 'Sheep')).toBeHidden();
+  expect(await printedLines(page)).toEqual(['Cow', 'Cup', 'Hen']);
+  await expect(boxes(page, 'Cup')).toHaveCount(5);
+  await expect(page.locator('#words .box')).toHaveCount(5);
 });
 
 test('a puzzle with no repeated word prints every word alone, nothing after it', async ({ page }) => {
@@ -564,10 +600,36 @@ test('a puzzle with no repeated word prints every word alone, nothing after it',
   expect(await printedLines(page)).toEqual(['Cat', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
 });
 
-test('the screen never shows the printed count: Cup keeps its 0/5', async ({ page }) => {
-  await openRepeats(page, CUP_PUZZLE);
-  expect(await printedLines(page)).toEqual(['Cow', 'Cup', 'Hen']);
-  await expect(progress(page, 'Cup')).toHaveText('0/5');
+// ---- A repeated word on any other type: a line per copy ----
+
+const CUP_MIRRAGE = { ...CUP_PUZZLE, type: 'Mirra?e', title: 'Cups mirrored' };
+const cupLines = page => page.locator('#words li', { hasText: 'Cup' });
+
+test('a Mirra?e puzzle whose Cup has 5 copies lists Cup 5 times, together, with no boxes and no 0/5', async ({ page }) => {
+  await openRepeats(page, CUP_MIRRAGE);
+  await expect(page.locator('#words li')).toHaveText(['Cow', 'Cup', 'Cup', 'Cup', 'Cup', 'Cup', 'Hen']);
+  await expect(page.locator('#words .box')).toHaveCount(0);
+  await expect(page.locator('#count')).toHaveText('0/7');
+});
+
+test('each copy of Cup found strikes the first unstruck Cup line, top first, whichever copy it was', async ({ page }) => {
+  await openRepeats(page, CUP_MIRRAGE);
+  const struck = () => cupLines(page).evaluateAll(lis => lis.map(li => li.classList.contains('done')));
+  await tapAll(page, [[4, 4], [4, 6]]);
+  await expect.poll(struck).toEqual([true, false, false, false, false]);
+  await tapAll(page, [[1, 2], [1, 0]]);
+  await expect.poll(struck).toEqual([true, true, false, false, false]);
+  await tapAll(page, [[1, 2], [1, 0]]);
+  await expect.poll(struck).toEqual([true, true, false, false, false]);
+  await expect(page.locator('#count')).toHaveText('2/7');
+});
+
+test('a printed Mirra?e puzzle reads Cup on 5 lines, unstruck, and no ×5', async ({ page }) => {
+  await openRepeats(page, CUP_MIRRAGE);
+  await tapAll(page, [[4, 4], [4, 6]]);
+  await page.emulateMedia({ media: 'print' });
+  expect(await printedLines(page)).toEqual(['Cow', 'Cup', 'Cup', 'Cup', 'Cup', 'Cup', 'Hen']);
+  for (const li of await cupLines(page).all()) await expect(li).toHaveCSS('text-decoration-line', 'none');
 });
 
 // A Mirra?e at a real one's size, 25 × 35, its list long words with the longest of them five times.
@@ -580,12 +642,12 @@ const MIRRAGE_PUZZLE = {
 };
 
 for (const layout of ['bottom', 'right', 'overlay']) {
-  test(`a Mirra?e-size list printed from ${layout} keeps every long word, and its ×5, on one line in its own column`, async ({ page }) => {
+  test(`a Mirra?e-size list printed from ${layout} keeps every long word, all five of its first, on one line in its own column`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
     await open(page, null, MIRRAGE_PUZZLE);
     const fit = await printedFit(page);
-    expect((await printedLines(page))[0]).toBe(LONG_WORDS[0] + ' ×5');
+    expect((await printedLines(page)).slice(0, 6)).toEqual([...Array(5).fill(LONG_WORDS[0]), LONG_WORDS[1]]);
     expect(fit.over).toEqual([]);
     expect(new Set(Object.values(fit.lines))).toEqual(new Set([1]));
     expect(fit.want).toBeGreaterThan(88);
@@ -598,22 +660,6 @@ test('a long word in capitals gets a column wide enough for it too', async ({ pa
   const fit = await printedFit(page);
   expect(fit.over).toEqual([]);
   expect(fit.lines).toEqual({ WWWWMMMMWWWW: 1, MOWWOWMOM: 1, Cat: 1 });
-});
-
-test('a word\'s count never leaves it: Royal blue ×5 wraps, if it must, between Royal and blue ×5', async ({ page }) => {
-  const words = ['Royal blue', 'Royal blue', 'Royal blue', 'Royal blue', 'Royal blue', 'Mint'];
-  await openRepeats(page, { ...PUZZLE, words: words.map(word => ({ ...PUZZLE.words[0], word })) });
-  const fit = await printedFit(page);
-  expect(fit.over).toEqual([]);
-  // The last line holds blue and its count together: its last piece of text ends before the count starts.
-  const tail = await page.locator('#words li', { hasText: 'Royal blue' }).evaluate(li => {
-    const range = document.createRange();
-    range.setStart(li.firstChild, li.firstChild.textContent.indexOf('blue'));
-    range.setEnd(li.firstChild, li.firstChild.textContent.length);
-    const blue = range.getBoundingClientRect(), box = li.getBoundingClientRect();
-    return { blueBottom: Math.round(blue.bottom), boxBottom: Math.round(box.bottom) };
-  });
-  expect(Math.abs(tail.blueBottom - tail.boxBottom)).toBeLessThanOrEqual(2);
 });
 
 test('a list whose words all fit keeps paper\'s 88px columns, as before', async ({ page }) => {
@@ -1099,14 +1145,12 @@ for (const layout of ['bottom', 'right', 'overlay']) {
   });
 }
 
-test('a repeated word stays put as its count of copies found grows', async ({ page }) => {
+test('a Repeats word and its boxes stay put as its boxes tick', async ({ page }) => {
   await openRepeats(page, SHEEP_PUZZLE);
   const before = await wordBoxes(page);
   for (const ends of SHEEP_ENDS.slice(0, 10)) await findSheep(page, ends);
-  await expect(progress(page, 'Sheep')).toHaveText('10/45');
-  const after = await wordBoxes(page);
-  expect(after[0].left).toBe(before[0].left);
-  expect(after[0].right).toBe(before[0].right);
+  await expect(ticked(page, 'Sheep')).toHaveCount(10);
+  expect(await wordBoxes(page)).toEqual(before);
 });
 
 // ---- On a phone ----
@@ -1595,11 +1639,11 @@ test('a 3-page puzzle\'s printed grids keep their ?s, on the page they sit', asy
   await expect(page.locator('.grid-sheet').nth(1).locator('.cell').nth(63)).toHaveText('?');
 });
 
-test('a Saga with Cow on two of its pages prints Cow ×2 on its words sheet', async ({ page }) => {
+test('a Saga with Cow on two of its pages prints Cow on two lines of its words sheet', async ({ page }) => {
   const cow = SAGA.words.find(w => w.word === 'Cow');
   await open(page, null, { ...SAGA, words: SAGA.words.concat([{ ...cow, grid: 1 }]) });
   await page.emulateMedia({ media: 'print' });
-  expect(await printedLines(page)).toEqual(['Cat', 'Cow ×2', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+  expect(await printedLines(page)).toEqual(['Cat', 'Cow', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
   await expect(page.locator('.grid-sheet li')).toHaveCount(0);
 });
 
