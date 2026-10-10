@@ -546,7 +546,7 @@ test('the real wordsearch index loads', async ({ page }) => {
   await expect(page.locator('#total')).toHaveText(/^\d+ puzzles?( · \d+ collections?)?$/);
 });
 
-// A collection of puzzles 1, 2 and 4 of the mixed index — 2 Vanilla and 1 Missing — numbered
+// A collection of puzzles 1, 2 and 4 of the mixed index — three wordsearches — numbered
 // backwards, written on 5 January, the day of puzzle 5.
 function issue() {
   return {
@@ -556,7 +556,7 @@ function issue() {
 }
 const collectionTiles = page => page.locator('.tiles .tile.collection');
 
-test('a collection tile shows under Collections, with its name, description and type breakdown — never among the wordsearches', async ({ page }) => {
+test('a collection tile shows under Collections, with its name, description and count of each kind — never among the wordsearches', async ({ page }) => {
   const fileRequests = await serve(page, mixed(6), [issue()]);
   await page.goto('/app/?sort=date');
   await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 5', 'Puzzle 4', 'Puzzle 3', 'Puzzle 2', 'Puzzle 1']);
@@ -566,7 +566,7 @@ test('a collection tile shows under Collections, with its name, description and 
   const tile = collectionTiles(page);
   await expect(tile).toHaveCount(1);
   await expect(tile.locator('.name')).toHaveText('Issue #1');
-  await expect(tile.locator('.detail .line')).toHaveText(['The first book, remade.', '2 Vanilla · 1 Missing']);
+  await expect(tile.locator('.detail .line')).toHaveText(['The first book, remade.', '3 Wordsearches']);
   await expect(page.locator('#total')).toHaveText('1 collection');
   expect(fileRequests).toEqual([]);
 });
