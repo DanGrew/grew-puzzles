@@ -163,10 +163,15 @@ export function browseList(items, state, done) {
   const finished = { '': () => true, yes: p => tileDone(p, done), no: p => !tileDone(p, done) }[state.finished];
   return items
     .filter(p => p.place === state.kind)
-    .filter(p => state.levels.length === 0 || state.levels.includes(p.tone))
-    .filter(p => state.types.length === 0 || state.types.includes(p.type))
+    .filter(p => inPicks(p, state))
     .filter(finished)
     .sort((a, b) => within.reduce((d, order) => d || order(a, b), sign * first(a, b)) || newer(a, b));
+}
+
+// Whether a tile is among the Difficulty and Type picks — the browse grid's and the rail's alike.
+function inPicks(p, state) {
+  return (state.levels.length === 0 || state.levels.includes(p.tone)) &&
+    (state.types.length === 0 || state.types.includes(p.type));
 }
 
 // A sort's order: its first key runs the way the direction does, and any after it hold A to Z
@@ -250,11 +255,15 @@ export function totalLabel(items) {
 
 // The Continue playing rail's tiles: each puzzle in play's own browse tile, in the order given —
 // a puzzle reached only through a collection still has one, opening it directly. Only a puzzle's
-// tile carries a hidden ID, so a collection's is never picked. A kind's place shows only its own
-// kind's puzzles; Collections, holding every kind, shows them all (the owner's call, 2026-10-10).
-export function railItems(items, playing, place) {
+// tile carries a hidden ID, so a collection's is never picked. The rail follows what the grid is
+// showing (the owner's calls, 2026-10-10): a kind's place only its own kind's puzzles, narrowed by
+// the Difficulty and Type picks as the grid is; Collections, holding every kind, all of them. The
+// Finished choice, sort and page never touch it — a puzzle in play is never finished.
+export function railItems(items, playing, state) {
   const byId = new Map(items.map(i => [i.hiddenId, i]));
-  return playing.map(id => byId.get(id)).filter(i => place === COLLECTIONS || i.place === place);
+  return playing.map(id => byId.get(id))
+    .filter(i => state.kind === COLLECTIONS || i.place === state.kind)
+    .filter(i => inPicks(i, state));
 }
 
 // How many tiles fit across a grid: one per column the browser laid out for it.

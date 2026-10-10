@@ -541,7 +541,7 @@ test('signed out, or with nothing in play, there\'s no rail and no space for one
   await other.close();
 });
 
-test('filtering, sorting and paging the tiles below never change the rail', async ({ context }) => {
+test('sorting and paging the tiles below never change the rail', async ({ context }) => {
   const rows = [...at(startedRows(id(2)), hour(10)), ...at(startedRows(id(27)), hour(9))];
   await site(context, { served: index(30), table: progressTable(rows) });
   const page = await landing(context);
@@ -549,10 +549,43 @@ test('filtering, sorting and paging the tiles below never change the rail', asyn
   await page.getByRole('button', { name: 'Next page' }).click();
   await page.locator('#sort').selectOption('title');
   await page.locator('#dir').click();
+  await expect(page).toHaveURL(/sort=title&dir=/);
+  expect(await railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+});
+
+// Puzzle 27 is a Vanilla, Puzzle 2 a Missing.
+test('picking a type narrows the rail to it as it does the tiles, and Clear filters brings the rest back', async ({ context }) => {
+  const rows = [...at(startedRows(id(2)), hour(10)), ...at(startedRows(id(27)), hour(9))];
+  await site(context, { served: index(30), table: progressTable(rows) });
+  const page = await landing(context);
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
   await page.locator('#filter-button').click();
   await page.locator('.chip', { hasText: 'Vanilla' }).click();
-  await expect(page.locator('#tiles .tile .name').first()).toHaveText('Puzzle 1');
-  expect(await railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 27']);
+  await page.locator('.chip', { hasText: 'Missing' }).click();
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+  await page.locator('#clear').click();
+  await page.locator('.chip', { hasText: 'Missing' }).click();
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2']);
+  await page.locator('#clear').click();
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 2', 'Puzzle 27']);
+});
+
+test('a type opened from the side bar shows only its own puzzles in play; one with none in play has no rail', async ({ context }) => {
+  const rows = [...at(startedRows(id(2)), hour(10)), ...at(startedRows(id(27)), hour(9))];
+  await site(context, { served: index(30), table: progressTable(rows) });
+  const vanilla = await landing(context, '/app/?type=Vanilla');
+  await expect.poll(() => railTitles(vanilla)).toEqual(['Puzzle 27']);
+  const missing = await landing(context, '/app/?type=Missing');
+  await expect.poll(() => railTitles(missing)).toEqual(['Puzzle 2']);
+});
+
+test('a type with nothing of it in play has no rail', async ({ context }) => {
+  const { table } = await site(context, { served: index(30), table: progressTable(at(startedRows(id(27)), hour(9))) });
+  const page = await landing(context, '/app/?type=Missing');
+  await expect.poll(() => table.reads.length).toBe(1);
+  await page.waitForTimeout(300);
+  await expect(page.locator('#rail')).toBeHidden();
 });
 
 test('signing in on the landing page brings the rail without a reload, and signing out takes it away', async ({ context }) => {

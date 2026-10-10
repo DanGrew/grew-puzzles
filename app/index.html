@@ -92,7 +92,9 @@ let state;
 // each tile on show's ✓, repainted as they arrive.
 let done = [];
 let ticks = [];
-// The puzzles still in play, most recently played first, and which set of them the rail shows.
+// The puzzles still in play, most recently played first; those of them the rail shows — the
+// place's, among the picks — and which set of them is on show.
+let inPlay = [];
 let playing = [];
 let railSet = 0;
 // Each filter in the popup repaints itself pressed or not as the picks change — the popup is
@@ -146,6 +148,11 @@ function showRail(set) {
   railTiles.replaceChildren(...view.tiles.map(railTile));
   railPrev.hidden = !view.prev;
   railNext.hidden = !view.next;
+}
+
+function drawRail(set) {
+  playing = railItems(items, inPlay, state);
+  showRail(set);
 }
 
 railPrev.addEventListener('click', () => showRail(railSet - 1));
@@ -212,11 +219,12 @@ function show(page) {
 }
 
 // Every change to the filter or sort goes into the page address — so back and a shared link keep
-// it — and starts again from page 1.
+// it — and starts again from page 1. The rail follows the picks, keeping its set where it can.
 function update(next) {
   state = next;
   history.replaceState(null, '', location.pathname + browseSearch(state));
   show(1);
+  drawRail(railSet);
 }
 
 // Clearing hides Clear filters, so the keyboard goes back to the Filters button.
@@ -254,8 +262,9 @@ filters.addEventListener('click', e => e.stopPropagation());
 document.addEventListener('click', () => closeOpenFilters());
 document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 
-// The ticks, the rail and the Finished row come from one read of the player's progress. The filters,
-// sort and search never touch the rail. With a Finished choice picked the tiles shown hang on the
+// The ticks, the rail and the Finished row come from one read of the player's progress. The rail
+// follows the place and its Difficulty and Type picks; the Finished choice, sort and paging never
+// touch it. With a Finished choice picked the tiles shown hang on the
 // progress, so they're drawn again — and signed out, the choice is dropped and every tile comes back.
 const REDRAWS = { true: () => update(state), false: () => ticks.forEach(paint => paint()) };
 
@@ -265,9 +274,9 @@ function tick(progress) {
   state = withSignIn(state, progress.signedIn);
   finishedCells.forEach(cell => { cell.hidden = !progress.signedIn; });
   filterButton.hidden = noFilters(types, progress.signedIn);
+  inPlay = progress.playing;
   redraw();
-  playing = railItems(items, progress.playing, state.kind);
-  showRail(0);
+  drawRail(0);
 }
 
 // The tiles never wait for the ticks or the rail, which follow whoever is signed in. A page brought back from
