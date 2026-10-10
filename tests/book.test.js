@@ -99,10 +99,17 @@ test('a maze in a collection is left out of its book, never fetched, and the res
   expect(asked.filter(url => url.includes('MAZE'))).toEqual([]);
 });
 
-test('the book opens on a title page: the collection\'s name and description, the site\'s address, and where the answers are', async ({ page }) => {
+test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {
   await openBook(page);
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('#book-title')).toHaveText('Issue #1');
+  // The owner's words (the product's docs/CONTENT.md, Title page): two lines under the title.
+  await expect(page.locator('#byline')).toHaveText('with the help of the Grawrables\nby Amanda Prew', { useInnerText: true });
+  const name = await page.locator('#book-title').boundingBox();
+  const byline = await page.locator('#byline').boundingBox();
+  const description = await page.locator('#book-description').boundingBox();
+  expect(byline.y).toBeGreaterThanOrEqual(name.y + name.height);
+  expect(description.y).toBeGreaterThanOrEqual(byline.y + byline.height);
   await expect(page.locator('#book-description')).toHaveText('The first book, remade.');
   await expect(page.locator('#address')).toHaveText('dangrew.github.io/grew-puzzles');
   await expect(page.locator('#answers')).toHaveText("The answers are on the site: open Issue #1 in Collections, pick the puzzle's number, and flip its grid.");
@@ -297,7 +304,7 @@ test('the copyright page follows the title page, on a page of its own, in the ow
   const copyright = page.locator('#copyright-page');
   await expect(copyright).toBeVisible();
   await expect(copyright.locator('p')).toHaveText([
-    '© 2026 Grew Puzzles All rights reserved.',
+    '© 2026 Amanda Prew All rights reserved.',
     'No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including photocopying, recording, or other electronic or mechanical methods, without the prior written permission of the publisher, except in the case of brief quotations used in reviews or educational settings.',
     "This book is for personal use only, and you're welcome to print it for yourself. It may not be used for commercial purposes or resale.",
   ], { useInnerText: true });
