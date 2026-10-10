@@ -382,13 +382,27 @@ export function keyCall(play) {
 }
 
 // ---- The checklist ----
-// A line for each element the maze has: Guides, Keys and Collectibles counted, then A, B and C,
-// then the six exits — or End, in a maze without letters. Each line is done once stepped on; an
-// exit's mark says whether it's the right one, ✓, or not, ✗.
+// A line for each element the maze has: Guides, Keys and Collectibles, a box per thing to find,
+// then A, B and C, then the six exits — or End, in a maze without letters. Each line is done once
+// everything on it is found; an exit's mark says whether it's the right one, ✓, or not, ✗.
 
-function counted(play, stops, name) {
+// said: the boxes as a screen reader reads them.
+function boxed(name, boxes) {
+  var got = boxes.filter(function (b) { return b.ticked; }).length;
+  var line = { text: name, boxes: boxes, said: got + ' of ' + boxes.length + ' found', mark: '', done: got === boxes.length };
+  return { true: [line], false: [] }[boxes.length > 0];
+}
+
+// Guides and collectibles: no box belongs to one of them, so they tick left to right as found.
+function inOrder(play, stops) {
   var got = stops.filter(function (s) { return play.got.includes(s.id); }).length;
-  return { true: [{ text: name, progress: got + '/' + stops.length, mark: '', done: got === stops.length }], false: [] }[stops.length > 0];
+  return stops.map(function (_, i) { return { label: '', ticked: i < got }; });
+}
+
+// Keys: a box each, numbered as the keys are, Key 2's box ticked once Key 2 is picked up.
+function numbered(play, stops) {
+  return stops.slice().sort(function (a, b) { return Number(a.label) - Number(b.label); })
+    .map(function (s) { return { label: s.label, ticked: play.got.includes(s.id) }; });
 }
 
 function exitMark(stop, got) {
@@ -399,9 +413,10 @@ export function checklist(play, board) {
   var kind = function (k) { return board.stops.filter(function (s) { return s.kind === k; }); };
   var each = kind('letter').concat(kind('exit'), kind('end')).map(function (s) {
     var got = play.got.includes(s.id);
-    return { text: s.label, progress: '', mark: exitMark(s, got && s.kind !== 'letter'), done: got };
+    return { text: s.label, boxes: [], said: '', mark: exitMark(s, got && s.kind !== 'letter'), done: got };
   });
-  return counted(play, kind('guide'), 'Guides').concat(counted(play, kind('key'), 'Keys'), counted(play, kind('collectible'), 'Collectibles'), each);
+  var group = function (k, name, boxes) { return boxed(name, boxes(play, kind(k))); };
+  return group('guide', 'Guides', inOrder).concat(group('key', 'Keys', numbered), group('collectible', 'Collectibles', inOrder), each);
 }
 
 // Finished is every line ticked.

@@ -100,7 +100,7 @@ function showMaze(id, board, play) {
   mazeEl('collected').setAttribute('stroke-dasharray', dash.array.join(' '));
   mazeEl('collected').setAttribute('stroke-dashoffset', dash.offset);
   drawSolution(mazeEl('solution-lines'), solutionMarks(board));
-  checklist(play, board).forEach(function () { mazeEl('checklist').appendChild(checklistLine()); });
+  checklist(play, board).forEach(function (line) { mazeEl('checklist').appendChild(checklistLine(line)); });
   mazeEl('play').hidden = false;
   dressMaze(id);
   wireFlip(function () { mazeEl('pad').inert = mazeEl('card').classList.contains('flipped'); });
@@ -160,7 +160,8 @@ function showMaze(id, board, play) {
       li.classList.toggle('done', line.done);
       li.dataset.mark = line.mark;
       li.querySelector('.line-text').textContent = line.text;
-      li.querySelector('.progress').textContent = line.progress;
+      li.querySelector('.boxes').setAttribute('aria-label', line.said);
+      line.boxes.forEach(function (b, j) { li.querySelector('.boxes').children[j].classList.toggle('ticked', b.ticked); });
       li.querySelector('.mark').textContent = line.mark;
     });
     mazeEl('count').textContent = checklistCount(play, board);
@@ -414,13 +415,20 @@ function mazeInk(property) {
   return window.getComputedStyle(mazeEl('play')).getPropertyValue(property).trim();
 }
 
-// One line of the checklist: its name, its count, its mark.
-function checklistLine() {
+// One line of the checklist: its name, a box per thing to find — a key's numbered — and its mark.
+function checklistLine(line) {
   var li = document.createElement('li');
-  ['line-text', 'progress', 'mark'].forEach(function (name) {
+  ['line-text', 'boxes', 'mark'].forEach(function (name) {
     var part = document.createElement('span');
     part.className = name;
     li.appendChild(part);
+  });
+  li.querySelector('.boxes').setAttribute('role', 'img');
+  line.boxes.forEach(function (b) {
+    var box = document.createElement('span');
+    box.className = 'box';
+    box.textContent = b.label;
+    li.querySelector('.boxes').appendChild(box);
   });
   return li;
 }

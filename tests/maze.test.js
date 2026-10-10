@@ -27,6 +27,8 @@ async function open(page, { maze, look, id } = {}) {
 const cell = (page, r, c, cols = 6) => page.locator('#grid .maze-cell').nth(r * cols + c);
 const stop = (page, id) => page.locator(`#grid [data-stop="${id}"]`);
 const line = (page, text) => page.locator('#checklist li').filter({ has: page.locator('.line-text', { hasText: new RegExp(`^${text}$`) }) });
+// A line's boxes, ticked or not, left to right.
+const ticks = (page, text) => line(page, text).locator('.box').evaluateAll(boxes => boxes.map(b => b.classList.contains('ticked')));
 
 async function tapAll(page, cells) {
   for (const [r, c] of cells) await cell(page, r, c).click();
@@ -164,15 +166,16 @@ test('stepping on a letter picks it up: it fades, its line ticks, and it stays t
   await expect(stop(page, 'letter-C')).toHaveClass(/\bgot\b/);
 });
 
-test('a guide, a key and a collectible count up on their lines as they\'re picked up', async ({ page }) => {
+test('a guide, a key and a collectible each tick a box on their lines as they\'re picked up', async ({ page }) => {
   await open(page);
   await tapAll(page, [[1, 0], [2, 0], [2, 1]]);
-  await expect(line(page, 'Keys')).toContainText('1/1');
+  await expect.poll(() => ticks(page, 'Keys')).toEqual([true]);
   await expect(line(page, 'Keys')).toHaveClass(/\bdone\b/);
   await tapAll(page, [[2, 0], [3, 0], [4, 0], [4, 1]]);
-  await expect(line(page, 'Guides')).toContainText('1/1');
+  await expect.poll(() => ticks(page, 'Guides')).toEqual([true]);
   await tapAll(page, [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5]]);
-  await expect(line(page, 'Collectibles')).toContainText('1/2');
+  await expect.poll(() => ticks(page, 'Collectibles')).toEqual([true, false]);
+  await expect(line(page, 'Collectibles').locator('.boxes')).toHaveAttribute('aria-label', '1 of 2 found');
   await expect(line(page, 'Collectibles')).not.toHaveClass(/\bdone\b/);
 });
 
@@ -187,22 +190,57 @@ test('tapping into a zone without its key does nothing and the zone flashes its 
   await tapAll(page, [[0, 1], [0, 0], [1, 0], [2, 0], [2, 1], [2, 0], [1, 0], [0, 0], [0, 1], [0, 2], [1, 2], [1, 3]]);
   expect((await trail(page)).slice(-2)).toEqual([[1, 2], [1, 3]]);
   await expect(zone).toHaveClass(/\bopen\b/);
-  await expect(line(page, 'Collectibles')).toContainText('1/2');
+  await expect.poll(() => ticks(page, 'Collectibles')).toEqual([true, false]);
 });
 
 test('the checklist reads Guides, Keys, Collectibles, A, B, C, then the six exits, all unticked', async ({ page }) => {
   await open(page);
   await expect(page.locator('#checklist .line-text')).toHaveText(['Guides', 'Keys', 'Collectibles', 'A', 'B', 'C', 'ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA']);
-  await expect(page.locator('#checklist .progress')).toHaveText(['0/1', '0/1', '0/2', '', '', '', '', '', '', '', '', '']);
+  await expect(page.locator('#checklist li')).toHaveText(['Guides', 'Keys1', 'Collectibles', 'A', 'B', 'C', 'ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA']);
+  expect(await page.locator('#checklist li').evaluateAll(lis => lis.map(li => li.querySelectorAll('.box').length))).toEqual([1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  await expect(page.locator('#checklist .box.ticked')).toHaveCount(0);
   await expect(page.locator('#checklist li.done')).toHaveCount(0);
   await expect(page.locator('#count')).toHaveText('0/12');
 });
+
+// The fixture with twelve collectibles, and four keys listed out of order.
+const TWELVE = { ...MAZE, collectibles: Array.from({ length: 12 }, (_, i) => ({ row: 5, col: i % 6 })),
+  keys: [3, 1, 4, 2].map((key, i) => ({ key, row: 5 - i, col: 5 })), zones: [] };
+
+test('a maze with 12 collectibles shows 12 empty boxes and no 0/12; its keys are boxes numbered 1 to 4', async ({ page }) => {
+  await open(page, { maze: TWELVE });
+  await expect.poll(() => ticks(page, 'Collectibles')).toEqual(Array(12).fill(false));
+  await expect(line(page, 'Collectibles')).toHaveText('Collectibles');
+  await expect(line(page, 'Keys').locator('.box')).toHaveText(['1', '2', '3', '4']);
+});
+
+// A big maze's worth of collectibles: a long line.
+const SIXTY = { ...MAZE, collectibles: Array.from({ length: 60 }, () => ({ row: 5, col: 0 })) };
+
+for (const [name, size] of [['on desktop', { width: 1280, height: 800 }], ['on a phone', { width: 390, height: 844 }]]) {
+  test(`${name}, sixty collectibles' boxes wrap rather than widening the checklist`, async ({ page, context }) => {
+    await page.setViewportSize(size);
+    await open(page);
+    const before = await page.locator('#checklist-card').boundingBox();
+    const many = await context.newPage();
+    await many.setViewportSize(size);
+    await open(many, { maze: SIXTY });
+    const boxes = line(many, 'Collectibles').locator('.box');
+    await expect(boxes).toHaveCount(60);
+    const card = await many.locator('#checklist-card').boundingBox(), last = await boxes.last().boundingBox();
+    expect(card.width).toBeLessThanOrEqual(before.width + 1);
+    expect(last.x + last.width).toBeLessThanOrEqual(card.x + card.width);
+    expect(await boxes.evaluateAll(all => new Set(all.map(b => b.getBoundingClientRect().top)).size)).toBeGreaterThan(1);
+  });
+}
 
 test('each exit is marked when stepped on, at any time: a wrong one ✗, the right one ✓, in the list and in the maze', async ({ page }) => {
   await open(page);
   await tapAll(page, [[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5]]);
   await expect(line(page, 'ACB')).toHaveClass(/\bdone\b/);
   await expect(line(page, 'ACB').locator('.mark')).toHaveText('✗');
+  const text = await line(page, 'ACB').locator('.line-text').boundingBox(), mark = await line(page, 'ACB').locator('.mark').boundingBox();
+  expect(mark.x - (text.x + text.width)).toBeLessThan(12);
   await expect(stop(page, 'exit-ACB')).toHaveAttribute('data-mark', '✗');
   await tapAll(page, [[0, 0], ...solutionCells()]);
   await expect(line(page, 'CBA').locator('.mark')).toHaveText('✓');
