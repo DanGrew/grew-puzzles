@@ -5,7 +5,7 @@ import {
   wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
-  windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
+  windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
   collectedSteps, collectedDash, windowSteps, minimapCollected
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
@@ -111,6 +111,15 @@ describe('coming back to a saved maze', () => {
     trail.slice(1).forEach((cell, i) => {
       expect(Math.abs(cell[0] - trail[i][0]) + Math.abs(cell[1] - trail[i][1])).toBe(1);
       expect(tapMaze({ ...newMazePlay(hundred), trail: trail.slice(0, i + 1) }, cell, hundred).trail).toHaveLength(i + 2);
+    });
+  });
+
+  it('tells apart two cells whose row and column run together the same — 1,10 and 11,0 — each coming back by its own route', () => {
+    const open = { rows: 12, cols: 11, start: [0, 0], bits: Array.from({ length: 12 }, () => Array(11).fill(0)), stops: [] };
+    [[1, 10], [11, 0]].forEach(cell => {
+      const trail = resumedMaze(open, cell, []).trail;
+      expect([trail.length, trail[0], trail[trail.length - 1]]).toEqual([12, [0, 0], cell]);
+      trail.slice(1).forEach((step, i) => expect(Math.abs(step[0] - trail[i][0]) + Math.abs(step[1] - trail[i][1])).toBe(1));
     });
   });
 
@@ -814,6 +823,21 @@ describe('the little map', () => {
     expect(tall.width).toBeCloseTo(89.6);
     expect(tall.height).toBe(112);
     expect(minimapSize({ rows: 50, cols: 100 }, 100)).toEqual({ scale: 1, width: 100, height: 50 });
+  });
+
+  it('takes the size picked while it fits its room, and shrinks to fit the room across when it doesn\'t', () => {
+    const fit = (board, size, room) => {
+      const map = minimapFit(board, size, room);
+      return [map.scale, map.width, map.height].map(n => Math.round(n * 1000) / 1000);
+    };
+    expect(fit({ rows: 100, cols: 100 }, 224, 230)).toEqual([2.24, 224, 224]);
+    expect(fit({ rows: 100, cols: 100 }, 224, 224)).toEqual([2.24, 224, 224]);
+    expect(fit({ rows: 100, cols: 100 }, 224, 146)).toEqual([1.46, 146, 146]);
+    // A tall maze is narrower than its size, so a narrower room still fits it whole.
+    expect(fit({ rows: 40, cols: 20 }, 160, 80)).toEqual([4, 80, 160]);
+    expect(fit({ rows: 40, cols: 20 }, 160, 60)).toEqual([3, 60, 120]);
+    // A wide maze fills its room across.
+    expect(fit({ rows: 20, cols: 40 }, 160, 100)).toEqual([2.5, 100, 50]);
   });
 
   it('draws its lines so many px wide however small a cell is on it, a stop at least half a cell', () => {

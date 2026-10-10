@@ -84,7 +84,7 @@ test.describe('a maze on the landing page', () => {
     await expect(page.locator('#filters .chip.types')).toHaveText(['Keylecticodes']);
   });
 
-  test('tapping it opens its maze play page: the maze in the grid card, the checklist beside it', async ({ page }) => {
+  test('tapping it opens its maze play page: the maze in the grid card, the checklist above it', async ({ page }) => {
     await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: MAZE }));
     await page.goto('/app/?kind=maze');
     await page.locator('.tile', { hasText: 'Everything corner' }).click();
@@ -331,14 +331,15 @@ test('Themed: collectibles and blocks show the puzzle\'s theme character', async
   await expect(stop(page, 'key-1')).toHaveCSS('background-image', 'none');
 });
 
-test('a real-size maze\'s grid card fits the window\'s height', async ({ page }) => {
+test('a real-size maze\'s grid card and the checklist above it fit the window\'s height together, the card taking the rest', async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) {
     await page.setViewportSize(viewport);
     await open(page, { id: 'MAZE-0002' });
     await expect(page.locator('#grid .maze-cell')).toHaveCount(32 * 40);
-    const card = await page.locator('#front').boundingBox();
-    expect(card.height).toBeLessThanOrEqual(viewport.height);
-    expect(card.height).toBeGreaterThan(viewport.height * 0.8);
+    const card = await page.locator('#front').boundingBox(), list = await page.locator('#checklist-card').boundingBox();
+    expect(list.y + list.height).toBeLessThan(card.y);
+    expect(card.y + card.height - list.y).toBeLessThanOrEqual(viewport.height);
+    expect(card.y + card.height - list.y).toBeGreaterThan(viewport.height * 0.8);
     await expect(page.locator('#checklist .line-text')).toHaveText(['Guides', 'End']);
   }
 });
@@ -577,13 +578,18 @@ test('the zoom is only ever mine: moves, taps and pickups never zoom, nor do fin
   expect(await cellSize(page)).toBe(zoom);
 });
 
-test('zoomed in, the little map shows the whole maze in the card\'s corner, every collectible on it; dragging its box looks round, and my next move brings the view back', async ({ page }) => {
+// ---- The little map beside the control pad (TASK-125) ----
+
+const overlaps = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+
+test('zoomed in, the little map shows the whole maze above the control pad, the two in one column, off the maze, every collectible on it; dragging its box looks round, and my next move brings the view back', async ({ page }) => {
   await open(page, { id: 'MAZE-0003', maze: MIDDLE });
   const map = page.locator('#minimap');
   await expect(map).toBeVisible();
-  const frame = await page.locator('#view').boundingBox(), box = await map.boundingBox();
-  expect(box.x + box.width).toBeLessThanOrEqual(frame.x + frame.width);
-  expect(box.y + box.height).toBeLessThanOrEqual(frame.y + frame.height);
+  const card = await page.locator('#stage').boundingBox(), box = await map.boundingBox(), padBox = await page.locator('#pad').boundingBox();
+  expect(overlaps(box, card)).toBe(false);
+  expect(box.y + box.height).toBeLessThanOrEqual(padBox.y);
+  expect(Math.abs(box.x + box.width / 2 - (padBox.x + padBox.width / 2))).toBeLessThan(2);
   const ink = await map.evaluate((canvas, c) => {
     const scale = canvas.width / 100;
     return Array.from(canvas.getContext('2d').getImageData(Math.floor((c.col + 0.5) * scale), Math.floor((c.row + 0.5) * scale), 1, 1).data.slice(0, 3));
@@ -600,6 +606,120 @@ test('zoomed in, the little map shows the whole maze in the card\'s corner, ever
   await page.keyboard.press('ArrowDown');
   await page.waitForTimeout(400);
   expect(Math.abs((await offCentre(page))[0])).toBeLessThan(2);
+});
+
+for (const width of [390, 360]) {
+  test(`on a phone ${width}px wide, the pad sits on the right half of the row under the maze, and zoomed in the little map on its left half, every key a comfortable tap`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+    const map = page.locator('#minimap');
+    await expect(map).toBeVisible();
+    const row = await page.locator('#controls').boundingBox(), card = await page.locator('#stage').boundingBox();
+    const box = await map.boundingBox(), padBox = await page.locator('#pad').boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(row.x);
+    expect(box.x + box.width).toBeLessThanOrEqual(row.x + row.width / 2);
+    expect(padBox.x).toBeGreaterThanOrEqual(row.x + row.width / 2);
+    expect(padBox.x + padBox.width).toBeLessThanOrEqual(Math.min(row.x + row.width, width));
+    expect(overlaps(box, padBox)).toBe(false);
+    expect(box.y < padBox.y + padBox.height && padBox.y < box.y + box.height).toBe(true);
+    expect(overlaps(box, card)).toBe(false);
+    expect(padBox.y).toBeGreaterThanOrEqual(card.y + card.height);
+    for (const press of ['N', 'S', 'W', 'E', 'back']) {
+      const key = await pad(page, press).boundingBox();
+      expect(Math.min(key.width, key.height)).toBeGreaterThanOrEqual(44);
+    }
+  });
+}
+
+for (const [where, size] of [['on desktop', { width: 1280, height: 720 }], ['on a phone', { width: 390, height: 844 }]]) {
+  test(`${where}, zooming out to the whole maze hides the little map and the pad stays exactly where it was`, async ({ page }) => {
+    await page.setViewportSize(size);
+    await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+    await expect(page.locator('#minimap')).toBeVisible();
+    const before = await page.locator('#pad').boundingBox();
+    while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
+    await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'false');
+    await expect(page.locator('#minimap')).toBeHidden();
+    expect(await page.locator('#pad').boundingBox()).toEqual(before);
+    await page.click('#zoom-in');
+    await expect(page.locator('#minimap')).toBeVisible();
+    expect(await page.locator('#pad').boundingBox()).toEqual(before);
+  });
+}
+
+test('on desktop the checklist sits above the maze, and the controls beside it', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const list = await page.locator('#checklist-card').boundingBox(), card = await page.locator('#stage').boundingBox();
+  const controls = await page.locator('#controls').boundingBox();
+  expect(list.y + list.height).toBeLessThan(card.y);
+  expect(Math.abs(list.x - card.x)).toBeLessThan(2);
+  expect(controls.x).toBeGreaterThan(card.x + card.width);
+  expect(controls.y).toBeGreaterThanOrEqual(card.y - 1);
+});
+
+test('on a phone the checklist sits under the controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const list = await page.locator('#checklist-card').boundingBox(), controls = await page.locator('#controls').boundingBox();
+  expect(list.y).toBeGreaterThanOrEqual(controls.y + controls.height);
+});
+
+const mapSize = (page, size) => page.locator(`[data-map-size="${size}"]`);
+
+test('the little map comes Small, Medium or Large, Small to start, each bigger than the last, its box still dragged to look round', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const map = page.locator('#minimap');
+  await expect(mapSize(page, 'small')).toHaveAttribute('aria-pressed', 'true');
+  const widths = [];
+  for (const size of ['small', 'medium', 'large']) {
+    await mapSize(page, size).click();
+    await expect(mapSize(page, size)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-map-size][aria-pressed="true"]')).toHaveCount(1);
+    widths.push(Math.round(await map.evaluate(c => c.getBoundingClientRect().width)));
+  }
+  expect(widths).toEqual([122, 178, 234]);
+  const box = await map.boundingBox(), card = await page.locator('#stage').boundingBox();
+  expect(overlaps(box, card)).toBe(false);
+  const before = await page.locator('#world').evaluate(w => w.style.transform);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 20, box.y + 20, { steps: 4 });
+  await page.mouse.up();
+  expect(await page.locator('#world').evaluate(w => w.style.transform)).not.toBe(before);
+});
+
+test('on a phone, a Large map stays in its half of the row, and the pad and the maze stay on screen together', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await mapSize(page, 'large').click();
+  const row = await page.locator('#controls').boundingBox(), box = await page.locator('#map-box').boundingBox();
+  const padBox = await page.locator('#pad').boundingBox(), card = await page.locator('#front').boundingBox();
+  expect(box.x + box.width).toBeLessThanOrEqual(row.x + row.width / 2);
+  expect(padBox.x).toBeGreaterThanOrEqual(row.x + row.width / 2);
+  expect(row.y + row.height - card.y).toBeLessThanOrEqual(780);
+  for (const size of ['small', 'medium', 'large']) {
+    const button = await mapSize(page, size).boundingBox();
+    expect(Math.min(button.width, button.height)).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test('the map\'s sizes hide with it when I zoom out to the whole maze', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await expect(mapSize(page, 'large')).toBeVisible();
+  while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
+  await expect(mapSize(page, 'large')).toBeHidden();
+});
+
+test('off the card, the little map hides while the solution shows, and comes back with the maze', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 450 });
+  await open(page, { id: 'MAZE-0002' });
+  await page.click('#zoom-in');
+  const map = page.locator('#minimap');
+  await expect(map).toBeVisible();
+  await page.click('#flip');
+  await expect(map).toBeHidden();
+  await page.click('#flip');
+  await expect(map).toBeVisible();
 });
 
 test('the little map shows the dashed paths too', async ({ page }) => {

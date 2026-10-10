@@ -609,7 +609,7 @@ export function windowMarks(board, win) {
 }
 
 // ---- The little map ----
-// While the player is zoomed in, a little map in the maze card's corner shows the whole maze: a box
+// While the player is zoomed in, a little map beside the control pad shows the whole maze: a box
 // round what's on view, the trail, the dashed paths, thinner, and every collectible, key, letter and exit — or the end — the
 // ones picked up faded. Never the solution. It's drawn in cells, scaled to fit size px.
 
@@ -617,6 +617,11 @@ export function windowMarks(board, win) {
 export function minimapSize(board, size) {
   var scale = size / Math.max(board.rows, board.cols);
   return { scale: scale, width: board.cols * scale, height: board.rows * scale };
+}
+
+// The map at the size picked, its longer side size px, shrunk to fit room px across.
+export function minimapFit(board, size, room) {
+  return minimapSize(board, Math.min(size, room * Math.max(board.rows, board.cols) / board.cols));
 }
 
 // The pens, in cells, to draw lines so many px wide however small a cell is on the map.

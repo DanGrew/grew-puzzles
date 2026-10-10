@@ -7,7 +7,7 @@ import {
   mazeUrl, mazeBoard, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, wallPath, mazeFrame,
   openView, refitView, centreOn, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow,
-  windowHolds, windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
+  windowHolds, windowCells, windowMarks, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
   collectedSteps, collectedDash, windowSteps, minimapCollected
 } from '../../core/maze/play-core.js';
 import { joinedMaze } from '../../core/maze/progress-core.js';
@@ -18,15 +18,19 @@ import { withCharacters, dressFigure } from '../theme-ui.js';
 import { wireFlip, celebrate } from '../card-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
-// Beside the grid card, the checklist card and the gap before it; on a phone it sits underneath.
-var MAZE_CHECKLIST_ROOM = { true: 0, false: 268 };
+// Beside the grid card, the controls' column and the gap before it; on a phone they sit underneath.
+var MAZE_CONTROLS_ROOM = { true: 0, false: 268 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MAZE_WINDOW_MARGIN = 24;
-// On a phone the control pad sits under the grid card, the page's gap above it, and stays on
-// screen with the card.
-var MAZE_PAD_GAP = 28;
-// The little map's longer side, px.
-var MAZE_MINIMAP_SIZE = 112;
+// The page's gap between the grid card and the checklist above it, or on a phone the controls
+// under it — each stays on screen with the card.
+var MAZE_GAP = 28;
+// The little map's longer side at each size, px.
+var MAZE_MINIMAP_SIZES = { small: 112, medium: 168, large: 224 };
+// The little map's room across: the controls' column, or on a phone the left half of their row —
+// less its padding and border either side.
+var MAZE_MINIMAP_ROOM = { true: 0.5, false: 1 };
+var MAZE_MINIMAP_EDGES = 10;
 // Each kind's colour on the little map: a property of styles/maze.css's.
 var MAZE_MINIMAP_INKS = { collectible: '--maze-collectible', key: '--maze-key', letter: '--maze-letter', exit: '--fg', end: '--fg' };
 var MAZE_MINIMAP_FADE = { true: 0.3, false: 1 };
@@ -71,7 +75,9 @@ function showMaze(id, board, play) {
   var dash = collectedDash();
   // The first frame opens the maze on the player; every one after refits it.
   var fitView = function (v, before, next, b, here) { return openView(next, board, here); };
-  var minimap = minimapSize(board, MAZE_MINIMAP_SIZE);
+  // The little map: Small until the player picks another size, fitted to its room on every resize.
+  var mapSize = 'small';
+  var minimap = { scale: 1, width: 0, height: 0 };
   var mapWalls = document.createElement('canvas');
   var minimapMove = noop;
   var touches = new Map();
@@ -290,18 +296,17 @@ function showMaze(id, board, play) {
 
   // ---- The little map ----
 
-  // The walls are drawn once, at the map's size, and every redraw copies them.
+  // Its box dragged, and its sizes picked: a new size fits the maze to the window again, since on
+  // a phone the map's row stays on screen with the card.
   function wireMinimap() {
-    var canvas = mazeEl('minimap'), ratio = window.devicePixelRatio;
-    var pixels = [Math.round(minimap.width * ratio), Math.round(minimap.height * ratio)];
-    var walls = mapWalls.getContext('2d');
-    canvas.style.width = minimap.width + 'px';
-    canvas.style.height = minimap.height + 'px';
-    [canvas, mapWalls].forEach(function (c) { c.width = pixels[0]; c.height = pixels[1]; });
-    walls.setTransform(ratio * minimap.scale, 0, 0, ratio * minimap.scale, 0, 0);
-    walls.strokeStyle = mazeInk('--line');
-    walls.lineWidth = minimapPens(minimap.scale).wall;
-    walls.stroke(new Path2D(board.walls));
+    var canvas = mazeEl('minimap');
+    document.querySelectorAll('[data-map-size]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        mapSize = button.dataset.mapSize;
+        document.querySelectorAll('[data-map-size]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === button)); });
+        sizeMaze();
+      });
+    });
     canvas.addEventListener('pointerdown', function (e) {
       var last = { x: e.clientX, y: e.clientY };
       canvas.setPointerCapture(e.pointerId);
@@ -313,6 +318,23 @@ function showMaze(id, board, play) {
     });
     canvas.addEventListener('pointermove', function (e) { minimapMove(e); });
     ['pointerup', 'pointercancel'].forEach(function (type) { canvas.addEventListener(type, function () { minimapMove = noop; }); });
+  }
+
+  // The map at the size picked, within its room; its walls drawn once at that size, and every
+  // redraw copies them.
+  function sizeMinimap(phone) {
+    var canvas = mazeEl('minimap'), ratio = window.devicePixelRatio, walls = mapWalls.getContext('2d');
+    var room = mazeEl('controls').clientWidth * MAZE_MINIMAP_ROOM[phone] - MAZE_MINIMAP_EDGES;
+    var pixels;
+    minimap = minimapFit(board, MAZE_MINIMAP_SIZES[mapSize], room);
+    pixels = [Math.round(minimap.width * ratio), Math.round(minimap.height * ratio)];
+    canvas.style.width = minimap.width + 'px';
+    canvas.style.height = minimap.height + 'px';
+    [canvas, mapWalls].forEach(function (c) { c.width = pixels[0]; c.height = pixels[1]; });
+    walls.setTransform(ratio * minimap.scale, 0, 0, ratio * minimap.scale, 0, 0);
+    walls.strokeStyle = mazeInk('--line');
+    walls.lineWidth = minimapPens(minimap.scale).wall;
+    walls.stroke(new Path2D(board.walls));
   }
 
   // The whole maze, the dashed paths under the trail, the trail, the stops — those picked up faded
@@ -358,19 +380,21 @@ function showMaze(id, board, play) {
     sizeMaze();
   }
 
-  // On a phone the pad under the card stays on screen with it. The card's edges round the frame
-  // are its borders and its padding, either side.
+  // The checklist above the card stays on screen with it, or on a phone the pad and the map under
+  // it. The card's edges round the frame are its borders and its padding, either side.
   function sizeMaze() {
     var playEl = mazeEl('play'), face = mazeEl('front'), frameEl = mazeEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
-    var next = mazeFrame({
+    var next, fitted;
+    sizeMinimap(phone);
+    next = mazeFrame({
       viewHeight: window.innerHeight,
-      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + { true: mazeEl('pad').offsetHeight + MAZE_PAD_GAP, false: 0 }[phone],
+      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + MAZE_GAP + { true: mazeEl('controls'), false: mazeEl('checklist-card') }[phone].offsetHeight,
       width: playEl.clientWidth,
-      chromeWidth: face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CHECKLIST_ROOM[phone],
+      chromeWidth: face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CONTROLS_ROOM[phone],
       rows: board.rows, cols: board.cols
     });
-    var fitted = fitView(view, frame, next, board, trailEnd(play));
+    fitted = fitView(view, frame, next, board, trailEnd(play));
     frame = next;
     fitView = refitView;
     playEl.style.setProperty('--frame-w', frame.width + 'px');

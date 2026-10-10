@@ -49,7 +49,7 @@ function newMaze(puzzle, board, then) {
 }
 
 // From here on, every change of who is signed in — the first look too — decides whether moves save
-// and what the line under the checklist says. Signing in mid-maze syncs it: the maze on screen,
+// and what the saved-progress line says. Signing in mid-maze syncs it: the maze on screen,
 // current(), is saved, and the maze saved elsewhere is handed to onSaved to join it. Supabase asks
 // that its own calls wait until its sign-in news has been handed round.
 export function wireMazeProgress(puzzle, board, current, onSaved) {
