@@ -79,7 +79,7 @@ function printBook(book, playPage, scene) {
 }
 
 function sizeBookWords() {
-  bookEl('sheets').querySelectorAll('ul.words').forEach(sizePrintedWords);
+  bookEl('sheets').querySelectorAll('ul.words').forEach(function (list) { sizePrintedWords(list, true); });
 }
 
 function showReady() {

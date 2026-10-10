@@ -178,6 +178,25 @@ test('a Repeats puzzle\'s book page carries its Cup ×5 exactly as its own print
   await play.close();
 });
 
+test('a Saga\'s words page in the book is its own printout\'s words sheet: its words as large, as far apart, in the same columns', async ({ page, browser }) => {
+  await openBook(page, {}, 'sagas');
+  await page.emulateMedia({ media: 'print' });
+  const sheet = (p, scope) => p.locator(`${scope} ul.words`).first().evaluate(ul => {
+    const li = getComputedStyle(ul.firstElementChild);
+    return { words: Array.from(ul.children, l => l.firstChild.textContent), type: [li.fontSize, li.lineHeight, li.marginBottom], columns: getComputedStyle(ul).columnWidth };
+  });
+  const book = await sheet(page, '.sheet:nth-child(1)');
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/wordsearch/WSCH-0010.json', r => r.fulfill({ json: SAGA }));
+  await play.goto('/app/play.html?id=WSCH-0010');
+  await expect(play.locator('#words')).toHaveAttribute('style', /--print-word-w/);
+  await play.emulateMedia({ media: 'print' });
+  expect(book).toEqual(await sheet(play, 'body'));
+  // Larger than paper's 13px: spread, not the one-grid page's words.
+  expect(parseFloat(book.type[0])).toBeGreaterThan(13);
+  await play.close();
+});
+
 // The book saved as a PDF the way Chrome's Save as PDF makes it: at the page's own size.
 async function savePdf(page) {
   return (await page.pdf({ preferCSSPageSize: true })).toString('latin1');

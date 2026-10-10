@@ -4,7 +4,7 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
-  printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
@@ -79,18 +79,27 @@ export function drawSheet(part, board, onCell) {
 }
 
 // Paper's word columns, sized to the list's widest word, a count on its word: each piece a line
-// may wrap between is measured on an unseen line in the printout's own type (styles/play.css,
-// .print-measure), since paper's layout is never the screen's. Run once the fonts are in, so the
-// type is the real one.
-export function sizePrintedWords(list) {
+// may wrap between, and each whole line, is measured on an unseen line in the printout's own type
+// (styles/play.css, .print-measure), since paper's layout is never the screen's. On a words sheet
+// of its own, the words then spread to fill it (play-core's printedSpread) — book says whether it's
+// the book's page. Run once the fonts are in, so the type is the real one.
+export function sizePrintedWords(list, book) {
   var line = document.createElement('span');
   line.className = 'print-measure';
   document.body.appendChild(line);
-  var widths = Array.from(list.children).flatMap(function (li) {
+  var pieces = Array.from(list.children, function (li) {
     return printedPieces(li.firstChild.textContent, li.dataset.copies).map(function (piece) { return measurePiece(line, piece); });
   });
+  var lines = Array.from(list.children, function (li, i) {
+    return { width: measurePiece(line, { text: li.firstChild.textContent, copies: li.dataset.copies }), pieces: pieces[i].length };
+  });
+  var column = printedColumnWidth(pieces.flat()), height = line.getBoundingClientRect().height;
+  var spread = printedSpread(lines, { line: height, column: column }, book);
   line.remove();
-  list.style.setProperty('--print-word-w', printedColumnWidth(widths) + 'px');
+  list.style.setProperty('--print-word-w', column + 'px');
+  list.style.setProperty('--print-line', height + 'px');
+  list.style.setProperty('--print-spread', spread.scale);
+  list.style.setProperty('--print-spread-gap', spread.gap + 'px');
 }
 
 function measurePiece(line, piece) {
@@ -192,7 +201,7 @@ function showPuzzle(opened, found) {
   wireTextSize();
   wireWords();
   wireWordsFit();
-  document.fonts.ready.then(function () { sizePrintedWords(playEl('words')); });
+  document.fonts.ready.then(function () { sizePrintedWords(playEl('words'), false); });
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
   // The words that have an entry are marked once the entries arrive; the grid never waits on them.

@@ -289,6 +289,45 @@ export function printedColumnWidth(pieceWidths) {
   return Math.ceil(Math.max.apply(null, [0].concat(pieceWidths)));
 }
 
+// A words sheet of its own — a puzzle of several grids' (styles/play.css, data-paged) — fills its
+// page: its words printed larger than paper's type, up to 1.5× it, and their rows spread down the
+// sheet, never further apart than two lines, the owner's call 2026-10-10. A list too long for that
+// shrinks back toward paper's type before it would spill onto a second sheet, never under it.
+// lines is each printed line, measured in paper's own type: its width on one line, and how many
+// pieces it may wrap into (printedPieces). type is that type's line height and the list's widest
+// piece (printedColumnWidth). Back come the scale to print the words at and the gap under each.
+export function printedSpread(lines, type, book) {
+  var room = printedRoom(book);
+  var scales = Array.from({ length: 11 }, function (_, i) { return (30 - i) / 20; });
+  var spreads = scales.map(function (scale) { return spreadAt(scale, lines, type, room); });
+  var spread = spreads.filter(function (s) { return s.gap >= s.least; }).concat([spreads[10]])[0];
+  return { scale: spread.scale, gap: Math.floor(Math.max(spread.least, spread.gap) * 10) / 10 };
+}
+
+// The room a words sheet's list has on the paper, measured from the printout itself
+// (tests/print.test.js checks it): across, inside the words card on the narrower of A4 and Letter,
+// or on the book's page; down, from under the card's band to the sheet's half-inch edge, or in the
+// book to above its page number — printed Colour, where the title's white tag sits the list lowest.
+// A title of one line: a longer one only sits the list lower.
+function printedRoom(book) {
+  return [{ width: 662, height: 767 }, { width: 684, height: 703 }][Number(book)];
+}
+
+// The words at one scale, spaced as styles/play.css prints them: 14px between the columns, and
+// under each line paper's 3px at least, scaled with its type. As many columns as fit across, each
+// at least the widest piece, or 88px, and every line on one line where the column has room for it,
+// else wrapped into its pieces. Paper balances the columns, so the tallest is at most an even share
+// of the lines and gaps plus one whole line and its gap; gap is the most each line's gap can be for
+// that to fit down the sheet, never more than two lines — under least, it doesn't fit.
+function spreadAt(scale, lines, type, room) {
+  var height = type.line * scale;
+  var columns = Math.max(1, Math.floor((room.width + 14) / (Math.max(88, type.column) * scale + 14)));
+  var across = (room.width - (columns - 1) * 14) / columns;
+  var each = lines.map(function (line) { return [line.pieces, 1][Number(line.width * scale <= across)]; });
+  var text = each.reduce(function (sum, n) { return sum + n; }, 0) * height / columns + Math.max.apply(null, each) * height;
+  return { scale: scale, least: 3 * scale, gap: Math.min(2 * height, (room.height - text) / (lines.length / columns + 1)) };
+}
+
 // Out of the placed copies only: a missing word is never there to find.
 export function countLabel(play, words) {
   return play.found.length + '/' + placedWords(words).length;

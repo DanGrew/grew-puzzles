@@ -1673,6 +1673,67 @@ test('a single-grid puzzle prints no sheets of its own beyond the one', async ({
   await expect(page.locator('#card')).toBeVisible();
 });
 
+// ---- A words sheet of its own fills its page ----
+
+// A Saga of n words, each short enough for one line.
+const sagaOf = n => ({ ...SAGA, words: Array.from({ length: n }, (_, i) => ({ ...SAGA.words[i % 8], word: 'Word ' + i })) });
+// Letter's printed page: 8.5 × 11 in less its 12 mm margins.
+const LETTER_PAGE = { width: 725, height: 965 };
+// The words list on paper as wide as Letter's printed page, from the page's top: its words' type, the
+// gap under each, a word's line height, where the list starts and ends, and each column's centre.
+async function wordsOnPaper(page, puzzle) {
+  await page.setViewportSize({ width: LETTER_PAGE.width, height: 900 });
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, 'bottom']);
+  await open(page, null, puzzle);
+  await columnsSized(page);
+  await page.emulateMedia({ media: 'print' });
+  return page.locator('#words').evaluate(ul => {
+    const lis = Array.from(ul.children), li = lis[0], css = getComputedStyle(li), r = ul.getBoundingClientRect();
+    // Each column's centre once, a word's box spanning its column.
+    const centres = lis.map(l => { const b = l.getBoundingClientRect(); return b.left + b.width / 2; })
+      .sort((a, b) => a - b).filter((c, i, all) => i === 0 || c - all[i - 1] > 2);
+    return { size: parseFloat(css.fontSize), gap: parseFloat(css.marginBottom), line: li.getBoundingClientRect().height,
+      top: r.top + scrollY, bottom: r.bottom + scrollY, left: r.left, right: r.right, centres, column: getComputedStyle(ul).columnWidth };
+  });
+}
+const sheetsIn = async page => [await pdfPages(await page.pdf({ format: 'Letter' })), await pdfPages(await page.pdf({ format: 'A4' }))];
+
+test('a Saga\'s words sheet spreads its columns across the whole page, evenly spaced', async ({ page }) => {
+  const words = await wordsOnPaper(page, sagaOf(120));
+  const steps = words.centres.slice(1).map((c, i) => c - words.centres[i]);
+  expect(words.centres.length).toBeGreaterThan(3);
+  for (const step of steps) expect(Math.abs(step - steps[0])).toBeLessThanOrEqual(1);
+  // As far in from the list's left as from its right: the columns fill it, none packed to one side.
+  expect(Math.abs((words.centres[0] - words.left) - (words.right - words.centres[words.centres.length - 1]))).toBeLessThanOrEqual(1);
+});
+
+test('a Saga\'s short words list prints at 1.5× paper\'s 13px, its lines two lines apart and no further', async ({ page }) => {
+  const words = await wordsOnPaper(page, sagaOf(10));
+  expect(words.size).toBe(19.5);
+  expect(words.gap).toBeCloseTo(2 * words.line, 0);
+  expect(words.gap).toBeLessThanOrEqual(2 * words.line);
+  expect(await sheetsIn(page)).toEqual([4, 4]);
+});
+
+test('a Saga\'s real-size list prints larger than paper\'s type, its rows reaching down most of the sheet, still on one sheet', async ({ page }) => {
+  const words = await wordsOnPaper(page, sagaOf(120));
+  expect(words.size).toBeGreaterThan(13);
+  expect(words.size).toBeLessThan(19.5);
+  expect(words.gap).toBeGreaterThan(3);
+  expect(words.bottom).toBeGreaterThan(0.75 * LETTER_PAGE.height);
+  expect(await sheetsIn(page)).toEqual([4, 4]);
+});
+
+test('a Saga\'s list too long even at paper\'s type prints at it, 3px apart, never smaller', async ({ page }) => {
+  const words = await wordsOnPaper(page, sagaOf(400));
+  expect([words.size, words.gap]).toEqual([13, 3]);
+});
+
+test('a puzzle of one grid prints its words at paper\'s own 13px, 3px apart, in 88px columns, as before', async ({ page }) => {
+  const words = await wordsOnPaper(page, PUZZLE);
+  expect([words.size, words.gap, words.column]).toEqual([13, 3, '88px']);
+});
+
 // ---- How big the grid and its words are ----
 
 const SIZE_KEY = 'grew-puzzles.text-size';
