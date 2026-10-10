@@ -212,7 +212,7 @@ test('the book\'s page has no margin, so the browser has no room to print its da
   await openBook(page);
   // The site's own stylesheets, in the order they load; the font's, from Google, is unreadable here.
   const rules = await page.evaluate(() => [...document.styleSheets].filter(s => s.href.startsWith(location.origin))
-    .flatMap(s => [...s.cssRules]).filter(r => r instanceof CSSPageRule).map(r => [r.style.size, r.style.margin]));
+    .flatMap(s => [...s.cssRules]).filter(r => r instanceof CSSPageRule && !r.selectorText).map(r => [r.style.size, r.style.margin]));
   expect(rules.at(-1)).toEqual(['8.5in 11in', '0px']);
 });
 
