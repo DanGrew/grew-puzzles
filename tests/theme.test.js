@@ -33,7 +33,7 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 // A card not on screen — the words over the grid, closed — has no box, and nothing covers it.
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
-for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
+for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'feedback.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
   test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');

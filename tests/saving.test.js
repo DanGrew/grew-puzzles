@@ -16,11 +16,11 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html']) {
   test(`on ${address}, the side bar holds Saving your progress after How to play, which opens its page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const pages = await page.locator('#site-side .page').allTextContents();
-    expect(pages.slice(-4)).toEqual(['How to play', 'Saving your progress', 'About us', 'Privacy']);
+    expect(pages.slice(-5)).toEqual(['How to play', 'Saving your progress', 'About us', 'Feedback', 'Privacy']);
     await page.locator('#site-side .page', { hasText: 'Saving your progress' }).click();
     await expect(page).toHaveURL(`${baseURL}/app/saving.html`);
     await expect(page.locator('h1')).toHaveText('Saving your progress');
