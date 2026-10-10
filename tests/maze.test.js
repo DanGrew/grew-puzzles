@@ -511,13 +511,18 @@ test('the zoom is only ever mine: moves, taps and pickups never zoom, nor do fin
   expect(await cellSize(page)).toBe(zoom);
 });
 
-test('zoomed in, the little map shows the whole maze in the card\'s corner, every collectible on it; dragging its box looks round, and my next move brings the view back', async ({ page }) => {
+// ---- The little map beside the control pad (TASK-125) ----
+
+const overlaps = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+
+test('zoomed in, the little map shows the whole maze above the control pad, the two in one column, off the maze, every collectible on it; dragging its box looks round, and my next move brings the view back', async ({ page }) => {
   await open(page, { id: 'MAZE-0003', maze: MIDDLE });
   const map = page.locator('#minimap');
   await expect(map).toBeVisible();
-  const frame = await page.locator('#view').boundingBox(), box = await map.boundingBox();
-  expect(box.x + box.width).toBeLessThanOrEqual(frame.x + frame.width);
-  expect(box.y + box.height).toBeLessThanOrEqual(frame.y + frame.height);
+  const card = await page.locator('#stage').boundingBox(), box = await map.boundingBox(), padBox = await page.locator('#pad').boundingBox();
+  expect(overlaps(box, card)).toBe(false);
+  expect(box.y + box.height).toBeLessThanOrEqual(padBox.y);
+  expect(Math.abs(box.x + box.width / 2 - (padBox.x + padBox.width / 2))).toBeLessThan(2);
   const ink = await map.evaluate((canvas, c) => {
     const scale = canvas.width / 100;
     return Array.from(canvas.getContext('2d').getImageData(Math.floor((c.col + 0.5) * scale), Math.floor((c.row + 0.5) * scale), 1, 1).data.slice(0, 3));
@@ -534,6 +539,57 @@ test('zoomed in, the little map shows the whole maze in the card\'s corner, ever
   await page.keyboard.press('ArrowDown');
   await page.waitForTimeout(400);
   expect(Math.abs((await offCentre(page))[0])).toBeLessThan(2);
+});
+
+for (const width of [390, 360]) {
+  test(`on a phone ${width}px wide, the pad sits on the right half of the row under the maze, and zoomed in the little map on its left half, every key a comfortable tap`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+    const map = page.locator('#minimap');
+    await expect(map).toBeVisible();
+    const row = await page.locator('#controls').boundingBox(), card = await page.locator('#stage').boundingBox();
+    const box = await map.boundingBox(), padBox = await page.locator('#pad').boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(row.x);
+    expect(box.x + box.width).toBeLessThanOrEqual(row.x + row.width / 2);
+    expect(padBox.x).toBeGreaterThanOrEqual(row.x + row.width / 2);
+    expect(padBox.x + padBox.width).toBeLessThanOrEqual(Math.min(row.x + row.width, width));
+    expect(overlaps(box, padBox)).toBe(false);
+    expect(box.y < padBox.y + padBox.height && padBox.y < box.y + box.height).toBe(true);
+    expect(overlaps(box, card)).toBe(false);
+    expect(padBox.y).toBeGreaterThanOrEqual(card.y + card.height);
+    for (const press of ['N', 'S', 'W', 'E', 'back']) {
+      const key = await pad(page, press).boundingBox();
+      expect(Math.min(key.width, key.height)).toBeGreaterThanOrEqual(44);
+    }
+  });
+}
+
+for (const [where, size] of [['on desktop', { width: 1280, height: 720 }], ['on a phone', { width: 390, height: 844 }]]) {
+  test(`${where}, zooming out to the whole maze hides the little map and the pad stays exactly where it was`, async ({ page }) => {
+    await page.setViewportSize(size);
+    await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+    await expect(page.locator('#minimap')).toBeVisible();
+    const before = await page.locator('#pad').boundingBox();
+    while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
+    await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'false');
+    await expect(page.locator('#minimap')).toBeHidden();
+    expect(await page.locator('#pad').boundingBox()).toEqual(before);
+    await page.click('#zoom-in');
+    await expect(page.locator('#minimap')).toBeVisible();
+    expect(await page.locator('#pad').boundingBox()).toEqual(before);
+  });
+}
+
+test('off the card, the little map hides while the solution shows, and comes back with the maze', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 450 });
+  await open(page, { id: 'MAZE-0002' });
+  await page.click('#zoom-in');
+  const map = page.locator('#minimap');
+  await expect(map).toBeVisible();
+  await page.click('#flip');
+  await expect(map).toBeHidden();
+  await page.click('#flip');
+  await expect(map).toBeVisible();
 });
 
 test('a maze that isn\'t 32×40 has no Print button', async ({ page }) => {

@@ -21,8 +21,8 @@ var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
 var MAZE_CHECKLIST_ROOM = { true: 0, false: 268 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MAZE_WINDOW_MARGIN = 24;
-// On a phone the control pad sits under the grid card, the page's gap above it, and stays on
-// screen with the card.
+// On a phone the control pad and the little map sit in a row under the grid card, the page's gap
+// above it, and stay on screen with the card.
 var MAZE_PAD_GAP = 28;
 // The little map's longer side, px.
 var MAZE_MINIMAP_SIZE = 112;
@@ -343,14 +343,14 @@ function showMaze(id, board, play) {
     sizeMaze();
   }
 
-  // On a phone the pad under the card stays on screen with it. The card's edges round the frame
-  // are its borders and its padding, either side.
+  // On a phone the pad and the map under the card stay on screen with it. The card's edges round
+  // the frame are its borders and its padding, either side.
   function sizeMaze() {
     var playEl = mazeEl('play'), face = mazeEl('front'), frameEl = mazeEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
     var next = mazeFrame({
       viewHeight: window.innerHeight,
-      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + { true: mazeEl('pad').offsetHeight + MAZE_PAD_GAP, false: 0 }[phone],
+      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + { true: mazeEl('controls').offsetHeight + MAZE_PAD_GAP, false: 0 }[phone],
       width: playEl.clientWidth,
       chromeWidth: face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CHECKLIST_ROOM[phone],
       rows: board.rows, cols: board.cols

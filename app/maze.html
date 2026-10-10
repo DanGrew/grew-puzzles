@@ -30,8 +30,7 @@
         <div class="card" id="card">
           <div class="face front-face" id="front">
             <div class="band" id="label"></div>
-            <!-- The frame: the maze behind it, only the cells round the view drawn, and the little
-                 map in its corner while zoomed in. -->
+            <!-- The frame: the maze behind it, only the cells round the view drawn. -->
             <div class="board" id="board">
               <div class="maze-view" id="view">
                 <div class="maze-world" id="world">
@@ -45,7 +44,6 @@
                   </svg>
                 </div>
               </div>
-              <canvas class="minimap" id="minimap" aria-hidden="true"></canvas>
             </div>
           </div>
           <div class="face back-face" id="back" aria-hidden="true" inert>
@@ -78,25 +76,28 @@
       <div class="complete" id="complete" hidden>Puzzle complete</div>
     </div>
 
-    <!-- Where a wordsearch's words would be: the control pad, then what there is to find, ticked
-         as it's found. -->
+    <!-- Where a wordsearch's words would be: the little map while zoomed in and the control pad,
+         then what there is to find, ticked as it's found. -->
     <aside id="checklist-card">
-      <div class="pad" id="pad" role="group" aria-label="Control pad">
-        <button class="pad-key up" type="button" data-press="N" aria-label="Up" title="Up">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>
-        </button>
-        <button class="pad-key left" type="button" data-press="W" aria-label="Left" title="Left">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 6 8l4.5 4.5"/></svg>
-        </button>
-        <button class="pad-key back" type="button" data-press="back" aria-label="Back" title="Back">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4 2.5 7l3 3"/><path d="M2.5 7h7a4 4 0 0 1 0 8H7"/></svg>
-        </button>
-        <button class="pad-key right" type="button" data-press="E" aria-label="Right" title="Right">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5 10 8l-4.5 4.5"/></svg>
-        </button>
-        <button class="pad-key down" type="button" data-press="S" aria-label="Down" title="Down">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5 8 10l4.5-4.5"/></svg>
-        </button>
+      <div class="controls" id="controls">
+        <canvas class="minimap" id="minimap" aria-hidden="true"></canvas>
+        <div class="pad" id="pad" role="group" aria-label="Control pad">
+          <button class="pad-key up" type="button" data-press="N" aria-label="Up" title="Up">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>
+          </button>
+          <button class="pad-key left" type="button" data-press="W" aria-label="Left" title="Left">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 6 8l4.5 4.5"/></svg>
+          </button>
+          <button class="pad-key back" type="button" data-press="back" aria-label="Back" title="Back">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4 2.5 7l3 3"/><path d="M2.5 7h7a4 4 0 0 1 0 8H7"/></svg>
+          </button>
+          <button class="pad-key right" type="button" data-press="E" aria-label="Right" title="Right">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5 10 8l-4.5 4.5"/></svg>
+          </button>
+          <button class="pad-key down" type="button" data-press="S" aria-label="Down" title="Down">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5 8 10l4.5-4.5"/></svg>
+          </button>
+        </div>
       </div>
       <div class="words-box">
         <div class="list-head">

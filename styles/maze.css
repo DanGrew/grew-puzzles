@@ -114,16 +114,27 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
 .play.maze button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
 .play.maze:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
 
-/* The little map: the whole maze in the frame's top-right corner — on screen as the page opens — while zoomed in, drawn by
-   ui/maze/play-ui.js. Dragging its box looks round the maze. */
-.minimap { position: absolute; right: 8px; top: 8px; z-index: 4; display: none; padding: 3px; background: var(--surface);
-  border: var(--ow) solid var(--line); border-radius: 8px; box-shadow: 3px 3px 0 var(--line); cursor: grab; touch-action: none; }
-.play.maze[data-zoomed="true"] .minimap { display: block; }
+/* The little map and the control pad, over the checklist, never over the maze: the map above the
+   pad in one column; on a phone, under the grid card, the map on the left half of the row and the
+   pad on the right. */
+.controls { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 20px; }
+@media (max-width: 760px) {
+  .controls { display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; gap: 0; }
+  .controls .pad { grid-column: 2; }
+}
 
-/* The control pad: up, down, left and right round Back, over the checklist — under the grid card
-   on a phone. A way with a wall greys out. */
+/* The little map: the whole maze — on screen as the page opens — while zoomed in, drawn by
+   ui/maze/play-ui.js. Dragging its box looks round the maze. Its room stays while it's hidden, so
+   the pad never moves as the player zooms; a maze that never zooms leaves no room for it. It
+   hides while the solution shows, as it did on the card's front. */
+.minimap { display: block; visibility: hidden; padding: 3px; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 8px; box-shadow: 3px 3px 0 var(--line); cursor: grab; touch-action: none; }
+.play.maze[data-zoomed="true"]:not(:has(.card.flipped)) .minimap { visibility: visible; }
+.play.maze:not([data-zoomable="true"]) .minimap { display: none; }
+
+/* The control pad: up, down, left and right round Back. A way with a wall greys out. */
 .pad { display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px); gap: 8px; width: max-content;
-  margin: 0 auto 20px; grid-template-areas: ". up ." "left back right" ". down ."; }
+  grid-template-areas: ". up ." "left back right" ". down ."; }
 .pad-key { display: grid; place-items: center; padding: 0; color: var(--fg); background: var(--surface); border: var(--ow) solid var(--line);
   border-radius: 14px; box-shadow: 3px 3px 0 var(--line); cursor: pointer; touch-action: manipulation; }
 .pad-key svg { width: 22px; height: 22px; }
