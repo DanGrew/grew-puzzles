@@ -62,6 +62,8 @@ test('each number band is its type\'s colour, the same as that puzzle\'s strip o
   const onLanding = [await strip('WSCH-0002'), await strip('WSCH-0003'), await strip('WSCH-0001')];
   expect(onLanding).toEqual(['rgb(246, 180, 122)', 'rgb(159, 216, 174)', 'rgb(159, 216, 174)']);
   await page.goto('/app/collection.html?slug=issue-1');
+  // The tiles draw once the indexes are read — wait for them, never read an empty page.
+  await expect(tiles(page).locator('.number')).toHaveCount(onLanding.length);
   const bands = await tiles(page).locator('.number').evaluateAll(els => els.map(el => getComputedStyle(el).backgroundColor));
   expect(bands).toEqual(onLanding);
   await expect(tiles(page).first().locator('.number')).toHaveCSS('color', 'rgb(15, 42, 36)');
