@@ -401,7 +401,7 @@ function inOrder(play, stops) {
 
 // Keys: a box each, numbered as the keys are, Key 2's box ticked once Key 2 is picked up.
 function numbered(play, stops) {
-  return stops.slice().sort(function (a, b) { return Number(a.label) - Number(b.label); })
+  return stops.sort(function (a, b) { return Number(a.label) - Number(b.label); })
     .map(function (s) { return { label: s.label, ticked: play.got.includes(s.id) }; });
 }
 
