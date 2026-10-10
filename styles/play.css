@@ -301,6 +301,14 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .tabs { display: none; }
   .play[data-paged="true"] .card { display: none; }
   .play[data-paged="true"] aside, .play[data-paged="true"] .col, .play[data-paged="true"] .stage { width: 100%; }
+  /* The words sheet's words fill it: their type, its line, columns and count's room scaled by
+     --print-spread, each line --print-spread-gap above the next (play-core's printedSpread, set by
+     ui/wordsearch/play-ui.js, which measures paper's line as --print-line); a puzzle of one grid
+     keeps paper's own. The line is set, not left to the font, so it scales exactly as reckoned. */
+  .play[data-paged="true"] ul.words { columns: calc(max(88px, var(--print-word-w, 0px)) * var(--print-spread, 1)); }
+  .play[data-paged="true"] ul.words li { font-size: calc(var(--print-word-size) * var(--print-spread, 1));
+    line-height: calc(var(--print-line) * var(--print-spread, 1)); margin-bottom: var(--print-spread-gap, 3px); }
+  .play[data-paged="true"] ul.words li::after { margin-left: calc(var(--print-count-gap) * var(--print-spread, 1)); }
   .play[data-paged="true"] .print-grids { display: block; --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(200mm / var(--rows)))), calc(7.5in / var(--cols))); }
   .grid-sheet { break-before: page; display: flex; flex-direction: column; align-items: center; }
   .print-face { width: max-content; }

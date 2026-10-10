@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, countLabel, sparkles,
+  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, printedSpread, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../../core/wordsearch/play-core.js';
@@ -281,6 +281,48 @@ describe('paper\'s word columns', () => {
     ]);
     expect(printedPieces('Royal blue', '×5')).toEqual([{ text: 'Royal', copies: '' }, { text: 'blue', copies: '×5' }]);
     expect(printedPieces('Parasaurolophus', '×5')).toEqual([{ text: 'Parasaurolophus', copies: '×5' }]);
+  });
+});
+
+describe('a words sheet of its own', () => {
+  // n lines of one width, each wrapping into pieces when its column has no room for it, in paper's
+  // 17px line; the widest piece column wide.
+  const lines = (n, width, pieces) => Array.from({ length: n }, () => ({ width, pieces }));
+  const type = column => ({ line: 17, column });
+
+  it('prints a short list at 1.5× paper\'s type, its lines two lines apart and no further', () => {
+    expect(printedSpread(lines(10, 50, 1), type(60), false)).toEqual({ scale: 1.5, gap: 51 });
+  });
+
+  it('shrinks a long list back toward paper\'s type until it fits the sheet, its gap what room is left', () => {
+    expect(printedSpread(lines(150, 50, 1), type(60), false)).toEqual({ scale: 1.2, gap: 4.3 });
+  });
+
+  it('fits the book\'s page, shorter than the play page\'s sheet, a little smaller', () => {
+    expect(printedSpread(lines(150, 50, 1), type(60), true)).toEqual({ scale: 1.15, gap: 7.4 });
+  });
+
+  it('keeps a size whose gap comes out exactly paper\'s least, 3px scaled with its type', () => {
+    // A 1.5px line: two of them at 1.5× are 4.5px, exactly 3px at 1.5×.
+    expect(printedSpread(lines(1, 50, 1), { line: 1.5, column: 60 }, false)).toEqual({ scale: 1.5, gap: 4.5 });
+  });
+
+  it('never prints smaller than paper\'s type, nor closer than its 3px, however long the list', () => {
+    expect(printedSpread(lines(400, 50, 1), type(60), false)).toEqual({ scale: 1, gap: 3 });
+  });
+
+  it('keeps a line on one line where its column has room for it, to the pixel', () => {
+    expect(printedSpread(lines(40, 216, 2), type(216), false)).toEqual({ scale: 1.5, gap: 11 });
+  });
+
+  it('counts a line too wide for its column as each of its pieces', () => {
+    // A pixel too wide at 1.5×, and on one line again in the 1.45× column.
+    expect(printedSpread(lines(40, 217, 2), type(216), false)).toEqual({ scale: 1.45, gap: 11.8 });
+    expect(printedSpread(lines(60, 300, 2), type(100), false)).toEqual({ scale: 1.25, gap: 5.4 });
+  });
+
+  it('lays a piece wider than the sheet in one column', () => {
+    expect(printedSpread(lines(5, 400, 1), type(700), false)).toEqual({ scale: 1.5, gap: 51 });
   });
 });
 

@@ -283,6 +283,35 @@ test('printed Colour, a puzzle of one grid still prints on one sheet, and a Saga
   expect(plain).toBe(4);
 });
 
+// A Saga with a real one's list: 125 words, every ninth two words too long for one line —
+// Christmas's size. Its words sheet is as full as a sheet gets, so it shows the room the print rules
+// reckon a words sheet has (core/wordsearch/play-core.js printedSpread) is the paper's.
+const fullSaga = hiddenId => ({
+  ...saga(hiddenId),
+  words: Array.from({ length: 125 }, (_, i) => ({ ...PUZZLE.words[i % 8], grid: i % 3, word: ['Christmas pudding', 'Word ' + i][Number(i % 9 > 0)] }))
+});
+const sheetsIn = async page => Promise.all(['Letter', 'A4'].map(async format =>
+  (await page.pdf({ printBackground: true, preferCSSPageSize: true, format })).toString('latin1').match(/\/Type\s*\/Page[^s]/g).length));
+const wordSize = page => page.locator('#words li').first().evaluate(li => parseFloat(getComputedStyle(li).fontSize));
+
+test('printed Colour, a Saga\'s full words sheet ends inside its half-inch edge, its words larger than paper\'s type, on one sheet of Letter or A4', async ({ page }) => {
+  await printing(page, 'colour');
+  await openPlay(page, 'WSCH-0012', fullSaga('WSCH-0012'));
+  await onPaper(page);
+  const card = await box(page.locator('aside'));
+  // The card's hard shadow is 4 px under it.
+  expect(card.y + card.height + 4).toBeLessThanOrEqual(1056 - 48);
+  expect(await wordSize(page)).toBeGreaterThan(13);
+  expect(await sheetsIn(page)).toEqual([4, 4]);
+});
+
+test('printed Plain, a Saga\'s full words sheet prints its words larger than paper\'s type, on one sheet of Letter or A4', async ({ page }) => {
+  await openPlay(page, 'WSCH-0012', fullSaga('WSCH-0012'));
+  await onPaper(page);
+  expect(await wordSize(page)).toBeGreaterThan(13);
+  expect(await sheetsIn(page)).toEqual([4, 4]);
+});
+
 // ---- The collection book ----
 const SAGA = saga('WSCH-0010');
 const FILES = { 'WSCH-0007': PUZZLE, 'WSCH-0008': { ...PUZZLE, hiddenId: 'WSCH-0008', title: 'Second' }, 'WSCH-0010': SAGA };
@@ -298,10 +327,12 @@ const BLEED = 12;
 const PAPER = { colour: [828, 1080], mono: [828, 1080] };
 const LETTER = [816, 1056];
 
-// The book in a style, as Print book's link on the collection page opens it, on a window its paper wide.
-async function openBook(page, style) {
+// The book in a style, as Print book's link on the collection page opens it, on a window its paper
+// wide — its puzzles FILES', or files'.
+async function openBook(page, style, files) {
+  const served = files || FILES;
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue] } }));
-  await page.route(/\/puzzles\/wordsearch\/WSCH-\d+\.json$/, r => r.fulfill({ json: FILES[r.request().url().match(/(WSCH-\d+)\.json$/)[1]] }));
+  await page.route(/\/puzzles\/wordsearch\/WSCH-\d+\.json$/, r => r.fulfill({ json: served[r.request().url().match(/(WSCH-\d+)\.json$/)[1]] }));
   await page.addInitScript(() => { window.printed = 0; window.print = () => { window.printed++; window.dispatchEvent(new Event('beforeprint')); }; });
   const [width, height] = PAPER[style] || LETTER;
   await page.setViewportSize({ width, height });
@@ -365,6 +396,19 @@ test('a book saved Plain is today\'s KDP book: every page 8.5 × 11 in, no bleed
   await openBook(page, 'plain');
   expect(await pdfPages(page)).toEqual(Array(8).fill([0, 0, 612, 792]));
 });
+
+for (const style of ['colour', 'plain']) {
+  test(`a book saved ${style === 'colour' ? 'Colour' : 'Plain'}: a Saga's full words page ends above its page number, its words larger than paper's type, the book its eight pages`, async ({ page }) => {
+    await openBook(page, style, { ...FILES, 'WSCH-0010': fullSaga('WSCH-0010') });
+    expect(await pdfPages(page)).toHaveLength(8);
+    await page.emulateMedia({ media: 'print' });
+    // Puzzle 2, the Saga: its words page.
+    const words = page.locator('.sheet').nth(1);
+    const card = await box(words.locator('aside'));
+    expect(card.y + card.height + 4).toBeLessThan((await box(words.locator(':scope > .page-number'))).y);
+    expect(await words.locator('ul.words li').first().evaluate(li => parseFloat(getComputedStyle(li).fontSize))).toBeGreaterThan(13);
+  });
+}
 
 test('printed Colour, each puzzle page\'s background runs over the whole page, past the trim on its outer side, top and foot', async ({ page }) => {
   await openBook(page, 'colour');
