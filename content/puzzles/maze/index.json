@@ -125,6 +125,51 @@
       "difficulty": "Hard",
       "width": 100,
       "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0015",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys 002",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0016",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys 003",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0017",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys 004",
+      "difficulty": "Hard",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0018",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys Large 001",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0019",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys Large 002",
+      "difficulty": "Extreme",
+      "width": 100,
+      "height": 100
     }
   ]
 }
