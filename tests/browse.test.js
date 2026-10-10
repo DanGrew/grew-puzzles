@@ -673,6 +673,8 @@ test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blu
     { title: 'Puzzle 2', type: 'Mirra?e', strip: STRIP.red },
   ]);
   await page.goto('/app/?kind=collections');
+  // The tiles draw once the indexes are read — wait for them, never read an empty page.
+  await expect(page.locator('.tiles .tile')).toHaveCount(1);
   expect(await strips(page)).toEqual([{ title: 'Issue #1', type: 'The first book, remade.', strip: STRIP.blue }]);
 });
 
