@@ -7,12 +7,12 @@
 
 export const COLLECTIONS = 'collections';
 
-// Every kind, in the side bar's order: its address name, what players call it, its hidden IDs'
-// prefix and its play page.
+// Every kind, in the side bar's order: its address name, what players call it — and one of it —
+// its hidden IDs' prefix and its play page.
 export function kinds() {
   return [
-    { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html' },
-    { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+    { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', prefix: 'WSCH', page: 'play.html' },
+    { kind: 'maze', name: 'Mazes', one: 'Maze', prefix: 'MAZE', page: 'maze.html' },
   ];
 }
 

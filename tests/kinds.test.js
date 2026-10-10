@@ -242,6 +242,21 @@ test.describe('on a phone', () => {
     await page.goto('/app/?kind=maze');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
+
+  // TASK-107: a collection of both kinds counts each kind, a line each, never adding their Vanillas.
+  test('a collection tile of both kinds counts each kind on a line of its own, never cut short', async ({ page }) => {
+    await serve(page);
+    await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
+      { slug: 'mix', name: 'Mix', description: 'Both.', created: '2026-10-09', puzzles: [
+        { id: 'MAZE-0001', number: 1 }, { id: 'WSCH-0001', number: 2 }, { id: 'MAZE-0004', number: 3 }, { id: 'WSCH-0002', number: 4 },
+      ] },
+    ] } }));
+    await page.goto('/app/?kind=collections');
+    const lines = page.locator('#tiles .tile.collection .detail .line');
+    await expect(lines).toHaveText(['Both.', '2 Wordsearches', '2 Mazes']);
+    expect(await lines.evaluateAll(els => els.some(el => el.scrollWidth > el.clientWidth))).toBe(false);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  });
 });
 
 test('on a desktop there is no Wordsearches | Mazes switch — the side bar is the way between kinds', async ({ page }) => {

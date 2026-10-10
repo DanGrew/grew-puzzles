@@ -1,5 +1,5 @@
 import {
-  PER_PAGE, COLLECTION_TYPE, filterOptions, noFilters, typeBreakdown, collectionHref, browseItems,
+  PER_PAGE, COLLECTION_TYPE, filterOptions, noFilters, kindBreakdown, collectionHref, browseItems,
   browseState, browseSearch, browseList, pageCount, pageOf, clearFilters, nothingPicked,
   withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons, filterRows, picked, togglePick,
   filtersLabel, railItems, columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn,
@@ -464,14 +464,24 @@ describe('browse-core.js', () => {
     ]);
   });
 
-  test('a collection\'s breakdown counts each type it holds, most first, ties A to Z', () => {
-    const index = [
-      { hiddenId: id(1), type: 'Vanilla' }, { hiddenId: id(2), type: 'Missing' }, { hiddenId: id(3), type: 'Vanilla' },
-      { hiddenId: id(4), type: 'Wildcards' }, { hiddenId: id(5), type: 'Mirra?e' },
-    ];
-    expect(typeBreakdown(collection('A', '', [id(2), id(1), id(3)]), index)).toBe('2 Vanilla · 1 Missing');
-    expect(typeBreakdown(collection('A', '', [id(4), id(2), id(5)]), index)).toBe('1 Mirra?e · 1 Missing · 1 Wildcards');
-    expect(typeBreakdown(collection('A', '', [id(1)]), index)).toBe('1 Vanilla');
+  test('a collection of one kind counts its puzzles of that kind, never its types', () => {
+    const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
+    expect(kindBreakdown(collection('A', '', [id(2), id(1), id(3)]))).toEqual(['3 Wordsearches']);
+    expect(kindBreakdown(collection('A', '', [maze(2), maze(1), maze(3), maze(4)]))).toEqual(['4 Mazes']);
+    expect(kindBreakdown(collection('A', '', [id(1)]))).toEqual(['1 Wordsearch']);
+    expect(kindBreakdown(collection('A', '', [maze(1)]))).toEqual(['1 Maze']);
+  });
+
+  test('a collection of both kinds counts each kind on a line of its own, so two Vanillas are never added together', () => {
+    const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
+    // Mazes first in the collection, still Wordsearches first on the tile — the side bar's order.
+    const ids = [maze(1), maze(2), ...Array.from({ length: 10 }, (_, i) => id(i + 1))];
+    expect(kindBreakdown(collection('A', '', ids))).toEqual(['10 Wordsearches', '2 Mazes']);
+    expect(kindBreakdown(collection('A', '', [id(1), maze(1)]))).toEqual(['1 Wordsearch', '1 Maze']);
+  });
+
+  test('an empty collection has no breakdown line', () => {
+    expect(kindBreakdown(collection('A', '', []))).toEqual([]);
   });
 
   test('a collection tile links to its collection page by slug', () => {
@@ -493,7 +503,7 @@ describe('browse-core.js', () => {
       },
       {
         kind: 'collection', place: 'collections', title: 'Issue', type: 'Collection', tone: 'Collection', created: '2026-10-05',
-        rank: 0, href: 'collection.html?slug=issue', lines: ['About Issue', '2 Vanilla'], ids: [id(2), id(1)],
+        rank: 0, href: 'collection.html?slug=issue', lines: ['About Issue', '2 Wordsearches'], ids: [id(2), id(1)],
       },
     ]);
     expect(COLLECTION_TYPE).toBe('Collection');

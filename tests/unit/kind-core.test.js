@@ -6,10 +6,10 @@ const puzzle = (hiddenId, type) => ({ hiddenId, type, created: '2026-10-08', tit
 const collection = name => ({ slug: name.toLowerCase(), name, description: '', created: '2026-10-08', puzzles: [] });
 
 describe('kind-core.js', () => {
-  test('the kinds, in the side bar\'s order: Wordsearches, then Mazes, each with its prefix and play page', () => {
+  test('the kinds, in the side bar\'s order: Wordsearches, then Mazes, each with its name for one, its prefix and play page', () => {
     expect(kinds()).toEqual([
-      { kind: 'wordsearch', name: 'Wordsearches', prefix: 'WSCH', page: 'play.html' },
-      { kind: 'maze', name: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+      { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', prefix: 'WSCH', page: 'play.html' },
+      { kind: 'maze', name: 'Mazes', one: 'Maze', prefix: 'MAZE', page: 'maze.html' },
     ]);
   });
 

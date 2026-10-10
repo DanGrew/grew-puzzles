@@ -84,15 +84,16 @@ export function withSignIn(state, signedIn) {
   return signedIn ? state : { ...state, finished: '' };
 }
 
-// How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing".
-export function typeBreakdown(collection, puzzles) {
-  const typeOf = new Map(puzzles.map(p => [p.hiddenId, p.type]));
-  const counts = new Map();
-  collection.puzzles.map(({ id }) => typeOf.get(id)).forEach(t => counts.set(t, (counts.get(t) ?? 0) + 1));
-  return [...counts]
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .map(([type, n]) => `${n} ${type}`)
-    .join(' · ');
+// A collection tile's breakdown: how many of each kind it holds, a line each in the side bar's
+// order — "10 Wordsearches", "2 Mazes" — a kind it doesn't hold left out. Never its types: two
+// kinds' Vanillas would add together, and a tile has no room for both kinds' (the owner's call,
+// 2026-10-10, for every collection alike).
+export function kindBreakdown(collection) {
+  const ids = collection.puzzles.map(({ id }) => id);
+  return kinds()
+    .map(k => ({ ...k, n: ids.filter(id => kindOf(id) === k.kind).length }))
+    .filter(k => k.n > 0)
+    .map(k => `${k.n} ${k.n === 1 ? k.one : k.name}`);
 }
 
 export function collectionHref(slug) {
@@ -112,7 +113,7 @@ export function browseItems(puzzles, collections) {
     })),
     ...collections.map(c => ({
       kind: 'collection', place: COLLECTIONS, title: c.name, type: COLLECTION_TYPE, tone: COLLECTION_TYPE, created: c.created,
-      rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)], ids: c.puzzles.map(({ id }) => id),
+      rank: 0, href: collectionHref(c.slug), lines: [c.description, ...kindBreakdown(c)], ids: c.puzzles.map(({ id }) => id),
     })),
   ];
 }
