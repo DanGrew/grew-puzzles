@@ -299,7 +299,11 @@ function reached(board) {
 // The route from the start to a cell, the start first: back from the cell, a step at a time, to
 // the start. A cell the start doesn't reach — one off the maze, or inside a block — has none.
 function routeTo(board, cell) {
-  var from = reached(board);
+  return routeBy(reached(board), board, cell);
+}
+
+// The same, by what reached() found, so many routes need the maze searched only once.
+function routeBy(from, board, cell) {
   var back = [cell].filter(function (c) { return from.has(cellKey(c)); });
   Array.from({ length: from.size }).forEach(function () {
     back.slice(-1).filter(function (c) { return !sameCell(c, board.start); })
@@ -331,6 +335,32 @@ export function resumedMaze(board, cell, found) {
 // The cells of everything found, in the checklist's order — what a find saves.
 export function foundCells(play, board) {
   return board.stops.filter(function (s) { return play.got.includes(s.id); }).map(function (s) { return s.cell; });
+}
+
+// ---- Where the player must have been ----
+// Beside the trail, a dashed path runs from the start to everything found. A perfect maze has one
+// route to each, so the paths follow from the finds alone — never saved, never their order.
+
+// The dashed paths as steps, [from, to], each a cell long: every step of the routes from the start
+// to everything found, once however many routes share it, and none the trail walks, which covers
+// them. Every route and the trail run out from the start, so a step is known by the cell it ends on.
+export function collectedSteps(play, board) {
+  var from = reached(board);
+  var walked = new Set(play.trail.map(cellKey));
+  var ends = new Map();
+  foundCells(play, board).forEach(function (cell) {
+    routeBy(from, board, cell).forEach(function (c) { ends.set(cellKey(c), c); });
+  });
+  return Array.from(ends.values()).filter(function (c) { return !walked.has(cellKey(c)); })
+    .map(function (c) { return [from.get(cellKey(c)), c]; });
+}
+
+// The dashes, in cells, drawn with round ends: a dash centred on every cell's centre and every
+// step's middle. Each step is a cell long and the pattern reads the same from either end, so the
+// dashes keep in step through every junction and bend, whichever way a step is drawn — at a bend,
+// the two half dashes meeting at the cell's centre round into one.
+export function collectedDash() {
+  return { array: [0.1, 0.4], offset: 0.05 };
 }
 
 // How a move draws the trail: the steps already drawn, of the trail's steps all told — a trail's
@@ -418,10 +448,19 @@ export function solutionMarks(board) {
   };
 }
 
+// Steps as a path, each its own line from cell centre to cell centre.
+function stepsPath(steps) {
+  return steps.map(function (step) { return 'M' + centre(step[0]) + 'L' + centre(step[1]); }).join('');
+}
+
+// Steps as a path: each with a cell in the patch.
+export function windowSteps(steps, win) {
+  return stepsPath(steps.filter(function (step) { return inWindow(win, step[0]) || inWindow(win, step[1]); }));
+}
+
 // The solution side's detours in green, as a path: each step of them with a cell in the patch.
 export function windowDetours(board, win) {
-  return board.detours.filter(function (step) { return inWindow(win, step[0]) || inWindow(win, step[1]); })
-    .map(function (step) { return 'M' + centre(step[0]) + 'L' + centre(step[1]); }).join('');
+  return windowSteps(board.detours, win);
 }
 
 // ---- The view ----
@@ -571,7 +610,7 @@ export function windowMarks(board, win) {
 
 // ---- The little map ----
 // While the player is zoomed in, a little map in the maze card's corner shows the whole maze: a box
-// round what's on view, the trail, and every collectible, key, letter and exit — or the end — the
+// round what's on view, the trail, the dashed paths, thinner, and every collectible, key, letter and exit — or the end — the
 // ones picked up faded. Never the solution. It's drawn in cells, scaled to fit size px.
 
 // px a cell, and the map's size, px, the maze's shape.
@@ -582,7 +621,12 @@ export function minimapSize(board, size) {
 
 // The pens, in cells, to draw lines so many px wide however small a cell is on the map.
 export function minimapPens(scale) {
-  return { wall: 0.6 / scale, trail: 2 / scale, box: 1.5 / scale, dot: Math.max(0.5, 2.5 / scale) };
+  return { wall: 0.6 / scale, trail: 2 / scale, collected: 1 / scale, box: 1.5 / scale, dot: Math.max(0.5, 2.5 / scale) };
+}
+
+// The dashed paths as a path, the whole maze's.
+export function minimapCollected(steps) {
+  return stepsPath(steps);
 }
 
 // The box round what's on view.
