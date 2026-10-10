@@ -37,19 +37,25 @@ function session(user) {
   return { access_token: token.join('.'), token_type: 'bearer', expires_in: 3600, expires_at: expires, refresh_token: 'refresh', user };
 }
 
-// A place, and a find, as the tables hold them.
+// A place, and a find, as the tables hold them — a find with the time the database stamped on it;
+// moved is a place with its own. placesSaved is the places saved, without their times.
 const place = (r, c, puzzle = 'MAZE-0001', user = PLAYER.id) => ({ user_id: user, puzzle, cell_row: r, cell_col: c });
-const find = (r, c, puzzle = 'MAZE-0001', user = PLAYER.id) => ({ user_id: user, puzzle, cell_row: r, cell_col: c, found_at: '2026-10-09T00:00:00+00:00' });
+const moved = (r, c, puzzle, movedAt) => ({ ...place(r, c, puzzle), moved_at: movedAt });
+const find = (r, c, puzzle = 'MAZE-0001', user = PLAYER.id, foundAt = '2026-10-09T00:00:00+00:00') => ({ user_id: user, puzzle, cell_row: r, cell_col: c, found_at: foundAt });
+const placesSaved = db => db.position.map(({ moved_at, ...row }) => row);
 
-function mazeTables({ position = [], found = [] } = {}) {
-  return { position: [...position], found: [...found], reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0, loseNext: '' };
+// lines are the wordsearch's progress table, read only; failPlaces refuses every read of the places,
+// as a database without moved_at would.
+function mazeTables({ position = [], found = [], lines = [], failPlaces = false } = {}) {
+  return { position: [...position], found: [...found], lines: [...lines], failPlaces, reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0, loseNext: '' };
 }
 
 const TABLES = { '/rest/v1/maze_position': 'position', '/rest/v1/maze_found': 'found' };
 const sameKey = (a, b, keys) => keys.every(k => a[k] === b[k]);
 
 // The player is whoever the request's token names; a request with no player's token — signed out —
-// or to any other table is a stray. The wordsearch's progress table answers every read with nothing.
+// or to any other table is a stray. The wordsearch's progress table answers every read with the
+// player's lines.
 async function standInForSupabase(context, db) {
   await context.route(`${SUPABASE}/**`, async route => {
     const request = route.request();
@@ -58,7 +64,7 @@ async function standInForSupabase(context, db) {
     if (url.pathname === '/auth/v1/user') return route.fulfill({ headers: CORS, json: PLAYER });
     if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
-    if (url.pathname === '/rest/v1/progress' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
+    if (url.pathname === '/rest/v1/progress' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: db.lines });
     const table = TABLES[url.pathname];
     if (!table || !token.includes('.')) {
       db.strays.push(`${request.method()} ${url.pathname}`);
@@ -71,13 +77,18 @@ async function standInForSupabase(context, db) {
   });
 }
 
+// A read answers with only the columns it selects, as PostgREST does.
 async function read(route, db, table, player, params) {
   const puzzle = (params.get('puzzle') || '').replace('eq.', '');
   db.reads.push({ table, puzzle, order: params.get('order') });
+  if (table === 'position' && db.failPlaces) {
+    return route.fulfill({ status: 400, headers: CORS, json: { code: '42703', message: 'column maze_position.moved_at does not exist' } });
+  }
   const offset = Number(params.get('offset') || 0);
   const limit = Math.min(Number(params.get('limit') || 1000), 1000);
+  const columns = (params.get('select') || '').split(',').map(c => c.trim());
   const rows = db[table].filter(r => r.user_id === player && (!puzzle || r.puzzle === puzzle))
-    .slice(offset, offset + limit).map(({ user_id, found_at, ...row }) => row);
+    .slice(offset, offset + limit).map(row => Object.fromEntries(columns.filter(c => c in row).map(c => [c, row[c]])));
   return route.fulfill({ headers: CORS, json: rows });
 }
 
@@ -96,8 +107,10 @@ async function save(route, db, table, row, prefer) {
   if (there >= 0 && !over) {
     return route.fulfill({ status: 409, headers: CORS, json: { code: '23505', message: 'duplicate key value violates unique constraint' } });
   }
-  if (there >= 0) db[table][there] = row;
-  else db[table].push(table === 'found' ? { ...row, found_at: new Date().toISOString() } : row);
+  // The database stamps each save's time, whatever the page sent.
+  const stamped = { ...row, [table === 'found' ? 'found_at' : 'moved_at']: new Date().toISOString() };
+  if (there >= 0) db[table][there] = stamped;
+  else db[table].push(stamped);
   // Saved, but its answer lost on the way back.
   if (db.loseNext === table) {
     db.loseNext = '';
@@ -175,10 +188,10 @@ test('signed in, a run that stops saves where I am and what I found right then �
   const page = await open(context);
   await expect(page.getByRole('button', { name: /save/i })).toHaveCount(0);
   await press(page, 'S');
-  await expect.poll(() => db.position).toEqual([place(2, 0)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(2, 0)]);
   expect(db.found).toEqual([]);
   await press(page, 'S', 'E');
-  await expect.poll(() => db.position).toEqual([place(3, 1)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(3, 1)]);
   await expect.poll(() => db.found.map(({ found_at, ...f }) => f)).toEqual([place(3, 1)]);
   await expect(saveLine(page)).toBeHidden();
 });
@@ -187,10 +200,10 @@ test('a tap saves too, and Back saves where it went back to', async ({ context }
   const db = await playing(context);
   const page = await open(context);
   await tapAll(page, [[0, 1], [0, 2], [0, 3]]);
-  await expect.poll(() => db.position).toEqual([place(0, 3)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(0, 3)]);
   await expect.poll(() => db.found.length).toBe(1);
   await press(page, 'back');
-  await expect.poll(() => db.position).toEqual([place(0, 2)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(0, 2)]);
   expect(db.found).toHaveLength(1);
 });
 
@@ -202,7 +215,7 @@ test('reloading, the trail runs from the start to exactly where I was, and every
   const walked = await trail(page);
   expect(walked).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [4, 1]]);
   await expect(count(page)).toHaveText('2/12');
-  await expect.poll(() => db.position).toEqual([place(4, 1)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(4, 1)]);
   await expect.poll(() => db.found.length).toBe(2);
 
   await page.reload();
@@ -236,7 +249,7 @@ test('opening the maze on another device puts me where I was, with everything I 
   await playing(phone, { db });
   const there = await open(laptop);
   await press(there, 'S', 'S', 'E');
-  await expect.poll(() => db.position).toEqual([place(3, 1)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(3, 1)]);
   await expect.poll(() => db.found.length).toBe(1);
 
   const here = await open(phone);
@@ -265,7 +278,7 @@ test('after a reload, a held key still opens its zone, and the exits reached sti
   const page = await open(context);
   await tapAll(page, [...solutionCells(), ...OTHER_EXITS.slice(0, 7)]);
   await expect(line(page, 'ACB').locator('.mark')).toHaveText('✗');
-  await expect.poll(() => db.position).toEqual([place(1, 5)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(1, 5)]);
   await expect.poll(() => db.found.length).toBe(9);
 
   await page.reload();
@@ -322,9 +335,9 @@ test('moving fast, the place saved last is where I am — an older one never lan
   db.slowNext = 1500;
   await press(page, 'S');
   await press(page, 'S', 'E');
-  await expect.poll(() => db.position, { timeout: 5000 }).toEqual([place(3, 1)]);
+  await expect.poll(() => placesSaved(db), { timeout: 5000 }).toEqual([place(3, 1)]);
   await page.waitForTimeout(500);
-  expect(db.position).toEqual([place(3, 1)]);
+  expect(placesSaved(db)).toEqual([place(3, 1)]);
   expect(db.saves.filter(s => s.table === 'position').length).toBeLessThan(4);
 });
 
@@ -391,7 +404,7 @@ test('with the connection off, play carries on and a note says the maze isn\'t s
 
   db.offline = false;
   await expect(saveLine(page)).toBeHidden({ timeout: 5000 });
-  await expect.poll(() => db.position).toEqual([place(3, 0)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(3, 0)]);
   await expect.poll(() => db.found.length).toBe(1);
   await page.close();
   const later = await open(context);
@@ -404,7 +417,7 @@ test('a save that fails once and lands on its retry says nothing', async ({ cont
   const page = await open(context);
   db.failNext = 1;
   await press(page, 'S');
-  await expect.poll(() => db.position, { timeout: 5000 }).toEqual([place(2, 0)]);
+  await expect.poll(() => placesSaved(db), { timeout: 5000 }).toEqual([place(2, 0)]);
   await page.waitForTimeout(300);
   expect(db.saves).toHaveLength(2);
   expect(await page.evaluate(() => window.lineShown)).toEqual([]);
@@ -426,7 +439,7 @@ test('something found before, walked over again, is never saved twice', async ({
   const page = await open(context);
   await tapAll(page, [[0, 1], [0, 2], [0, 3], [0, 0]]);
   await tapAll(page, [[0, 1], [0, 2], [0, 3]]);
-  await expect.poll(() => db.position).toEqual([place(0, 3)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(0, 3)]);
   await page.waitForTimeout(300);
   expect(db.found).toHaveLength(1);
   expect(await page.evaluate(() => window.lineShown)).toEqual([]);
@@ -444,7 +457,7 @@ test('signing in mid-maze: having moved, my place here is kept and saved, and wh
   await expect(count(page)).toHaveText('2/12');
   await expect(line(page, 'B')).toHaveClass(/\bdone\b/);
   expect(await trail(page)).toEqual([[0, 0], [0, 1], [0, 2], [0, 3]]);
-  await expect.poll(() => db.position).toEqual([place(0, 3)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(0, 3)]);
   await expect.poll(() => db.found.length).toBe(2);
 });
 
@@ -457,7 +470,7 @@ test('signing in mid-maze without having moved picks the maze up where I left it
   await expect(count(page)).toHaveText('2/12');
   await expect.poll(() => trail(page)).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [3, 1]]);
   await page.waitForTimeout(300);
-  expect(db.position).toEqual([place(3, 1)]);
+  expect(placesSaved(db)).toEqual([place(3, 1)]);
   expect(db.saves).toEqual([]);
 });
 
@@ -465,7 +478,7 @@ test('signing out mid-maze brings the line back, and moves after aren\'t saved',
   const db = await playing(context);
   const page = await open(context);
   await press(page, 'S');
-  await expect.poll(() => db.position).toEqual([place(2, 0)]);
+  await expect.poll(() => placesSaved(db)).toEqual([place(2, 0)]);
   await page.locator('.site .avatar').click();
   await page.locator('#account-menu .sign-out').click();
   await expect(hint(page)).toBeVisible();
@@ -575,4 +588,90 @@ test('signed out, no maze tile wears a ✓ and nothing is read', async ({ contex
   expect(await tickedTitles(page)).toEqual([]);
   expect(db.reads).toEqual([]);
   expect(opened).toEqual([]);
+});
+
+// ---- Continue playing and Finished ----
+
+const railTitles = page => page.locator('#rail .tile .name').allInnerTexts();
+const tileTitles = page => page.locator('#tiles .tile .name').allInnerTexts();
+// A wordsearch line, as the progress table holds it — started, nowhere near finished.
+const wordLine = foundAt => ({ user_id: PLAYER.id, puzzle: 'WSCH-0007', page: 0, start_row: 0, start_col: 0, direction: 'E', found_at: foundAt });
+
+test('signed in, moving off a maze\'s start and leaving, back on Mazes it sits in Continue playing', async ({ context }) => {
+  const db = mazeTables();
+  await site(context, { db });
+  const page = await landing(context, '/app/?kind=maze');
+  await expect(page.locator('#rail')).toBeHidden();
+  await tile(page, 'Half done').click();
+  await expect(page.locator('#play')).toBeVisible();
+  await tapAll(page, solutionCells().slice(0, 1));
+  await expect.poll(() => db.position.length).toBe(1);
+  await page.goBack();
+  await expect.poll(() => railTitles(page)).toEqual(['Half done']);
+  await expect(page.locator('#rail .tile')).toHaveAttribute('href', 'maze.html?id=MAZE-0002');
+});
+
+test('each kind\'s rail holds only its own, the one played most recently first — a maze by the later of its last move and last find; Collections\' holds both', async ({ context }) => {
+  const db = mazeTables({
+    lines: [wordLine('2026-10-09T10:00:00+00:00')],
+    // Half done: moved in last, nothing found — the newest of all. Untouched: back on its start,
+    // but something found since — played at its find.
+    position: [moved(3, 1, 'MAZE-0002', '2026-10-09T12:00:00+00:00'), moved(0, 0, 'MAZE-0004', '2026-10-09T08:00:00+00:00')],
+    found: [find(0, 1, 'MAZE-0004', PLAYER.id, '2026-10-09T11:00:00+00:00')],
+  });
+  await site(context, { db });
+  const page = await landing(context, '/app/?kind=maze');
+  await expect.poll(() => railTitles(page)).toEqual(['Half done', 'Untouched']);
+  expect(db.reads.filter(r => r.table === 'position')).toEqual([{ table: 'position', puzzle: '', order: 'puzzle.asc' }]);
+  const wordsearches = await landing(context, '/app/');
+  await expect.poll(() => railTitles(wordsearches)).toEqual(['Farmyard']);
+  const collections = [{ slug: 'mixed', name: 'mixed', description: 'Both kinds', created: '2026-12-31', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
+  await context.route('**/content/collections/index.json', r => r.fulfill({ json: { collections } }));
+  const shelf = await landing(context, '/app/?kind=collections');
+  await expect.poll(() => railTitles(shelf)).toEqual(['Half done', 'Untouched', 'Farmyard']);
+  expect(db.strays).toEqual([]);
+});
+
+test('a maze only opened, its place still the start and nothing found, isn\'t in Continue playing', async ({ context }) => {
+  const db = mazeTables({ position: [moved(0, 0, 'MAZE-0002', '2026-10-09T12:00:00+00:00')] });
+  await site(context, { db });
+  const page = await landing(context, '/app/?kind=maze');
+  await expect.poll(() => db.reads.length).toBe(2);
+  await page.waitForTimeout(300);
+  await expect(page.locator('#rail')).toBeHidden();
+});
+
+test('a finished maze, all six exits included, leaves Continue playing and shows under Finished; Not finished shows the rest', async ({ context }) => {
+  const db = mazeTables({
+    position: [moved(2, 4, 'MAZE-0001', '2026-10-09T12:00:00+00:00'), moved(3, 1, 'MAZE-0002', '2026-10-09T11:00:00+00:00')],
+    found: finishedRows('MAZE-0001'),
+  });
+  await site(context, { db });
+  const page = await landing(context, '/app/?kind=maze&finished=yes');
+  await expect.poll(() => tileTitles(page)).toEqual(['Everything corner']);
+  await expect.poll(() => railTitles(page)).toEqual(['Half done']);
+  const rest = await landing(context, '/app/?kind=maze&finished=no');
+  await expect.poll(() => tileTitles(rest)).toEqual(['Half done', 'Untouched']);
+});
+
+test('when the places can\'t be read, mazes with finds still show in Continue playing and the ticks still come', async ({ context }) => {
+  const allButBCA = EVERYTHING.filter(([r, c]) => !(r === 2 && c === 4));
+  const db = mazeTables({
+    failPlaces: true,
+    position: [moved(3, 1, 'MAZE-0004', '2026-10-09T12:00:00+00:00')],
+    found: [...finishedRows('MAZE-0001'), ...finishedRows('MAZE-0002', allButBCA)],
+  });
+  await site(context, { db });
+  const page = await landing(context, '/app/?kind=maze');
+  await expect.poll(() => railTitles(page)).toEqual(['Half done']);
+  await expect(tile(page, 'Everything corner')).toHaveAttribute('data-done', 'true');
+});
+
+test('signed out, there\'s no rail and no maze place is read', async ({ context }) => {
+  const db = mazeTables({ position: [moved(3, 1, 'MAZE-0002', '2026-10-09T12:00:00+00:00')] });
+  await site(context, { db, signedIn: false });
+  const page = await landing(context, '/app/?kind=maze');
+  await page.waitForTimeout(500);
+  await expect(page.locator('#rail')).toBeHidden();
+  expect(db.reads).toEqual([]);
 });

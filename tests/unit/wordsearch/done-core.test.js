@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { playBoard } from '../../../core/wordsearch/play-core.js';
 import { findRow } from '../../../core/wordsearch/progress-core.js';
 import {
-  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, tileDone
+  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, lastPlayed, railOrder, tileDone
 } from '../../../core/wordsearch/done-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -108,6 +108,29 @@ describe('which puzzles are still in play', () => {
 
   it('none with nothing started', () => {
     expect(playingPuzzles([], [], [], [])).toEqual([]);
+  });
+});
+
+describe('when each puzzle was last played, and the rail\'s order', () => {
+  it('a puzzle\'s last played is its latest time, in the column named, whatever order its rows are read in', () => {
+    const rows = [
+      { puzzle: 'MAZE-0001', moved_at: '2026-10-01T08:00:00+00:00', found_at: '2026-12-01T08:00:00+00:00' },
+      { puzzle: 'MAZE-0001', moved_at: '2026-10-03T08:00:00+00:00' },
+      { puzzle: 'MAZE-0002', moved_at: '2026-10-02T08:00:00+00:00' },
+    ];
+    expect(lastPlayed(rows, 'moved_at')).toEqual(new Map([['MAZE-0001', '2026-10-03T08:00:00+00:00'], ['MAZE-0002', '2026-10-02T08:00:00+00:00']]));
+  });
+
+  it('no rows, no times', () => {
+    expect(lastPlayed([], 'found_at')).toEqual(new Map());
+  });
+
+  it('puzzles of both kinds go in one order, the one played most recently first, each by its own kind\'s time', () => {
+    const wordsearches = new Map([['WSCH-0001', '2026-10-02T08:00:00+00:00'], ['WSCH-0002', '2026-10-04T08:00:00+00:00']]);
+    const mazes = new Map([['MAZE-0001', '2026-10-03T08:00:00+00:00'], ['MAZE-0002', '2026-10-01T08:00:00+00:00']]);
+    const playing = ['WSCH-0001', 'WSCH-0002', 'MAZE-0001', 'MAZE-0002'];
+    expect(railOrder(playing, [wordsearches, mazes])).toEqual(['WSCH-0002', 'MAZE-0001', 'WSCH-0001', 'MAZE-0002']);
+    expect(playing).toEqual(['WSCH-0001', 'WSCH-0002', 'MAZE-0001', 'MAZE-0002']);
   });
 });
 

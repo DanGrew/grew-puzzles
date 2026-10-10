@@ -8,6 +8,7 @@ const WORDS = [
   'Lost your connection? Don\'t worry, we\'ll keep trying until your finds are saved. A little note under the words lets you know until they are, so keep the puzzle open.',
   'Ticks and Continue playing. Finished a puzzle? It gets a ✓ on its tile. Wandered off halfway? It\'ll be waiting for you under Continue playing at the top of the page.',
   'Not signed in? That\'s fine too. Every puzzle plays just the same, we just can\'t remember where you got to. Sign in partway through and the words you\'ve found in that puzzle are saved.',
+  'Mazes too. Every time you stop, we save where you are and everything you\'ve picked up. Come back later and your trail will be waiting, right up to where you left off.',
 ];
 
 test.beforeEach(async ({ context }) => {
@@ -32,7 +33,7 @@ test('the Saving your progress page is worded exactly as the owner wrote it, eac
   await expect(page.locator('main h1')).toHaveText('Saving your progress');
   await expect(page.locator('main h2')).toHaveCount(0);
   await expect(page.locator('main p')).toHaveText(WORDS);
-  await expect(page.locator('main p strong')).toHaveText(['Play anywhere.', 'Lost your connection?', 'Ticks and Continue playing.', 'Not signed in?']);
+  await expect(page.locator('main p strong')).toHaveText(['Play anywhere.', 'Lost your connection?', 'Ticks and Continue playing.', 'Not signed in?', 'Mazes too.']);
   await expect(page.locator('main a')).toHaveCount(0);
   await expect(page.locator('main img')).toHaveCount(0);
 });

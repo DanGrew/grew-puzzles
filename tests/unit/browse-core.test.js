@@ -6,6 +6,8 @@ import {
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
+// A browse state in a place, nothing picked unless picks says.
+const railState = (kind, picks = {}) => ({ kind, levels: [], types: [], finished: '', sort: 'difficulty', dir: 'desc', ...picks });
 // Puzzle n was saved on day n of October, so the highest is the newest.
 // The tiles a state shows, by hidden ID or collection name, from the indexes' entries.
 const shown = (index, state, collections = []) => browseList(browseItems(index, collections), { kind: 'wordsearch', levels: [], ...state }, [])
@@ -547,11 +549,37 @@ describe('browse-core.js', () => {
 
   test('the rail holds each puzzle in play\'s own browse tile, in the order given, a collection\'s puzzle too', () => {
     const items = browseItems(puzzles(3), [collection('Farm', '2026-10-09', [id(2)])]);
-    const rail = railItems(items, [id(2), id(3)]);
+    const rail = railItems(items, [id(2), id(3)], railState('wordsearch'));
     expect(rail.map(i => i.hiddenId)).toEqual([id(2), id(3)]);
     expect(rail[0]).toBe(items.find(i => i.hiddenId === id(2)));
     expect(rail[0]).toMatchObject({ kind: 'puzzle', href: playHref(id(2)) });
-    expect(railItems(items, [])).toEqual([]);
+    expect(railItems(items, [], railState('wordsearch'))).toEqual([]);
+  });
+
+  test('a kind\'s rail holds only that kind\'s puzzles, in the order given; Collections\' holds every kind', () => {
+    const maze = { hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-09', title: 'Maze 1' };
+    const items = browseItems([...puzzles(2), maze], []);
+    const playing = ['MAZE-0001', id(2), id(1)];
+    expect(railItems(items, playing, railState('wordsearch')).map(i => i.hiddenId)).toEqual([id(2), id(1)]);
+    expect(railItems(items, playing, railState('maze')).map(i => i.hiddenId)).toEqual(['MAZE-0001']);
+    expect(railItems(items, playing, railState('collections')).map(i => i.hiddenId)).toEqual(playing);
+  });
+
+  test('the rail narrows to the Type and Difficulty picks as the grid does, and ignores the Finished choice', () => {
+    const held = [
+      { hiddenId: id(1), type: 'Vanilla', created: '2026-10-01', title: 'A' },
+      { hiddenId: id(2), type: 'Missing', created: '2026-10-01', title: 'B' },
+      { hiddenId: id(3), type: 'Vanilla', created: '2026-10-01', title: 'C' },
+    ];
+    const items = browseItems(held, []);
+    const playing = [id(3), id(2), id(1)];
+    const tone = items.find(i => i.hiddenId === id(2)).tone;
+    const ids = state => railItems(items, playing, state).map(i => i.hiddenId);
+    expect(ids(railState('wordsearch', { types: ['Vanilla'] }))).toEqual([id(3), id(1)]);
+    expect(ids(railState('wordsearch', { types: ['Vanilla', 'Missing'] }))).toEqual(playing);
+    expect(ids(railState('wordsearch', { levels: [tone] }))).toEqual([id(2)]);
+    expect(ids(railState('wordsearch', { levels: [tone], types: ['Vanilla'] }))).toEqual([]);
+    expect(ids(railState('wordsearch', { finished: 'yes' }))).toEqual(playing);
   });
 
   test('as many rail tiles fit as the grid has columns', () => {
