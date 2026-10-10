@@ -450,6 +450,24 @@ describe('browse-core.js', () => {
     expect(typeBreakdown(collection('A', '', [id(1)]), index)).toBe('1 Vanilla');
   });
 
+  test('a collection of mazes alone reads its maze types the same way', () => {
+    const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
+    const index = [
+      { hiddenId: maze(1), type: 'Vanilla' }, { hiddenId: maze(2), type: 'Keys' },
+      { hiddenId: maze(3), type: 'Vanilla' }, { hiddenId: maze(4), type: 'Vanilla' },
+    ];
+    expect(typeBreakdown(collection('A', '', [maze(2), maze(1), maze(3), maze(4)]), index)).toBe('3 Vanilla · 1 Keys');
+  });
+
+  test('a collection of both kinds splits its breakdown by kind, so two Vanillas are never added together', () => {
+    const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
+    const words = Array.from({ length: 10 }, (_, i) => ({ hiddenId: id(i + 1), type: i < 8 ? 'Vanilla' : 'Missing' }));
+    const index = [...words, { hiddenId: maze(1), type: 'Vanilla' }, { hiddenId: maze(2), type: 'Vanilla' }];
+    // Mazes first in the collection, still Wordsearches first on the tile — the side bar's order.
+    const ids = [maze(1), maze(2), ...words.map(w => w.hiddenId)];
+    expect(typeBreakdown(collection('A', '', ids), index)).toBe('Wordsearches: 8 Vanilla · 2 Missing · Mazes: 2 Vanilla');
+  });
+
   test('a collection tile links to its collection page by slug', () => {
     expect(collectionHref('issue-1-remake')).toBe('collection.html?slug=issue-1-remake');
     expect(collectionHref('a b&c')).toBe('collection.html?slug=a%20b%26c');

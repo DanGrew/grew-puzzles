@@ -240,6 +240,25 @@ test.describe('on a phone', () => {
     await page.goto('/app/?kind=maze');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
+
+  // TASK-107: a collection of both kinds tells their Vanillas apart, and its longer line wraps.
+  test('a collection tile of both kinds reads each kind\'s types under its name, wrapped, never cut short', async ({ page }) => {
+    await serve(page);
+    await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
+      { slug: 'mix', name: 'Mix', description: 'Both.', created: '2026-10-09', puzzles: [
+        { id: 'MAZE-0001', number: 1 }, { id: 'WSCH-0001', number: 2 }, { id: 'MAZE-0004', number: 3 }, { id: 'WSCH-0002', number: 4 },
+      ] },
+    ] } }));
+    await page.goto('/app/?kind=collections');
+    const line = page.locator('#tiles .tile.collection .detail .line').nth(1);
+    await expect(line).toHaveText('Wordsearches: 1 Saga · 1 Vanilla · Mazes: 1 Keys · 1 Vanilla');
+    const fit = await line.evaluate(el => ({
+      cut: el.scrollWidth > el.clientWidth, rows: el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight),
+    }));
+    expect(fit.cut).toBe(false);
+    expect(fit.rows).toBeGreaterThan(1.5);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  });
 });
 
 test('on a desktop there is no Wordsearches | Mazes switch — the side bar is the way between kinds', async ({ page }) => {

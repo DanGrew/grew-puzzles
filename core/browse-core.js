@@ -85,11 +85,24 @@ export function withSignIn(state, signedIn) {
   return signedIn ? state : { ...state, finished: '' };
 }
 
-// How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing".
+// How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing". A
+// type is taken with its kind, so a collection of both kinds reads each kind's types under its
+// name, in the side bar's order — "Wordsearches: 8 Vanilla · 2 Missing · Mazes: 2 Vanilla" — and
+// never adds two kinds' Vanillas together; one kind alone stays short, without its name.
 export function typeBreakdown(collection, puzzles) {
   const typeOf = new Map(puzzles.map(p => [p.hiddenId, p.type]));
+  const ids = collection.puzzles.map(({ id }) => id);
+  const held = kinds()
+    .map(k => ({ name: k.name, types: ids.filter(id => kindOf(id) === k.kind).map(id => typeOf.get(id)) }))
+    .filter(k => k.types.length > 0);
+  return held
+    .map(k => (held.length > 1 ? `${k.name}: ${countedTypes(k.types)}` : countedTypes(k.types)))
+    .join(' · ');
+}
+
+function countedTypes(types) {
   const counts = new Map();
-  collection.puzzles.map(({ id }) => typeOf.get(id)).forEach(t => counts.set(t, (counts.get(t) ?? 0) + 1));
+  types.forEach(t => counts.set(t, (counts.get(t) ?? 0) + 1));
   return [...counts]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([type, n]) => `${n} ${type}`)
