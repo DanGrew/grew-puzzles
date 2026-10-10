@@ -474,10 +474,12 @@ describe('the dashed paths to everything found', () => {
 
   it('a big maze\'s paths run a cell a step, joined up, back to the start', () => {
     const hundred = mazeBoard(structuredClone(require('../../fixtures/MAZE-0003.json')));
-    const found = hundred.stops.slice(0, 3).map(s => s.cell);
+    const found = hundred.stops.map(s => s.cell);
     const all = collectedSteps(resumedMaze(hundred, [0, 0], found), hundred);
     const ends = new Set(all.map(s => s[1].join(',')));
-    expect(all.length).toBeGreaterThan(0);
+    // Every cell keeps its own place in the search, so every find has its route: row 1 column 11
+    // is never mistaken for row 11 column 1.
+    found.forEach(cell => expect(ends.has(cell.join(','))).toBe(true));
     all.forEach(([from, to]) => {
       expect(Math.abs(from[0] - to[0]) + Math.abs(from[1] - to[1])).toBe(1);
       expect(ends.has(from.join(',')) || (from[0] === 0 && from[1] === 0)).toBe(true);
