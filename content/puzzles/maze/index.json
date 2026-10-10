@@ -44,6 +44,87 @@
       "difficulty": "Easy",
       "width": 32,
       "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0006",
+      "type": "Vanilla",
+      "created": "2026-10-10",
+      "title": "Vanilla Large 001",
+      "difficulty": "Easy",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0007",
+      "type": "Vanilla",
+      "created": "2026-10-10",
+      "title": "Vanilla Large 002",
+      "difficulty": "Easy",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0008",
+      "type": "Vanilla",
+      "created": "2026-10-10",
+      "title": "Vanilla Large Blind 001",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0009",
+      "type": "Vanilla",
+      "created": "2026-10-10",
+      "title": "Vanilla Large Blind 002",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0010",
+      "type": "Collectibles",
+      "created": "2026-10-10",
+      "title": "Collectibles 001",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0011",
+      "type": "Collectibles",
+      "created": "2026-10-10",
+      "title": "Collectibles 002",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0012",
+      "type": "Code Breaker",
+      "created": "2026-10-10",
+      "title": "Code Breaker 001",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0013",
+      "type": "Keys",
+      "created": "2026-10-10",
+      "title": "Keys 001",
+      "difficulty": "Hard",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0014",
+      "type": "Collectibles",
+      "created": "2026-10-10",
+      "title": "Collectibles Large 001",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
     }
   ]
 }
