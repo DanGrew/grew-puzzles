@@ -2,7 +2,7 @@
 // does, and what the board shows. Pure — the DOM work is ui/wordsearch/play-ui.js. The
 // puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
 // the page imports it through ui/, and the unit tests import it directly.
-import { dayLabel } from '../day-core.js';
+import { puzzleDifficulty } from '../kind-core.js';
 import { themeScale } from '../theme-core.js';
 
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
@@ -74,12 +74,15 @@ function pageNames(count, name) {
 }
 
 // The type is the board's only label on screen: shown exactly as written, in the grid's header
-// band. Every grid is the same size, so the first one sizes them all.
+// band. Under the title, its difficulty — the one its tile shows (puzzleDifficulty) — and its
+// code, the hidden ID, so a player can name it. Every grid is the same size, so the first one
+// sizes them all.
 export function playBoard(puzzle) {
   var count = puzzle.grids.length;
   return {
     title: puzzle.title,
-    created: dayLabel(puzzle.created),
+    difficulty: puzzleDifficulty(puzzle),
+    code: puzzle.hiddenId,
     label: puzzle.type,
     solutionLabel: puzzle.type + ' · Solution',
     grids: puzzle.grids.map(boardGrid),

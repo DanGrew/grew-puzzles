@@ -3,7 +3,7 @@
 // its number, whatever its kind.
 // Reads only the indexes' entries — never a puzzle file.
 import { tileDetail, playHref } from './browse-core.js';
-import { kindOf, difficultyOf } from './kind-core.js';
+import { kindOf, puzzleDifficulty } from './kind-core.js';
 import { PRINT_STYLES } from './book-core.js';
 
 export function slugOf(search) {
@@ -24,7 +24,7 @@ function found(collection, puzzles) {
     .sort((a, b) => a.number - b.number)
     .map(({ id, number }) => ({
       number: String(number), title: byId.get(id).title, type: byId.get(id).type, place: kindOf(id),
-      tone: difficultyOf(kindOf(id), byId.get(id).type), lines: tileDetail(byId.get(id)), href: playHref(id), ids: [id],
+      tone: puzzleDifficulty(byId.get(id)), lines: tileDetail(byId.get(id)), href: playHref(id), ids: [id],
     }));
   // Print book opens the whole collection as one printout (app/book.html), in the print style picked
   // under it in the side bar: Colour, Black and white or Plain.

@@ -1,6 +1,7 @@
-// The play card every puzzle's page shares: the flip to its solution and back, and the pop and
-// sparkle when it's finished. Each page names the parts by the same ids — #card, #front, #back,
-// #flip and #board. Where each sparkle goes is core/wordsearch/play-core.js's sparkles.
+// The play card every puzzle's page shares: the line under its title, the flip to its solution
+// and back, and the pop and sparkle when it's finished. Each page names the parts by the same ids
+// — #ident, #card, #front, #back, #flip and #board. Where each sparkle goes is
+// core/wordsearch/play-core.js's sparkles.
 import { sparkles } from '../core/wordsearch/play-core.js';
 
 var CARD_FLIP_LABELS = { true: 'Back to puzzle', false: 'Show solution' };
@@ -9,6 +10,15 @@ var CARD_SPARKLE_LIFE_MS = 1700;
 
 function cardEl(id) {
   return document.getElementById(id);
+}
+
+// The line under a puzzle's title: its difficulty, in its colour, and its code — Easy · WSCH-0042.
+// part finds a part by its id: the page's own, or a copy of the play page in the book.
+export function drawIdent(part, board) {
+  part('difficulty').textContent = board.difficulty;
+  part('difficulty').dataset.tone = board.difficulty;
+  part('code').textContent = board.code;
+  part('ident').hidden = false;
 }
 
 // The grid turns over like a revolving door; what the player did on the front stays as it was.

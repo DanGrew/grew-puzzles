@@ -129,9 +129,10 @@
   /* Anything that sat straight on the paper sits on a white tag, so it reads over the background. */
   :root:is([data-print="colour"], [data-print="mono"]) .play-head { width: fit-content; max-width: calc(100% - 48px); box-sizing: border-box;
     margin-inline: auto; padding: 10px 24px; background: #fff; border: 2px solid #000; border-radius: 14px; box-shadow: 4px 4px 0 #000; }
-  :root:is([data-print="colour"], [data-print="mono"]) aside::after,
   :root:is([data-print="colour"], [data-print="mono"]) :is(.sheet-number, .page-number) { width: fit-content;
     padding: 2px 8px; background: #fff; border-radius: 6px; }
-  :root:is([data-print="colour"], [data-print="mono"]) aside::after { margin-left: auto; }
   :root:is([data-print="colour"], [data-print="mono"]) .sheet-number { margin-inline: auto; }
+  /* The difficulty's pill in its colour, as on screen — in greys, Black and white. */
+  :root:is([data-print="colour"], [data-print="mono"]) .play-head .difficulty { background: var(--tone); }
+  :root[data-print="mono"] .play-head .difficulty { filter: grayscale(1); }
 }

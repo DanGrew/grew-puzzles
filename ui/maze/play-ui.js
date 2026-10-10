@@ -15,7 +15,7 @@ import { playJson } from '../../core/wordsearch/play-core.js';
 import { withSavedMaze, wireMazeProgress, saveMove } from './progress-ui.js';
 import { characterFor, isPhone } from '../../core/theme-core.js';
 import { withCharacters, dressFigure } from '../theme-ui.js';
-import { wireFlip, celebrate } from '../card-ui.js';
+import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
 // Beside the grid card, the controls' column and the gap before it; on a phone they sit underneath.
@@ -91,7 +91,7 @@ function showMaze(id, board, play) {
 
   document.title = board.title + ' · Grew Puzzles';
   mazeEl('title').textContent = board.title;
-  mazeEl('created').textContent = board.created;
+  drawIdent(mazeEl, board);
   mazeEl('label').textContent = board.label;
   mazeEl('solution-label').textContent = board.solutionLabel;
   mazeEl('play').style.setProperty('--cols', board.cols);

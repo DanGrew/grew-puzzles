@@ -2,7 +2,6 @@
 // tile of its own — their order and paging, what each tile, filter and pager button says, and how
 // the place, filter and sort ride in the page address — and the Continue playing rail above them,
 // a set at a time. Reads only the indexes' entries — never a puzzle file.
-import { dayLabel } from './day-core.js';
 import { tileDone } from './wordsearch/done-core.js';
 import { COLLECTIONS, kinds, kindOf, places, difficulties, puzzleDifficulty, levelsOf, typesOf, placeParams } from './kind-core.js';
 
@@ -101,9 +100,9 @@ export function collectionHref(slug) {
   return `collection.html?slug=${encodeURIComponent(slug)}`;
 }
 
-// Every tile browse can show, as one list: a puzzle in its kind's place, by its own title, type
-// and date, in its own difficulty's tone (puzzleDifficulty), and a collection in Collections, by its name, as the type
-// Collection, in the collections' tone, and its created date. A collection's puzzles are never
+// Every tile browse can show, as one list: a puzzle in its kind's place, by its own title and
+// type, in its own difficulty's tone (puzzleDifficulty), and a collection in Collections, by its name, as the type
+// Collection, in the collections' tone — each carrying its created date for the Date sort alone. A collection's puzzles are never
 // tiles there — each puzzle shows once, in its kind, however many collections hold it. ids are the
 // puzzles a tile stands for — finished, all of them, it's ticked (core/wordsearch/done-core.js).
 export function browseItems(puzzles, collections) {
@@ -150,6 +149,15 @@ export function browseSearch(state) {
   if (state.dir !== 'desc') params.set('dir', state.dir);
   const query = params.toString();
   return query ? `?${query}` : '';
+}
+
+// Whether pressing a link only looks through the landing page again — a place, a type, the site's
+// name — so the page redraws where it is rather than loading, and its background stays (BUG-124).
+// /app/ and /app/index.html are the one page. A press that asks for a new tab is the browser's.
+export function inPlace(href, here, press) {
+  const page = url => new URL(url).pathname.replace(/index\.html$/, '');
+  const plain = press.button === 0 && !(press.ctrlKey || press.metaKey || press.shiftKey || press.altKey);
+  return String(page(href) === page(here) && plain);
 }
 
 // The tiles a state shows, in its order: only its place's. Within a row picks widen, since a tile
@@ -228,11 +236,10 @@ export function dirLabel(state) {
 }
 
 // The small lines beneath a tile's title: its type as written, then — a maze whose index entry
-// has it — its size, width by height, then its created date — a line each, so a long date never
-// wraps one tile taller than the rest.
+// has it — its size, width by height, a line each. No date: the Date sort reads it, no tile shows it.
 export function tileDetail(puzzle) {
   const size = [puzzle].filter(p => p.width && p.height).map(p => `${p.width}×${p.height}`);
-  return [puzzle.type, ...size, dayLabel(puzzle.created)];
+  return [puzzle.type, ...size];
 }
 
 // A puzzle's play page, its kind's: a maze plays on its own page, a wordsearch on the play page.

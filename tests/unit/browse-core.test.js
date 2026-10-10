@@ -3,6 +3,7 @@ import {
   browseState, browseSearch, browseList, pageCount, pageOf, clearFilters, nothingPicked,
   withSort, flipDir, dirLabel, tileDetail, playHref, totalLabel, pagerButtons, filterRows, picked, togglePick,
   filtersLabel, railItems, columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn,
+  inPlace,
 } from '../../core/browse-core.js';
 
 const id = n => `WSCH-${String(n).padStart(4, '0')}`;
@@ -293,6 +294,29 @@ describe('browse-core.js', () => {
     expect(state.finished).toBe('yes');
   });
 
+  test('a plain press on a link to the landing page stays on it, /app/ and /app/index.html alike', () => {
+    const plain = { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false };
+    const here = 'http://site/app/?type=Saga';
+    expect(inPlace('http://site/app/index.html?kind=maze', here, plain)).toBe('true');
+    expect(inPlace('http://site/app/index.html', 'http://site/app/index.html?kind=maze', plain)).toBe('true');
+    expect(inPlace('http://site/app/', here, plain)).toBe('true');
+    expect(inPlace('http://site/app/play.html?id=WSCH-0001', here, plain)).toBe('false');
+    expect(inPlace('http://site/app/how-to-play.html', here, plain)).toBe('false');
+    expect(inPlace('http://site/index.html', here, plain)).toBe('false');
+    // Only a page named exactly index.html, at the end of the path, is the folder's own page.
+    expect(inPlace('http://site/app/index.htmlx', 'http://site/app/x', plain)).toBe('false');
+    expect(inPlace('http://site/app/index-html', here, plain)).toBe('false');
+  });
+
+  test('a press asking for a new tab or window, or not the main button, is left to the browser', () => {
+    const plain = { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false };
+    const href = 'http://site/app/index.html?kind=maze', here = 'http://site/app/';
+    ['ctrlKey', 'metaKey', 'shiftKey', 'altKey'].forEach(key => {
+      expect(inPlace(href, here, { ...plain, [key]: true })).toBe('false');
+    });
+    expect(inPlace(href, here, { ...plain, button: 1 })).toBe('false');
+  });
+
   test('an address picks Finished or Not finished; anything else is no choice', () => {
     expect(browseState('?finished=yes', options(['Vanilla'])).finished).toBe('yes');
     expect(browseState('?finished=no', options(['Vanilla'])).finished).toBe('no');
@@ -379,16 +403,16 @@ describe('browse-core.js', () => {
     expect(pageOf(all, 2).map(p => p.title)).toEqual(['T25', 'T26', 'T27', 'T28', 'T29', 'T30']);
   });
 
-  test('beneath the title, a tile reads the type as written, then the created date, a line each', () => {
-    expect(tileDetail({ hiddenId: id(3), type: 'Mirra?e', created: '2026-10-02', title: 'Farm' })).toEqual(['Mirra?e', '2 Oct 2026']);
+  test('beneath the title, a tile reads the type as written, and no date', () => {
+    expect(tileDetail({ hiddenId: id(3), type: 'Mirra?e', created: '2026-10-02', title: 'Farm' })).toEqual(['Mirra?e']);
   });
 
   test('a maze tile reads its size, width by height, under its type — only once its entry has both', () => {
     const maze = { hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-02', title: 'Farm' };
-    expect(tileDetail({ ...maze, width: 100, height: 60 })).toEqual(['Vanilla', '100×60', '2 Oct 2026']);
-    expect(tileDetail(maze)).toEqual(['Vanilla', '2 Oct 2026']);
-    expect(tileDetail({ ...maze, width: 100 })).toEqual(['Vanilla', '2 Oct 2026']);
-    expect(tileDetail({ ...maze, height: 60 })).toEqual(['Vanilla', '2 Oct 2026']);
+    expect(tileDetail({ ...maze, width: 100, height: 60 })).toEqual(['Vanilla', '100×60']);
+    expect(tileDetail(maze)).toEqual(['Vanilla']);
+    expect(tileDetail({ ...maze, width: 100 })).toEqual(['Vanilla']);
+    expect(tileDetail({ ...maze, height: 60 })).toEqual(['Vanilla']);
   });
 
   test('a tile links to the play page by hidden ID', () => {
@@ -471,11 +495,11 @@ describe('browse-core.js', () => {
     expect(items).toEqual([
       {
         ...index[0], kind: 'puzzle', place: 'wordsearch', tone: 'Easy', rank: 1, href: 'play.html?id=WSCH-0001',
-        lines: ['Vanilla', '1 Oct 2026'], ids: [id(1)],
+        lines: ['Vanilla'], ids: [id(1)],
       },
       {
         ...index[1], kind: 'puzzle', place: 'wordsearch', tone: 'Easy', rank: 2, href: 'play.html?id=WSCH-0002',
-        lines: ['Vanilla', '2 Oct 2026'], ids: [id(2)],
+        lines: ['Vanilla'], ids: [id(2)],
       },
       {
         kind: 'collection', place: 'collections', title: 'Issue', type: 'Collection', tone: 'Collection', created: '2026-10-05',
