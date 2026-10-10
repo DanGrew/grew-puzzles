@@ -216,7 +216,7 @@ test('the side bar holds the site\'s map, then Print page last, How to play its 
   await expect(page.locator('.play-head button')).toHaveCount(0);
   await expect(page.locator('#site-side .side-own .print-name')).toHaveText(['Print page']);
   const pages = page.locator('#site-side .page');
-  await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Privacy']);
+  await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Feedback', 'Privacy']);
   await expect(pages.first()).toHaveAttribute('href', 'how-to-play.html');
   await expect(page.locator('[popover]#help')).toHaveCount(0);
 });

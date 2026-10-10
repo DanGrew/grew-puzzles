@@ -23,7 +23,7 @@ async function serve(page, { collections = [ISSUE], mazes = MAZES } = {}) {
 
 const side = page => page.locator('#site-side');
 const PAGES = ['/app/', '/app/play.html?id=WSCH-0007', '/app/maze.html?id=MAZE-0001', '/app/collection.html?slug=issue-1',
-  '/app/how-to-play.html', '/app/saving.html', '/app/about.html', '/app/privacy.html'];
+  '/app/how-to-play.html', '/app/saving.html', '/app/about.html', '/app/feedback.html', '/app/privacy.html'];
 
 test('the site address lands on the page with the Grew Puzzles site bar and the side bar beside the page', async ({ page }) => {
   await serve(page);
@@ -54,7 +54,7 @@ test('the side bar lists each kind with its count and its types, then Collection
   await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Collections1']);
   await expect(side(page).locator('.types').first().locator('.type')).toHaveText(['Vanilla', 'Saga', 'Mirra?e']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveText(['Vanilla', 'Keys', 'Keylecticodes']);
-  await expect(side(page).locator('.page')).toHaveText(['How to play', 'Saving your progress', 'About us', 'Privacy']);
+  await expect(side(page).locator('.page')).toHaveText(['How to play', 'Saving your progress', 'About us', 'Feedback', 'Privacy']);
   await expect(side(page).locator('> *:visible').last()).toHaveClass(/\blook\b/);
   await expect(side(page).locator('.kind').nth(1)).toHaveAttribute('href', 'index.html?kind=maze');
   await expect(side(page).locator('.kind').nth(2)).toHaveAttribute('href', 'index.html?kind=collections');
