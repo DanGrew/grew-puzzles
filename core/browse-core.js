@@ -250,10 +250,11 @@ export function totalLabel(items) {
 
 // The Continue playing rail's tiles: each puzzle in play's own browse tile, in the order given —
 // a puzzle reached only through a collection still has one, opening it directly. Only a puzzle's
-// tile carries a hidden ID, so a collection's is never picked.
-export function railItems(items, playing) {
+// tile carries a hidden ID, so a collection's is never picked. A kind's place shows only its own
+// kind's puzzles; Collections, holding every kind, shows them all (the owner's call, 2026-10-10).
+export function railItems(items, playing, place) {
   const byId = new Map(items.map(i => [i.hiddenId, i]));
-  return playing.map(id => byId.get(id));
+  return playing.map(id => byId.get(id)).filter(i => place === COLLECTIONS || i.place === place);
 }
 
 // How many tiles fit across a grid: one per column the browser laid out for it.

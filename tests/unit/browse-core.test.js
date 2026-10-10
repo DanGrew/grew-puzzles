@@ -547,11 +547,20 @@ describe('browse-core.js', () => {
 
   test('the rail holds each puzzle in play\'s own browse tile, in the order given, a collection\'s puzzle too', () => {
     const items = browseItems(puzzles(3), [collection('Farm', '2026-10-09', [id(2)])]);
-    const rail = railItems(items, [id(2), id(3)]);
+    const rail = railItems(items, [id(2), id(3)], 'wordsearch');
     expect(rail.map(i => i.hiddenId)).toEqual([id(2), id(3)]);
     expect(rail[0]).toBe(items.find(i => i.hiddenId === id(2)));
     expect(rail[0]).toMatchObject({ kind: 'puzzle', href: playHref(id(2)) });
-    expect(railItems(items, [])).toEqual([]);
+    expect(railItems(items, [], 'wordsearch')).toEqual([]);
+  });
+
+  test('a kind\'s rail holds only that kind\'s puzzles, in the order given; Collections\' holds every kind', () => {
+    const maze = { hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-09', title: 'Maze 1' };
+    const items = browseItems([...puzzles(2), maze], []);
+    const playing = ['MAZE-0001', id(2), id(1)];
+    expect(railItems(items, playing, 'wordsearch').map(i => i.hiddenId)).toEqual([id(2), id(1)]);
+    expect(railItems(items, playing, 'maze').map(i => i.hiddenId)).toEqual(['MAZE-0001']);
+    expect(railItems(items, playing, 'collections').map(i => i.hiddenId)).toEqual(playing);
   });
 
   test('as many rail tiles fit as the grid has columns', () => {

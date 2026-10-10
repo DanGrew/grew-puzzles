@@ -611,7 +611,7 @@ test('signed in, moving off a maze\'s start and leaving, back on Mazes it sits i
   await expect(page.locator('#rail .tile')).toHaveAttribute('href', 'maze.html?id=MAZE-0002');
 });
 
-test('mazes and wordsearches share one rail, the one played most recently first — a maze by the later of its last move and last find', async ({ context }) => {
+test('each kind\'s rail holds only its own, the one played most recently first — a maze by the later of its last move and last find; Collections\' holds both', async ({ context }) => {
   const db = mazeTables({
     lines: [wordLine('2026-10-09T10:00:00+00:00')],
     // Half done: moved in last, nothing found — the newest of all. Untouched: back on its start,
@@ -621,8 +621,14 @@ test('mazes and wordsearches share one rail, the one played most recently first 
   });
   await site(context, { db });
   const page = await landing(context, '/app/?kind=maze');
-  await expect.poll(() => railTitles(page)).toEqual(['Half done', 'Untouched', 'Farmyard']);
+  await expect.poll(() => railTitles(page)).toEqual(['Half done', 'Untouched']);
   expect(db.reads.filter(r => r.table === 'position')).toEqual([{ table: 'position', puzzle: '', order: 'puzzle.asc' }]);
+  const wordsearches = await landing(context, '/app/');
+  await expect.poll(() => railTitles(wordsearches)).toEqual(['Farmyard']);
+  const collections = [{ slug: 'mixed', name: 'mixed', description: 'Both kinds', created: '2026-12-31', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
+  await context.route('**/content/collections/index.json', r => r.fulfill({ json: { collections } }));
+  const shelf = await landing(context, '/app/?kind=collections');
+  await expect.poll(() => railTitles(shelf)).toEqual(['Half done', 'Untouched', 'Farmyard']);
   expect(db.strays).toEqual([]);
 });
 

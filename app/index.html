@@ -266,7 +266,7 @@ function tick(progress) {
   finishedCells.forEach(cell => { cell.hidden = !progress.signedIn; });
   filterButton.hidden = noFilters(types, progress.signedIn);
   redraw();
-  playing = railItems(items, progress.playing);
+  playing = railItems(items, progress.playing, state.kind);
   showRail(0);
 }
 
