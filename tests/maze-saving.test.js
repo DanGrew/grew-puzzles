@@ -231,6 +231,15 @@ test('reloading, the trail runs from the start to exactly where I was, and every
   await expect(page.locator('#here')).toHaveAttribute('cy', '4.5');
 });
 
+test('coming back to a half-played maze, the boxes match what I\'d found', async ({ context }) => {
+  await playing(context, { db: mazeTables({ position: [place(3, 0)], found: [find(2, 1), find(0, 5)] }) });
+  const page = await open(context);
+  const ticks = text => line(page, text).locator('.box').evaluateAll(boxes => boxes.map(b => b.classList.contains('ticked')));
+  await expect.poll(() => ticks('Collectibles')).toEqual([true, false]);
+  await expect.poll(() => ticks('Keys')).toEqual([true]);
+  await expect.poll(() => ticks('Guides')).toEqual([false]);
+});
+
 test('coming back to a half-played maze, the dashes run to everything I\'d found', async ({ context }) => {
   await playing(context, { db: mazeTables({ position: [place(3, 0)], found: [find(2, 1), find(0, 3)] }) });
   const page = await open(context);

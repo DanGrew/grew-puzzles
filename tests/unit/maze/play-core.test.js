@@ -347,45 +347,80 @@ describe('tapping a trail', () => {
 });
 
 describe('the checklist', () => {
-  it('reads, untouched: Guides, Keys and Collectibles counted, then A, B, C, then the six exits', () => {
+  const empty = n => Array.from({ length: n }, () => ({ label: '', ticked: false }));
+  const ticks = line => line.boxes.map(b => b.ticked);
+
+  it('reads, untouched: Guides, Keys and Collectibles a box each, then A, B, C, then the six exits', () => {
     expect(checklist(newMazePlay(BOARD), BOARD)).toEqual([
-      { text: 'Guides', progress: '0/1', mark: '', done: false },
-      { text: 'Keys', progress: '0/1', mark: '', done: false },
-      { text: 'Collectibles', progress: '0/2', mark: '', done: false },
-      ...['A', 'B', 'C', 'ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'].map(text => ({ text, progress: '', mark: '', done: false })),
+      { text: 'Guides', boxes: empty(1), said: '0 of 1 found', mark: '', done: false },
+      { text: 'Keys', boxes: [{ label: '1', ticked: false }], said: '0 of 1 found', mark: '', done: false },
+      { text: 'Collectibles', boxes: empty(2), said: '0 of 2 found', mark: '', done: false },
+      ...['A', 'B', 'C', 'ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'].map(text => ({ text, boxes: [], said: '', mark: '', done: false })),
     ]);
     expect(checklistCount(newMazePlay(BOARD), BOARD)).toBe('0/12');
   });
 
   it('ticks a letter, in any order, with no mark', () => {
     const lines = checklist(taps([[0, 1], [0, 2], [0, 3]]), BOARD);
-    expect(lines[5]).toEqual({ text: 'C', progress: '', mark: '', done: true });
+    expect(lines[5]).toEqual({ text: 'C', boxes: [], said: '', mark: '', done: true });
     expect(lines[3].done).toBe(false);
   });
 
-  it('counts a group up as its stops are picked up, done once all are', () => {
+  it('ticks a group\'s next box as each is picked up, done once all are', () => {
     const one = taps([[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5]]);
-    expect(checklist(one, BOARD)[2]).toEqual({ text: 'Collectibles', progress: '1/2', mark: '', done: false });
+    expect(checklist(one, BOARD)[2]).toEqual({
+      text: 'Collectibles', boxes: [{ label: '', ticked: true }, { label: '', ticked: false }], said: '1 of 2 found', mark: '', done: false
+    });
     const play = walkSolution();
-    expect(checklist(play, BOARD).slice(0, 3).map(l => [l.progress, l.done])).toEqual([['1/1', true], ['1/1', true], ['2/2', true]]);
+    expect(checklist(play, BOARD).slice(0, 3).map(l => [ticks(l), l.said, l.done])).toEqual([
+      [[true], '1 of 1 found', true], [[true], '1 of 1 found', true], [[true, true], '2 of 2 found', true]
+    ]);
+  });
+
+  it('a maze with 12 collectibles shows 12 boxes, ticking left to right whichever is found', () => {
+    const twelve = Array.from({ length: 12 }, (_, i) => ({ row: Math.floor(i / 6), col: i % 6 }));
+    const board = mazeBoard({ ...structuredClone(MAZE), collectibles: twelve });
+    const line = got => checklist({ ...newMazePlay(board), got }, board).find(l => l.text === 'Collectibles');
+    expect(line([]).boxes).toEqual(empty(12));
+    expect(ticks(line(['collectible-9', 'collectible-4', 'collectible-11']))).toEqual([true, true, true, ...Array(9).fill(false)]);
+    expect(line(['collectible-9', 'collectible-4', 'collectible-11']).said).toBe('3 of 12 found');
+    expect(line(twelve.map((_, i) => 'collectible-' + i)).done).toBe(true);
+  });
+
+  it('keys are numbered 1 up, whatever order the file lists them, and Key 2 ticks box 2', () => {
+    const keys = [3, 1, 4, 2].map((key, i) => ({ key, row: 5, col: i }));
+    const board = mazeBoard({ ...structuredClone(MAZE), keys, zones: [] });
+    const line = got => checklist({ ...newMazePlay(board), got }, board).find(l => l.text === 'Keys');
+    expect(line([]).boxes.map(b => b.label)).toEqual(['1', '2', '3', '4']);
+    expect(ticks(line(['key-2']))).toEqual([false, true, false, false]);
+    expect(line(['key-2']).said).toBe('1 of 4 found');
+    expect(ticks(line(['key-4', 'key-1']))).toEqual([true, false, false, true]);
+    expect(line(['key-1', 'key-2', 'key-3', 'key-4']).done).toBe(true);
+    expect(line(['key-1', 'key-2', 'key-3']).done).toBe(false);
+  });
+
+  it('keys numbered past 9 still run in number order, not as text', () => {
+    const keys = [10, 2].map((key, i) => ({ key, row: 5, col: i }));
+    const board = mazeBoard({ ...structuredClone(MAZE), keys, zones: [] });
+    expect(checklist(newMazePlay(board), board)[1].boxes.map(b => b.label)).toEqual(['2', '10']);
   });
 
   it('marks the right exit ✓ and a wrong one ✗, each ticked', () => {
     const lines = checklist(taps(OTHER_EXITS.slice(0, 7), walkSolution()), BOARD);
-    expect(lines.find(l => l.text === 'CBA')).toEqual({ text: 'CBA', progress: '', mark: '✓', done: true });
-    expect(lines.find(l => l.text === 'ACB')).toEqual({ text: 'ACB', progress: '', mark: '✗', done: true });
-    expect(lines.find(l => l.text === 'BCA')).toEqual({ text: 'BCA', progress: '', mark: '', done: false });
+    expect(lines.find(l => l.text === 'CBA')).toEqual({ text: 'CBA', boxes: [], said: '', mark: '✓', done: true });
+    expect(lines.find(l => l.text === 'ACB')).toEqual({ text: 'ACB', boxes: [], said: '', mark: '✗', done: true });
+    expect(lines.find(l => l.text === 'BCA')).toEqual({ text: 'BCA', boxes: [], said: '', mark: '', done: false });
     expect(checklistCount(taps(OTHER_EXITS.slice(0, 7), walkSolution()), BOARD)).toBe('8/12');
   });
 
   it('a maze without letters lists only what it has, ending in End', () => {
     const board = mazeBoard({ ...structuredClone(MAZE), guides: [], keys: [], zones: [], letters: [], exits: [] });
     expect(checklist(newMazePlay(board), board)).toEqual([
-      { text: 'Collectibles', progress: '0/2', mark: '', done: false },
-      { text: 'End', progress: '', mark: '', done: false },
+      { text: 'Collectibles', boxes: empty(2), said: '0 of 2 found', mark: '', done: false },
+      { text: 'End', boxes: [], said: '', mark: '', done: false },
     ]);
     const ended = { trail: [[5, 5]], got: ['collectible-0', 'collectible-1', 'end'], events: [], locked: [] };
-    expect(checklist(ended, board)[1]).toEqual({ text: 'End', progress: '', mark: '✓', done: true });
+    expect(checklist(ended, board)[1]).toEqual({ text: 'End', boxes: [], said: '', mark: '✓', done: true });
     expect(mazeFinished(ended, board)).toBe(true);
   });
 });
