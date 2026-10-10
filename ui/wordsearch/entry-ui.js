@@ -17,8 +17,8 @@ function entryEl(id) {
   return document.getElementById(id);
 }
 
-// groups are the puzzle's wordGroups, listed its words as the list shows them (play-core's
-// listedWords). A site with no entries, or a puzzle whose groups have none, leaves the list as it is.
+// groups are the puzzle's wordGroups, listed the list's lines as it shows them (play-core's
+// wordLines). A site with no entries, or a puzzle whose groups have none, leaves the list as it is.
 export function wireEntries(groups, listed) {
   wirePopup();
   return fetch(entriesUrl())

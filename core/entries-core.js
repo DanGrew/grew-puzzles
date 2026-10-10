@@ -13,7 +13,7 @@ export function entriesJson(response) {
   return response.json();
 }
 
-// One per listed word, in list order: marked when it has an entry, with what its popup shows. The
+// One per line of the list, in its order, by what the line reads: marked when it has an entry, with what its popup shows. The
 // puzzle's groups are searched in its own order — the group, then the word, exactly as listed — so
 // a word in two of them takes its first group's entry. A word without one is left unmarked.
 export function wordEntries(index, wordGroups, listed) {

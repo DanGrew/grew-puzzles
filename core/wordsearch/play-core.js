@@ -222,38 +222,56 @@ export function playMarks(play, words) {
   };
 }
 
-// The list names each word once, where it first appears: a word with several copies is listed
-// once in the file per copy, and copies holds every one of them, by index.
-export function listedWords(words) {
+// ---- The word list ----
+// Every line of the list is described here, once: what it reads, the words it stands for, and how
+// each is marked. The screen, the solution side, the printout and the book only draw it.
+// A line is { kind, text, parts }: kind names how its parts are drawn (ui/wordsearch/play-ui.js);
+// text is what the line reads; parts are the words it stands for, each with every copy of it in
+// the file, by index, and what paper prints beside it. Every line today is a word line — one
+// listed word, a missing one too, whatever its copies. A line of several words, or one marked once
+// a page, is one more kind, its parts each marked as below.
+
+// One line per word, where it first appears: a word with several copies is listed once in the
+// file per copy. printed: on paper, a word of several copies says how many to find, as the
+// generator names it — Sheep ×45 — whatever was found on screen; a word of one copy, a missing one
+// too, says nothing. progressWidth: how wide its progress is with every copy found, in characters,
+// so a find never moves the word.
+export function wordLines(words) {
   var texts = words.map(function (w) { return w.text; });
   return texts.filter(function (text, i) { return texts.indexOf(text) === i; }).map(function (text) {
-    return { text: text, copies: texts.map(function (_, i) { return i; }).filter(function (i) { return texts[i] === text; }) };
-  });
-}
-
-// One entry per listed word. done: every copy found; progress: copies found out of all of them,
-// for a word with more than one copy only. revealed: a missing word shown red — once every placed
-// word is found, or while the solution shows (flipped); flipping back hides it again until the
-// puzzle is done.
-export function wordList(play, words, flipped) {
-  var reveal = flipped || solved(play.found, words);
-  return listedWords(words).map(function (entry) {
-    var isFound = function (i) { return play.found.includes(i); };
-    var found = entry.copies.filter(isFound);
-    var copies = entry.copies.length;
-    return {
-      text: entry.text,
-      done: entry.copies.every(isFound),
-      revealed: words[entry.copies[0]].missing && reveal,
-      progress: { true: found.length + '/' + copies, false: '' }[copies > 1]
+    var copies = texts.map(function (_, i) { return i; }).filter(function (i) { return texts[i] === text; });
+    var part = {
+      text: text, copies: copies,
+      printed: { true: '×' + copies.length, false: '' }[copies.length > 1],
+      progressWidth: copiesProgress(copies.length, copies.length).length
     };
+    return { kind: 'word', text: text, parts: [part] };
   });
 }
 
-// On paper, a listed word with several copies says how many to find, as the generator names it —
-// Sheep ×45 — whatever was found on screen; a word of one copy, a missing one too, says nothing.
-export function printedCount(entry) {
-  return { true: '×' + entry.copies.length, false: '' }[entry.copies.length > 1];
+// How every line is marked as the play stands, part by part, in the lines' order.
+// done: every copy found; progress: copies found out of all of them; revealed: a missing word shown
+// red — once every placed word is found, or while the solution shows (flipped); flipping back hides
+// it again until the puzzle is done.
+export function lineMarks(play, words, flipped) {
+  var reveal = flipped || solved(play.found, words);
+  return wordLines(words).map(function (line) {
+    return { kind: line.kind, parts: line.parts.map(function (part) { return partMarks(part, play.found, words, reveal); }) };
+  });
+}
+
+function partMarks(part, found, words, reveal) {
+  var isFound = function (i) { return found.includes(i); };
+  return {
+    done: part.copies.every(isFound),
+    revealed: words[part.copies[0]].missing && reveal,
+    progress: copiesProgress(part.copies.filter(isFound).length, part.copies.length)
+  };
+}
+
+// Copies found out of all of them, for a word of more than one copy only.
+function copiesProgress(found, copies) {
+  return { true: found + '/' + copies, false: '' }[copies > 1];
 }
 
 // A printed line, as the pieces it may wrap between: a line wraps only at a space, never inside a

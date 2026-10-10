@@ -3,8 +3,8 @@
 // completion pop. Every rule lives in core/wordsearch/play-core.js; nothing here decides anything.
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
-  puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, listedWords, wordList,
-  printedCount, printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
+  printedPieces, printedColumnWidth, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
@@ -29,6 +29,9 @@ var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
 var PLAY_SIZE_KEY = 'grew-puzzles.text-size';
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
+// Each kind of line in the word list (play-core's wordLines): how it's drawn once, for the screen
+// and paper alike, and how its marks (play-core's lineMarks) show as the play goes.
+var PLAY_LINES = { word: { draw: drawWordLine, mark: markWordLine } };
 
 // What printing the puzzle's sheet in a style needs loaded first: nothing, until its character is
 // known (dressPuzzle).
@@ -66,19 +69,8 @@ export function drawSheet(part, board, onCell) {
   part('play').style.setProperty('--rows', board.rows);
   part('play').dataset.paged = String(board.sheets.length > 0);
   drawPuzzleGrid(part('grid'), board.grids[0], onCell);
-  // One line per word, however many copies; a word's progress sits beside it, on screen only,
-  // as wide from the first find as when every copy is found, so a find never moves a word. On
-  // paper its count of copies takes the progress's place (styles/play.css draws it from the attribute).
-  var full = wordList({ found: board.words.map(function (_, i) { return i; }) }, board.words, false);
-  listedWords(board.words).forEach(function (entry, i) {
-    var li = document.createElement('li');
-    var progress = document.createElement('span');
-    li.textContent = entry.text;
-    li.dataset.copies = printedCount(entry);
-    progress.className = 'progress';
-    progress.style.minWidth = full[i].progress.length + 'ch';
-    li.appendChild(progress);
-    part('words').appendChild(li);
+  wordLines(board.words).forEach(function (line) {
+    part('words').appendChild(PLAY_LINES[line.kind].draw(line));
   });
   board.sheets.forEach(function (label, i) {
     part('print-grids').appendChild(gridSheet(part('grid-sheet'), board, label, board.grids[i]));
@@ -105,6 +97,27 @@ function measurePiece(line, piece) {
   line.textContent = piece.text;
   line.dataset.copies = piece.copies;
   return line.getBoundingClientRect().width;
+}
+
+// A word line: the word, its progress beside it on screen only, held at its widest; on paper its
+// count of copies takes the progress's place (styles/play.css draws it from the attribute).
+function drawWordLine(line) {
+  var word = line.parts[0];
+  var li = document.createElement('li');
+  var progress = document.createElement('span');
+  li.textContent = word.text;
+  li.dataset.copies = word.printed;
+  progress.className = 'progress';
+  progress.style.minWidth = word.progressWidth + 'ch';
+  li.appendChild(progress);
+  return li;
+}
+
+function markWordLine(li, marks) {
+  var word = marks.parts[0];
+  li.classList.toggle('done', word.done);
+  li.classList.toggle('revealed', word.revealed);
+  li.querySelector('.progress').textContent = word.progress;
 }
 
 // Printed Colour or Black and white, every sheet of a puzzle wears its character, peering from
@@ -183,7 +196,7 @@ function showPuzzle(opened, found) {
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
   // The words that have an entry are marked once the entries arrive; the grid never waits on them.
-  wireEntries(opened.groups, listedWords(board.words));
+  wireEntries(opened.groups, wordLines(board.words));
 
   // Signed in mid-puzzle: what was saved for this puzzle elsewhere joins the board.
   function joinSaved(found) {
@@ -214,10 +227,8 @@ function showPuzzle(opened, found) {
 
   function render() {
     drawMarks(playEl('overlay'), board, playMarks(play, board.words));
-    wordList(play, board.words, playEl('card').classList.contains('flipped')).forEach(function (item, i) {
-      playEl('words').children[i].classList.toggle('done', item.done);
-      playEl('words').children[i].classList.toggle('revealed', item.revealed);
-      playEl('words').children[i].querySelector('.progress').textContent = item.progress;
+    lineMarks(play, board.words, playEl('card').classList.contains('flipped')).forEach(function (marks, i) {
+      PLAY_LINES[marks.kind].mark(playEl('words').children[i], marks);
     });
     playEl('count').textContent = countLabel(play, board.words);
     playEl('complete').hidden = !finished(play, board.words);

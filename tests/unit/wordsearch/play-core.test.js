@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
-  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, listedWords, wordList, printedCount, printedPieces, printedColumnWidth, countLabel, sparkles,
+  wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../../core/wordsearch/play-core.js';
@@ -16,6 +16,9 @@ beforeEach(() => {
   WORDS = BOARD.words;
 });
 const at = text => WORDS.findIndex(w => w.text === text);
+// Each line's one word's marks: every line today is a word line, of one part.
+const wordMarks = (play, words, flipped) => lineMarks(play, words, flipped).map(line => line.parts[0]);
+const printed = words => wordLines(words).map(line => line.parts[0].printed);
 
 function taps(cells, play) {
   return cells.reduce((p, cell) => tap(p, cell, WORDS), play || newPlay());
@@ -241,19 +244,19 @@ describe('what the board shows', () => {
   });
 
   it('crosses off found words in the list', () => {
-    expect(wordList(taps([[4, 2], [2, 2]]), WORDS, false).slice(0, 2)).toEqual([
-      { text: 'Cat', done: true, revealed: false, progress: '' }, { text: 'Cow', done: false, revealed: false, progress: '' }
+    expect(wordMarks(taps([[4, 2], [2, 2]]), WORDS, false).slice(0, 2)).toEqual([
+      { done: true, revealed: false, progress: '' }, { done: false, revealed: false, progress: '' }
     ]);
   });
 
   it('lists each word once, with no progress, when every word has one copy', () => {
-    expect(listedWords(WORDS).map(entry => entry.copies)).toEqual([[0], [1], [2], [3], [4], [5], [6], [7]]);
-    expect(wordList(newPlay(), WORDS, false).map(item => item.text)).toEqual(WORDS.map(w => w.text));
-    expect(wordList(solvedPlay(WORDS, 0), WORDS, false).filter(item => item.progress !== '')).toEqual([]);
+    expect(wordLines(WORDS).map(line => line.parts[0].copies)).toEqual([[0], [1], [2], [3], [4], [5], [6], [7]]);
+    expect(wordLines(WORDS).map(line => line.text)).toEqual(WORDS.map(w => w.text));
+    expect(wordMarks(solvedPlay(WORDS, 0), WORDS, false).filter(item => item.progress !== '')).toEqual([]);
   });
 
   it('shows no word red in a puzzle with none missing, solved or flipped', () => {
-    expect(wordList(solvedPlay(WORDS, 0), WORDS, true).filter(item => item.revealed)).toEqual([]);
+    expect(wordMarks(solvedPlay(WORDS, 0), WORDS, true).filter(item => item.revealed)).toEqual([]);
   });
 
   it('counts found words out of all of them', () => {
@@ -300,7 +303,7 @@ describe('a puzzle with a missing word', () => {
   });
 
   it('prints no count beside any word, the missing one included', () => {
-    expect(listedWords(MISSING).map(printedCount)).toEqual(['', '', '', '', '', '', '', '', '']);
+    expect(printed(MISSING)).toEqual(['', '', '', '', '', '', '', '', '']);
   });
 
   it('counts only the placed words', () => {
@@ -309,7 +312,7 @@ describe('a puzzle with a missing word', () => {
   });
 
   it('shows every word unmarked at the start, the missing one too', () => {
-    expect(wordList(newPlay(), MISSING, false).filter(item => item.done || item.revealed)).toEqual([]);
+    expect(wordMarks(newPlay(), MISSING, false).filter(item => item.done || item.revealed)).toEqual([]);
   });
 
   it('sets off completion on the last placed word', () => {
@@ -327,18 +330,19 @@ describe('a puzzle with a missing word', () => {
   });
 
   it('turns the missing word red once every placed word is found', () => {
-    const list = wordList(solvedPlay(MISSING, 0), MISSING, false);
-    expect(list[goat()]).toEqual({ text: 'Goat', done: false, revealed: true, progress: '' });
+    const list = wordMarks(solvedPlay(MISSING, 0), MISSING, false);
+    expect(wordLines(MISSING)[goat()].text).toBe('Goat');
+    expect(list[goat()]).toEqual({ done: false, revealed: true, progress: '' });
     expect(list.filter(item => item.revealed)).toHaveLength(1);
   });
 
   it('turns the missing word red while the solution shows, and back once it does not', () => {
-    expect(wordList(newPlay(), MISSING, true)[goat()].revealed).toBe(true);
-    expect(wordList(newPlay(), MISSING, false)[goat()].revealed).toBe(false);
+    expect(wordMarks(newPlay(), MISSING, true)[goat()].revealed).toBe(true);
+    expect(wordMarks(newPlay(), MISSING, false)[goat()].revealed).toBe(false);
   });
 
   it('keeps the missing word unmarked one word short of the end', () => {
-    expect(wordList(allBut(0), MISSING, false)[goat()].revealed).toBe(false);
+    expect(wordMarks(allBut(0), MISSING, false)[goat()].revealed).toBe(false);
   });
 
   it('solves only the placed words for the solution side', () => {
@@ -423,16 +427,18 @@ describe('a puzzle with repeated words', () => {
   const cups = () => [1, 2, 3, 4, 5];
 
   it('lists a repeated word once, where it first appears, holding every copy', () => {
-    expect(listedWords(REPEATS)).toEqual([
-      { text: 'Cow', copies: [0] }, { text: 'Cup', copies: [1, 2, 3, 4, 5] }, { text: 'Hen', copies: [6] }
+    expect(wordLines(REPEATS)).toEqual([
+      { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', copies: [0], printed: '', progressWidth: 0 }] },
+      { kind: 'word', text: 'Cup', parts: [{ text: 'Cup', copies: [1, 2, 3, 4, 5], printed: '×5', progressWidth: 3 }] },
+      { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', copies: [6], printed: '', progressWidth: 0 }] }
     ]);
   });
 
   it('shows 0/5 beside Cup at the start, and the other words as before', () => {
-    expect(wordList(newPlay(), REPEATS, false)).toEqual([
-      { text: 'Cow', done: false, revealed: false, progress: '' },
-      { text: 'Cup', done: false, revealed: false, progress: '0/5' },
-      { text: 'Hen', done: false, revealed: false, progress: '' }
+    expect(lineMarks(newPlay(), REPEATS, false)).toEqual([
+      { kind: 'word', parts: [{ done: false, revealed: false, progress: '' }] },
+      { kind: 'word', parts: [{ done: false, revealed: false, progress: '0/5' }] },
+      { kind: 'word', parts: [{ done: false, revealed: false, progress: '' }] }
     ]);
   });
 
@@ -444,7 +450,7 @@ describe('a puzzle with repeated words', () => {
 
   it('reads 1/5 after one copy, and finding that same copy again changes nothing', () => {
     const one = find([[0, 0], [0, 2]]);
-    expect(wordList(one, REPEATS, false)[1]).toEqual({ text: 'Cup', done: false, revealed: false, progress: '1/5' });
+    expect(wordMarks(one, REPEATS, false)[1]).toEqual({ done: false, revealed: false, progress: '1/5' });
     const again = find([[0, 0], [0, 2]], one);
     expect(again.found).toEqual([1]);
     expect(again.events).toEqual([]);
@@ -453,9 +459,9 @@ describe('a puzzle with repeated words', () => {
 
   it('crosses Cup off only once every copy is found', () => {
     const four = { picked: [], found: [1, 2, 3, 4], events: [], page: 0 };
-    expect(wordList(four, REPEATS, false)[1]).toEqual({ text: 'Cup', done: false, revealed: false, progress: '4/5' });
+    expect(wordMarks(four, REPEATS, false)[1]).toEqual({ done: false, revealed: false, progress: '4/5' });
     const all = find([[4, 4], [4, 6]], four);
-    expect(wordList(all, REPEATS, false)[1]).toEqual({ text: 'Cup', done: true, revealed: false, progress: '5/5' });
+    expect(wordMarks(all, REPEATS, false)[1]).toEqual({ done: true, revealed: false, progress: '5/5' });
   });
 
   it('counts every copy in the overall count', () => {
@@ -474,12 +480,13 @@ describe('a puzzle with repeated words', () => {
   });
 
   it('prints Cup ×5, and the other words as before', () => {
-    expect(listedWords(REPEATS).map(printedCount)).toEqual(['', '×5', '']);
+    expect(printed(REPEATS)).toEqual(['', '×5', '']);
   });
 
   it('prints the count of every copy, however many were found on screen', () => {
     const sheep = Array.from({ length: 45 }, (_, i) => ({ text: 'Sheep', grid: 0, cells: [[i, 0]] }));
-    expect(listedWords(sheep).map(printedCount)).toEqual(['×45']);
+    expect(printed(sheep)).toEqual(['×45']);
+    expect(wordLines(sheep)[0].parts[0].progressWidth).toBe('45/45'.length);
   });
 });
 
@@ -565,8 +572,8 @@ describe('a puzzle of several grids', () => {
 
   it('lists every word from every page, whichever page shows', () => {
     const play = find([[0, 0], [0, 2]]);
-    expect(wordList(play, words(), false).map(item => item.text)).toEqual(['Cat', 'Cow', 'Dog', 'Goat', 'Hen']);
-    expect(wordList(turnPage(play, 2), words(), false)).toEqual(wordList(play, words(), false));
+    expect(wordLines(words()).map(line => line.text)).toEqual(['Cat', 'Cow', 'Dog', 'Goat', 'Hen']);
+    expect(lineMarks(turnPage(play, 2), words(), false)).toEqual(lineMarks(play, words(), false));
     expect(countLabel(turnPage(play, 1), words())).toBe('1/4');
   });
 
