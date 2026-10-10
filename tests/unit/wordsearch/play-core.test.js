@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, printedSpread, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, boardScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
@@ -46,6 +46,31 @@ describe('finding the puzzle a play URL names', () => {
 });
 
 describe('the board', () => {
+  // TASK-114: a page shows what the file carries — capitals and big letters, never the type's name.
+  it('shows each word in capitals as written, spaces kept, when the file asks for capitals', () => {
+    const words = playBoard({ ...PUZZLE, capitals: true }).words;
+    expect(words.map(w => w.shown)).toEqual(['CAT', 'COW', 'EWE', 'HEN', 'ICE CREAM', 'MAP', 'PIG', 'PIGLET']);
+    expect(words.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
+    expect(wordLines(words).map(line => line.parts[0].shown)).toContain('ICE CREAM');
+  });
+
+  it('keeps a hyphen in capitals', () => {
+    const words = playBoard({ ...PUZZLE, capitals: true, words: [{ ...PUZZLE.words[0], word: 'Jack-in-the-box' }] }).words;
+    expect(words[0].shown).toBe('JACK-IN-THE-BOX');
+  });
+
+  it('shows each word as written, and its letters a Vanilla\'s, when the file asks for neither', () => {
+    expect(BOARD.words.map(w => w.shown)).toEqual(BOARD.words.map(w => w.text));
+    expect(BOARD.letters).toBe(1);
+  });
+
+  it('draws the letters 1.5× a Vanilla\'s when the file asks for big letters, whatever its type', () => {
+    expect(playBoard({ ...PUZZLE, bigLetters: true }).letters).toBe(1.5);
+    expect(playBoard({ ...PUZZLE, type: 'Kids' }).letters).toBe(1);
+    expect(playBoard({ ...PUZZLE, type: 'Kids' }).words[0].shown).toBe('Cat');
+    expect(playBoard({ ...PUZZLE, bigLetters: true }).words[0].shown).toBe('Cat');
+  });
+
   it('walks each of the eight directions from the start cell', () => {
     const cells = dir => wordCells({ start: { row: 4, col: 4 }, direction: dir, length: 2 })[1];
     expect(cells('N')).toEqual([3, 4]);
@@ -337,7 +362,7 @@ describe('a puzzle with a missing word', () => {
 
   it('lists the missing word among the rest, with no cells and no line to save', () => {
     expect(MISSING.map(w => w.text)).toEqual(['Cat', 'Cow', 'Ewe', 'Goat', 'Hen', 'Ice cream', 'Map', 'Pig', 'Piglet']);
-    expect(MISSING[goat()]).toEqual({ text: 'Goat', missing: true, cells: [], line: null });
+    expect(MISSING[goat()]).toEqual({ text: 'Goat', shown: 'Goat', missing: true, cells: [], line: null });
     expect(MISSING[0].missing).toBe(false);
   });
 
@@ -467,9 +492,9 @@ describe('a puzzle with repeated words', () => {
 
   it('lists a Repeats word once, where it first appears, as a boxes line holding every copy', () => {
     expect(wordLines(REPEATS, 'Repeats')).toEqual([
-      { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', copies: [0], strikes: 1 }] },
-      { kind: 'boxes', text: 'Cup', parts: [{ text: 'Cup', copies: [1, 2, 3, 4, 5], strikes: 5 }] },
-      { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', copies: [6], strikes: 1 }] }
+      { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', shown: 'Cow', copies: [0], strikes: 1 }] },
+      { kind: 'boxes', text: 'Cup', parts: [{ text: 'Cup', shown: 'Cup', copies: [1, 2, 3, 4, 5], strikes: 5 }] },
+      { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', shown: 'Hen', copies: [6], strikes: 1 }] }
     ]);
   });
 
@@ -526,9 +551,9 @@ describe('a puzzle with repeated words', () => {
   it('on any other type, lists Cup once per copy, its lines together where it first appears', () => {
     ['Mirra?e', 'Saga', 'Vanilla', undefined].forEach(type => {
       expect(wordLines(REPEATS, type)).toEqual([
-        { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', copies: [0], strikes: 1 }] },
-        ...[1, 2, 3, 4, 5].map(n => ({ kind: 'copy', text: 'Cup', parts: [{ text: 'Cup', copies: cups(), strikes: n }] })),
-        { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', copies: [6], strikes: 1 }] }
+        { kind: 'word', text: 'Cow', parts: [{ text: 'Cow', shown: 'Cow', copies: [0], strikes: 1 }] },
+        ...[1, 2, 3, 4, 5].map(n => ({ kind: 'copy', text: 'Cup', parts: [{ text: 'Cup', shown: 'Cup', copies: cups(), strikes: n }] })),
+        { kind: 'word', text: 'Hen', parts: [{ text: 'Hen', shown: 'Hen', copies: [6], strikes: 1 }] }
       ]);
     });
   });
@@ -682,11 +707,11 @@ describe('how big the grid and its words are', () => {
 
   it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
     expect(textSizeMenu('large')).toEqual([
-      { size: 'tiny', label: 'Tiny', scale: 10 / 22, picked: false },
-      { size: 'small', label: 'Small', scale: 15 / 22, picked: false },
-      { size: 'normal', label: 'Normal', scale: 1, picked: false },
-      { size: 'large', label: 'Large', scale: 27 / 22, picked: true },
-      { size: 'huge', label: 'Huge', scale: 32 / 22, picked: false }
+      { size: 'tiny', label: 'Tiny', picked: false },
+      { size: 'small', label: 'Small', picked: false },
+      { size: 'normal', label: 'Normal', picked: false },
+      { size: 'large', label: 'Large', picked: true },
+      { size: 'huge', label: 'Huge', picked: false }
     ]);
   });
 
@@ -712,6 +737,15 @@ describe('how big the grid and its words are', () => {
     expect(stored).toEqual(['huge']);
     expect(saveTextSize(() => { throw new Error('blocked'); }, 'huge')).toBe(false);
   });
+
+  // TASK-114: a Kids puzzle's Normal is 1.5× a Vanilla's, and every size scales from there.
+  it('scales a puzzle\'s own letters by the size: big letters 1.5× a Vanilla\'s at every size', () => {
+    expect(boardScale('normal', 1)).toBe(1);
+    expect(boardScale('large', 1)).toBe(27 / 22);
+    expect(boardScale('normal', 1.5)).toBe(1.5);
+    expect(boardScale('tiny', 1.5)).toBe(10 / 22 * 1.5);
+    expect(boardScale('huge', 1.5)).toBe(32 / 22 * 1.5);
+  });
 });
 
 describe('how the words fill their card', () => {
@@ -722,9 +756,26 @@ describe('how the words fill their card', () => {
   const page = ({ cardWidth = 400, cardHeight = 300, ...over } = {}) => ({
     count: 10, wordWidths: [80, 99.2, 60], wordSize: 16, rowHeight: 20, colGap: 16, rowGap: 7,
     gridCols: 8, gridRows: 6, naturalCell: 40, cardChromeWidth: cardWidth - 320, cardChromeHeight: cardHeight - 240,
-    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, scale: 1, room: 0, ...over
+    chromeWidth: 36, chromeHeight: 60, pageWidth: 1000, pageGap: 28, scale: 1, letters: 1, room: 0, ...over
   });
   const columnsOf = fit => fit.places.reduce((lengths, [, c]) => ({ ...lengths, [c]: (lengths[c] || 0) + 1 }), {});
+
+  // TASK-114: a Kids grid fits the page's width — whole on a phone — never under a Vanilla's letters.
+  it('shrinks big letters, in whole pixels, until the grid card fits the page\'s width, never under a Vanilla\'s', () => {
+    expect(wordsFit('bottom', page({ letters: 1.5, pageWidth: 340 }))).toMatchObject({ cell: 32, cardWidth: 336 });
+    expect(wordsFit('overlay', page({ letters: 1.5, pageWidth: 343 }))).toMatchObject({ cell: 32, cardWidth: 336 });
+    expect(wordsFit('bottom', page({ letters: 1.5, pageWidth: 400 }))).toMatchObject({ cell: 40, cardWidth: 400 });
+    expect(wordsFit('bottom', page({ letters: 1.5, pageWidth: 200 })).cell).toBeCloseTo(40 / 1.5, 5);
+  });
+
+  it('keeps a Vanilla grid\'s letters their own size however narrow the page — it scrolls instead', () => {
+    expect(wordsFit('bottom', page({ pageWidth: 200 }))).toMatchObject({ cell: 40, cardWidth: 400 });
+    expect(wordsFit('overlay', page({ pageWidth: 340 }))).toMatchObject({ cell: 40, cardWidth: 400 });
+  });
+
+  it('starts a Kids grid beside its words from the letters that fit the page', () => {
+    expect(wordsFit('right', page({ letters: 1.5, count: 1, pageWidth: 340 }))).toMatchObject({ sits: 'bottom', cell: 32 });
+  });
 
   it('makes every column as wide as the widest word, rounded up to a whole pixel', () => {
     expect(wordsFit('bottom', page()).wordWidth).toBe(100);

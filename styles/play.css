@@ -188,7 +188,8 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .entry-close { width: 40px; height: 40px; font-size: 18px; }
 }
 
-/* The text size — #play's --scale, the player's pick (play-core's textScale), Normal at 1. On
+/* The text size — #play's --scale, the player's pick times the puzzle's own letters (play-core's
+   boardScale), a Vanilla's Normal at 1, a Kids puzzle's at 1.5. On
    screen it scales the grid's letters and the words' text together, the letters never under
    20px a cell and the words never under 11px; the grid card, the words card and the found lines
    all follow the letters. Paper ignores it. The menu, by its corner button, shows each size as
@@ -251,21 +252,26 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    printout is always the blank puzzle — whatever is flipped, found, selected or laid out on
    screen. The cell is sized so the grid leaves the words room, however many rows and columns —
    but never so small its letters (half the cell) print under 7 pt, KDP's smallest text, unless
-   the grid would then be wider than 7.5 in, the book's page less its 0.5 in edges. */
+   the grid would then be wider than 7.5 in, the book's page less its 0.5 in edges. Big letters
+   (--letters) grow the cell by that much, the grid no wider than the words' 165 mm unless a
+   Vanilla's already is — core/theme-core.js printCell does the same sum. */
 @page { margin: 12mm; }
 /* Printed Colour or Black and white, the sheet's background reaches the paper's edge: no margin,
    each sheet keeping its own half inch inside (styles/look.css). Ahead of the book's own page, so
    that one stays the book's. */
 @page themed { margin: 0; }
 /* A printed word's type — shared by paper and by the unseen line the page measures each printed
-   word on, so a column is sized in the type it prints in. */
+   word on, so a column is sized in the type it prints in. Big letters (--letters, play-core's
+   playBoard, on the puzzle and on its measuring line alike) print the words that much bigger too. */
 :root { --print-word-size: 13px; }
+.play, .print-measure { --print-word-size: calc(13px * var(--letters, 1)); }
 .print-measure { position: absolute; top: 0; left: -10000px; visibility: hidden; white-space: nowrap;
   font: 400 var(--print-word-size) var(--font-body); }
 @media print {
   :root { --bg: #fff; --surface: #fff; --fg: #000; --muted: #000; --line: #000; --band: #000; --band-fg: #fff; --wild: #000;
     --shadow: 4px 4px 0 #000; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .play { --cell: min(max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows)))), calc(7.5in / var(--cols))); }
+  .play { --print-cell: max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows))));
+    --cell: min(calc(var(--print-cell) * var(--letters, 1)), max(var(--print-cell), calc(165mm / var(--cols))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
   .site, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count,
   .word-popup, .word-popup:popover-open { display: none; }
@@ -284,7 +290,8 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
 
   /* The words come home beneath the grid from wherever they sat, open or closed, as wide as the
      grid's widest — 165 mm — so a long list runs to more columns rather than off the page. Each
-     column is 88px, or the list's widest word where that's wider (--print-word-w, measured by
+     column is 88px — grown with big letters (--letters), so a Kids list wraps no more than a
+     Vanilla's — or the list's widest word where that's wider (--print-word-w, measured by
      ui/wordsearch/play-ui.js), so no word runs into the next; a longer line of several words wraps
      at a space. A word of several copies is on as many lines, or on a Repeats puzzle one line with
      its boxes under it across the whole card, every box empty whatever was found on screen. */
@@ -293,7 +300,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   aside { width: 165mm; max-width: none; }
   .card { width: max-content; margin-inline: auto; }
   .stage > aside .words-box { height: auto; display: block; }
-  ul.words, .stage > aside ul.words { display: block; columns: max(88px, var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
+  ul.words, .stage > aside ul.words { display: block; columns: max(calc(88px * var(--letters, 1)), var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
     font-size: var(--print-word-size); text-align: center; color: var(--fg); text-decoration: none; }
   ul.words li.done .line-text { text-decoration: none; }

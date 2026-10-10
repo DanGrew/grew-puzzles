@@ -192,23 +192,34 @@ describe('printed Colour or Black and white: the sheet', () => {
   });
 
   test('a one-grid sheet\'s cell leaves its words 105 mm down; a grid sheet of its own takes 200 mm', () => {
-    expect(printCell(15, 15, false)).toBeCloseTo(396.85 / 15, 5);
-    expect(printCell(15, 15, true)).toBe(36);
-    expect(printCell(8, 30, true)).toBeCloseTo(755.91 / 30, 5);
+    expect(printCell(15, 15, false, 1)).toBeCloseTo(396.85 / 15, 5);
+    expect(printCell(15, 15, true, 1)).toBe(36);
+    expect(printCell(8, 30, true, 1)).toBeCloseTo(755.91 / 30, 5);
   });
 
   test('a cell is 14 pt at the least, never wider than the sheet\'s 7.5 in across, never over 36 px, never wider than 165 mm a row', () => {
-    expect(printCell(30, 30, false)).toBe(18.67);
-    expect(printCell(40, 10, false)).toBe(18);
-    expect(printCell(5, 5, false)).toBe(36);
-    expect(printCell(20, 5, false)).toBeCloseTo(623.62 / 20, 5);
+    expect(printCell(30, 30, false, 1)).toBe(18.67);
+    expect(printCell(40, 10, false, 1)).toBe(18);
+    expect(printCell(5, 5, false, 1)).toBe(36);
+    expect(printCell(20, 5, false, 1)).toBeCloseTo(623.62 / 20, 5);
+  });
+
+  // TASK-114: a Kids puzzle's big letters print 1.5× a Vanilla's, the grid no wider than the words.
+  test('big letters print the cell 1.5× a Vanilla\'s, never wider than 165 mm a row, unless a Vanilla\'s already is', () => {
+    expect(printCell(8, 8, false, 1.5)).toBe(54);
+    expect(printCell(15, 15, false, 1.5)).toBeCloseTo(396.85 / 15 * 1.5, 5);
+    expect(printCell(5, 5, false, 1.5)).toBe(54);
+    expect(printCell(15, 6, false, 1.5)).toBeCloseTo(623.62 / 15, 5);
+    expect(printCell(36, 36, false, 1.5)).toBeCloseTo(18.67, 5);
+    expect(printCell(40, 10, false, 1.5)).toBe(18);
   });
 
   test('the card a character peers from: a grid card is its cells and 32 px; a words card the paper less its half-inch edges', () => {
-    expect(printCardWidth('one', 15, 15, printPaper(false))).toBeCloseTo(396.85 + 32, 5);
-    expect(printCardWidth('grid', 15, 15, printPaper(false))).toBe(15 * 36 + 32);
-    expect(printCardWidth('words', 15, 15, printPaper(false))).toBe(794 - 96);
-    expect(printCardWidth('words', 15, 15, printPaper(true))).toBe(816 - 96);
+    expect(printCardWidth('one', 15, 15, 1, printPaper(false))).toBeCloseTo(396.85 + 32, 5);
+    expect(printCardWidth('grid', 15, 15, 1, printPaper(false))).toBe(15 * 36 + 32);
+    expect(printCardWidth('one', 8, 8, 1.5, printPaper(false))).toBe(8 * 54 + 32);
+    expect(printCardWidth('words', 15, 15, 1, printPaper(false))).toBe(794 - 96);
+    expect(printCardWidth('words', 15, 15, 1, printPaper(true))).toBe(816 - 96);
   });
 
   test('its top sits under the half-inch edge, the title and its 16 px — a words sheet 20 px more, a grid sheet\'s title without its date — and in the book under the puzzle\'s number', () => {

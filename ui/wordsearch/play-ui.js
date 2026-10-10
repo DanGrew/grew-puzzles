@@ -4,7 +4,7 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
-  printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, textSizeMenu, savedTextSize, saveTextSize,
+  printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale, textSizeMenu, savedTextSize, saveTextSize,
   playReach
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
@@ -71,6 +71,7 @@ export function drawSheet(part, board, onCell) {
   part('label').textContent = board.label;
   part('play').style.setProperty('--cols', board.cols);
   part('play').style.setProperty('--rows', board.rows);
+  part('play').style.setProperty('--letters', board.letters);
   part('play').dataset.paged = String(board.sheets.length > 0);
   drawPuzzleGrid(part('grid'), board.grids[0], onCell);
   wordLines(board.words, board.label).forEach(function (line) {
@@ -84,12 +85,15 @@ export function drawSheet(part, board, onCell) {
 
 // Paper's word columns, sized to the list's widest word: each piece a line may wrap between, and
 // each whole line, is measured on an unseen line in the printout's own type
-// (styles/play.css, .print-measure), since paper's layout is never the screen's. On a words sheet
-// of its own, the words then spread to fill it (play-core's printedSpread) — book says whether it's
-// the book's page. Run once the fonts are in, so the type is the real one.
+// (styles/play.css, .print-measure), carrying the puzzle's own letters — on the page itself, since
+// the puzzle may not show (Overlay's closed list, the book's pages on screen) and paper's layout is
+// never the screen's. On a words sheet of its own, the words then spread to fill it (play-core's
+// printedSpread) — book says whether it's the book's page. Run once the fonts are in, so the type
+// is the real one.
 export function sizePrintedWords(list, book) {
   var line = document.createElement('span');
   line.className = 'print-measure';
+  line.style.setProperty('--letters', list.closest('.play').style.getPropertyValue('--letters'));
   document.body.appendChild(line);
   var pieces = Array.from(list.children, function (li) {
     return printedPieces(li.firstChild.textContent).map(function (piece) { return measurePiece(line, piece); });
@@ -114,7 +118,7 @@ function measurePiece(line, text) {
 // A word line, or one copy's line of a repeated word: the word, struck once found.
 function drawWordLine(line) {
   var li = document.createElement('li');
-  li.textContent = line.parts[0].text;
+  li.textContent = line.parts[0].shown;
   return li;
 }
 
@@ -131,7 +135,7 @@ function drawBoxesLine(line) {
   var li = document.createElement('li'), text = document.createElement('span'), boxes = document.createElement('span');
   li.className = 'boxes-line';
   text.className = 'line-text';
-  text.textContent = word.text;
+  text.textContent = word.shown;
   boxes.className = 'boxes';
   word.copies.forEach(function () {
     var box = document.createElement('span');
@@ -164,7 +168,7 @@ export function dressPrintout(play, start, board, character, book, random) {
   }[String(board.sheets.length > 0)];
   sheets.forEach(function (s) {
     var paper = printPaper(book);
-    var frame = { paper: paper, cardWidth: printCardWidth(s.sheet, board.cols, board.rows, paper), cardTop: printCardTop(s.sheet, book) };
+    var frame = { paper: paper, cardWidth: printCardWidth(s.sheet, board.cols, board.rows, board.letters, paper), cardTop: printCardTop(s.sheet, book) };
     dressPrintSheet(s.card, s.start, character, printDress(s.sheet, frame, character, random));
   });
 }
@@ -376,8 +380,9 @@ function showList(open) {
 }
 
 // The corner button beside the words layout opens the text-size menu under it: a size picked
-// scales the grid's letters and the words' text (styles/play.css, --scale), closes the menu and
-// is kept on this device. Pressing outside the menu closes it unchanged.
+// scales the grid's letters and the words' text (styles/play.css, --scale) from the puzzle's own
+// (play-core's boardScale), its "Aa" at the letters it gives, closes the menu and is kept on this
+// device. Pressing outside the menu closes it unchanged.
 function wireTextSize() {
   var menu = playEl('text-size-menu');
   textSizeMenu('').forEach(function (item) {
@@ -386,7 +391,7 @@ function wireTextSize() {
     choice.type = 'button';
     choice.setAttribute('role', 'menuitemradio');
     choice.dataset.size = item.size;
-    choice.style.setProperty('--scale', item.scale);
+    choice.style.setProperty('--scale', boardScale(item.size, playLetters()));
     tick.className = 'tick';
     aa.className = 'aa';
     aa.textContent = 'Aa';
@@ -413,10 +418,15 @@ function pickTextSize(size) {
 
 function showTextSize(size) {
   playEl('play').dataset.size = size;
-  playEl('play').style.setProperty('--scale', textScale(size));
+  playEl('play').style.setProperty('--scale', boardScale(size, playLetters()));
   textSizeMenu(size).forEach(function (item, i) {
     playEl('text-size-menu').children[i].setAttribute('aria-checked', String(item.picked));
   });
+}
+
+// How big the puzzle's letters are against a Vanilla's (play-core's playBoard), as drawSheet set it.
+function playLetters() {
+  return Number(playEl('play').style.getPropertyValue('--letters'));
 }
 
 // The menu opens just under its button, its left edge lined up with the button's.
@@ -460,7 +470,8 @@ function layoutWords() {
     cardChromeWidth: card.width - cols * cell, cardChromeHeight: card.height - rows * cell,
     chromeWidth: box.getBoundingClientRect().width - list.clientWidth,
     chromeHeight: box.getBoundingClientRect().height - list.getBoundingClientRect().height,
-    pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap), scale: textScale(play.dataset.size),
+    pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap),
+    scale: boardScale(play.dataset.size, playLetters()), letters: playLetters(),
     room: wordsRoom(lookNow(), play.dataset.template, isPhone(document.documentElement.clientWidth))
   });
   play.dataset.sits = fit.sits;

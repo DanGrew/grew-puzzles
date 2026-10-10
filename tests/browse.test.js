@@ -685,6 +685,46 @@ test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blu
   expect(await strips(page)).toEqual([{ title: 'Issue #1', type: 'The first book, remade.', strip: STRIP.blue }]);
 });
 
+// TASK-114: Kids, the difficulty after Extreme — a bright yellow of its own, unlike Medium's.
+const KIDS_YELLOW = 'rgb(255, 240, 77)';
+function withKids() {
+  const served = index(3);
+  [['Kids', 'Little Farm'], ['Mirra?e', 'Mirror'], ['Vanilla', 'Farmyard']].forEach(([type, title], i) => Object.assign(served.puzzles[i], { type, title }));
+  return served;
+}
+
+test('the filter popup shows a Kids row last, after Extreme, holding the Kids type, underlined in Kids\' own colour', async ({ page }) => {
+  await serve(page, withKids());
+  await page.goto('/app/');
+  await openFilters(page);
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme', 'Kids']], ['Type', ['Vanilla', 'Mirra?e', 'Kids']]]);
+  expect(await level(page, 'Kids').evaluate(el => getComputedStyle(el).textDecorationColor)).toBe(KIDS_YELLOW);
+  await level(page, 'Kids').click();
+  await expect(tileNames(page)).toHaveText(['Little Farm']);
+});
+
+test('a Kids tile and the side bar\'s Kids dot wear Kids\' own colour, unlike any other difficulty\'s', async ({ page }) => {
+  await serve(page, withKids());
+  await page.goto('/app/');
+  await drawn(page);
+  const strip = await page.locator('.tiles .tile', { hasText: 'Little Farm' }).evaluate(el => getComputedStyle(el, '::before').backgroundColor);
+  expect(strip).toBe(KIDS_YELLOW);
+  expect(Object.values(STRIP)).not.toContain(KIDS_YELLOW);
+  const dot = await page.locator('#site-side .types').first().locator('.type', { hasText: 'Kids' }).locator('.dot')
+    .evaluate(el => getComputedStyle(el).backgroundColor);
+  expect(dot).toBe(KIDS_YELLOW);
+});
+
+test('sorted easiest first, Kids puzzles come last; hardest first, they come first', async ({ page }) => {
+  await serve(page, withKids(), [issue()]);
+  await page.goto('/app/');
+  await drawn(page);
+  await expect(tileNames(page)).toHaveText(['Farmyard', 'Mirror', 'Little Farm']);
+  await page.locator('#dir').click();
+  await expect(page.locator('#dir')).toHaveText('Hardest first');
+  await expect(tileNames(page)).toHaveText(['Little Farm', 'Mirror', 'Farmyard']);
+});
+
 test('the tile green is lighter than the band green, which the heading keeps; a picked Easy takes the tile green', async ({ page }) => {
   await serve(page, mixed(3));
   await page.goto('/app/');

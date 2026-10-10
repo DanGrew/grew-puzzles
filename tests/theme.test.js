@@ -68,6 +68,26 @@ test('a page that cannot read or store the look opens Themed, and still switches
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
 });
 
+// TASK-114: a Kids puzzle is dressed as any wordsearch is, its big grid card and all.
+for (const layout of ['bottom', 'right', 'overlay']) {
+  test(`Themed in ${layout}, a Kids puzzle wears the character its ID number lands on, background and name, the label clear of its bigger cards`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.route(/\/content\/puzzles\/wordsearch\/WSCH-\d+\.json$/, route => route.fulfill({ json: require('./fixtures/WSCH-0012.json') }));
+    await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+    await page.goto('/app/play.html?id=WSCH-0012');
+    await expect(page.locator('#name-tag')).not.toBeEmpty();
+    await page.evaluate(() => document.fonts.ready);
+    const owner = CHARACTERS[11];
+    await expect(page.locator('#name-tag')).toHaveText(owner.name);
+    expect(await css(page.locator('#theme-figure'), 'background-image')).toBe(url(owner.figure));
+    expect(await sceneOf(page)).toBe(url(owner.scene));
+    await expect(page.locator('#grid .cell').first()).toHaveCSS('font-size', '33px');
+    const tag = await page.locator('#name-tag').boundingBox();
+    expect(overlaps(tag, await page.locator('.stage').boundingBox())).toBe(false);
+    expect(overlaps(tag, await page.locator('aside').boundingBox())).toBe(false);
+  });
+}
+
 test('Themed, a puzzle wears the character its ID number lands on, background and name, the same every visit', async ({ page }) => {
   await openPlay(page, 'WSCH-0007');
   const owner = CHARACTERS[6];
