@@ -283,7 +283,8 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
 
   /* The words come home beneath the grid from wherever they sat, open or closed, as wide as the
      grid's widest — 165 mm — so a long list runs to more columns rather than off the page. Each
-     column is 88px, or the list's widest word where that's wider, a count on its word
+     column is 88px — grown with big letters (--letters), so a Kids list wraps no more than a
+     Vanilla's — or the list's widest word where that's wider, a count on its word
      (--print-word-w, measured by ui/wordsearch/play-ui.js), so no word runs into the next; a
      longer line of several words wraps at a space. */
   .stage > aside { position: static; margin-top: 20px; }
@@ -291,7 +292,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   aside { width: 165mm; max-width: none; }
   .card { width: max-content; margin-inline: auto; }
   .stage > aside .words-box { height: auto; display: block; }
-  ul.words, .stage > aside ul.words { display: block; columns: max(88px, var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
+  ul.words, .stage > aside ul.words { display: block; columns: max(calc(88px * var(--letters, 1)), var(--print-word-w, 0px)); column-gap: 14px; overflow: visible; }
   ul.words li, ul.words li.done { display: block; width: auto; margin-bottom: 3px; break-inside: avoid;
     font-size: var(--print-word-size); text-align: center; color: var(--fg); text-decoration: none; }
   /* A repeated word's count of copies, after it on its line — Sheep ×45 — never the screen's

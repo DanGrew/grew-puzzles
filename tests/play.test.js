@@ -2063,15 +2063,28 @@ test('a Kids puzzle prints its letters and words 1.5× a Vanilla\'s, its words i
   expect(await printedBoxes(page)).toEqual(normal);
 });
 
+test('a Kids puzzle prints ICE CREAM on one line, as a Vanilla prints Ice cream: its columns\' least width grows with its letters', async ({ page }) => {
+  await openKids(page);
+  await page.emulateMedia({ media: 'print' });
+  const height = text => page.locator('#words li', { hasText: text }).evaluate(li => li.getBoundingClientRect().height);
+  expect(await height('ICE CREAM')).toBe(await height('COW'));
+  await expect(page.locator('#words')).toHaveCSS('column-width', `${88 * 1.5}px`);
+});
+
 test('a Kids puzzle\'s printed words keep to their columns, sized in the big type they print in', async ({ page }) => {
   await openKids(page);
   await page.emulateMedia({ media: 'print' });
   const column = parseFloat(await page.locator('#words').evaluate(l => l.style.getPropertyValue('--print-word-w')));
-  const widest = Math.max(...await page.locator('#words li').evaluateAll(lis => lis.map(li => {
-    const range = document.createRange();
-    range.selectNodeContents(li.firstChild);
-    return range.getBoundingClientRect().width;
-  })));
+  // The widest piece a line may wrap between — each word — in the type the list prints in.
+  const widest = Math.max(...await page.locator('#words li').evaluateAll(lis => lis.flatMap(li => li.firstChild.textContent.split(' ').map(word => {
+    const piece = document.createElement('span');
+    piece.style.cssText = `position: absolute; white-space: nowrap; font: ${getComputedStyle(li).font}`;
+    piece.textContent = word;
+    document.body.appendChild(piece);
+    const width = piece.getBoundingClientRect().width;
+    piece.remove();
+    return width;
+  }))));
   expect(column).toBeGreaterThanOrEqual(Math.floor(widest));
   expect(column).toBeLessThan(widest + 2);
 });
