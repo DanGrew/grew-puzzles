@@ -151,6 +151,15 @@ export function browseSearch(state) {
   return query ? `?${query}` : '';
 }
 
+// Whether pressing a link only looks through the landing page again — a place, a type, the site's
+// name — so the page redraws where it is rather than loading, and its background stays (BUG-124).
+// /app/ and /app/index.html are the one page. A press that asks for a new tab is the browser's.
+export function inPlace(href, here, press) {
+  const page = url => new URL(url).pathname.replace(/index\.html$/, '');
+  const plain = press.button === 0 && !(press.ctrlKey || press.metaKey || press.shiftKey || press.altKey);
+  return String(page(href) === page(here) && plain);
+}
+
 // The tiles a state shows, in its order: only its place's. Within a row picks widen, since a tile
 // has exactly one difficulty and one type; the two rows narrow each other, and a row with nothing
 // picked holds back nothing — so Hard and Vanilla is the Hard Vanilla tiles. A Finished choice

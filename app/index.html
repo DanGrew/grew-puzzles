@@ -59,7 +59,7 @@
 import {
   filterOptions, browseItems, browseState, browseSearch, browseList, pageOf, pageCount, filterRows, picked, togglePick,
   filtersLabel, clearFilters, nothingPicked, withSort, flipDir, dirLabel, totalLabel, pagerButtons, railItems,
-  columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn, noFilters,
+  columnsOf, railView, toggleFinished, finishedPressed, filtersByProgress, withSignIn, noFilters, inPlace,
 } from '../core/browse-core.js';
 import { placeName } from '../core/kind-core.js';
 import { markPlace } from '../ui/side-bar-ui.js';
@@ -83,7 +83,9 @@ const railTiles = document.getElementById('rail-tiles');
 const railPrev = document.getElementById('rail-prev');
 const railNext = document.getElementById('rail-next');
 let items = [];
-// The types the place's filters offer — none in Collections, which has no difficulties either.
+// What each place's filters offer, and the types this place's offer — none in Collections, which
+// has no difficulties either.
+let options;
 let types = [];
 // The owner's characters: each tile wears its puzzle's, shown only while Themed is on.
 let characters = [];
@@ -97,9 +99,15 @@ let ticks = [];
 let inPlay = [];
 let playing = [];
 let railSet = 0;
+// Whether the player's progress has arrived yet, and whether it found anyone signed in — until it
+// arrives, nobody is known to be.
+let known = 'false';
+let signedIn = false;
 // Each filter in the popup repaints itself pressed or not as the picks change — the popup is
-// drawn once, so a press never loses keyboard focus.
-const painters = [];
+// drawn once for each place, so a press never loses keyboard focus. The Finished row's two are
+// the same in every place; the Difficulty and Type rows' are the place's own.
+const finishedPainters = [];
+let placePainters = [];
 
 function part(className, text) {
   const span = document.createElement('span');
@@ -170,8 +178,9 @@ function pagerButton(spec) {
   return b;
 }
 
-// A button in the popup: pressing it picks, pressed says whether it shows pressed.
-function filter(className, label, pressed, pick) {
+// A button in the popup: pressing it picks, pressed says whether it shows pressed, painters is
+// where it's repainted from.
+function filter(className, label, pressed, pick, painters) {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = className;
@@ -183,13 +192,13 @@ function filter(className, label, pressed, pick) {
 
 // The Finished row's choices: Finished, the ✓ tiles, and Not finished, the rest.
 finishedCells[1].append(
-  filter('choice', 'Finished', s => finishedPressed(s, 'yes'), s => toggleFinished(s, 'yes')),
-  filter('choice', 'Not finished', s => finishedPressed(s, 'no'), s => toggleFinished(s, 'no')),
+  filter('choice', 'Finished', s => finishedPressed(s, 'yes'), s => toggleFinished(s, 'yes'), finishedPainters),
+  filter('choice', 'Not finished', s => finishedPressed(s, 'no'), s => toggleFinished(s, 'no'), finishedPainters),
 );
 
 // A pick in a row: a difficulty wears its colour; a type is plain.
 function chip(pick) {
-  const b = filter(`chip ${pick.key}`, pick.value, s => picked(s, pick), s => togglePick(s, pick));
+  const b = filter(`chip ${pick.key}`, pick.value, s => picked(s, pick), s => togglePick(s, pick), placePainters);
   b.setAttribute('data-tone', pick.tone);
   return b;
 }
@@ -207,7 +216,7 @@ function row(spec) {
 function show(page) {
   const list = browseList(items, state, done);
   document.getElementById('total').textContent = totalLabel(list);
-  painters.forEach(paint => paint());
+  finishedPainters.concat(placePainters).forEach(paint => paint());
   markPlace(state.kind, state.types);
   filterButton.textContent = filtersLabel(state);
   clear.hidden = nothingPicked(state);
@@ -218,11 +227,22 @@ function show(page) {
   pager.replaceChildren(...pagerButtons(page, pageCount(list.length)).map(pagerButton));
 }
 
-// Every change to the filter or sort goes into the page address — so back and a shared link keep
-// it — and starts again from page 1. The rail follows the picks, keeping its set where it can.
+// Every change to the filter or sort goes into the page address as a step of its own — so Back
+// goes to the pick before, and a shared link keeps it — and starts again from page 1. The rail
+// follows the picks, keeping its set where it can.
 function update(next) {
   state = next;
+  history.pushState(null, '', location.pathname + browseSearch(state));
+  draw();
+}
+
+// The same picks drawn again — the progress has changed what they show — stay the step they are.
+function redraw() {
   history.replaceState(null, '', location.pathname + browseSearch(state));
+  draw();
+}
+
+function draw() {
   show(1);
   drawRail(railSet);
 }
@@ -266,16 +286,18 @@ document.addEventListener('keydown', e => closeOpenFilters(e.key === 'Escape'));
 // follows the place and its Difficulty and Type picks; the Finished choice, sort and paging never
 // touch it. With a Finished choice picked the tiles shown hang on the
 // progress, so they're drawn again — and signed out, the choice is dropped and every tile comes back.
-const REDRAWS = { true: () => update(state), false: () => ticks.forEach(paint => paint()) };
+const REDRAWS = { true: redraw, false: () => ticks.forEach(paint => paint()) };
 
 function tick(progress) {
-  const redraw = REDRAWS[filtersByProgress(state)];
+  const again = REDRAWS[filtersByProgress(state)];
   done = progress.done;
-  state = withSignIn(state, progress.signedIn);
-  finishedCells.forEach(cell => { cell.hidden = !progress.signedIn; });
-  filterButton.hidden = noFilters(types, progress.signedIn);
+  known = 'true';
+  signedIn = progress.signedIn;
+  state = withSignIn(state, signedIn);
+  finishedCells.forEach(cell => { cell.hidden = !signedIn; });
+  filterButton.hidden = noFilters(types, signedIn);
   inPlay = progress.playing;
-  redraw();
+  again();
   drawRail(0);
 }
 
@@ -284,25 +306,62 @@ function tick(progress) {
 const RETURNS = { true: () => withDone(items, tick), false: () => {} };
 window.addEventListener('pageshow', e => RETURNS[e.persisted]());
 
-// An address with a Finished choice draws no tiles until the progress arrives, so none ever show
-// only to drop out.
+// Until the progress arrives, an address with a Finished choice draws no tiles, so none ever show
+// only to drop out. Once it has, the place draws at once, its ✓s and its rail with it — a Finished
+// choice dropped if nobody is signed in — and the rail from its first set.
 const FIRST_DRAWS = { true: () => {}, false: () => show(1) };
+const ENTRIES = {
+  false: () => FIRST_DRAWS[filtersByProgress(state)](),
+  true: () => {
+    state = withSignIn(state, signedIn);
+    railSet = 0;
+    redraw();
+  },
+};
 
-// The page is one place — a kind, or Collections — named by its address; the side bar and the
-// phone's switch go to another by opening its address.
-function load([index, mazes, published, owned]) {
-  const puzzles = index.puzzles.concat(mazes.puzzles);
-  const options = filterOptions(puzzles);
-  characters = owned;
-  dressScene(randomCharacter(characters, Math.random));
-  items = browseItems(puzzles, published.collections);
+// The page is one place — a kind, or Collections — with its filter and sort, named by its address:
+// drawn from it when the page opens, and again whenever the address changes under it — a link to
+// another place on this page, Back or Forward. Filtering is looking through the same page, so it
+// never loads again for these, and its background stays as it was (BUG-124).
+function enter() {
   state = browseState(location.search, options);
   types = options[state.kind].types;
   document.getElementById('browse-title').textContent = placeName(state.kind);
-  filterButton.hidden = noFilters(types, false);
+  filterButton.hidden = noFilters(types, signedIn);
+  setFilters(false);
+  placePainters = [];
   rows.replaceChildren(...filterRows(options[state.kind]).flatMap(row), ...finishedCells);
-  FIRST_DRAWS[filtersByProgress(state)]();
+  ENTRIES[known]();
+}
+
+// A link to this page itself — a place or a type in the side bar, the phone's switch, the site's
+// name — changes the address and draws the page where it is, from the top, as it would open at that
+// address. Any other link goes where it goes.
+const FOLLOWS = {
+  true: (press, a) => {
+    press.preventDefault();
+    history.pushState(null, '', a.href);
+    enter();
+    window.scrollTo(0, 0);
+  },
+  false: () => {},
+};
+
+function follow(press) {
+  [press.target.closest('a[href]')].filter(Boolean).forEach(a => FOLLOWS[inPlace(a.href, location.href, press)](press, a));
+}
+
+function load([index, mazes, published, owned]) {
+  const puzzles = index.puzzles.concat(mazes.puzzles);
+  options = filterOptions(puzzles);
+  characters = owned;
+  dressScene(randomCharacter(characters, Math.random));
+  items = browseItems(puzzles, published.collections);
+  enter();
   wireDone(items, tick);
+  window.addEventListener('popstate', enter);
+  // Before the side bar's own click handling, which keeps its presses to itself.
+  document.addEventListener('click', follow, true);
 }
 
 // A site with no collections has no collections file, and one with no mazes no maze index: each

@@ -132,6 +132,9 @@ function mixed(count) {
 
 const tileNames = page => page.locator('.tiles .tile .name');
 const tileTypes = page => page.locator('.tiles .tile .detail .line:first-child');
+// The sort and its direction are on the page before it has read the indexes; a pick made then is
+// lost when the page draws. Wait for the first tile before picking.
+const drawn = page => expect(tileNames(page).first()).toBeVisible();
 // The filters live in a popup the Filters button opens: a Difficulty row, a pick per difficulty,
 // then a Type row, a chip per type.
 const filterButton = page => page.locator('#filter-button');
@@ -432,6 +435,7 @@ test('picking a sort and a direction reorders, back on page 1', async ({ page })
 test('sorting by type groups the types, ties newest first', async ({ page }) => {
   await serve(page, mixed(6));
   await page.goto('/app/');
+  await drawn(page);
   await page.locator('#sort').selectOption('type');
   await page.locator('#dir').click();
   await expect(tileTypes(page)).toHaveText(['Mirra?e', 'Mirra?e', 'Missing', 'Missing', 'Vanilla', 'Vanilla']);
@@ -466,6 +470,7 @@ test('a plain address opens easiest first, each difficulty by type then title A 
 test('flipped, Extreme comes first down to Easy, still by type then title A to Z', async ({ page }) => {
   await serve(page, sorted(), [issue()]);
   await page.goto('/app/');
+  await drawn(page);
   await page.locator('#dir').click();
   await expect(page.locator('#dir')).toHaveText('Hardest first');
   await expect(page).toHaveURL(/\/app\/\?dir=asc$/);
@@ -478,6 +483,7 @@ test('flipped, Extreme comes first down to Easy, still by type then title A to Z
 test('picking Date from the plain landing page shows newest first, and goes into the address', async ({ page }) => {
   await serve(page, sorted());
   await page.goto('/app/');
+  await drawn(page);
   await page.locator('#sort').selectOption('date');
   await expect(page.locator('#dir')).toHaveText('Newest first');
   await expect(tileNames(page).first()).toHaveText('Apples');

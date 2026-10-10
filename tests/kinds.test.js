@@ -177,11 +177,13 @@ test('every puzzle tile shows its kind\'s picture between its strip and its titl
   const fileRequests = await serve(page);
   const pictures = () => page.locator('#tiles .tile .pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
   await page.goto('/app/');
+  await expect(names(page)).toHaveCount(3);
   const grids = await pictures();
   expect(grids).toHaveLength(3);
   expect(new Set(grids).size).toBe(1);
   expect(grids[0]).toContain('<text');
   await page.goto('/app/?kind=maze');
+  await expect(names(page)).toHaveCount(6);
   const mazes = await pictures();
   expect(mazes).toHaveLength(6);
   expect(new Set(mazes).size).toBe(1);

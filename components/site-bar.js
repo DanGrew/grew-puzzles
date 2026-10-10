@@ -104,7 +104,12 @@
     e.stopPropagation();
     setSide(!side.hasAttribute('data-open'));
   });
-  side.addEventListener('click', function (e) { e.stopPropagation(); });
+  // A link pressed in the drawer closes it — on the landing page a place or a type draws where the
+  // player is, with no new page to close it.
+  side.addEventListener('click', function (e) {
+    e.stopPropagation();
+    [setSide].filter(function () { return e.target.closest('a'); }).forEach(function (f) { f(false); });
+  });
   document.addEventListener('click', function () { setSide(false); });
   // Escape is the drawer's only while it is open — closed, the key belongs to the rest of the page.
   document.addEventListener('keydown', function (e) {

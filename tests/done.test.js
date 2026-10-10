@@ -806,3 +806,54 @@ test('finishing a puzzle with Finished picked, then going back, it shows among t
   await page.goBack();
   await expect(shownNames(page)).toHaveText(['Farm', 'Puzzle 1']);
 });
+
+// Picking on the landing page redraws it where it is (BUG-124): the progress already read stays,
+// so nothing is read again and no ✓ or rail tile ever drops out to come back.
+async function watchForFlashes(page) {
+  await page.evaluate(() => {
+    window.flashes = [];
+    window.stayed = true;
+    const look = () => {
+      if (document.getElementById('rail').hidden) window.flashes.push('rail');
+      document.querySelectorAll('#tiles .tile[data-done="false"]').forEach(t => {
+        if (t.querySelector('.name').textContent === 'Puzzle 2') window.flashes.push('tick');
+      });
+    };
+    new MutationObserver(look).observe(document.querySelector('main'), { childList: true, subtree: true, attributes: true });
+  });
+}
+
+test('signed in, a type picked in the side bar keeps the ✓s and the rail, never flashing them away', async ({ context }) => {
+  const rows = [...finishedRows(id(2)), ...at(startedRows(id(4)), hour(10)), ...at(startedRows(id(3)), hour(9))];
+  const { table } = await site(context, { served: index(6), table: progressTable(rows) });
+  const page = await landing(context);
+  await expect.poll(() => railTitles(page)).toEqual(['Puzzle 4', 'Puzzle 3']);
+  expect(await tickedTitles(page)).toEqual(['Puzzle 2']);
+  const reads = table.reads.length;
+  await watchForFlashes(page);
+  await page.locator('#site-side .types').first().locator('.type', { hasText: 'Missing' }).click();
+  await expect(shownNames(page)).toHaveText(['Puzzle 2', 'Puzzle 4', 'Puzzle 6']);
+  expect(await tickedTitles(page)).toEqual(['Puzzle 2']);
+  expect(await railTitles(page)).toEqual(['Puzzle 4']);
+  expect(await page.evaluate(() => [window.stayed, window.flashes])).toEqual([true, []]);
+  expect(table.reads.length).toBe(reads);
+});
+
+test('signed in, Back from a type to a Finished pick shows the finished tiles again, Finished pressed', async ({ context }) => {
+  await finishedSite(context);
+  const page = await landing(context);
+  await openFilters(page);
+  await choice(page, 'Finished').click();
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 2']);
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { window.stayed = true; });
+  await page.locator('#site-side .types').first().locator('.type', { hasText: 'Missing' }).click();
+  await expect(shownNames(page)).toHaveText(['Puzzle 2', 'Puzzle 4']);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/app\/\?finished=yes$/);
+  await expect(shownNames(page)).toHaveText(['Puzzle 1', 'Puzzle 2']);
+  await expect(page.locator('#filter-button')).toHaveText('Filters · 1');
+  await openFilters(page);
+  await expect(choice(page, 'Finished')).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => window.stayed)).toBe(true);
+});
