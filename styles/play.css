@@ -251,11 +251,11 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    that one stays the book's. */
 @page themed { margin: 0; }
 /* A printed word's type, and the room before its count — shared by paper and by the unseen line
-   the page measures each printed word on, inside the words card, so a column is sized in the type
-   it prints in. Big letters (#play's --letters, play-core's playBoard) print the words that much
-   bigger too. */
+   the page measures each printed word on, so a column is sized in the type it prints in. Big
+   letters (--letters, play-core's playBoard, on the puzzle and on its measuring line alike) print
+   the words that much bigger too. */
 :root { --print-word-size: 13px; --print-count-gap: 6px; }
-.play { --print-word-size: calc(13px * var(--letters, 1)); }
+.play, .print-measure { --print-word-size: calc(13px * var(--letters, 1)); }
 .print-measure { position: absolute; top: 0; left: -10000px; visibility: hidden; white-space: nowrap;
   font: 400 var(--print-word-size) var(--font-body); }
 .print-measure::after { content: attr(data-copies); margin-left: var(--print-count-gap); font-variant-numeric: tabular-nums; }

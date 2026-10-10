@@ -81,14 +81,16 @@ export function drawSheet(part, board, onCell) {
 
 // Paper's word columns, sized to the list's widest word, a count on its word: each piece a line
 // may wrap between, and each whole line, is measured on an unseen line in the printout's own type
-// (styles/play.css, .print-measure) — inside the list's card, so it takes the puzzle's own letters —
-// since paper's layout is never the screen's. On a words sheet of its own, the words then spread
+// (styles/play.css, .print-measure), carrying the puzzle's own letters — on the page itself, since
+// the puzzle may not show (Overlay's closed list, the book's pages on screen) and paper's layout is
+// never the screen's. On a words sheet of its own, the words then spread
 // to fill it (play-core's printedSpread) — book says whether it's the book's page. Run once the
 // fonts are in, so the type is the real one.
 export function sizePrintedWords(list, book) {
   var line = document.createElement('span');
   line.className = 'print-measure';
-  list.parentElement.appendChild(line);
+  line.style.setProperty('--letters', list.closest('.play').style.getPropertyValue('--letters'));
+  document.body.appendChild(line);
   var pieces = Array.from(list.children, function (li) {
     return printedPieces(li.firstChild.textContent, li.dataset.copies).map(function (piece) { return measurePiece(line, piece); });
   });
