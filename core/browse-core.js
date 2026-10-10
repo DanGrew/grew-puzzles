@@ -153,8 +153,7 @@ export function browseSearch(state) {
 
 // Whether pressing a link only looks through the landing page again — a place, a type, the site's
 // name — so the page redraws where it is rather than loading, and its background stays (BUG-124).
-// /app/ and /app/index.html are the one page. A press that asks for a new tab or window is the
-// browser's.
+// /app/ and /app/index.html are the one page. A press that asks for a new tab is the browser's.
 export function inPlace(href, here, press) {
   const page = url => new URL(url).pathname.replace(/index\.html$/, '');
   const plain = press.button === 0 && !(press.ctrlKey || press.metaKey || press.shiftKey || press.altKey);
