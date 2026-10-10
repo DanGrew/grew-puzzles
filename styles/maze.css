@@ -9,14 +9,23 @@
   --maze-letter: #d6336c; --maze-main: #2a6df5; --maze-detour: #1b9a46; --maze-exit: #d62a1e;
 }
 
-.play.maze { flex-flow: row wrap; justify-content: center; align-items: flex-start; }
-/* --cell is the page's, sized by ui/maze/play-ui.js to fit the grid card in the window. */
-.play.maze #checklist-card { flex: none; width: 240px; max-width: none; }
+/* The checklist above the grid card, the controls beside it and saved progress's slip (play.css)
+   under them; on a phone the card, the controls, the checklist and the slip, one under the next.
+   --cell is the page's, sized by ui/maze/play-ui.js to fit the checklist and the grid card in the
+   window together. */
+.play.maze { display: grid; justify-content: center; align-items: start; gap: 28px;
+  grid-template-columns: auto 240px; grid-template-rows: auto auto auto 1fr;
+  grid-template-areas: "list ." "card controls" "card slip" "card ."; }
+.play.maze[hidden] { display: none; }
+.play.maze > .col { grid-area: card; }
+.play.maze > .controls { grid-area: controls; }
+.play.maze > #checklist-card { grid-area: list; width: auto; max-width: none; }
+.play.maze > .save-line { grid-area: slip; margin-top: -8px; }
+.play.maze ul.checklist { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); column-gap: 20px; }
 @media (max-width: 760px) {
-  .play.maze #checklist-card { width: 100%; }
+  .play.maze { grid-template-columns: 100%; grid-template-rows: none; grid-template-areas: "card" "controls" "list" "slip"; }
+  .play.maze ul.checklist { grid-template-columns: none; }
 }
-/* Saved progress's slip (play.css) sits under the checklist, in the card's column. */
-.play.maze #checklist-card > .save-line { margin-top: 14px; }
 
 /* The frame: the grid card's window onto the maze, sized by ui/maze/play-ui.js (--frame-w,
    --frame-h). The maze sits behind it at the player's zoom (--cell), moved so they stay in the
@@ -114,23 +123,32 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
 .play.maze button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
 .play.maze:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
 
-/* The little map and the control pad, over the checklist, never over the maze: the map above the
-   pad in one column; on a phone, under the grid card, the map on the left half of the row and the
-   pad on the right. */
-.controls { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-bottom: 20px; }
+/* The little map and the control pad, never over the maze: the map above the pad in one column;
+   on a phone, under the grid card, the map on the left half of the row and the pad on the right. */
+.controls { display: flex; flex-direction: column; align-items: center; gap: 14px; }
 @media (max-width: 760px) {
   .controls { display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center; gap: 0; }
   .controls .pad { grid-column: 2; }
 }
 
 /* The little map: the whole maze — on screen as the page opens — while zoomed in, drawn by
-   ui/maze/play-ui.js. Dragging its box looks round the maze. Its room stays while it's hidden, so
-   the pad never moves as the player zooms; a maze that never zooms leaves no room for it. It
-   hides while the solution shows, as it did on the card's front. */
-.minimap { display: block; visibility: hidden; padding: 3px; background: var(--surface);
+   ui/maze/play-ui.js at the size picked under it, Small, Medium or Large, never wider than its
+   room. Dragging its box looks round the maze. Its room stays while it's hidden, so the pad never
+   moves as the player zooms; a maze that never zooms leaves no room for it. It hides while the
+   solution shows, as it did on the card's front. */
+.map-box { display: flex; flex-direction: column; align-items: center; gap: 8px; visibility: hidden; }
+.play.maze[data-zoomed="true"]:not(:has(.card.flipped)) .map-box { visibility: visible; }
+.play.maze:not([data-zoomable="true"]) .map-box { display: none; }
+.minimap { display: block; padding: 3px; background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: 8px; box-shadow: 3px 3px 0 var(--line); cursor: grab; touch-action: none; }
-.play.maze[data-zoomed="true"]:not(:has(.card.flipped)) .minimap { visibility: visible; }
-.play.maze:not([data-zoomable="true"]) .minimap { display: none; }
+.map-sizes { display: flex; gap: 6px; }
+.map-sizes button { width: 32px; height: 28px; padding: 0; font: 600 13px var(--font-display); color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
+.map-sizes button[aria-pressed="true"] { color: var(--band-fg); background: var(--band); }
+.map-sizes button:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
+@media (max-width: 760px) {
+  .map-sizes button { width: 44px; height: 44px; }
+}
 
 /* The control pad: up, down, left and right round Back. A way with a wall greys out. */
 .pad { display: grid; grid-template-columns: repeat(3, 52px); grid-template-rows: repeat(3, 52px); gap: 8px; width: max-content;

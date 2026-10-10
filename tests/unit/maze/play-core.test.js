@@ -5,7 +5,7 @@ import {
   wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
-  windowCells, windowMarks, minimapSize, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
+  windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -731,6 +731,21 @@ describe('the little map', () => {
     expect(tall.width).toBeCloseTo(89.6);
     expect(tall.height).toBe(112);
     expect(minimapSize({ rows: 50, cols: 100 }, 100)).toEqual({ scale: 1, width: 100, height: 50 });
+  });
+
+  it('takes the size picked while it fits its room, and shrinks to fit the room across when it doesn\'t', () => {
+    const fit = (board, size, room) => {
+      const map = minimapFit(board, size, room);
+      return [map.scale, map.width, map.height].map(n => Math.round(n * 1000) / 1000);
+    };
+    expect(fit({ rows: 100, cols: 100 }, 224, 230)).toEqual([2.24, 224, 224]);
+    expect(fit({ rows: 100, cols: 100 }, 224, 224)).toEqual([2.24, 224, 224]);
+    expect(fit({ rows: 100, cols: 100 }, 224, 146)).toEqual([1.46, 146, 146]);
+    // A tall maze is narrower than its size, so a narrower room still fits it whole.
+    expect(fit({ rows: 40, cols: 20 }, 160, 80)).toEqual([4, 80, 160]);
+    expect(fit({ rows: 40, cols: 20 }, 160, 60)).toEqual([3, 60, 120]);
+    // A wide maze fills its room across.
+    expect(fit({ rows: 20, cols: 40 }, 160, 100)).toEqual([2.5, 100, 50]);
   });
 
   it('draws its lines so many px wide however small a cell is on it, a stop at least half a cell', () => {

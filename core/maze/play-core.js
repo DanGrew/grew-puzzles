@@ -580,6 +580,11 @@ export function minimapSize(board, size) {
   return { scale: scale, width: board.cols * scale, height: board.rows * scale };
 }
 
+// The map at the size picked, its longer side size px, shrunk to fit room px across.
+export function minimapFit(board, size, room) {
+  return minimapSize(board, Math.min(size, room * Math.max(board.rows, board.cols) / board.cols));
+}
+
 // The pens, in cells, to draw lines so many px wide however small a cell is on the map.
 export function minimapPens(scale) {
   return { wall: 0.6 / scale, trail: 2 / scale, box: 1.5 / scale, dot: Math.max(0.5, 2.5 / scale) };

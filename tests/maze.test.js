@@ -84,7 +84,7 @@ test.describe('a maze on the landing page', () => {
     await expect(page.locator('#filters .chip.types')).toHaveText(['Keylecticodes']);
   });
 
-  test('tapping it opens its maze play page: the maze in the grid card, the checklist beside it', async ({ page }) => {
+  test('tapping it opens its maze play page: the maze in the grid card, the checklist above it', async ({ page }) => {
     await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: MAZE }));
     await page.goto('/app/?kind=maze');
     await page.locator('.tile', { hasText: 'Everything corner' }).click();
@@ -265,14 +265,15 @@ test('Themed: collectibles and blocks show the puzzle\'s theme character', async
   await expect(stop(page, 'key-1')).toHaveCSS('background-image', 'none');
 });
 
-test('a real-size maze\'s grid card fits the window\'s height', async ({ page }) => {
+test('a real-size maze\'s grid card and the checklist above it fit the window\'s height together, the card taking the rest', async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) {
     await page.setViewportSize(viewport);
     await open(page, { id: 'MAZE-0002' });
     await expect(page.locator('#grid .maze-cell')).toHaveCount(32 * 40);
-    const card = await page.locator('#front').boundingBox();
-    expect(card.height).toBeLessThanOrEqual(viewport.height);
-    expect(card.height).toBeGreaterThan(viewport.height * 0.8);
+    const card = await page.locator('#front').boundingBox(), list = await page.locator('#checklist-card').boundingBox();
+    expect(list.y + list.height).toBeLessThan(card.y);
+    expect(card.y + card.height - list.y).toBeLessThanOrEqual(viewport.height);
+    expect(card.y + card.height - list.y).toBeGreaterThan(viewport.height * 0.8);
     await expect(page.locator('#checklist .line-text')).toHaveText(['Guides', 'End']);
   }
 });
@@ -579,6 +580,69 @@ for (const [where, size] of [['on desktop', { width: 1280, height: 720 }], ['on 
     expect(await page.locator('#pad').boundingBox()).toEqual(before);
   });
 }
+
+test('on desktop the checklist sits above the maze, and the controls beside it', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const list = await page.locator('#checklist-card').boundingBox(), card = await page.locator('#stage').boundingBox();
+  const controls = await page.locator('#controls').boundingBox();
+  expect(list.y + list.height).toBeLessThan(card.y);
+  expect(Math.abs(list.x - card.x)).toBeLessThan(2);
+  expect(controls.x).toBeGreaterThan(card.x + card.width);
+  expect(controls.y).toBeGreaterThanOrEqual(card.y - 1);
+});
+
+test('on a phone the checklist sits under the controls', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const list = await page.locator('#checklist-card').boundingBox(), controls = await page.locator('#controls').boundingBox();
+  expect(list.y).toBeGreaterThanOrEqual(controls.y + controls.height);
+});
+
+const mapSize = (page, size) => page.locator(`[data-map-size="${size}"]`);
+
+test('the little map comes Small, Medium or Large, Small to start, each bigger than the last, its box still dragged to look round', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const map = page.locator('#minimap');
+  await expect(mapSize(page, 'small')).toHaveAttribute('aria-pressed', 'true');
+  const widths = [];
+  for (const size of ['small', 'medium', 'large']) {
+    await mapSize(page, size).click();
+    await expect(mapSize(page, size)).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-map-size][aria-pressed="true"]')).toHaveCount(1);
+    widths.push(Math.round(await map.evaluate(c => c.getBoundingClientRect().width)));
+  }
+  expect(widths).toEqual([122, 178, 234]);
+  const box = await map.boundingBox(), card = await page.locator('#stage').boundingBox();
+  expect(overlaps(box, card)).toBe(false);
+  const before = await page.locator('#world').evaluate(w => w.style.transform);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 20, box.y + 20, { steps: 4 });
+  await page.mouse.up();
+  expect(await page.locator('#world').evaluate(w => w.style.transform)).not.toBe(before);
+});
+
+test('on a phone, a Large map stays in its half of the row, and the pad and the maze stay on screen together', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await mapSize(page, 'large').click();
+  const row = await page.locator('#controls').boundingBox(), box = await page.locator('#map-box').boundingBox();
+  const padBox = await page.locator('#pad').boundingBox(), card = await page.locator('#front').boundingBox();
+  expect(box.x + box.width).toBeLessThanOrEqual(row.x + row.width / 2);
+  expect(padBox.x).toBeGreaterThanOrEqual(row.x + row.width / 2);
+  expect(row.y + row.height - card.y).toBeLessThanOrEqual(780);
+  for (const size of ['small', 'medium', 'large']) {
+    const button = await mapSize(page, size).boundingBox();
+    expect(Math.min(button.width, button.height)).toBeGreaterThanOrEqual(44);
+  }
+});
+
+test('the map\'s sizes hide with it when I zoom out to the whole maze', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await expect(mapSize(page, 'large')).toBeVisible();
+  while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
+  await expect(mapSize(page, 'large')).toBeHidden();
+});
 
 test('off the card, the little map hides while the solution shows, and comes back with the maze', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 450 });

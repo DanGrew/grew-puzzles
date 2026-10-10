@@ -76,29 +76,39 @@
       <div class="complete" id="complete" hidden>Puzzle complete</div>
     </div>
 
-    <!-- Where a wordsearch's words would be: the little map while zoomed in and the control pad,
-         then what there is to find, ticked as it's found. -->
-    <aside id="checklist-card">
-      <div class="controls" id="controls">
+    <!-- Beside the maze, or under it on a phone: the little map while zoomed in, its sizes, and the
+         control pad. -->
+    <div class="controls" id="controls">
+      <div class="map-box" id="map-box">
         <canvas class="minimap" id="minimap" aria-hidden="true"></canvas>
-        <div class="pad" id="pad" role="group" aria-label="Control pad">
-          <button class="pad-key up" type="button" data-press="N" aria-label="Up" title="Up">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>
-          </button>
-          <button class="pad-key left" type="button" data-press="W" aria-label="Left" title="Left">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 6 8l4.5 4.5"/></svg>
-          </button>
-          <button class="pad-key back" type="button" data-press="back" aria-label="Back" title="Back">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4 2.5 7l3 3"/><path d="M2.5 7h7a4 4 0 0 1 0 8H7"/></svg>
-          </button>
-          <button class="pad-key right" type="button" data-press="E" aria-label="Right" title="Right">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5 10 8l-4.5 4.5"/></svg>
-          </button>
-          <button class="pad-key down" type="button" data-press="S" aria-label="Down" title="Down">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5 8 10l4.5-4.5"/></svg>
-          </button>
+        <div class="map-sizes" role="group" aria-label="Map size">
+          <button type="button" data-map-size="small" aria-pressed="true" aria-label="Small map" title="Small map">S</button>
+          <button type="button" data-map-size="medium" aria-pressed="false" aria-label="Medium map" title="Medium map">M</button>
+          <button type="button" data-map-size="large" aria-pressed="false" aria-label="Large map" title="Large map">L</button>
         </div>
       </div>
+      <div class="pad" id="pad" role="group" aria-label="Control pad">
+        <button class="pad-key up" type="button" data-press="N" aria-label="Up" title="Up">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 8 6l4.5 4.5"/></svg>
+        </button>
+        <button class="pad-key left" type="button" data-press="W" aria-label="Left" title="Left">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 3.5 6 8l4.5 4.5"/></svg>
+        </button>
+        <button class="pad-key back" type="button" data-press="back" aria-label="Back" title="Back">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4 2.5 7l3 3"/><path d="M2.5 7h7a4 4 0 0 1 0 8H7"/></svg>
+        </button>
+        <button class="pad-key right" type="button" data-press="E" aria-label="Right" title="Right">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5 10 8l-4.5 4.5"/></svg>
+        </button>
+        <button class="pad-key down" type="button" data-press="S" aria-label="Down" title="Down">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.5 8 10l4.5-4.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Where a wordsearch's words would be — above the maze, or under the controls on a phone: what
+         there is to find, ticked as it's found. -->
+    <aside id="checklist-card">
       <div class="words-box">
         <div class="list-head">
           <h2>Checklist</h2>
@@ -106,15 +116,17 @@
         </div>
         <ul class="checklist" id="checklist"></ul>
       </div>
-      <!-- Signed out, the invitation to sign in; signed in, a note while the maze isn't saved. -->
-      <div class="save-line" id="save-line" role="status" hidden>
-        <p class="slip" id="save-hint" hidden>
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15.5H5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 14.3 7 4 4 0 0 1 15 15.5h-1"/><path d="M10 16.5V10M7.5 12.3 10 9.8l2.5 2.5"/></svg>
-          <span><button class="sign-in-link" id="save-sign-in" type="button">Sign in</button> to save your progress — or just play.</span>
-        </p>
-        <p class="slip slip-note" id="save-note" hidden><span class="dot" aria-hidden="true"></span>Progress not saved — reconnecting</p>
-      </div>
     </aside>
+
+    <!-- Signed out, the invitation to sign in; signed in, a note while the maze isn't saved — under
+         the controls, or under the checklist on a phone. -->
+    <div class="save-line" id="save-line" role="status" hidden>
+      <p class="slip" id="save-hint" hidden>
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15.5H5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 14.3 7 4 4 0 0 1 15 15.5h-1"/><path d="M10 16.5V10M7.5 12.3 10 9.8l2.5 2.5"/></svg>
+        <span><button class="sign-in-link" id="save-sign-in" type="button">Sign in</button> to save your progress — or just play.</span>
+      </p>
+      <p class="slip slip-note" id="save-note" hidden><span class="dot" aria-hidden="true"></span>Progress not saved — reconnecting</p>
+    </div>
   </main>
 </div>
 <script src="../components/site-bar.js"></script>
