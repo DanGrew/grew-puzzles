@@ -249,6 +249,72 @@ test('flipping back keeps the trail and the ticks', async ({ page }) => {
   expect((await trail(page)).at(-1)).toEqual([0, 4]);
 });
 
+// The dashed paths' steps, each [from, to], read back from their path.
+async function dashed(page) {
+  const d = await page.locator('#collected').getAttribute('d');
+  return d.split('M').filter(Boolean).map(s => s.split('L').map(p => p.split(',').map(n => Number(n) - 0.5).reverse()));
+}
+
+const TO_KEY = [[[0, 0], [1, 0]], [[1, 0], [2, 0]], [[2, 0], [2, 1]]];
+
+test('picking up Key 1 down a side branch and walking back out, a dashed line runs from the start to it, and my solid trail on to where I am', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[1, 0], [2, 0], [2, 1], [2, 0], [3, 0]]);
+  expect(await trail(page)).toEqual([[0, 0], [1, 0], [2, 0], [3, 0]]);
+  expect(await dashed(page)).toEqual([[[2, 0], [2, 1]]]);
+  await tapAll(page, [[0, 0]]);
+  expect(await dashed(page)).toEqual(TO_KEY);
+  const path = page.locator('#collected');
+  await expect(path).toHaveAttribute('stroke-dasharray', '0.1 0.4');
+  await expect(path).toHaveAttribute('stroke-dashoffset', '0.05');
+  await expect(path).toHaveCSS('stroke-linecap', 'round');
+  await expect(path).toHaveCSS('stroke', 'rgb(31, 111, 92)');
+  await expect(path).toBeVisible();
+});
+
+test('with several things found, every corridor on the way to any of them is dashed once, a cell a step, so the dashes keep in step', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[0, 1], [0, 2], [0, 3], [0, 4], [1, 4], [1, 5], [0, 5], [0, 0], [1, 0], [2, 0], [2, 1], [0, 0]]);
+  const steps = await dashed(page);
+  expect(steps).toEqual([[[0, 0], [0, 1]], [[0, 1], [0, 2]], [[0, 2], [0, 3]], [[0, 3], [0, 4]], [[0, 4], [1, 4]], [[1, 4], [1, 5]],
+    [[1, 5], [0, 5]], ...TO_KEY]);
+  expect(new Set(steps.map(s => s[1].join(','))).size).toBe(steps.length);
+  steps.forEach(([from, to]) => expect(Math.abs(from[0] - to[0]) + Math.abs(from[1] - to[1])).toBe(1));
+});
+
+test('where my trail runs along a dashed corridor, the solid line covers it: those steps aren\'t dashed, and the trail draws over the rest', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[1, 0], [2, 0], [2, 1], [0, 0], [1, 0]]);
+  expect(await dashed(page)).toEqual(TO_KEY.slice(1));
+  expect(await page.locator('#lines').evaluate(svg => Array.from(svg.children).map(c => c.id))).toEqual(['walls', 'collected', 'trail', 'here', 'key-call']);
+});
+
+test('backing out with Back or by tapping an earlier cell, the dashes to everything I found stay', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[1, 0], [2, 0], [2, 1]]);
+  expect(await dashed(page)).toEqual([]);
+  await pad(page, 'back').click();
+  expect(await dashed(page)).toEqual(TO_KEY.slice(2));
+  await tapAll(page, [[0, 0]]);
+  expect(await dashed(page)).toEqual(TO_KEY);
+});
+
+test('a dead end I walked into and found nothing in is not dashed', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [0, 0]]);
+  expect(await dashed(page)).toEqual([]);
+  await tapAll(page, [[1, 0], [2, 0], [2, 1], [1, 1], [0, 0]]);
+  expect(await dashed(page)).toEqual(TO_KEY);
+});
+
+test('flipped to the solution, the solution shows alone, without the dashes, as it does without the trail', async ({ page }) => {
+  await open(page);
+  await tapAll(page, [[1, 0], [2, 0], [2, 1], [0, 0]]);
+  await page.click('#flip');
+  await expect(page.locator('#card')).toHaveClass(/\bflipped\b/);
+  await expect(page.locator('#back .collected, #back .trail')).toHaveCount(0);
+});
+
 test('Plain: a collectible is a dot and a block a solid tile, with no character', async ({ page }) => {
   await open(page);
   const collectible = stop(page, 'collectible-1');
@@ -534,6 +600,34 @@ test('zoomed in, the little map shows the whole maze in the card\'s corner, ever
   await page.keyboard.press('ArrowDown');
   await page.waitForTimeout(400);
   expect(Math.abs((await offCentre(page))[0])).toBeLessThan(2);
+});
+
+test('the little map shows the dashed paths too', async ({ page }) => {
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  // The route from the start to the collectible nearest it, by the page's own rules.
+  const route = await page.evaluate(async maze => {
+    const core = await import('/core/maze/play-core.js');
+    const board = core.mazeBoard(maze);
+    return board.stops.filter(s => s.kind === 'collectible')
+      .map(s => core.resumedMaze(board, s.cell, []).trail)
+      .sort((a, b) => a.length - b.length)[0];
+  }, MIDDLE);
+  const middle = route[Math.floor(route.length / 2)];
+  const map = page.locator('#minimap');
+  const inkAt = () => map.evaluate((canvas, c) => {
+    const scale = canvas.width / 100, x = Math.floor((c[1] + 0.5) * scale), y = Math.floor((c[0] + 0.5) * scale);
+    return Array.from(canvas.getContext('2d').getImageData(x - 1, y - 1, 3, 3).data);
+  }, middle);
+  const before = await inkAt();
+  // Walked there a tap a cell, then all the way back with Backspace.
+  await page.evaluate(cells => {
+    cells.forEach(([r, c]) => document.querySelector(`#grid [data-cell="${r},${c}"]`).click());
+    cells.forEach(() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' })));
+  }, route.slice(1));
+  expect(await trail(page)).toEqual([[50, 50]]);
+  expect(await dashed(page)).toHaveLength(route.length - 1);
+  const after = await inkAt();
+  expect(after.reduce((sum, v, i) => sum + Math.abs(v - before[i]), 0)).toBeGreaterThan(30);
 });
 
 test('a maze that isn\'t 32×40 has no Print button', async ({ page }) => {

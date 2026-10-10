@@ -231,6 +231,13 @@ test('reloading, the trail runs from the start to exactly where I was, and every
   await expect(page.locator('#here')).toHaveAttribute('cy', '4.5');
 });
 
+test('coming back to a half-played maze, the dashes run to everything I\'d found', async ({ context }) => {
+  await playing(context, { db: mazeTables({ position: [place(3, 0)], found: [find(2, 1), find(0, 3)] }) });
+  const page = await open(context);
+  expect(await trail(page)).toEqual([[0, 0], [1, 0], [2, 0], [3, 0]]);
+  await expect(page.locator('#collected')).toHaveAttribute('d', 'M0.5,2.5L1.5,2.5M0.5,0.5L1.5,0.5M1.5,0.5L2.5,0.5M2.5,0.5L3.5,0.5');
+});
+
 test('Back after a reload goes back a run at a time, as it did before', async ({ context }) => {
   await playing(context, { db: mazeTables({ position: [place(5, 5)] }) });
   const page = await open(context);
