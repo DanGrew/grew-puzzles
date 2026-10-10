@@ -131,7 +131,7 @@ async function printout(page, scope) {
   const style = (selector, props) => at(selector).evaluate((el, p) => p.map(k => getComputedStyle(el)[k]), props);
   const size = async selector => { const b = await at(selector).boundingBox(); return [Math.round(b.width), Math.round(b.height)]; };
   return {
-    title: await at('h1').textContent(), created: await at('.created').textContent(), label: await at('.front-face .band').textContent(),
+    title: await at('h1').textContent(), ident: await at('.ident').textContent(), label: await at('.front-face .band').textContent(),
     letters: await page.locator(`${scope} .front-face .cell`).allTextContents(),
     // The words as printed: the word itself and its count, never the screen's progress beside it.
     words: await page.locator(`${scope} ul.words li`).evaluateAll(lis => lis.map(li => li.firstChild.textContent)),
@@ -143,6 +143,7 @@ async function printout(page, scope) {
     bandLook: await style('.front-face .band', ['backgroundColor', 'color', 'font']),
     cellLook: await style('.front-face .cell', ['color', 'font']),
     titleLook: await style('h1', ['font', 'color']),
+    difficultyLook: await style('.difficulty', ['backgroundColor', 'borderTop', 'filter']),
   };
 }
 
@@ -310,6 +311,19 @@ test('nothing the book adds shows an answer or a hidden ID', async ({ page }) =>
   await expect(page.locator('.sheet .back-face .cell')).toHaveCount(0);
   await expect(page.locator('.sheet svg line, .sheet svg circle')).toHaveCount(0);
   await expect(sheets(page).nth(1).locator('.front-face .cell').first()).toHaveText('?');
+});
+
+test('each puzzle page reads its difficulty and code under its title, once, and the book shows no date anywhere', async ({ page }) => {
+  await openBook(page);
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.ident')).toHaveText(['Easy · WSCH-0007', 'Medium · WSCH-0008', 'Easy · WSCH-0009']);
+  for (const i of [0, 1, 2]) {
+    const title = await sheets(page).nth(i).locator('h1').boundingBox();
+    const ident = await sheets(page).nth(i).locator('.ident').boundingBox();
+    expect(ident.y).toBeGreaterThanOrEqual(title.y + title.height);
+    expect((await sheets(page).nth(i).innerText()).match(/WSCH-\d+/g)).toHaveLength(1);
+  }
+  await expect(page.locator('#sheets')).not.toContainText(/2026|Jan|Oct/);
 });
 
 test('on screen the book shows its title page, Print book again, the hint for saving it as a PDF and the way back; the rest is paper only', async ({ page }) => {

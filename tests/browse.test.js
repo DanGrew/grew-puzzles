@@ -35,12 +35,13 @@ test('the site opens straight onto the browse grid, with no intro', async ({ pag
   await expect(page.locator('main > .kind-switch')).toBeHidden();
 });
 
-test('a tile shows the title, with its type and created date small beneath — no number, no hidden ID', async ({ page }) => {
+test('a tile shows the title, with its type small beneath — no date, no number, no hidden ID', async ({ page }) => {
   const fileRequests = await serve(page, index(3));
   await page.goto('/app/');
   const first = page.locator('.tiles .tile').first();
   await expect(first.locator('.name')).toHaveText('Puzzle 1');
-  await expect(first.locator('.detail .line')).toHaveText(['Vanilla', '1 Jan 2026']);
+  await expect(first.locator('.detail .line')).toHaveText(['Vanilla']);
+  await expect(page.locator('#tiles')).not.toContainText('2026');
   const name = await first.locator('.name').boundingBox();
   const detail = await first.locator('.detail').boundingBox();
   expect(detail.y).toBeGreaterThanOrEqual(name.y + name.height);
@@ -56,7 +57,7 @@ test('a type name shows exactly as written', async ({ page }) => {
   served.puzzles[0].type = 'Mirra?e';
   await serve(page, served);
   await page.goto('/app/');
-  await expect(page.locator('.tiles .tile .detail .line')).toHaveText(['Mirra?e', '1 Jan 2026']);
+  await expect(page.locator('.tiles .tile .detail .line')).toHaveText(['Mirra?e']);
 });
 
 test('up to 24 puzzles fit one page, with no pager', async ({ page }) => {

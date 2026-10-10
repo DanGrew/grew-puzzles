@@ -45,13 +45,14 @@ const ALL_WORDS = [
   [[0, 0], [0, 7]], [[0, 7], [2, 7]], [[7, 2], [7, 0]], [[1, 0], [6, 0]]
 ];
 
-test('the address holds the hidden ID; the page shows the title centred with the date small beneath, and the type in the grid band', async ({ page }) => {
+test('the address holds the hidden ID; the page shows the title centred with its difficulty and code small beneath, no date, and the type in the grid band', async ({ page }) => {
   await open(page);
   await expect(page).toHaveURL(/\/app\/play\.html\?id=WSCH-0007$/);
   const title = page.locator('#title');
-  const created = page.locator('#created');
+  const created = page.locator('#ident');
   await expect(title).toHaveText('Farm Kitchen');
-  await expect(created).toHaveText('2 Oct 2026');
+  await expect(created).toHaveText('Easy · WSCH-0007');
+  await expect(page.locator('.play-head')).not.toContainText('2026');
   await expect(page).toHaveTitle('Farm Kitchen · Grew Puzzles');
   await expect(page.locator('#label')).toHaveText('Vanilla');
   await expect(page.locator('#grid .cell')).toHaveCount(64);
@@ -67,7 +68,15 @@ test('the address holds the hidden ID; the page shows the title centred with the
   expect(date.y).toBeGreaterThanOrEqual(box.y + box.height);
   const size = locator => locator.evaluate(el => parseFloat(getComputedStyle(el).fontSize));
   expect(await size(created)).toBeLessThan(await size(title));
-  await expect(page.locator('body')).not.toContainText('WSCH');
+});
+
+test('the difficulty under the title wears its own colour, the one its tile\'s strip wears', async ({ page }) => {
+  const tone = async () => page.locator('#difficulty').evaluate(el => getComputedStyle(el).backgroundColor);
+  await open(page);
+  expect(await tone()).toBe('rgb(159, 216, 174)');
+  await open(page, null, { ...PUZZLE, type: 'Mirra?e' });
+  await expect(page.locator('#ident')).toHaveText('Extreme · WSCH-0007');
+  expect(await tone()).toBe('rgb(241, 154, 154)');
 });
 
 test('a type name shows in the band exactly as written', async ({ page }) => {
@@ -1102,7 +1111,7 @@ test('a repeated word stays put as its count of copies found grows', async ({ pa
 
 // ---- On a phone ----
 
-test('on a phone the page is the screen wide: burger top-left, title, date and bar centred on the screen', async ({ browser }) => {
+test('on a phone the page is the screen wide: burger top-left, title, its difficulty and code, and bar centred on the screen', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   await open(page, null, WIDE_PUZZLE);
@@ -1110,7 +1119,7 @@ test('on a phone the page is the screen wide: burger top-left, title, date and b
   const screen = 390;
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(screen);
   const centre = box => box.x + box.width / 2;
-  for (const selector of ['.site', '#title', '#created']) {
+  for (const selector of ['.site', '#title', '#ident']) {
     expect(Math.abs(centre(await page.locator(selector).boundingBox()) - screen / 2)).toBeLessThan(2);
   }
   const burger = await page.locator('.site .burger').boundingBox();
@@ -1122,7 +1131,7 @@ test('on a phone the page is the screen wide: burger top-left, title, date and b
 test('a hidden ID with no puzzle says so', async ({ page }) => {
   await open(page, '?id=WSCH-0099');
   await expect(page.locator('#title')).toHaveText('Puzzle not found');
-  await expect(page.locator('#created')).toHaveText('');
+  await expect(page.locator('#ident')).toBeHidden();
   await expect(page.locator('#missing')).toBeVisible();
   await expect(page.locator('#play')).toBeHidden();
 });
@@ -1156,7 +1165,7 @@ async function messUp(page) {
 async function printedBoxes(page) {
   await page.emulateMedia({ media: 'print' });
   const box = selector => page.locator(selector).boundingBox();
-  return { title: await box('#title'), created: await box('#created'), type: await box('#label'),
+  return { title: await box('#title'), created: await box('#ident'), type: await box('#label'),
     grid: await box('#grid'), words: await box('#words-list') };
 }
 
@@ -1178,7 +1187,7 @@ test('on a phone, Print page in the drawer opens the print dialog and closes the
 });
 
 for (const layout of ['bottom', 'right', 'overlay']) {
-  test(`the printout is title, date and type, then the grid, then the words beneath it, from ${layout}`, async ({ page }) => {
+  test(`the printout is title, difficulty and code, and type, then the grid, then the words beneath it, from ${layout}`, async ({ page }) => {
     await page.setViewportSize({ width: 1200, height: 900 });
     await openIn(page, layout);
     const b = await printedBoxes(page);
@@ -1214,21 +1223,27 @@ test('the printout is the site\'s cards in black and white, with no site bar, me
   await expect(page.locator('html')).toHaveCSS('print-color-adjust', 'exact');
 });
 
-test('the printout marks the hidden ID small under the words card\'s right corner; the screen never shows it', async ({ page }) => {
+test('the printout reads the difficulty and code under the title, with no date, and the code never again at the foot', async ({ page }) => {
   await open(page);
-  const mark = () => page.locator('#words-list').evaluate(el => {
-    const s = getComputedStyle(el, '::after');
-    return { content: s.content, size: parseFloat(s.fontSize), align: s.textAlign };
-  });
-  expect((await mark()).content).toBe('none');
-  await expect(page.locator('body')).not.toContainText('WSCH');
-
   await page.emulateMedia({ media: 'print' });
-  const printed = await mark();
-  expect(printed.content).toBe('"WSCH-0007"');
-  expect(printed.align).toBe('right');
-  expect(printed.size).toBeLessThan(parseFloat(await page.locator('#words li').first().evaluate(li => getComputedStyle(li).fontSize)));
+  await expect(page.locator('#ident')).toBeVisible();
+  await expect(page.locator('#ident')).toHaveText('Easy · WSCH-0007');
+  expect(await page.locator('#words-list').evaluate(el => getComputedStyle(el, '::after').content)).toBe('none');
+  expect((await page.locator('body').innerText()).match(/WSCH-0007/g)).toHaveLength(1);
+  await expect(page.locator('body')).not.toContainText('2026');
 });
+
+for (const [style, fill] of [['plain', 'rgba(0, 0, 0, 0)'], ['colour', 'rgb(159, 216, 174)'], ['mono', 'rgb(159, 216, 174)']]) {
+  test(`printed ${style}, the difficulty's pill is ${style === 'plain' ? 'outlined, never coloured' : 'in its colour'}${style === 'mono' ? ', in greys' : ''}`, async ({ page }) => {
+    await open(page);
+    await page.evaluate(s => { document.documentElement.dataset.print = s; }, style);
+    await page.emulateMedia({ media: 'print' });
+    const pill = page.locator('#difficulty');
+    await expect(pill).toHaveCSS('background-color', fill);
+    await expect(pill).toHaveCSS('border-top-color', 'rgb(0, 0, 0)');
+    await expect(pill).toHaveCSS('filter', style === 'mono' ? 'grayscale(1)' : 'none');
+  });
+}
 
 test('the printed words read down each column, then on to the next', async ({ page }) => {
   await open(page);
@@ -1533,16 +1548,16 @@ for (const layout of ['bottom', 'right', 'overlay']) {
   });
 }
 
-test('the leading sheet is the title, date and words card with the hidden ID beneath, and no grid', async ({ page }) => {
+test('the leading sheet is the title, its difficulty and code, and the words card, and no grid', async ({ page }) => {
   await openSaga(page, 'overlay');
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('#title')).toBeVisible();
-  await expect(page.locator('#created')).toBeVisible();
+  await expect(page.locator('#ident')).toHaveText('Medium · WSCH-0007');
   await expect(page.locator('#words-list')).toBeVisible();
   await expect(page.locator('#words li')).toHaveCount(8);
   await expect(page.locator('#card')).toBeHidden();
   await expect(page.locator('#tabs')).toBeHidden();
-  expect(await page.locator('#words-list').evaluate(el => getComputedStyle(el, '::after').content)).toBe('"WSCH-0007"');
+  expect(await page.locator('#words-list').evaluate(el => getComputedStyle(el, '::after').content)).toBe('none');
   const words = await page.locator('#words-list').boundingBox();
   const first = await page.locator('.grid-sheet').first().boundingBox();
   expect(first.y).toBeGreaterThan(words.y + words.height);
@@ -1563,7 +1578,7 @@ test('each grid sheet is the title and its blank grid alone, banded Saga · Page
     await expect(sheets.nth(i).locator('.cell').nth(63)).toHaveText(corner);
   }
   // Blank: no words, no found lines, no circles, no solution side.
-  await expect(sheets.locator('li, svg, .created')).toHaveCount(0);
+  await expect(sheets.locator('li, svg, .ident')).toHaveCount(0);
   const sizes = await sheets.locator('.grid').evaluateAll(gs => gs.map(g => [g.offsetWidth, g.offsetHeight]));
   expect(new Set(sizes.map(String)).size).toBe(1);
   expect(sizes[0][0]).toBeGreaterThan(0);
