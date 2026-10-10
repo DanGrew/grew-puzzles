@@ -85,19 +85,19 @@ export function withSignIn(state, signedIn) {
   return signedIn ? state : { ...state, finished: '' };
 }
 
-// How many of each type a collection holds, most first, ties A to Z: "8 Vanilla · 2 Missing". A
-// type is taken with its kind, so a collection of both kinds reads each kind's types under its
-// name, in the side bar's order — "Wordsearches: 8 Vanilla · 2 Missing · Mazes: 2 Vanilla" — and
-// never adds two kinds' Vanillas together; one kind alone stays short, without its name.
+// A collection tile's breakdown lines. One kind alone: how many of each type it holds, most first,
+// ties A to Z — "8 Vanilla · 2 Missing". Both kinds: how many of each kind, a line each in the side
+// bar's order — "10 Wordsearches", "2 Mazes" — so two kinds' Vanillas are never added together
+// (the owner's call, 2026-10-10: the types of both kinds were too much for a tile).
 export function typeBreakdown(collection, puzzles) {
   const typeOf = new Map(puzzles.map(p => [p.hiddenId, p.type]));
   const ids = collection.puzzles.map(({ id }) => id);
   const held = kinds()
-    .map(k => ({ name: k.name, types: ids.filter(id => kindOf(id) === k.kind).map(id => typeOf.get(id)) }))
+    .map(k => ({ ...k, types: ids.filter(id => kindOf(id) === k.kind).map(id => typeOf.get(id)) }))
     .filter(k => k.types.length > 0);
-  return held
-    .map(k => (held.length > 1 ? `${k.name}: ${countedTypes(k.types)}` : countedTypes(k.types)))
-    .join(' · ');
+  return held.length > 1
+    ? held.map(k => `${k.types.length} ${k.types.length === 1 ? k.one : k.name}`)
+    : held.map(k => countedTypes(k.types));
 }
 
 function countedTypes(types) {
@@ -126,7 +126,7 @@ export function browseItems(puzzles, collections) {
     })),
     ...collections.map(c => ({
       kind: 'collection', place: COLLECTIONS, title: c.name, type: COLLECTION_TYPE, tone: COLLECTION_TYPE, created: c.created,
-      rank: 0, href: collectionHref(c.slug), lines: [c.description, typeBreakdown(c, puzzles)], ids: c.puzzles.map(({ id }) => id),
+      rank: 0, href: collectionHref(c.slug), lines: [c.description, ...typeBreakdown(c, puzzles)], ids: c.puzzles.map(({ id }) => id),
     })),
   ];
 }

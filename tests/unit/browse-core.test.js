@@ -445,9 +445,9 @@ describe('browse-core.js', () => {
       { hiddenId: id(1), type: 'Vanilla' }, { hiddenId: id(2), type: 'Missing' }, { hiddenId: id(3), type: 'Vanilla' },
       { hiddenId: id(4), type: 'Wildcards' }, { hiddenId: id(5), type: 'Mirra?e' },
     ];
-    expect(typeBreakdown(collection('A', '', [id(2), id(1), id(3)]), index)).toBe('2 Vanilla · 1 Missing');
-    expect(typeBreakdown(collection('A', '', [id(4), id(2), id(5)]), index)).toBe('1 Mirra?e · 1 Missing · 1 Wildcards');
-    expect(typeBreakdown(collection('A', '', [id(1)]), index)).toBe('1 Vanilla');
+    expect(typeBreakdown(collection('A', '', [id(2), id(1), id(3)]), index)).toEqual(['2 Vanilla · 1 Missing']);
+    expect(typeBreakdown(collection('A', '', [id(4), id(2), id(5)]), index)).toEqual(['1 Mirra?e · 1 Missing · 1 Wildcards']);
+    expect(typeBreakdown(collection('A', '', [id(1)]), index)).toEqual(['1 Vanilla']);
   });
 
   test('a collection of mazes alone reads its maze types the same way', () => {
@@ -456,16 +456,21 @@ describe('browse-core.js', () => {
       { hiddenId: maze(1), type: 'Vanilla' }, { hiddenId: maze(2), type: 'Keys' },
       { hiddenId: maze(3), type: 'Vanilla' }, { hiddenId: maze(4), type: 'Vanilla' },
     ];
-    expect(typeBreakdown(collection('A', '', [maze(2), maze(1), maze(3), maze(4)]), index)).toBe('3 Vanilla · 1 Keys');
+    expect(typeBreakdown(collection('A', '', [maze(2), maze(1), maze(3), maze(4)]), index)).toEqual(['3 Vanilla · 1 Keys']);
   });
 
-  test('a collection of both kinds splits its breakdown by kind, so two Vanillas are never added together', () => {
+  test('a collection of both kinds counts each kind on a line of its own, so two Vanillas are never added together', () => {
     const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
     const words = Array.from({ length: 10 }, (_, i) => ({ hiddenId: id(i + 1), type: i < 8 ? 'Vanilla' : 'Missing' }));
     const index = [...words, { hiddenId: maze(1), type: 'Vanilla' }, { hiddenId: maze(2), type: 'Vanilla' }];
     // Mazes first in the collection, still Wordsearches first on the tile — the side bar's order.
     const ids = [maze(1), maze(2), ...words.map(w => w.hiddenId)];
-    expect(typeBreakdown(collection('A', '', ids), index)).toBe('Wordsearches: 8 Vanilla · 2 Missing · Mazes: 2 Vanilla');
+    expect(typeBreakdown(collection('A', '', ids), index)).toEqual(['10 Wordsearches', '2 Mazes']);
+    expect(typeBreakdown(collection('A', '', [id(1), maze(1)]), index)).toEqual(['1 Wordsearch', '1 Maze']);
+  });
+
+  test('an empty collection has no breakdown line', () => {
+    expect(typeBreakdown(collection('A', '', []), [])).toEqual([]);
   });
 
   test('a collection tile links to its collection page by slug', () => {

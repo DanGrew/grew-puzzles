@@ -241,8 +241,8 @@ test.describe('on a phone', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
 
-  // TASK-107: a collection of both kinds tells their Vanillas apart, and its longer line wraps.
-  test('a collection tile of both kinds reads each kind\'s types under its name, wrapped, never cut short', async ({ page }) => {
+  // TASK-107: a collection of both kinds counts each kind, a line each, never adding their Vanillas.
+  test('a collection tile of both kinds counts each kind on a line of its own, never cut short', async ({ page }) => {
     await serve(page);
     await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
       { slug: 'mix', name: 'Mix', description: 'Both.', created: '2026-10-09', puzzles: [
@@ -250,13 +250,9 @@ test.describe('on a phone', () => {
       ] },
     ] } }));
     await page.goto('/app/?kind=collections');
-    const line = page.locator('#tiles .tile.collection .detail .line').nth(1);
-    await expect(line).toHaveText('Wordsearches: 1 Saga · 1 Vanilla · Mazes: 1 Keys · 1 Vanilla');
-    const fit = await line.evaluate(el => ({
-      cut: el.scrollWidth > el.clientWidth, rows: el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight),
-    }));
-    expect(fit.cut).toBe(false);
-    expect(fit.rows).toBeGreaterThan(1.5);
+    const lines = page.locator('#tiles .tile.collection .detail .line');
+    await expect(lines).toHaveText(['Both.', '2 Wordsearches', '2 Mazes']);
+    expect(await lines.evaluateAll(els => els.some(el => el.scrollWidth > el.clientWidth))).toBe(false);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
 });
