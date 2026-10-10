@@ -40,15 +40,16 @@ export function placeName(place) {
 export function difficultyOf(kind, type) {
   const difficulty = new Map([
     ['wordsearch:Saga', 'Medium'], ['wordsearch:Wildcards', 'Medium'], ['wordsearch:Missing', 'Hard'],
-    ['wordsearch:Repeats', 'Hard'], ['wordsearch:Mirra?e', 'Extreme'],
+    ['wordsearch:Repeats', 'Hard'], ['wordsearch:Mirra?e', 'Extreme'], ['wordsearch:Kids', 'Kids'],
     ['maze:Collectibles', 'Medium'], ['maze:Code Breaker', 'Medium'], ['maze:Keys', 'Hard'], ['maze:Keylecticodes', 'Extreme'],
   ]);
   return difficulty.get(`${kind}:${type}`) ?? 'Easy';
 }
 
-// Every difficulty, easiest first: the Difficulty filter's order, and the Difficulty sort's.
+// Every difficulty, easiest first, then Kids — the owner's, for puzzles made for children
+// (2026-10-09): the Difficulty filter's order, and the Difficulty sort's.
 export function difficulties() {
-  return ['Easy', 'Medium', 'Hard', 'Extreme'];
+  return ['Easy', 'Medium', 'Hard', 'Extreme', 'Kids'];
 }
 
 // A puzzle's difficulty: the one the owner saved with it in its index entry, or — none saved, as

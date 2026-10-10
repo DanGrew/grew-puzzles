@@ -31,12 +31,14 @@ export function noFilters(types, signedIn) {
   return types.length === 0 && !signedIn;
 }
 
-// Every tone, easiest first, then collections: the Difficulty sort's order.
+// Every tone, easiest first, then Kids, then collections: the Difficulty sort's order. A Kids tile
+// and a collection's never share a grid — each place shows only its own — so Kids sorts last of
+// the puzzles, and first sorted hardest first.
 function tones() {
   return [...difficulties(), COLLECTION_TYPE];
 }
 
-// The filter popup, the same for every kind: a Difficulty row, Easy to Extreme, each in its colour,
+// The filter popup, the same for every kind: a Difficulty row, Easy to Extreme then Kids, each in its colour,
 // then a Type row, the kind's types in one list — a row with nothing to pick isn't there. A pick
 // names what it picks from (levels or types) and what.
 export function filterRows(options) {
@@ -184,7 +186,7 @@ function inPicks(p, state) {
 }
 
 // A sort's order: its first key runs the way the direction does, and any after it hold A to Z
-// either way. Difficulty runs Easy to Extreme, then collections — the filter rows' order — as the
+// either way. Difficulty runs Easy to Extreme, then Kids, then collections — tones() — as the
 // default direction, desc, so the plain landing page is easiest first; within a difficulty, type
 // then title.
 function sortOrder(sort) {
