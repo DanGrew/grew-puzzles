@@ -1,27 +1,29 @@
 // Done ticks on the landing and collection pages: signed in, every tile whose puzzles the player has
 // finished — wordsearches and mazes alike — wears a ✓. The tiles draw first and never wait — the
-// ticks arrive once the player's saved lines and maze finds are read and the files of the puzzles
-// they've started are opened. Signed out, nothing is read and no tile changes; a read that fails
-// ticks nothing it can't be sure of. The same read hands the landing page the started wordsearches
-// still in play, most recent first, for its Continue playing rail. Every rule is
-// core/wordsearch/done-core.js's, a maze's finished core/maze/done-core.js's; the client, and who
-// is signed in, are ui/sign-in-ui.js's.
+// ticks arrive once the player's saved lines, maze places and maze finds are read and the files of
+// the puzzles they've started are opened. Signed out, nothing is read and no tile changes; a read
+// that fails ticks nothing it can't be sure of. The same read hands the landing page the started
+// puzzles still in play, wordsearches and mazes together, most recently played first, for its
+// Continue playing rail. Every rule is core/wordsearch/done-core.js's, a maze's
+// core/maze/done-core.js's; the client, and who is signed in, are ui/sign-in-ui.js's.
 import { client } from '../sign-in-ui.js';
 import { accountView } from '../../core/auth-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { savedRows } from '../../core/wordsearch/progress-core.js';
 import {
-  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, tileDone,
+  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, lastPlayed, railOrder, tileDone,
 } from '../../core/wordsearch/done-core.js';
 import { mazeFile } from '../../core/maze/play-core.js';
-import { doneMazes } from '../../core/maze/done-core.js';
+import { doneMazes, playingMazes, mazeLastPlayed } from '../../core/maze/done-core.js';
 
 var DONE_LOOKUPS = { true: lookUp, false: none };
 var DONE_READS = { true: readFrom, false: function (source, n, rows, then) { then(rows); } };
-// What's read for the ticks: every saved line, and every maze find, each in one fixed order.
+// What's read for the ticks and the rail: every saved line, every maze find and every maze place,
+// each in one fixed order.
 var DONE_SOURCES = [
   { table: 'progress', columns: 'puzzle, page, start_row, start_col, direction, found_at', order: ['puzzle', 'page', 'start_row', 'start_col', 'direction'] },
-  { table: 'maze_found', columns: 'puzzle, cell_row, cell_col', order: ['puzzle', 'cell_row', 'cell_col'] }
+  { table: 'maze_found', columns: 'puzzle, cell_row, cell_col, found_at', order: ['puzzle', 'cell_row', 'cell_col'] },
+  { table: 'maze_position', columns: 'puzzle, cell_row, cell_col, moved_at', order: ['puzzle'] }
 ];
 var DONE_HANDS = { true: function (then, progress) { then(progress); }, false: function () {} };
 // Each look-up is numbered: only the latest one's answer is handed on, so a slow read that lands
@@ -57,13 +59,13 @@ function lookUp(tiles, then) {
   Promise.all(DONE_SOURCES.map(function (source) {
     return new Promise(function (read) { readFrom(source, 0, [], read); });
   })).then(function (read) {
-    var lines = read[0], finds = read[1];
-    var started = startedPuzzles(lines, tiles), mazes = startedPuzzles(finds, tiles);
+    var lines = read[0], finds = read[1], places = read[2];
+    var started = startedPuzzles(lines, tiles), mazes = startedPuzzles(finds.concat(places), tiles);
     Promise.all([Promise.allSettled(started.map(openPuzzle)), Promise.allSettled(mazes.map(openMaze))]).then(function (opened) {
-      var done = donePuzzles(lines, started, opened[0]);
-      DONE_HANDS[mine === asked](then, {
-        done: done.concat(doneMazes(finds, mazes, opened[1])), playing: playingPuzzles(lines, started, opened[0], done), signedIn: true
-      });
+      var done = donePuzzles(lines, started, opened[0]), mazesDone = doneMazes(finds, mazes, opened[1]);
+      var playing = playingPuzzles(lines, started, opened[0], done).concat(playingMazes(places, finds, mazes, opened[1], mazesDone));
+      var lasts = [lastPlayed(lines, 'found_at'), mazeLastPlayed(places, finds)];
+      DONE_HANDS[mine === asked](then, { done: done.concat(mazesDone), playing: railOrder(playing, lasts), signedIn: true });
     });
   });
 }

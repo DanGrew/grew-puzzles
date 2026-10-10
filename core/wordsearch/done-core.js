@@ -2,8 +2,8 @@
 // never saved — it is worked out as the play page works it out, every placed word's line saved
 // (core/wordsearch/play-core.js, core/wordsearch/progress-core.js). Only the files of puzzles the
 // player has saved a find in are ever opened, never every puzzle on the page. The same read says
-// which started puzzles are still in play, for the landing page's Continue playing rail. Pure — the
-// reading is ui/wordsearch/done-ui.js.
+// which started puzzles are still in play, for the landing page's Continue playing rail, and in
+// what order, mazes among them. Pure — the reading is ui/wordsearch/done-ui.js.
 import { playBoard, restoredPlay, finished } from './play-core.js';
 import { restoredFinds } from './progress-core.js';
 
@@ -40,15 +40,27 @@ export function donePuzzles(rows, started, opened) {
 }
 
 // The started puzzles still being played — the Continue playing rail's — the one found in most
-// recently first: its file opened, and not finished. When a puzzle was last played is the latest
-// found time among its saved lines. A file that couldn't be opened is never in play: no rail beats
-// a wrong one.
+// recently first: its file opened, and not finished. A file that couldn't be opened is never in
+// play: no rail beats a wrong one.
 export function playingPuzzles(rows, started, opened, done) {
+  return railOrder(started.filter(function (id, i) { return opened[i].status === 'fulfilled' && !done.includes(id); }),
+    [lastPlayed(rows, 'found_at')]);
+}
+
+// When each puzzle was last played: the latest time among its saved rows, column naming the time a
+// row holds — a wordsearch's lines their found_at, a maze's place its moved_at and its finds their
+// found_at (core/maze/done-core.js).
+export function lastPlayed(rows, column) {
   var last = new Map(rows.map(function (row) { return [row.puzzle, '']; }));
-  rows.forEach(function (row) { last.set(row.puzzle, [last.get(row.puzzle), row.found_at].sort()[1]); });
-  return started
-    .filter(function (id, i) { return opened[i].status === 'fulfilled' && !done.includes(id); })
-    .sort(function (a, b) { return last.get(b).localeCompare(last.get(a)); });
+  rows.forEach(function (row) { last.set(row.puzzle, [last.get(row.puzzle), row[column]].sort()[1]); });
+  return last;
+}
+
+// The Continue playing rail, puzzles of every kind together: the one played most recently first,
+// by lasts, each kind's last played times.
+export function railOrder(playing, lasts) {
+  var last = new Map(lasts.flatMap(function (times) { return [...times]; }));
+  return playing.slice().sort(function (a, b) { return last.get(b).localeCompare(last.get(a)); });
 }
 
 function puzzleDone(rows, hiddenId, puzzle) {
