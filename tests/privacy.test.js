@@ -9,8 +9,8 @@ const WORDS = [
   ['Your privacy', 'You don\'t need an account to play — every puzzle is free and open to everyone. If you\'d like your progress saved, you can sign in with Google.'],
   ['No tricks', `There are no tricks and no money-making here. We literally just use your email to save your progress, with Supabase, the service we use for our database. If you have any questions or concerns, please reach out at ${EMAIL}.`],
   ['What we keep', 'Only your email address and your progress on each puzzle. We use them for one thing: saving your progress so you can pick up where you left off, on any device.'],
-  ['Who else sees it', 'Nobody. Sign-in is handled by Google, and your progress is stored with Supabase. We don\'t sell anything, show ads, or track you.'],
-  ['Deleting it', 'Tap your picture, then Delete my account. Everything we keep about you is removed for good.'],
+  ['Who else sees it', 'Nobody. Sign-in is handled by Google, and your progress is stored with Supabase, and backed up privately on GitHub. We don\'t sell anything, show ads, or track you.'],
+  ['Deleting it', `Tap your picture, then Delete my account, and everything we keep about you is removed. We also keep backups for 90 days, so a copy stays in those until it expires. Any concerns, drop us an email at ${EMAIL} and we'll handle it.`],
 ];
 
 test.beforeEach(async ({ context }) => {
@@ -37,12 +37,12 @@ test('the Privacy page is worded exactly as the owner wrote it, a heading to eac
   await expect(page.locator('main')).not.toContainText('[');
 });
 
-test('the puzzles\' email is a link that starts an email to it', async ({ page }) => {
+test('the puzzles\' email, under No tricks and Deleting it, is a link that starts an email to it', async ({ page }) => {
   await page.goto('/app/privacy.html');
-  const link = page.locator('main a');
-  await expect(link).toHaveCount(1);
-  await expect(link).toHaveText(EMAIL);
-  await expect(link).toHaveAttribute('href', `mailto:${EMAIL}`);
+  const links = page.locator('main a');
+  await expect(links).toHaveCount(2);
+  await expect(links).toHaveText([EMAIL, EMAIL]);
+  for (const link of await links.all()) await expect(link).toHaveAttribute('href', `mailto:${EMAIL}`);
 });
 
 test('no page carries the studio\'s old address — the puzzles\' email is the site\'s one', async ({ request }) => {
