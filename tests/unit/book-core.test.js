@@ -10,7 +10,7 @@ const collections = () => [
 
 describe('book-core.js', () => {
   test('the book opens on a title page: the collection, the site, and where the answers are', () => {
-    const book = bookView(collections(), 'issue-1');
+    const book = bookView(collections(), 'issue-1', []);
     expect(book.found).toBe(true);
     expect(book.name).toBe('Issue #1');
     expect(book.description).toBe('The first book.');
@@ -19,28 +19,32 @@ describe('book-core.js', () => {
   });
 
   test('then one page per puzzle, in number order, each headed with its number — the number its character goes by', () => {
-    expect(bookView(collections(), 'issue-1').pages).toEqual([
-      { heading: 'Puzzle 1', number: 1, search: '?id=WSCH-0002' },
-      { heading: 'Puzzle 2', number: 2, search: '?id=WSCH-0003' },
-      { heading: 'Puzzle 10', number: 10, search: '?id=WSCH-0001' },
+    expect(bookView(collections(), 'issue-1', []).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'wordsearch', search: '?id=WSCH-0002' },
+      { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0003' },
+      { heading: 'Puzzle 10', number: 10, kind: 'wordsearch', search: '?id=WSCH-0001' },
     ]);
   });
 
-  test('a maze in the collection is left out of its book: it plays on the site alone, its number skipped', () => {
+  test('a 32×40 maze takes its place in the book like any puzzle; a bigger one, or one the index doesn\'t list, is left out, its number skipped', () => {
     const mixed = [{
       slug: 'mixed', name: 'Mixed', description: '', created: '2026-10-08',
-      puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0001', number: 3 }, { id: 'WSCH-0002', number: 1 }],
+      puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0001', number: 3 }, { id: 'MAZE-0001', number: 1 }, { id: 'MAZE-0009', number: 4 }],
     }];
-    expect(bookView(mixed, 'mixed').pages).toEqual([
-      { heading: 'Puzzle 1', number: 1, search: '?id=WSCH-0002' },
-      { heading: 'Puzzle 3', number: 3, search: '?id=WSCH-0001' },
+    const index = [
+      { hiddenId: 'MAZE-0001', width: 32, height: 40 },
+      { hiddenId: 'MAZE-0003', width: 100, height: 100 },
+      { hiddenId: 'MAZE-0004', width: 32, height: 40 },
+    ];
+    expect(bookView(mixed, 'mixed', index).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'maze', search: '?id=MAZE-0001' },
+      { heading: 'Puzzle 3', number: 3, kind: 'wordsearch', search: '?id=WSCH-0001' },
     ]);
-    const mazes = [{ slug: 'mazes', name: 'Mazes', description: '', created: '2026-10-08', puzzles: [{ id: 'MAZE-0001', number: 1 }] }];
-    expect(bookView(mazes, 'mazes').pages).toEqual([]);
+    expect(bookView(mixed, 'mixed', []).pages.map(p => p.number)).toEqual([3]);
   });
 
   test('nothing the book adds names a hidden ID', () => {
-    const { pages, ...added } = bookView(collections(), 'issue-1');
+    const { pages, ...added } = bookView(collections(), 'issue-1', []);
     expect(JSON.stringify(added)).not.toContain('WSCH');
     expect(pages.map(p => p.heading).join()).not.toContain('WSCH');
   });
@@ -53,14 +57,14 @@ describe('book-core.js', () => {
   });
 
   test('the book leads back to its collection, slug and all', () => {
-    expect(bookView(collections(), 'issue-1').back).toBe('collection.html?slug=issue-1');
+    expect(bookView(collections(), 'issue-1', []).back).toBe('collection.html?slug=issue-1');
     const odd = [{ slug: 'a b&c', name: 'Odd', description: '', created: '2026-10-03', puzzles: [] }];
-    expect(bookView(odd, 'a b&c').back).toBe('collection.html?slug=a%20b%26c');
+    expect(bookView(odd, 'a b&c', []).back).toBe('collection.html?slug=a%20b%26c');
   });
 
   test('making the book leaves the collection\'s published order as it was', () => {
     const held = collections();
-    bookView(held, 'issue-1');
+    bookView(held, 'issue-1', []);
     expect(held[1].puzzles.map(p => p.number)).toEqual([2, 10, 1]);
   });
 
@@ -76,8 +80,8 @@ describe('book-core.js', () => {
 
   test('an address naming no collection the site holds has no book', () => {
     const missing = { found: false, name: 'Collection not found', description: '', address: '', answers: '', back: '', pages: [] };
-    expect(bookView(collections(), 'nope')).toEqual(missing);
-    expect(bookView(collections(), null)).toEqual(missing);
-    expect(bookView([], 'issue-1')).toEqual(missing);
+    expect(bookView(collections(), 'nope', [])).toEqual(missing);
+    expect(bookView(collections(), null, [])).toEqual(missing);
+    expect(bookView([], 'issue-1', [])).toEqual(missing);
   });
 });

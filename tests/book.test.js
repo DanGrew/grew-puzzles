@@ -81,22 +81,62 @@ test('Print book on a collection\'s page opens the print dialog on its book, eve
   await expect(page).toHaveTitle('Issue #1 · Grew Puzzles');
 });
 
-test('a maze in a collection is left out of its book, never fetched, and the rest prints', async ({ page }) => {
-  const mixed = {
-    slug: 'mixed', name: 'Mixed', description: 'A wordsearch and a big maze.', created: '2026-10-08',
-    puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0007', number: 1 }],
-  };
-  const asked = [];
+// Mazes for a mixed book: a 32×40 (MAZE-0002) and a 100×100 (MAZE-0003), as the mazes' index lists them.
+const MAZE_32 = require('./fixtures/MAZE-0002.json');
+const MAZE_100 = require('./fixtures/MAZE-0003.json');
+const mixed = {
+  slug: 'mixed', name: 'Mixed', description: 'A wordsearch and two mazes.', created: '2026-10-08',
+  puzzles: [{ id: 'MAZE-0003', number: 2 }, { id: 'WSCH-0007', number: 1 }, { id: 'MAZE-0002', number: 3 }],
+};
+
+async function openMixed(page, asked = []) {
   page.on('request', r => asked.push(r.url()));
   await serve(page);
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [mixed] } }));
+  await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: [MAZE_32, MAZE_100].map(m => ({ hiddenId: m.hiddenId, width: m.width, height: m.height })) } }));
+  await page.route('**/content/puzzles/maze/MAZE-0002.json', r => r.fulfill({ json: MAZE_32 }));
+  await page.route('**/content/puzzles/maze/MAZE-0003.json', r => r.fulfill({ json: MAZE_100 }));
   await catchPrint(page);
   await page.goto('/app/book.html?slug=mixed');
   await expect(page.locator('#ready')).toBeVisible();
+}
+
+test('a 32×40 maze takes its page in its collection\'s book in number order; a bigger maze is left out, never fetched', async ({ page }) => {
+  const asked = [];
+  await openMixed(page, asked);
   await expect.poll(() => page.evaluate(() => window.printed)).toEqual([[64]]);
   await page.emulateMedia({ media: 'print' });
-  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1']);
-  expect(asked.filter(url => url.includes('MAZE'))).toEqual([]);
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 3']);
+  await expect(sheets(page).nth(1).locator('.maze-sheet h1')).toHaveText(MAZE_32.title);
+  await expect(page.locator('.sheet .page-number')).toHaveText(['3', '4']);
+  expect(asked.filter(url => url.includes('MAZE-0003'))).toEqual([]);
+});
+
+test('a maze\'s book page is exactly its own printout, its number above the title, the maze where it stands on its own sheet', async ({ page, browser }) => {
+  await openMixed(page);
+  await page.emulateMedia({ media: 'print' });
+  const inBook = sheets(page).nth(1).locator('.maze-sheet');
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/maze/MAZE-0002.json', r => r.fulfill({ json: MAZE_32 }));
+  await play.goto('/app/maze.html?id=MAZE-0002');
+  await expect(play.locator('#play')).toBeVisible();
+  const own = play.locator('#maze-sheet');
+  for (const part of ['maze', 'figures']) {
+    expect(await inBook.locator(`[data-part="${part}"]`).innerHTML()).toBe(await own.locator(`[data-part="${part}"]`).innerHTML());
+  }
+  expect(await inBook.locator('[data-part="note"]').innerHTML()).toBe(await own.locator('[data-part="note"]').innerHTML());
+  await expect(inBook.locator('.maze-sheet-top > .sheet-number')).toHaveText('Puzzle 3');
+  const top = await sheets(page).nth(1).boundingBox();
+  const maze = await inBook.locator('[data-part="maze"]').boundingBox();
+  expect(maze.y - top.y).toBeCloseTo(2 * 96, 0);
+  expect(maze.height).toBeCloseTo(8 * 96, 0);
+  await play.close();
+});
+
+test('saved as a PDF, a book with a maze is every page 8.5×11 in, the maze on one page', async ({ page }) => {
+  await openMixed(page);
+  const pdf = await savePdf(page);
+  expect(pageSizes(pdf)).toEqual([LETTER, LETTER, LETTER, LETTER]);
 });
 
 test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {

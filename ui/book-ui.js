@@ -1,35 +1,51 @@
-// The collection book's DOM: the title page, then one copy of the play page per puzzle, each
-// drawn by the play page's own printout (drawSheet), and the print dialog once every grid is
-// drawn. Every rule lives in core/book-core.js; how a puzzle's page looks is styles/play.css's.
+// The collection book's DOM: the title page, then one copy of each puzzle's own printout — a
+// wordsearch the play page's, drawn by its drawSheet; a maze the maze page's sheet, drawn by its
+// drawMazeSheet — and the print dialog once every page is drawn. Every rule lives in
+// core/book-core.js; how a puzzle's page looks is styles/play.css's and styles/maze.css's.
 import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers, printStyleOf } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
+import { mazeUrl, mazeBoard } from '../core/maze/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
+import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
 var SCENE_WAIT = 1500;
+// Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
+// that page dressed in its character. A maze is always one sheet.
+var BOOK_KINDS = {
+  wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
+  maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
+};
 
 function bookEl(id) {
   return document.getElementById(id);
 }
 
+function readJson(url) {
+  return fetch(url).then(function (r) { return r.json(); });
+}
+
 // Themed, the page behind the print dialog wears a background, as the collection page does — the
 // paper never does (styles/look.css is screen only). The book prints in the style its address
-// names — Print book's pick on the collection page — every time it prints.
+// names — Print book's pick on the collection page — every time it prints. The mazes' index tells
+// which of the collection's mazes print: only 32×40.
 export function openBook(search) {
   document.documentElement.dataset.print = printStyleOf(search);
   bookEl('print-again').addEventListener('click', function () { window.print(); });
   var scene = dressRandomScene(Math.random, SCENE_WAIT);
   Promise.all([
-    fetch('../content/collections/index.json').then(function (r) { return r.json(); }),
+    readJson('../content/collections/index.json'),
+    readJson('../content/puzzles/maze/index.json').catch(function () { return { puzzles: [] }; }),
     fetch('play.html').then(function (r) { return r.text(); }),
+    fetch('maze.html').then(function (r) { return r.text(); }),
   ]).then(function (got) {
-    var book = bookView(got[0].collections, slugOf(search));
+    var book = bookView(got[0].collections, slugOf(search), got[1].puzzles);
     showTitlePage(book);
-    BOOK_SHOWS[book.found](book, got[1], scene);
+    BOOK_SHOWS[book.found](book, { wordsearch: sheetTemplate(got[2], ['.play-head', 'main.play']), maze: sheetTemplate(got[3], ['.maze-sheet']) }, scene);
   });
 }
 
@@ -52,22 +68,21 @@ function showMissing() {
 // page's background too, so no page prints blank however many puzzles the collection holds — and,
 // the fonts in, each page's word columns are sized as the play page sizes its own. Printed Colour
 // or Black and white, each puzzle wears its character in number order, round again after the last,
-// as on the collection page, each page at a spot of its own picked again every time the book
-// prints, and every character's images are in before the dialog opens.
-function printBook(book, playPage, scene) {
-  var template = sheetTemplate(playPage);
+// as on the collection page, each wordsearch page at a spot of its own picked again every time the
+// book prints, and every character's images are in before the dialog opens.
+function printBook(book, templates, scene) {
+  var kinds = book.pages.map(function (page) { return BOOK_KINDS[page.kind]; });
   Promise.all([
-    Promise.all(book.pages.map(function (page) { return fetch(puzzleUrl(page.search)).then(playJson); })),
+    Promise.all(book.pages.map(function (page, i) { return fetch(kinds[i].url(page.search)).then(playJson); })),
     withCharacters(function (characters) { return characters; }),
   ])
     .then(function (got) {
-      var puzzles = got[0];
-      var boards = puzzles.map(function (puzzle) { return playBoard(puzzle); });
-      var numbers = pageNumbers(boards);
+      var boards = got[0].map(function (puzzle, i) { return kinds[i].board(puzzle); });
+      var numbers = pageNumbers(boards.map(function (board, i) { return kinds[i].sheets(board); }));
       var wearers = book.pages.map(function (page) { return characterAt(got[1], page.number); });
-      var pages = boards.map(function (board, i) { return sheet(template, book.pages[i].heading, board, numbers[i]); });
+      var pages = boards.map(function (board, i) { return kinds[i].page(templates[book.pages[i].kind], book.pages[i].heading, board, numbers[i]); });
       var printout = function () {
-        pages.forEach(function (page, i) { dressPrintout(page.querySelector('main.play'), page, boards[i], wearers[i], true, Math.random); });
+        pages.forEach(function (page, i) { kinds[i].dress(page, boards[i], wearers[i]); });
       };
       bookEl('sheets').replaceChildren.apply(bookEl('sheets'), pages);
       printout();
@@ -76,6 +91,14 @@ function printBook(book, playPage, scene) {
     })
     .then(sizeBookWords)
     .then(showReady, showFailed);
+}
+
+function dressWordsearchPage(page, board, character) {
+  dressPrintout(page.querySelector('main.play'), page, board, character, true, Math.random);
+}
+
+function dressMazePage(page, board, character) {
+  dressMazeSheet(page.querySelector('.maze-sheet'), page, character);
 }
 
 function sizeBookWords() {
@@ -93,20 +116,18 @@ function showFailed() {
   bookEl('failed').hidden = false;
 }
 
-// A blank book page: its number, then the play page's own heading and puzzle, taken from the play
-// page itself so the book never keeps a copy of its own.
-function sheetTemplate(playPage) {
-  var play = new DOMParser().parseFromString(playPage, 'text/html');
+// A blank book page: its number, then the parts of a kind's page that print, taken from that page
+// itself so the book never keeps a copy of its own.
+function sheetTemplate(html, parts) {
+  var source = new DOMParser().parseFromString(html, 'text/html');
   var page = bookEl('sheet').content.firstElementChild.cloneNode(true);
-  page.append(play.querySelector('.play-head'), play.querySelector('main.play'));
+  page.append.apply(page, parts.map(function (part) { return source.querySelector(part); }));
   return page;
 }
 
-// One puzzle's page, drawn exactly as the play page draws its printout — a puzzle of several grids
-// runs on over a page per grid, each headed with the puzzle's number too. Every page carries its
-// page number at the foot, on its outer side. Each copy then drops the play page's ids, which
-// belong to the play page alone.
-function sheet(template, heading, board, numbers) {
+// One wordsearch's page, drawn exactly as the play page draws its printout — a puzzle of several
+// grids runs on over a page per grid, each headed with the puzzle's number too.
+function wordsearchPage(template, heading, board, numbers) {
   var page = template.cloneNode(true);
   var part = function (id) { return page.querySelector('#' + id); };
   var number = page.querySelector('.sheet-number');
@@ -117,6 +138,23 @@ function sheet(template, heading, board, numbers) {
     grid.prepend(number.cloneNode(true));
     grid.append(pageNumber.cloneNode(true));
   });
+  return numbered(page, numbers);
+}
+
+// One maze's page, drawn exactly as the maze page draws its printout, its number heading the
+// sheet's top, above the title, so the maze stands where it does on the maze page's own.
+function mazePage(template, heading, board, numbers) {
+  var page = template.cloneNode(true);
+  var number = page.querySelector('.sheet-number');
+  number.textContent = heading;
+  page.querySelector('.maze-sheet-top').prepend(number);
+  drawMazeSheet(page.querySelector('.maze-sheet'), board);
+  return numbered(page, numbers);
+}
+
+// Every page carries its page number at the foot, on its outer side. Each copy then drops its
+// page's ids, which belong to that page alone.
+function numbered(page, numbers) {
   page.querySelectorAll('.page-number').forEach(function (el, i) {
     el.textContent = numbers[i].number;
     el.dataset.side = numbers[i].side;

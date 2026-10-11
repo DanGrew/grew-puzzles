@@ -671,3 +671,94 @@ export function minimapTrail(trail) {
 export function dragView(view, from, to, scale, frame, board) {
   return onMaze({ cell: view.cell, x: view.x + (to.x - from.x) / scale, y: view.y + (to.y - from.y) / scale }, frame, board);
 }
+
+// ---- Paper ----
+// A maze prints on one 8.5×11 page, 0.2 in a cell, only at 32×40, which fills it (the owner's call,
+// 2026-10-08): a bigger maze plays on the site alone, and has no Print and no page in a book. The
+// sheet is always the blank maze: no trail, nothing found, never the solution.
+
+export function mazePrints(cols, rows) {
+  return cols === 32 && rows === 40;
+}
+
+// The note box at the sheet's top right (the owner's pick, 2026-10-11: Grouped): what the maze has
+// to find, a line a group, every box empty: Guides, Keys numbered and Collectibles as the
+// checklist has them, then Letters and Exits as rows of boxes each labelled with its own, or End.
+export function printedNote(board) {
+  var labels = function (k) { return board.stops.filter(function (s) { return s.kind === k; }).map(function (s) { return s.label; }); };
+  var groups = checklist(newMazePlay(board), board).filter(function (line) { return line.boxes.length > 0; }).map(function (line) {
+    return { name: line.text, boxes: line.boxes.map(function (b) { return b.label; }) };
+  });
+  var rows = [['Letters', labels('letter').sort()], ['Exits', labels('exit')], ['End', labels('end').map(function () { return ''; })]];
+  return groups.concat(rows.filter(function (row) { return row[1].length > 0; }).map(function (row) { return { name: row[0], boxes: row[1] }; }));
+}
+
+// What a stop reads on paper, where no colour tells a key from a letter: a key KEY and its number,
+// a letter its letter, an exit its letter order, the end End; a guide or collectible nothing.
+export function printedLabel(stop) {
+  return { true: 'KEY ' + stop.label, false: stop.label }[stop.kind === 'key'];
+}
+
+// A zone on paper is labelled with its key's number, ZONE 1 to ZONE 4.
+export function printedZone(zone) {
+  return 'ZONE ' + zone.key;
+}
+
+// One shape of the sheet: an SVG element's name, its attributes and its text.
+function shape(name, attributes, text) {
+  return { name: name, attributes: attributes, text: text };
+}
+
+// Shapes placed together from a cell's top-left corner, so many cells across and down.
+function placedAt(x, y, shapes) {
+  return { transform: 'translate(' + x + ' ' + y + ')', shapes: shapes };
+}
+
+// Each stop as paper draws it, in its cell: a guide a small dot, a collectible a dot, a key a box
+// reading KEY and its number, a letter a disc, an exit or the end a pill with its letter order or
+// End.
+function stopShapes(stop) {
+  var label = printedLabel(stop);
+  var pill = function (kind) {
+    return [shape('rect', { class: 'ms-' + kind, x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, ''), shape('text', { class: 'ms-' + kind + '-text', x: 0.5, y: 0.51 }, label)];
+  };
+  var shapes = {
+    guide: [shape('circle', { class: 'ms-guide', cx: 0.5, cy: 0.5, r: 0.16 }, '')],
+    collectible: [shape('circle', { class: 'ms-dot', cx: 0.5, cy: 0.5, r: 0.24 }, '')],
+    key: [shape('rect', { class: 'ms-key', x: 0.05, y: 0.18, width: 0.9, height: 0.64, rx: 0.12 }, ''), shape('text', { class: 'ms-key-text', x: 0.5, y: 0.5 }, label)],
+    letter: [shape('circle', { class: 'ms-letter', cx: 0.5, cy: 0.5, r: 0.4 }, ''), shape('text', { class: 'ms-letter-text', x: 0.5, y: 0.52 }, label)],
+    exit: pill('exit'),
+    end: pill('end')
+  };
+  return placedAt(stop.cell[1], stop.cell[0], shapes[stop.kind]);
+}
+
+// A grid area over the maze's cells, from a top-left cell, so many rows down and columns across.
+function areaOf(cell, span) {
+  return (cell[0] + 1) + ' / ' + (cell[1] + 1) + ' / span ' + span + ' / span ' + span;
+}
+
+// What the sheet draws, in cells, in the order it lies on the paper: the start; each zone, shaded
+// and labelled; the walls; each block, over the walls so none crosses it; each stop with what it
+// reads. And where the puzzle's character stands in, printed Colour or Black and white: on each
+// collectible and each block, as grid areas over the cells. Nothing the player did.
+export function printedMaze(board) {
+  var zone = function (z) {
+    return placedAt(z.left, z.top, [
+      shape('rect', { class: 'ms-zone', width: z.right - z.left + 1, height: z.bottom - z.top + 1 }, ''),
+      shape('text', { class: 'ms-zone-text', x: 0.14, y: 0.42 }, printedZone(z))
+    ]);
+  };
+  var block = function (b) { return placedAt(b[1], b[0], [shape('rect', { class: 'ms-block', x: 0.08, y: 0.08, width: 1.84, height: 1.84, rx: 0.15 }, '')]); };
+  var collectibles = board.stops.filter(function (s) { return s.kind === 'collectible'; });
+  return {
+    viewBox: '0 0 ' + board.cols + ' ' + board.rows,
+    groups: [placedAt(board.start[1], board.start[0], [shape('rect', { class: 'ms-start', width: 1, height: 1 }, '')])]
+      .concat(board.zones.map(zone))
+      .concat([placedAt(0, 0, [shape('path', { class: 'ms-walls', d: board.walls }, '')])])
+      .concat(board.blocks.map(block))
+      .concat(board.stops.map(stopShapes)),
+    figures: collectibles.map(function (s) { return { kind: 'collectible', area: areaOf(s.cell, 1) }; })
+      .concat(board.blocks.map(function (b) { return { kind: 'block', area: areaOf(b, 2) }; }))
+  };
+}
