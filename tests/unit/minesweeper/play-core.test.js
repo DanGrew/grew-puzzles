@@ -63,6 +63,10 @@ describe('the board', () => {
 });
 
 describe('marking a blank square', () => {
+  it('a board starts with nothing marked and nothing set off', () => {
+    expect(newMinesPlay()).toEqual({ marks: {}, events: [] });
+  });
+
   it('cycles dot, mine, blank', () => {
     expect(taps([[1, 1]], SMALL)).toEqual({ marks: { '1,1': 'dot' }, events: [] });
     expect(taps([[1, 1], [1, 1]], SMALL)).toEqual({ marks: { '1,1': 'mine' }, events: [] });
@@ -119,6 +123,17 @@ describe('tapping a number', () => {
     expect(taps([[9, 9]], BOARD).marks).toEqual({ '8,8': 'dot', '8,9': 'dot' });
     expect(taps([[6, 0], [6, 1], [6, 1], [7, 1], [7, 1], [6, 0]], BOARD).marks)
       .toEqual({ '6,1': 'mine', '7,1': 'mine', '5,0': 'dot', '5,1': 'dot' });
+  });
+
+  it('a number in the middle fills all eight squares round it, the corners too', () => {
+    const middle = minesBoard({
+      hiddenId: 'MINE-0010', type: 'Vanilla', created: '2026-10-11', title: 'Middle', width: 4, height: 3,
+      numbersPerStep: 1, numbers: ['....', '.0..', '....'], mines: [{ row: 0, col: 3 }]
+    });
+    expect(taps([[1, 1]], middle).marks).toEqual({
+      '0,0': 'dot', '0,1': 'dot', '0,2': 'dot', '1,0': 'dot', '1,2': 'dot', '2,0': 'dot', '2,1': 'dot', '2,2': 'dot'
+    });
+    expect(numberState({ marks: { '2,0': 'mine' } }, [1, 1], middle)).toBe('over');
   });
 });
 

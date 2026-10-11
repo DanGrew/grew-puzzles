@@ -28,11 +28,12 @@ function keyOf(cell) {
   return cell[0] + ',' + cell[1];
 }
 
-// The squares touching a square, edges and corners alike — up to eight.
+// The squares round a number, edges and corners alike, on the board: the three rows and three
+// columns about it. Its own square comes along, and never counts — a number is never marked, and
+// never blank.
 function around(cell, board) {
-  return [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]].map(function (d) {
-    return [cell[0] + d[0], cell[1] + d[1]];
-  }).filter(function (c) {
+  var rows = [cell[0] - 1, cell[0], cell[0] + 1], cols = [cell[1] - 1, cell[1], cell[1] + 1];
+  return rows.flatMap(function (r) { return cols.map(function (c) { return [r, c]; }); }).filter(function (c) {
     return c[0] >= 0 && c[0] < board.rows && c[1] >= 0 && c[1] < board.cols;
   });
 }
@@ -115,9 +116,8 @@ function numberFill(play, cell, board) {
 export function tapMines(play, cell, board) {
   if (minesFinished(play, board)) return { marks: play.marks, events: [] };
   var tap = { true: numberFill, false: function () { return marked(play, [cell], nextMark(markOf(play, cell))); } };
-  var next = { marks: tap[keyOf(cell) in board.numbers](play, cell, board), events: [] };
-  next.events = minesFinished(next, board) ? ['complete'] : [];
-  return next;
+  var marks = tap[keyOf(cell) in board.numbers](play, cell, board);
+  return { marks: marks, events: minesFinished({ marks: marks }, board) ? ['complete'] : [] };
 }
 
 // ---- What the board shows ----
