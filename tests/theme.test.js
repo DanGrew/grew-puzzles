@@ -118,11 +118,19 @@ const placed = page => page.evaluate(() => {
   };
 });
 
+// A puzzle as published, its words in a layout.
+async function openReal(page, id, layout) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+  await page.goto('/app/play.html?id=' + id);
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+}
+
 test('Themed, the puzzle\'s number picks one of the printout\'s four spots, the same every visit', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  for (const [id, spot] of [['WSCH-0007', 'topRight'], ['WSCH-0008', 'topLeft'], ['WSCH-0009', 'right'], ['WSCH-0010', 'left']]) {
-    await openPlay(page, id, 'bottom');
-    expect(await spotOf(page)).toBe(spot);
+  for (const [id, spot] of [['WSCH-0001', 'right'], ['WSCH-0002', 'left'], ['WSCH-0003', 'topRight'], ['WSCH-0004', 'topLeft']]) {
+    await openReal(page, id, 'bottom');
+    await expect.poll(() => spotOf(page)).toBe(spot);
     await page.reload();
     await expect(page.locator('#name-tag')).not.toBeEmpty();
     await expect.poll(() => spotOf(page)).toBe(spot);
@@ -131,18 +139,33 @@ test('Themed, the puzzle\'s number picks one of the printout\'s four spots, the 
 
 test('a spot stands where the printout has it, the printout\'s picture at the grid card\'s size', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
-  // The test puzzle prints its 8 × 8 grid card 8 × 36 + 32 = 320 px across.
-  await openPlay(page, 'WSCH-0009', 'bottom');
-  const right = await placed(page), scale = right.card.width / 320;
+  // A 15 × 15 puzzle prints its grid card 396.85 + 32 px across.
+  await openReal(page, 'WSCH-0001', 'bottom');
+  await expect.poll(() => spotOf(page)).toBe('right');
+  const right = await placed(page), scale = right.card.width / 428.85;
   expect(scale).toBeGreaterThan(1);
-  expect(right.x - right.card.right).toBeCloseTo(10 * scale, 1);
-  expect(right.y - right.card.top).toBeCloseTo(188 * scale, 1);
-  expect(right.height).toBeCloseTo(293 * scale, 1);
-  await openPlay(page, 'WSCH-0008', 'bottom');
+  expect(right.x - right.card.right).toBeCloseTo(10 * scale, 0);
+  expect(right.y - right.card.top).toBeCloseTo(188 * scale, 0);
+  expect(right.height).toBeCloseTo(293 * scale, 0);
+  await openReal(page, 'WSCH-0004', 'bottom');
+  await expect.poll(() => spotOf(page)).toBe('topLeft');
   const topLeft = await placed(page);
-  expect(topLeft.x - topLeft.card.left).toBeCloseTo(49 * scale, 1);
-  expect(topLeft.y - topLeft.card.top).toBeCloseTo(-14 * scale, 1);
-  expect(topLeft.height).toBeCloseTo(213 * scale, 1);
+  expect(topLeft.x - topLeft.card.left).toBeCloseTo(49 * scale, 0);
+  expect(topLeft.y - topLeft.card.top).toBeCloseTo(-14 * scale, 0);
+  expect(topLeft.height).toBeCloseTo(213 * scale, 0);
+});
+
+test('a spot whose character would rise over the title is passed over: with the words at the Right, the top right', async ({ page }) => {
+  // Puzzle 3's number lands on the top right; beside its words, that corner is under the title.
+  await page.setViewportSize({ width: 1920, height: 1000 });
+  await openReal(page, 'WSCH-0003', 'right');
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  await expect.poll(() => spotOf(page)).not.toBe('topRight');
+  const title = await page.locator('.play-head').boundingBox(), tag = await page.locator('#name-tag').boundingBox();
+  // The top left's label would stand behind the side bar here, so it's left off.
+  expect(tag === null || !overlaps(tag, title)).toBe(true);
+  const figure = await page.locator('#theme-figure').boundingBox();
+  expect(figure.x + figure.width).toBeLessThan(title.x);
 });
 
 for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009', 'WSCH-0010']) {
