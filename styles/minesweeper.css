@@ -1,0 +1,46 @@
+/* The minesweeper play page — over play.css's cards, after docs/MOCKUP-MINESWEEPER.html in the
+   product entry: the board in the grid card, the Mines card beside it, under it on a phone. A
+   number sits on a pale square; a mark is a ringed dot for a mine and a small dot for no mine. */
+:root { --clue-bg: #f1f6f3; }
+
+.play.mines { display: grid; grid-template-columns: auto minmax(220px, 290px); gap: 40px; align-items: start; justify-content: center; }
+.play.mines[hidden] { display: none; }
+.play.mines aside { max-width: none; }
+@media (max-width: 760px) {
+  .play.mines { grid-template-columns: 100%; justify-items: center; gap: 28px; }
+  .play.mines aside { max-width: 460px; }
+}
+
+/* The frame: the grid card's window onto the board, sized by ui/minesweeper/play-ui.js
+   (--frame-w, --frame-h). The board sits behind it at the player's zoom (--cell). A board that
+   zooms takes a drag or a pinch on it, not the page's. */
+.mines-view { position: relative; width: var(--frame-w, 0px); height: var(--frame-h, 0px); overflow: hidden; outline: var(--ow) solid var(--line); }
+.play.mines[data-zoomable="true"] #view { touch-action: none; }
+.mines-world { position: absolute; left: 0; top: 0; }
+.mines-grid { display: grid; grid-template-columns: repeat(var(--cols), var(--cell)); grid-template-rows: repeat(var(--rows), var(--cell)); }
+
+.mines-square { box-sizing: border-box; position: relative; display: grid; place-items: center; width: var(--cell); height: var(--cell);
+  padding: 0; border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--surface);
+  font: 700 calc(var(--cell) * .48)/1 var(--font-body); color: var(--fg); user-select: none; -webkit-user-select: none; transition: color .25s; }
+button.mines-square { cursor: pointer; }
+button.mines-square:hover { background: #f4f8f6; }
+button.mines-square:focus-visible { outline: 2px solid var(--select); outline-offset: -3px; }
+.mines-square[data-mark="number"], button.mines-square[data-mark="number"]:hover { background: var(--clue-bg); }
+.mines-square[data-state="met"] { color: color-mix(in srgb, var(--fg) 28%, transparent); }
+.mines-square[data-state="over"] { color: var(--wrong); }
+.mines-square[data-mark="mine"]::after { content: ""; width: 56%; height: 56%; border-radius: 50%; background: var(--fg);
+  box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--fg); }
+.mines-square[data-mark="dot"]::after { content: ""; width: 16%; height: 16%; border-radius: 50%; background: var(--muted); }
+.back-face .mines-square[data-mark="mine"]::after { background: var(--band); box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--band); }
+
+/* Zoom out and in at the card's top-left, while the board zooms. */
+button.zoom-out { left: 0; transform: translate(-35%, -35%); }
+button.zoom-in { left: 37px; transform: translateY(-35%); }
+button.zoom-out svg, button.zoom-in svg { display: block; }
+.play.mines button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+.play.mines:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+
+/* The Mines card: the rule, then what a tap does. */
+.mines-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+.mines-legend { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; font-size: 13.5px; line-height: 1.4; }
+.mines-legend .mines-square { --cell: 30px; border: 1px solid var(--rule); }
