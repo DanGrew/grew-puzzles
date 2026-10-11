@@ -120,7 +120,7 @@ test('a site with no mazes shows its wordsearches as before', async ({ page }) =
 test('the start is highlighted, the trail sets off from it, and its difficulty and code sit under the title, no date', async ({ page }) => {
   await open(page);
   await expect(page.locator('#ident')).toHaveText('Extreme · MAZE-0001');
-  await expect(page.locator('.play-head')).not.toContainText('2026');
+  await expect(page.locator('.site-main > .play-head')).not.toContainText('2026');
   await expect(cell(page, 0, 0)).toHaveClass(/\bstart\b/);
   await expect(page.locator('#grid .start')).toHaveCount(1);
   expect(await trail(page)).toEqual([[0, 0]]);
@@ -797,8 +797,8 @@ test('the little map shows the dashed paths too', async ({ page }) => {
 
 test('a maze that isn\'t 32×40 has no Print button', async ({ page }) => {
   await open(page, { id: 'MAZE-0003' });
-  await expect(page.locator('[data-menu-entry]')).toHaveCount(0);
-  await expect(page.locator('#print')).toHaveCount(0);
+  await expect(page.locator('#print')).toBeHidden();
+  await expect(page.locator('#site-side .side-own')).toBeHidden();
 });
 
 test('on a phone, a 100×100 maze plays with the pad on screen under it, drawing only the cells round the view, and moves without lag', async ({ page }) => {

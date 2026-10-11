@@ -6,7 +6,7 @@ import {
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
   windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
-  collectedSteps, collectedDash, windowSteps, minimapCollected
+  collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints, printedNote, printedLabel, printedZone, printedMaze
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -915,5 +915,111 @@ describe('the little map', () => {
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 0, y: 0 }, { x: 5, y: -2.5 }, 2.5, frame, big)).toEqual({ cell: 20, x: 12, y: 9 });
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 50, y: 50 }, { x: 0, y: 500 }, 1, frame, big)).toEqual({ cell: 20, x: 0, y: 60 });
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 10, y: 10 }, { x: 13, y: 5 }, 1, frame, big)).toEqual({ cell: 20, x: 13, y: 5 });
+  });
+});
+
+describe('on paper', () => {
+  it('only a 32×40 maze prints', () => {
+    expect(mazePrints(32, 40)).toBe(true);
+    expect([[40, 32], [100, 100], [32, 41], [31, 40], [6, 6]].map(([c, r]) => mazePrints(c, r))).toEqual([false, false, false, false, false]);
+  });
+
+  it('the note box lists what the maze has, a line a group: Guides, Keys numbered, Collectibles, then Letters and Exits labelled', () => {
+    expect(printedNote(BOARD)).toEqual([
+      { name: 'Guides', boxes: [''] },
+      { name: 'Keys', boxes: ['1'] },
+      { name: 'Collectibles', boxes: ['', ''] },
+      { name: 'Letters', boxes: ['A', 'B', 'C'] },
+      { name: 'Exits', boxes: ['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'] },
+    ]);
+  });
+
+  it('letters run A to Z whatever order the file lists them, and keys in number order', () => {
+    const letters = [{ letter: 'C', row: 0, col: 3 }, { letter: 'A', row: 5, col: 1 }, { letter: 'B', row: 3, col: 1 }];
+    const keys = [3, 1, 2].map((key, i) => ({ key, row: 5, col: i + 2 }));
+    const board = mazeBoard({ ...structuredClone(MAZE), letters, keys, zones: [] });
+    expect(printedNote(board).find(l => l.name === 'Letters').boxes).toEqual(['A', 'B', 'C']);
+    expect(printedNote(board).find(l => l.name === 'Keys').boxes).toEqual(['1', '2', '3']);
+  });
+
+  it('a maze without letters ends in End, one box, and lists nothing it hasn\'t', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), guides: [], keys: [], zones: [], letters: [], exits: [] });
+    expect(printedNote(board)).toEqual([{ name: 'Collectibles', boxes: ['', ''] }, { name: 'End', boxes: [''] }]);
+  });
+
+  it('a key reads KEY and its number, a zone ZONE and its key\'s; everything else its own label', () => {
+    const label = kind => printedLabel(BOARD.stops.find(s => s.kind === kind));
+    expect(['key', 'letter', 'exit', 'guide', 'collectible'].map(label)).toEqual(['KEY 1', 'A', 'ABC', '', '']);
+    expect(printedLabel({ kind: 'end', label: 'End' })).toBe('End');
+    expect(printedZone(BOARD.zones[0])).toBe('ZONE 1');
+  });
+
+  // The sheet's groups, each as its place and its shapes' classes and text, for reading at a glance.
+  const drawn = maze => maze.groups.map(g => [g.transform, g.shapes.map(s => s.attributes.class + (s.text ? ':' + s.text : ''))]);
+
+  it('the sheet draws the blank maze in cells, in the order it lies: the start, the zone, the walls, the blocks, then every stop with what it reads', () => {
+    const maze = printedMaze(BOARD);
+    expect(maze.viewBox).toBe('0 0 6 6');
+    const blocks = MAZE.blocks.map(b => [`translate(${b.col} ${b.row})`, ['ms-block']]);
+    const stops = BOARD.stops.map(s => `translate(${s.cell[1]} ${s.cell[0]})`);
+    expect(drawn(maze)).toEqual([
+      ['translate(0 0)', ['ms-start']],
+      ['translate(2 1)', ['ms-zone', 'ms-zone-text:ZONE 1']],
+      ['translate(0 0)', ['ms-walls']],
+      ...blocks,
+      [stops[0], ['ms-guide']],
+      [stops[1], ['ms-dot']],
+      [stops[2], ['ms-dot']],
+      [stops[3], ['ms-key', 'ms-key-text:KEY 1']],
+      [stops[4], ['ms-letter', 'ms-letter-text:A']],
+      [stops[5], ['ms-letter', 'ms-letter-text:B']],
+      [stops[6], ['ms-letter', 'ms-letter-text:C']],
+      ...['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'].map((code, i) => [stops[7 + i], ['ms-exit', 'ms-exit-text:' + code]]),
+    ]);
+    expect(maze.groups[2].shapes[0]).toEqual({ name: 'path', attributes: { class: 'ms-walls', d: BOARD.walls }, text: '' });
+  });
+
+  it('each shape is the SVG element paper draws, sized in its cell', () => {
+    const maze = printedMaze(BOARD);
+    const of = cls => maze.groups.flatMap(g => g.shapes).find(s => s.attributes.class === cls);
+    expect(of('ms-start')).toEqual({ name: 'rect', attributes: { class: 'ms-start', width: 1, height: 1 }, text: '' });
+    expect(of('ms-zone')).toEqual({ name: 'rect', attributes: { class: 'ms-zone', width: 2, height: 1 }, text: '' });
+    expect(of('ms-zone-text')).toEqual({ name: 'text', attributes: { class: 'ms-zone-text', x: 0.14, y: 0.42 }, text: 'ZONE 1' });
+    expect(of('ms-block')).toEqual({ name: 'rect', attributes: { class: 'ms-block', x: 0.08, y: 0.08, width: 1.84, height: 1.84, rx: 0.15 }, text: '' });
+    expect(of('ms-guide')).toEqual({ name: 'circle', attributes: { class: 'ms-guide', cx: 0.5, cy: 0.5, r: 0.16 }, text: '' });
+    expect(of('ms-dot')).toEqual({ name: 'circle', attributes: { class: 'ms-dot', cx: 0.5, cy: 0.5, r: 0.24 }, text: '' });
+    expect(of('ms-key')).toEqual({ name: 'rect', attributes: { class: 'ms-key', x: 0.05, y: 0.18, width: 0.9, height: 0.64, rx: 0.12 }, text: '' });
+    expect(of('ms-key-text')).toEqual({ name: 'text', attributes: { class: 'ms-key-text', x: 0.5, y: 0.5 }, text: 'KEY 1' });
+    expect(of('ms-letter')).toEqual({ name: 'circle', attributes: { class: 'ms-letter', cx: 0.5, cy: 0.5, r: 0.4 }, text: '' });
+    expect(of('ms-letter-text')).toEqual({ name: 'text', attributes: { class: 'ms-letter-text', x: 0.5, y: 0.52 }, text: 'A' });
+    expect(of('ms-exit')).toEqual({ name: 'rect', attributes: { class: 'ms-exit', x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, text: '' });
+    expect(of('ms-exit-text')).toEqual({ name: 'text', attributes: { class: 'ms-exit-text', x: 0.5, y: 0.51 }, text: 'ABC' });
+  });
+
+  it('a maze without letters ends in the End pill, dark, reading End', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), letters: [], exits: [] });
+    const end = printedMaze(board).groups.at(-1);
+    expect(end).toEqual({
+      transform: `translate(${MAZE.end.col} ${MAZE.end.row})`,
+      shapes: [
+        { name: 'rect', attributes: { class: 'ms-end', x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, text: '' },
+        { name: 'text', attributes: { class: 'ms-end-text', x: 0.5, y: 0.51 }, text: 'End' },
+      ],
+    });
+  });
+
+  it('a zone several rows deep and columns wide is drawn its full size', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), zones: [{ key: 1, top: 1, left: 2, bottom: 4, right: 3 }] });
+    expect(printedMaze(board).groups[1].shapes[0].attributes).toEqual({ class: 'ms-zone', width: 2, height: 4 });
+    const tall = mazeBoard({ ...structuredClone(MAZE), width: 32, height: 40, walls: Array(40).fill('0'.repeat(32)) });
+    expect(printedMaze(tall).viewBox).toBe('0 0 32 40');
+  });
+
+  it('printed Colour, the character stands on each collectible\'s cell and each block\'s four', () => {
+    const cells = BOARD.stops.filter(s => s.kind === 'collectible').map(s => `${s.cell[0] + 1} / ${s.cell[1] + 1} / span 1 / span 1`);
+    expect(printedMaze(BOARD).figures).toEqual([
+      ...cells.map(area => ({ kind: 'collectible', area })),
+      ...MAZE.blocks.map(b => ({ kind: 'block', area: `${b.row + 1} / ${b.col + 1} / span 2 / span 2` })),
+    ]);
   });
 });
