@@ -1,7 +1,7 @@
 // Themed or Plain: the owner's characters, each with its own background, dress every page when a
 // player picks Themed — Plain is the site as it always was. Which character a puzzle wears, which
-// of the three play-page templates, where the character stands and how big, all decided here; the
-// characters themselves are content/characters/index.json, in the owner's order. The theme is
+// of the printout's four spots it peers from on screen and on paper, and how big, all decided here;
+// the characters themselves are content/characters/index.json, in the owner's order. The theme is
 // dress, never content: no puzzle file names a character.
 
 // The list of characters, beside their images.
@@ -42,7 +42,7 @@ export function figureFile(character) {
 }
 
 // A puzzle's number: the digits of its hidden ID.
-function idNumber(hiddenId) {
+export function idNumber(hiddenId) {
   return Number(hiddenId.split('-')[1]);
 }
 
@@ -66,87 +66,9 @@ export function randomCharacter(characters, random) {
   return characters[Math.floor(random() * characters.length)];
 }
 
-// Which template a puzzle's play page wears — the character on the right, its mirror on the left,
-// or the normal page — spread evenly by its ID number, the same on every visit.
-export function templateFor(hiddenId) {
-  return ['beside', 'mirror', 'normal'][(idNumber(hiddenId) - 1) % 3];
-}
-
-// A placement shrinks with the grid card, in proportion, on a card narrower than the one the owner
-// placed the characters on (691 px wide); never grows past it.
-export function themeScale(cardWidth) {
-  return Math.min(1, cardWidth / 691);
-}
-
 // A phone: a screen no wider than the play page's phone layout (styles/play.css, 760 px).
 export function isPhone(screenWidth) {
   return screenWidth <= 760;
-}
-
-// The room the words card leaves the character beside it, under the grid in templates beside and
-// mirror, at full size: the character's 240 px and a 14 px gap. None when Plain, and none on a
-// phone, where the words keep the grid card's width.
-export function wordsRoom(look, template, phone) {
-  var rooms = { beside: 254, mirror: 254, normal: 0 };
-  return { themed: rooms[template], plain: 0 }[look] * Number(!phone);
-}
-
-// Where the character stands on the play page, for a template and where the words sit — the
-// owner's placements in the product's docs/MOCKUP-THEMED.html, captured 2026-10-05 with all 12
-// characters in view on a 691 × 733 px grid card: the character's centre from the grid card's
-// top-left, its height, its turn, its name label's centre, from the character's, in character
-// heights across and down, so it moves and shrinks with it, and whether it's flipped to face
-// right, towards the grid, from the left every character faces. Every one stands behind the cards
-// (styles/look.css), the owner's call 2026-10-05.
-// The owner placed each one against the card edges nearest it, and those are its anchors — the
-// last two: 0 holds it from the card's left (or top), 1 from its right (or bottom). On any other
-// grid card it keeps its offset from them, so it stays beside the grid whatever the grid's size
-// (TASK-64). On a card narrower than 691 px the offsets and the size shrink in proportion; on a
-// wider one, neither grows.
-// On a phone every template stands the character in one spot, facing left, measured from the
-// phone's 422 px grid card's top-left, with no name label. card is the grid card: its width and
-// height, and its top-left from the page's.
-export function figurePlacement(template, sits, card, phone) {
-  var captured = {
-    beside: {
-      bottom: [656, 1004, 700, 0, -0.156, 0.166, false, 1, 1], right: [870, -29, 440, 0, 0.377, -0.107, false, 1, 0],
-      overlay: [904, 732, 700, 0, -0.121, -0.389, false, 1, 1]
-    },
-    mirror: {
-      bottom: [15, 1030, 695, 0, -0.187, 0.039, true, 0, 1], right: [256, -32, 385, 0, -0.322, -0.104, true, 0, 0],
-      overlay: [-190, 432, 635, 0, 0.036, -0.391, true, 0, 1]
-    },
-    normal: {
-      bottom: [719, 293, 560, 61, 0.143, 0.173, false, 1, 0], right: [275, -31, 455, -24, -0.376, -0.136, true, 0, 0],
-      overlay: [-89, 309, 455, -90, -0.018, 0.341, false, 0, 0]
-    }
-  };
-  var spots = {
-    false: { spot: captured[template][sits], full: [691, 733], label: true },
-    true: { spot: [369, 1, 140, 0, 0, 0, false, 0, 0], full: [422, 0], label: false }
-  };
-  var at = spots[phone], spot = at.spot, scale = Math.min(1, card.width / at.full[0]);
-  var left = card.left + fromEdge(spot[0], spot[7], card.width, at.full[0], scale);
-  var top = card.top + fromEdge(spot[1], spot[8], card.height, at.full[1], scale);
-  var height = spot[2] * scale;
-  return {
-    left: left, top: top, height: height, turn: spot[3], flip: spot[6],
-    label: at.label, labelLeft: left + spot[4] * height, labelTop: top + spot[5] * height
-  };
-}
-
-// A captured offset along one side of the card, kept from its anchor edge: the near edge (left or
-// top) as captured, or the far edge (right or bottom) by how far beyond or short of it it was
-// captured — scaled with the card either way.
-function fromEdge(captured, far, size, full, scale) {
-  return far * size + (captured - far * full) * scale;
-}
-
-// The tallest the words card grows under the grid before its list scrolls, Themed: the character's
-// own height in its spot, so it stands beside the whole card, the owner's call 2026-10-05 — no cap
-// on a phone, where the character stands small over the grid card instead.
-export function wordsCap(placement, phone) {
-  return { false: placement.height + 'px', true: 'none' }[phone];
 }
 
 // How the character is drawn on its spot: centred on it, turned, and mirrored when flipped — the
@@ -182,8 +104,13 @@ export function printCell(cols, rows, paged, letters) {
 // its 2 px outline — or, on a words sheet, the words card, the paper's whole width less its
 // half-inch edges.
 export function printCardWidth(sheet, cols, rows, letters, paper) {
-  const grid = paged => cols * printCell(cols, rows, paged, letters) + 32;
-  return { one: grid(false), grid: grid(true), words: paper.width - 96 }[sheet];
+  return { one: printGridWidth(cols, rows, letters, false), grid: printGridWidth(cols, rows, letters, true), words: paper.width - 96 }[sheet];
+}
+
+// A printed grid card across, whatever the paper: its cells, on a one-grid sheet or a grid sheet
+// of its own (paged), and 32 px.
+function printGridWidth(cols, rows, letters, paged) {
+  return cols * printCell(cols, rows, paged, letters) + 32;
 }
 
 // How far down the paper that card's top sits, before any rise: the half-inch edge, the book's
@@ -196,16 +123,18 @@ export function printCardTop(sheet, numbered) {
 
 // The owner's four spots, handed back 2026-10-08 from the product's docs/MOCKUP-THEMED-PRINT.html,
 // on the one-grid sheet's 429 × 472 px grid card: the character's centre from the card's top-left
-// corner, its height, its turn (clockwise positive) and whether it's flipped to face right. On paper
-// it wears no name label, the owner's call 2026-10-09. Each is held from the card edges nearest it —
-// the right two from the card's right edge, the left two from its left, all from its top — so a
-// wider card, a Saga's words card or any grid's, keeps it as far from the corner.
+// corner, its height, its turn (clockwise positive) and whether it's flipped to face right; and its
+// name label's centre from the character's, in character heights across and down. On paper it
+// wears no name label, the owner's call 2026-10-09 — only a screen wider than a phone does
+// (sitePlacement). Each is held from the card edges nearest it — the right two from the card's
+// right edge, the left two from its left, all from its top — so a wider card, a Saga's words card
+// or any grid's, keeps it as far from the corner.
 function printSpot(spot) {
   return {
-    right: { x: 439, y: 188, height: 293, turn: 37, flip: true, far: 1 },
-    left: { x: -1, y: 171, height: 293, turn: -41, flip: false, far: 0 },
-    topRight: { x: 378, y: -13, height: 213, turn: -3, flip: true, far: 1 },
-    topLeft: { x: 49, y: -14, height: 213, turn: 12, flip: false, far: 0 }
+    right: { x: 439, y: 188, height: 293, turn: 37, flip: true, far: 1, label: [0.3, 0.52] },
+    left: { x: -1, y: 171, height: 293, turn: -41, flip: false, far: 0, label: [-0.3, 0.52] },
+    topRight: { x: 378, y: -13, height: 213, turn: -3, flip: true, far: 1, label: [0.62, -0.05] },
+    topLeft: { x: 49, y: -14, height: 213, turn: 12, flip: false, far: 0, label: [-0.62, -0.05] }
   }[spot];
 }
 
@@ -273,5 +202,104 @@ export function printDress(sheet, frame, character, random) {
   return {
     spot, left: 'calc(' + p.far * 100 + '% + ' + p.fromEdge + 'px)', top: p.y + 'px', height: p.height + 'px',
     transform: figureTransform(p), rise: printRise(spot, frame, outline) + 'px'
+  };
+}
+
+// ---- On screen, Themed (TASK-146) ----
+// The site wears the printout's four spots, so Themed is one picture on screen and on paper: the
+// play page's character peers from its grid card, a text page's from its text card. Which spot is
+// the page's number round the spots that show — a puzzle's own, a text page's its place in the side
+// bar — so it never changes between visits on the same screen, the owner's call 2026-10-11.
+
+// The spots a page picks from: all four, but a Saga's play page — as its printed sheets — and any
+// page on a phone only the top corners.
+export function siteChoices(saga, phone) {
+  return [['right', 'left', 'topRight', 'topLeft'], ['topRight', 'topLeft']][Number(saga || phone)];
+}
+
+// How big the play page draws the printout's picture: its grid card on screen against the card the
+// puzzle prints on — the one-grid sheet's, or a Saga's grid sheet's — so the character stands as
+// big against the grid, and as far from its corner, as on paper.
+export function siteScale(cardWidth, cols, rows, letters, saga) {
+  return cardWidth / printGridWidth(cols, rows, letters, saga);
+}
+
+// A spot on a page: the character's centre, held from the card edge it's held from, and its
+// height, both at the frame's scale; its turn and facing; and its name label's centre. frame.card
+// is the card's left, top, width and height on the page.
+export function sitePlacement(spot, frame) {
+  const s = printSpot(spot), p = printPlacement(spot, frame.card.width), card = frame.card, height = s.height * frame.scale;
+  const left = card.left + p.far * card.width + p.fromEdge * frame.scale, top = card.top + s.y * frame.scale;
+  return { spot, left, top, height, turn: s.turn, flip: s.flip, labelLeft: left + s.label[0] * height, labelTop: top + s.label[1] * height };
+}
+
+// Whether a spot shows: what stands past the card — at the sides only that, at a top corner the
+// whole character — and its name label stay inside the screen's edges, and the words card covers
+// none of either. frame.label is the label's width and height — none, and so not judged, on a
+// phone or without a name.
+function siteShows(spot, frame, outline) {
+  const { box, label } = siteBoxes(spot, frame, outline), card = frame.card;
+  const shows = { right: [card.left + card.width, box.right], left: [box.left, card.left], topRight: [box.left, box.right], topLeft: [box.left, box.right] }[spot];
+  const across = [[Math.min(shows[0], label.left), Math.max(shows[1], label.right)], shows][Number(frame.label.width === 0)];
+  return across[0] >= frame.screen.left && across[1] <= frame.screen.right && !covered(box, frame.words, card) && !covered(label, frame.words, card);
+}
+
+// The box round a spot's character's inked outline on the page, and round its name label.
+function siteBoxes(spot, frame, outline) {
+  const p = sitePlacement(spot, frame), ink = inkBox(outline, p.height, p.turn, p.flip);
+  return {
+    box: { left: p.left + ink.left, right: p.left + ink.right, top: p.top + ink.top, bottom: p.top + ink.bottom },
+    label: {
+      left: p.labelLeft - frame.label.width / 2, right: p.labelLeft + frame.label.width / 2,
+      top: p.labelTop - frame.label.height / 2, bottom: p.labelTop + frame.label.height / 2
+    }
+  };
+}
+
+// Whether a spot keeps its character and its name label off the page's title, the owner's call
+// 2026-10-11 — frame.title the title's box, its left, top, width and height.
+function clearOfTitle(spot, frame, outline) {
+  const { box, label } = siteBoxes(spot, frame, outline), t = frame.title;
+  const meets = b => b.left < t.left + t.width && t.left < b.right && b.top < t.top + t.height && t.top < b.bottom;
+  return !meets(box) && !meets(label);
+}
+
+// Whether the words card covers some of the character where the card it peers from doesn't —
+// beside or under the grid; laid over the grid, it covers only what the grid card already hides.
+function covered(box, words, card) {
+  const meet = {
+    left: Math.max(box.left, words.left), right: Math.min(box.right, words.left + words.width),
+    top: Math.max(box.top, words.top), bottom: Math.min(box.bottom, words.top + words.height)
+  };
+  const behind = meet.left >= card.left && meet.right <= card.left + card.width && meet.top >= card.top && meet.bottom <= card.top + card.height;
+  return meet.left < meet.right && meet.top < meet.bottom && !behind;
+}
+
+// Where a page's character stands: its number round the spots that show with its name label, on a
+// screen wider than a phone; none does, round those that show without it, the label left off as
+// paper leaves it; none does still, round every one it has. Each way, the spots that keep clear of
+// the title come first, where any does. Drawn centred, turned and mirrored when flipped. frame is
+// the card, the scale, the screen's left and right edges on the page, the words card that may cover
+// it (a text page's an empty box), the title, the name label's size, and whether it's a Saga and a
+// phone.
+// No character — the list couldn't be read — is judged as a whole image.
+export function siteDress(frame, character, number) {
+  const outline = [character].filter(Boolean).map(c => c.outline)[0];
+  const choices = siteChoices(frame.saga, frame.phone);
+  const bare = { ...frame, label: { width: 0, height: 0 } };
+  const labelled = choices.filter(spot => siteShows(spot, frame, outline));
+  const unlabelled = choices.filter(spot => siteShows(spot, bare, outline));
+  const tiers = [
+    { spots: labelled.filter(spot => clearOfTitle(spot, frame, outline)), label: !frame.phone },
+    { spots: unlabelled.filter(spot => clearOfTitle(spot, bare, outline)), label: false },
+    { spots: labelled, label: !frame.phone },
+    { spots: unlabelled, label: false },
+    { spots: choices, label: false }
+  ];
+  const tier = tiers.find(t => t.spots.length > 0);
+  const p = sitePlacement(tier.spots[(number - 1) % tier.spots.length], frame);
+  return {
+    spot: p.spot, left: p.left + 'px', top: p.top + 'px', height: p.height + 'px', transform: figureTransform(p),
+    label: tier.label, labelLeft: p.labelLeft + 'px', labelTop: p.labelTop + 'px'
   };
 }

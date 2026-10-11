@@ -3,7 +3,6 @@
 // puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
 // the page imports it through ui/, and the unit tests import it directly.
 import { puzzleDifficulty } from '../kind-core.js';
-import { themeScale } from '../theme-core.js';
 
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
@@ -424,6 +423,16 @@ export function playReach(screenWidth, column, sideWidth) {
   return { left: Math.min(0, left - column.left), right: Math.min(0, column.right - (screenWidth - 24)) };
 }
 
+// How far the play area does reach, once its grid and words are laid out across (wordsFit's
+// across): no further than they need, so whatever fits in the column sits centred in it, under the
+// title. What doesn't takes half its spill from each side, as far as each side reaches, the rest
+// from the other. reach is playReach's, the furthest it may go; columnWidth the column's own.
+export function playMargins(reach, columnWidth, across) {
+  const need = Math.max(0, across - columnWidth), roomLeft = -reach.left, roomRight = -reach.right;
+  const left = Math.min(roomLeft, Math.max(need / 2, need - roomRight));
+  return { left: 0 - left, right: 0 - Math.min(roomRight, need - left) };
+}
+
 // ---- How the words fill their card ----
 // The list reads like the paper: down each column, then on to the next, no column more than one
 // word longer than another. Its card takes its size from the grid card: under it, never wider and
@@ -436,22 +445,22 @@ export function playReach(screenWidth, column, sideWidth) {
 // colGap/rowGap; the grid's gridCols × gridRows letters at the page's own naturalCell size, and
 // the grid card's band, tabs and edges round them (cardChromeWidth/cardChromeHeight); the words
 // card's own chromeWidth/chromeHeight round its list; the page's pageWidth and pageGap between
-// grid and list; the player's text size as its scale (boardScale); the puzzle's own letters
-// (playBoard's); and room, what the words card leaves the character beside it under the grid at
-// full size (theme-core's wordsRoom), 0 when there's none.
+// grid and list; the player's text size as its scale (boardScale); and the puzzle's own letters
+// (playBoard's). Themed takes no room from the words: the character peers from behind the cards.
 // sits is where the list goes; cell the grid's letter size, and cardWidth × cardHeight its card
 // at that size; wordSize the words' text size; columns how many, wordWidth each column's, and
-// places each word's [row, column], from 1; room the room left beside the words under the grid,
-// shrunk with the grid card.
+// places each word's [row, column], from 1; across how wide the grid card and the words card lie
+// across the page together — beside it, both and the gap between; under or over, the grid card's.
 export function wordsFit(layout, measured) {
   var m = Object.assign({}, measured, { naturalCell: wholeCell(measured) });
   var fit = { bottom: underFit, right: besideFit, overlay: overFit }[layout](m);
   var card = gridCard(m, fit.cell);
   var words = wordsAt(m, fit.wordSize);
   var columns = fit.columns(words, card);
+  var across = { bottom: card.width, overlay: card.width, right: besideWidth(words, card) }[fit.sits];
   return {
     sits: fit.sits, cell: fit.cell, wordSize: fit.wordSize, cardWidth: card.width, cardHeight: card.height,
-    columns: columns, wordWidth: words.wordWidth, places: wordPlaces(m.count, columns), room: roomAt(m, card)
+    columns: columns, wordWidth: words.wordWidth, places: wordPlaces(m.count, columns), across: across
   };
 }
 
@@ -461,11 +470,6 @@ export function wordsFit(layout, measured) {
 function wholeCell(m) {
   var across = Math.floor((m.pageWidth - m.cardChromeWidth) / m.gridCols);
   return Math.min(m.naturalCell, Math.max(across, m.naturalCell / m.letters));
-}
-
-// The room beside the words under the grid, shrinking with the grid card as the character does.
-function roomAt(m, card) {
-  return m.room * themeScale(card.width);
 }
 
 // The grid card at a letter size: its letters, and its band, tabs and edges round them.
@@ -486,9 +490,9 @@ function acrossColumns(w, width) {
   return Math.max(1, Math.min(w.count, across));
 }
 
-// Under: as many columns as fit across the grid card, less any room left the character beside them.
+// Under: as many columns as fit across the grid card.
 function underFit(m) {
-  return { sits: 'bottom', cell: m.naturalCell, wordSize: m.wordSize, columns: function (w, card) { return acrossColumns(w, Math.min(card.width, w.pageWidth) - roomAt(w, card)); } };
+  return { sits: 'bottom', cell: m.naturalCell, wordSize: m.wordSize, columns: function (w, card) { return acrossColumns(w, Math.min(card.width, w.pageWidth)); } };
 }
 
 // Over: as few columns as fill the grid card's height, never more than fit across it — a list

@@ -104,50 +104,80 @@ test('puzzle 13 wears the first character again, round after the last', async ({
   await expect(page.locator('#name-tag')).toHaveText(CHARACTERS[0].name);
 });
 
-test('the three templates spread across puzzles by number: on the right, its mirror, the normal page', async ({ page }) => {
-  for (const [id, template] of [['WSCH-0007', 'beside'], ['WSCH-0008', 'mirror'], ['WSCH-0009', 'normal']]) {
-    await openPlay(page, id);
-    await expect(page.locator('#play')).toHaveAttribute('data-template', template);
+// TASK-146: the site wears the printout's four spots (core/theme-core.js), fixed by the puzzle's number.
+const spotOf = page => page.locator('#theme-figure').getAttribute('data-spot');
+// Mirrored left to right: the figure's drawn matrix turns over (its determinant goes negative).
+const mirrored = locator => locator.evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return m.a * m.d - m.b * m.c < 0; });
+// The figure's centre and height as placed, and the grid card, both from the play area's top-left.
+const placed = page => page.evaluate(() => {
+  const play = document.getElementById('play').getBoundingClientRect(), stage = document.getElementById('stage').getBoundingClientRect();
+  const f = document.getElementById('theme-figure').style;
+  return {
+    x: parseFloat(f.left), y: parseFloat(f.top), height: parseFloat(f.height),
+    card: { left: stage.left - play.left, top: stage.top - play.top, right: stage.right - play.left, width: stage.width }
+  };
+});
+
+// A puzzle as published, its words in a layout.
+async function openReal(page, id, layout) {
+  await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [LAYOUT_KEY, layout]);
+  await page.goto('/app/play.html?id=' + id);
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+}
+
+test('Themed, the puzzle\'s number picks one of the printout\'s four spots, the same every visit', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  for (const [id, spot] of [['WSCH-0001', 'right'], ['WSCH-0002', 'left'], ['WSCH-0003', 'topRight'], ['WSCH-0004', 'topLeft']]) {
+    await openReal(page, id, 'bottom');
+    await expect.poll(() => spotOf(page)).toBe(spot);
+    await page.reload();
+    await expect(page.locator('#name-tag')).not.toBeEmpty();
+    await expect.poll(() => spotOf(page)).toBe(spot);
   }
 });
 
-for (const [id, side] of [['WSCH-0007', 'right'], ['WSCH-0008', 'left']]) {
-  test(`under the grid, ${side === 'right' ? 'template 1' : 'its mirror'} narrows the words card to leave the character room on the ${side}`, async ({ page }) => {
-    await page.setViewportSize({ width: 1400, height: 1000 });
+test('a spot stands where the printout has it, the printout\'s picture at the grid card\'s size', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  // A 15 × 15 puzzle prints its grid card 396.85 + 32 px across.
+  await openReal(page, 'WSCH-0001', 'bottom');
+  await expect.poll(() => spotOf(page)).toBe('right');
+  const right = await placed(page), scale = right.card.width / 428.85;
+  expect(scale).toBeGreaterThan(1);
+  expect(right.x - right.card.right).toBeCloseTo(10 * scale, 0);
+  expect(right.y - right.card.top).toBeCloseTo(188 * scale, 0);
+  expect(right.height).toBeCloseTo(293 * scale, 0);
+  await openReal(page, 'WSCH-0004', 'bottom');
+  await expect.poll(() => spotOf(page)).toBe('topLeft');
+  const topLeft = await placed(page);
+  expect(topLeft.x - topLeft.card.left).toBeCloseTo(49 * scale, 0);
+  expect(topLeft.y - topLeft.card.top).toBeCloseTo(-14 * scale, 0);
+  expect(topLeft.height).toBeCloseTo(213 * scale, 0);
+});
+
+test('a spot whose character would rise over the title is passed over: with the words at the Right, the top right', async ({ page }) => {
+  // Puzzle 3's number lands on the top right; beside its words, that corner is under the title.
+  await page.setViewportSize({ width: 1920, height: 1000 });
+  await openReal(page, 'WSCH-0003', 'right');
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  await expect.poll(() => spotOf(page)).not.toBe('topRight');
+  const title = await page.locator('.play-head').boundingBox(), tag = await page.locator('#name-tag').boundingBox();
+  // The top left's label would stand behind the side bar here, so it's left off.
+  expect(tag === null || !overlaps(tag, title)).toBe(true);
+  const figure = await page.locator('#theme-figure').boundingBox();
+  expect(figure.x + figure.width).toBeLessThan(title.x);
+});
+
+for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009', 'WSCH-0010']) {
+  test(`${id}: the character faces the grid, flipped on the right, behind the cards, its name label the right way round`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await openPlay(page, id, 'bottom');
-    const stage = await page.locator('.stage').boundingBox();
-    const words = await page.locator('aside').boundingBox();
-    const figure = await page.locator('#theme-figure').boundingBox();
-    expect(words.width).toBeLessThan(stage.width - 50);
-    const edges = { right: [words.x, stage.x], left: [words.x + words.width, stage.x + stage.width] }[side];
-    expect(Math.abs(edges[0] - edges[1])).toBeLessThan(1);
-    expect({ right: figure.x + figure.width / 2 > words.x + words.width, left: figure.x + figure.width / 2 < words.x }[side]).toBe(true);
+    expect(await mirrored(page.locator('#theme-figure'))).toBe(['right', 'topRight'].includes(await spotOf(page)));
+    expect(await mirrored(page.locator('#name-tag'))).toBe(false);
+    await expect(page.locator('#name-tag')).toBeVisible();
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
   });
-}
 
-test('the normal page, and Plain, keep the words card the grid card\'s width under it', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 1000 });
-  await openPlay(page, 'WSCH-0009', 'bottom');
-  const stage = await page.locator('.stage').boundingBox();
-  expect(Math.abs((await page.locator('aside').boundingBox()).width - stage.width)).toBeLessThan(1);
-  await lookAs(page, 'plain');
-  await openPlay(page, 'WSCH-0007', 'bottom');
-  expect(Math.abs((await page.locator('aside').boundingBox()).width - (await page.locator('.stage').boundingBox()).width)).toBeLessThan(1);
-});
-
-test('switching to Plain mid-puzzle gives the words back the grid card\'s width; Themed takes the room again', async ({ page }) => {
-  await page.setViewportSize({ width: 1400, height: 1000 });
-  await openPlay(page, 'WSCH-0007', 'bottom');
-  const narrow = (await page.locator('aside').boundingBox()).width;
-  await page.locator('#site-side .look button[data-look="plain"]').click();
-  await expect(page.locator('#theme-figure')).toBeHidden();
-  await expect(page.locator('#name-tag')).toBeHidden();
-  await expect.poll(async () => (await page.locator('aside').boundingBox()).width).toBeCloseTo((await page.locator('.stage').boundingBox()).width, 0);
-  await page.locator('#site-side .look button[data-look="themed"]').click();
-  await expect.poll(async () => (await page.locator('aside').boundingBox()).width).toBeCloseTo(narrow, 0);
-});
-
-for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009']) {
   for (const layout of ['bottom', 'right', 'overlay']) {
     test(`${id} in ${layout}: the name label covers neither the grid card nor the words card`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 1000 });
@@ -159,59 +189,82 @@ for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009']) {
   }
 }
 
-// Mirrored left to right: the figure's drawn matrix turns over (its determinant goes negative).
-const mirrored = locator => locator.evaluate(el => { const m = new DOMMatrix(getComputedStyle(el).transform); return m.a * m.d - m.b * m.c < 0; });
-
-for (const [id, layout, flipped] of [
-  ['WSCH-0007', 'bottom', false], ['WSCH-0007', 'right', false], ['WSCH-0007', 'overlay', false],
-  ['WSCH-0008', 'bottom', true], ['WSCH-0008', 'right', true], ['WSCH-0008', 'overlay', true],
-  ['WSCH-0009', 'bottom', false], ['WSCH-0009', 'right', true], ['WSCH-0009', 'overlay', false]
-]) {
-  test(`${id} in ${layout}: the character faces ${flipped ? 'right, flipped' : 'left'}, behind the cards, and its name label reads the right way round`, async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 1000 });
-    await openPlay(page, id, layout);
-    expect(await mirrored(page.locator('#theme-figure'))).toBe(flipped);
-    expect(await mirrored(page.locator('#name-tag'))).toBe(false);
-    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
-  });
-}
-
-test('a tall grid keeps the character under it, not over its letters (Christmas, WSCH-0041)', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
-  await page.goto('/app/play.html?id=WSCH-0041');
-  await expect(page.locator('#name-tag')).not.toBeEmpty();
-  await page.evaluate(() => document.fonts.ready);
-  const stage = await page.locator('.stage').boundingBox();
-  const figure = await page.locator('#theme-figure').boundingBox();
-  expect(stage.height).toBeGreaterThan(1000);
-  expect(figure.y + figure.height / 2).toBeGreaterThan(stage.y + stage.height);
+test('with the words at the Right, a spot the words card would cover is skipped, the number picking among the rest', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await openPlay(page, 'WSCH-0009', 'right');
+  expect(await spotOf(page)).not.toBe('right');
+  const figure = await page.locator('#theme-figure').boundingBox(), words = await page.locator('aside').boundingBox();
+  expect(figure.x + figure.width / 2).toBeLessThan(words.x);
 });
 
-test('under the grid, a long word list scrolls in a words card no taller than the character; Plain keeps the whole list', async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test('a spot the window\'s edge would cut is skipped: the left side, past the side bar\'s edge', async ({ page }) => {
+  // Puzzle 2's 15 × 15 grid: wide on a 1440 px window the left side shows, on 1100 px it would
+  // stand behind the side bar.
   await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
-  await page.goto('/app/play.html?id=WSCH-0041');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/app/play.html?id=WSCH-0002');
   await expect(page.locator('#name-tag')).not.toBeEmpty();
-  await page.evaluate(() => document.fonts.ready);
-  const figure = await page.locator('#theme-figure').boundingBox();
-  expect(Math.abs((await page.locator('.words-box').boundingBox()).height - figure.height)).toBeLessThan(2);
-  expect(await page.locator('ul.words').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+  await expect.poll(() => spotOf(page)).toBe('left');
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await expect.poll(() => spotOf(page)).not.toBe('left');
+  const side = await page.locator('#site-side').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+  expect(figure.x + figure.width / 2).toBeGreaterThan(side.x + side.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1100);
+});
+
+test('the words card keeps the grid card\'s width under the grid, Themed or Plain, and switching the look never moves it', async ({ page }) => {
+  await page.setViewportSize({ width: 1400, height: 1000 });
+  for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009', 'WSCH-0010']) {
+    await openPlay(page, id, 'bottom');
+    expect(Math.abs((await page.locator('aside').boundingBox()).width - (await page.locator('.stage').boundingBox()).width)).toBeLessThan(1);
+  }
+  // Across, that is: Themed's white title tag sits everything a little lower.
+  const across = async () => { const b = await page.locator('aside').boundingBox(); return [b.x, b.width, b.height]; };
+  const themed = await across();
   await page.locator('#site-side .look button[data-look="plain"]').click();
-  await expect.poll(async () => (await page.locator('.words-box').boundingBox()).height).toBeGreaterThan(1000);
+  await expect(page.locator('#theme-figure')).toBeHidden();
+  await expect(page.locator('#name-tag')).toBeHidden();
+  expect(await across()).toEqual(themed);
+  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await expect(page.locator('#name-tag')).toBeVisible();
+  expect(await across()).toEqual(themed);
 });
 
-test('on a phone the character stands at the grid card\'s top-right, behind it, facing left, with no label and no room taken from the words', async ({ page }) => {
+test('under the grid, a long word list is never capped to the character\'s height (Christmas, WSCH-0041)', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
+  await page.goto('/app/play.html?id=WSCH-0041');
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+  expect((await page.locator('.words-box').boundingBox()).height).toBeGreaterThan(1000);
+  expect(await page.locator('ul.words').evaluate(el => el.scrollHeight > el.clientHeight)).toBe(false);
+});
+
+test('a Saga\'s play page picks only from the two top corners, as its printed sheets do', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.addInitScript(key => localStorage.setItem(key, 'bottom'), LAYOUT_KEY);
+  for (const [id, spot] of [['WSCH-0041', 'topRight'], ['WSCH-0042', 'topLeft']]) {
+    await page.goto('/app/play.html?id=' + id);
+    await expect(page.locator('#name-tag')).not.toBeEmpty();
+    await page.evaluate(() => document.fonts.ready);
+    expect(await spotOf(page)).toBe(spot);
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.y + figure.height / 2).toBeLessThan(stage.y);
+  }
+});
+
+test('on a phone the character peers over a top corner of the grid card, behind it, with no label and no room taken from the words', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openPlay(page, 'WSCH-0008', 'bottom');
-  expect(await mirrored(page.locator('#theme-figure'))).toBe(false);
-  await expect(page.locator('#name-tag')).toBeHidden();
-  expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
-  const stage = await page.locator('.stage').boundingBox();
-  const figure = await page.locator('#theme-figure').boundingBox();
-  expect(figure.height).toBeCloseTo(140 * Math.min(1, stage.width / 422), 0);
-  expect(Math.abs((await page.locator('aside').boundingBox()).width - Math.min(stage.width, 358))).toBeLessThan(2);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  for (const id of ['WSCH-0007', 'WSCH-0008', 'WSCH-0009', 'WSCH-0010']) {
+    await openPlay(page, id, 'bottom');
+    expect(['topRight', 'topLeft']).toContain(await spotOf(page));
+    await expect(page.locator('#name-tag')).toBeHidden();
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.y + figure.height / 2).toBeLessThan(stage.y);
+    expect(Math.abs((await page.locator('aside').boundingBox()).width - Math.min(stage.width, 358))).toBeLessThan(2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  }
 });
 
 test('Plain shows no character, name or background, and never asks for a character image', async ({ page }) => {
@@ -285,19 +338,45 @@ test('a text page picks its character and its background each at random, on thei
   expect(await css(page.locator('#theme-figure'), 'background-image')).toBe(url(character.figure));
   const other = { [CHARACTERS[0].name]: CHARACTERS[11], [CHARACTERS[11].name]: CHARACTERS[0] }[name];
   expect(await sceneOf(page)).toBe(url(other.scene));
-  const card = await page.locator('.page-card').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
-  expect(figure.x + figure.width / 2 - card.x).toBeCloseTo(818, -1);
-  expect(figure.height).toBeCloseTo(230, 0);
+  await expect(page.locator('#name-tag')).toBeVisible();
 });
 
-test('on a narrow window the text page\'s character shrinks over the card\'s top edge, in front', async ({ page }) => {
+// Each text page's place in the side bar picks its spot, round the four, the same every visit.
+for (const [path, spot] of [['how-to-play', 'right'], ['saving', 'left'], ['about', 'topRight'], ['feedback', 'topLeft'], ['privacy', 'right']]) {
+  test(`${path} wears its character peering from behind the text card at its own spot, ${spot}, at the printout's size`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(`/app/${path}.html`);
+    await expect(page.locator('#name-tag')).not.toBeEmpty();
+    await expect.poll(() => spotOf(page)).toBe(spot);
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
+    expect(parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height))).toBe({ right: 293, left: 293, topRight: 213, topLeft: 213 }[spot]);
+    await expect(page.locator('#name-tag')).toBeVisible();
+    await page.reload();
+    await expect(page.locator('#name-tag')).not.toBeEmpty();
+    await expect.poll(() => spotOf(page)).toBe(spot);
+  });
+}
+
+test('a text page whose name label the window\'s edge would cut keeps its character and leaves the label off', async ({ page }) => {
+  // Bunnosaur, the first, whose label no spot holds on a 1200 px window.
+  await page.addInitScript(() => { Math.random = () => 0; });
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/app/privacy.html');
+  await expect.poll(() => spotOf(page)).not.toBeNull();
+  await expect(page.locator('#name-tag')).toBeHidden();
+  await expect(page.locator('#theme-figure')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1200);
+});
+
+test('on a phone a text page\'s character peers over a top corner of the text card, behind it, with no label', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/app/privacy.html');
-  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await expect.poll(() => spotOf(page)).not.toBeNull();
+  expect(['topRight', 'topLeft']).toContain(await spotOf(page));
+  await expect(page.locator('#name-tag')).toBeHidden();
+  expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
   const card = await page.locator('.page-card').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
-  expect(figure.height).toBeCloseTo(120, 0);
-  // Placed from inside the card's 2px outline.
-  expect(figure.y + figure.height / 2 - card.y).toBeCloseTo(-68, 0);
+  expect(figure.y + figure.height / 2).toBeLessThan(card.y);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
 

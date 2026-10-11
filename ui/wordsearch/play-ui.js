@@ -5,15 +5,15 @@
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
   printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale, textSizeMenu, savedTextSize, saveTextSize,
-  playReach
+  playReach, playMargins
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import {
-  characterFor, templateFor, isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap, dressOf, printPaper, printCardWidth, printCardTop, printDress
+  characterFor, idNumber, isPhone, siteScale, siteDress, dressOf, printPaper, printCardWidth, printCardTop, printDress
 } from '../../core/theme-core.js';
 import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { wireEntries } from './entry-ui.js';
-import { withCharacters, dressScene, dressFigure, dressName, lookNow, onLook, printIn, printImages, dressPrintSheet } from '../theme-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages, dressPrintSheet } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -40,6 +40,9 @@ var PLAY_LINES = {
 // What printing the puzzle's sheet in a style needs loaded first: nothing, until its character is
 // known (dressPuzzle).
 var printLoad = function () { return Promise.resolve(); };
+// What the character on screen stands by: the puzzle's number, its board, and its character once
+// known (dressPuzzle).
+var playFigure;
 
 function playEl(id) {
   return document.getElementById(id);
@@ -269,18 +272,21 @@ function showPuzzle(opened, found) {
   var PLAY_EVENTS = { complete: celebrate };
 }
 
-// Themed: the puzzle wears its own character, its background behind the page, in its own
-// template — the same every visit. Plain shows none of it (styles/look.css). Its printout wears the
-// same character whatever the look, on a spot picked again every time it prints, its images loaded
-// before the dialog opens when Print page's pick is Colour or Black and white.
+// Themed: the puzzle wears its own character, its background behind the page, at the printout's
+// spot its number picks — the same every visit (placePlayFigure). Plain shows none of it
+// (styles/look.css). Its printout wears the same character whatever the look, on a spot picked
+// again every time it prints, its images loaded before the dialog opens when Print page's pick is
+// Colour or Black and white.
 function dressPuzzle(hiddenId, board) {
-  playEl('play').dataset.template = templateFor(hiddenId);
+  playFigure = { number: idNumber(hiddenId), board: board, character: undefined };
   withCharacters(function (characters) {
     var character = characterFor(characters, hiddenId);
     var printout = function () { dressPrintout(playEl('play'), document.documentElement, board, character, false, Math.random); };
+    playFigure.character = character;
     dressScene(character);
     dressFigure(playEl('theme-figure'), character);
     dressName(playEl('name-tag'), character);
+    layoutWords();
     printout();
     window.addEventListener('beforeprint', printout);
     printLoad = function () { return printImages(character); };
@@ -438,7 +444,7 @@ function placeTextSizeMenu() {
 
 // The list is laid out again whenever the page or the grid card changes size, once the page's
 // font has loaded and the words are their true width, and when the player switches the look —
-// Themed may leave the character room beside the words.
+// Plain has no character to place, Themed places it again.
 function wireWordsFit() {
   new ResizeObserver(layoutWords).observe(playEl('stage'));
   window.addEventListener('resize', layoutWords);
@@ -450,11 +456,11 @@ function wireWordsFit() {
 // card's size for the words card to take, the grid's letter size and the words' text size, and
 // each word's column and row. The play area reaches past the page's column to the window's edges,
 // never over the side bar (play-core's playReach, styles/play.css), so the page is measured once it
-// does. The words are measured at the page's own text size, as revealed, the boldest they get.
+// does — then draws back to no further than the grid and words need (playMargins), so what fits in
+// the column sits centred in it, under the title. The words are measured at the page's own text size, as revealed, the boldest they get.
 function layoutWords() {
-  var play = playEl('play'), list = playEl('words'), box = list.parentElement;
-  var reach = playReach(document.documentElement.clientWidth, play.parentElement.getBoundingClientRect(),
-    playEl('site-side').getBoundingClientRect().width);
+  var play = playEl('play'), list = playEl('words'), box = list.parentElement, column = play.parentElement.getBoundingClientRect();
+  var reach = playReach(document.documentElement.clientWidth, column, playEl('site-side').getBoundingClientRect().width);
   play.style.setProperty('--reach-left', reach.left + 'px');
   play.style.setProperty('--reach-right', reach.right + 'px');
   var card = playEl('stage').getBoundingClientRect(), cell = playEl('grid').firstElementChild.getBoundingClientRect().width;
@@ -471,36 +477,37 @@ function layoutWords() {
     chromeWidth: box.getBoundingClientRect().width - list.clientWidth,
     chromeHeight: box.getBoundingClientRect().height - list.getBoundingClientRect().height,
     pageWidth: play.clientWidth, pageGap: parseFloat(getComputedStyle(play).columnGap),
-    scale: boardScale(play.dataset.size, playLetters()), letters: playLetters(),
-    room: wordsRoom(lookNow(), play.dataset.template, isPhone(document.documentElement.clientWidth))
+    scale: boardScale(play.dataset.size, playLetters()), letters: playLetters()
   });
   play.dataset.sits = fit.sits;
   play.style.setProperty('--fit-cell', fit.cell + 'px');
   play.style.setProperty('--card-w', fit.cardWidth + 'px');
   play.style.setProperty('--card-h', fit.cardHeight + 'px');
-  play.style.setProperty('--words-room', fit.room + 'px');
   list.style.setProperty('--word-cols', fit.columns);
   list.style.setProperty('--word-w', fit.wordWidth + 'px');
   list.style.setProperty('--word-size', fit.wordSize + 'px');
   fit.places.forEach(function (place, i) { list.children[i].style.gridArea = place[0] + ' / ' + place[1]; });
-  placeFigure(fit);
+  var margins = playMargins(reach, column.width, fit.across);
+  play.style.setProperty('--reach-left', margins.left + 'px');
+  play.style.setProperty('--reach-right', margins.right + 'px');
+  placePlayFigure(fit);
 }
 
-// The character on its template's spot for where the words ended up, measured from the grid
-// card as it now stands on the page, facing that spot's way, and its name label beside it, the
-// words card under the grid no taller than it — on a phone, its one spot, no label and no cap.
-function placeFigure(fit) {
+// The character at the printout's spot its puzzle's number picks among those that show, measured
+// from the grid card as it now stands on the page, the printout's picture at the grid card's size
+// (core/theme-core.js siteDress) — a spot the words card would cover, or the window's edge cut,
+// skipped.
+function placePlayFigure(fit) {
   var page = playEl('play').getBoundingClientRect(), card = playEl('stage').getBoundingClientRect();
+  var words = playEl('words-list').getBoundingClientRect(), title = document.querySelector('.play-head').getBoundingClientRect();
+  var board = playFigure.board, saga = board.sheets.length > 0;
   var phone = isPhone(document.documentElement.clientWidth);
-  var spot = figurePlacement(playEl('play').dataset.template, fit.sits,
-    { width: fit.cardWidth, height: fit.cardHeight, left: card.left - page.left, top: card.top - page.top }, phone);
-  var figure = playEl('theme-figure'), tag = playEl('name-tag');
-  figure.style.left = spot.left + 'px';
-  figure.style.top = spot.top + 'px';
-  figure.style.height = spot.height + 'px';
-  figure.style.transform = figureTransform(spot);
-  playEl('play').style.setProperty('--words-cap', wordsCap(spot, phone));
-  tag.hidden = !spot.label;
-  tag.style.left = spot.labelLeft + 'px';
-  tag.style.top = spot.labelTop + 'px';
+  placeFigure(playEl('theme-figure'), playEl('name-tag'), siteDress({
+    card: { left: card.left - page.left, top: card.top - page.top, width: fit.cardWidth, height: fit.cardHeight },
+    scale: siteScale(fit.cardWidth, board.cols, board.rows, board.letters, saga),
+    screen: screenEdges(page.left),
+    words: { left: words.left - page.left, top: words.top - page.top, width: words.width, height: words.height },
+    title: { left: title.left - page.left, top: title.top - page.top, width: title.width, height: title.height },
+    label: labelSize(phone), saga: saga, phone: phone
+  }, playFigure.character, playFigure.number));
 }

@@ -1,6 +1,6 @@
 import {
-  charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, templateFor, themeScale,
-  isPhone, wordsRoom, figurePlacement, figureTransform, wordsCap,
+  charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, idNumber,
+  isPhone, figureTransform, siteChoices, siteScale, sitePlacement, siteDress,
   printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress
 } from '../../core/theme-core.js';
 
@@ -68,9 +68,9 @@ describe('which character a puzzle wears', () => {
   });
 });
 
-describe('which template a puzzle wears', () => {
-  test('beside, its mirror, the normal page — spread evenly by the hidden ID number', () => {
-    expect(['WSCH-0001', 'WSCH-0002', 'WSCH-0003', 'WSCH-0004', 'WSCH-0050'].map(templateFor)).toEqual(['beside', 'mirror', 'normal', 'beside', 'mirror']);
+describe('a puzzle\'s number', () => {
+  test('is the digits of its hidden ID', () => {
+    expect(['WSCH-0001', 'WSCH-0050', 'MAZE-0123'].map(idNumber)).toEqual([1, 50, 123]);
   });
 });
 
@@ -78,99 +78,6 @@ describe('a phone', () => {
   test('is a window no wider than the play page\'s phone layout, 760px', () => {
     expect(isPhone(760)).toBe(true);
     expect(isPhone(761)).toBe(false);
-  });
-});
-
-describe('the room the words leave the character', () => {
-  test('under the grid in beside and mirror, 240px and a 14px gap, only while Themed', () => {
-    expect(wordsRoom('themed', 'beside', false)).toBe(254);
-    expect(wordsRoom('themed', 'mirror', false)).toBe(254);
-    expect(wordsRoom('themed', 'normal', false)).toBe(0);
-    expect(['beside', 'mirror', 'normal'].map(t => wordsRoom('plain', t, false))).toEqual([0, 0, 0]);
-  });
-
-  test('none on a phone, where the words keep the grid card\'s width', () => {
-    expect(['beside', 'mirror', 'normal'].map(t => wordsRoom('themed', t, true))).toEqual([0, 0, 0]);
-  });
-});
-
-describe('where the character stands on the play page', () => {
-  test('shrinks in proportion on a grid card narrower than 691px, never grows past it', () => {
-    expect(themeScale(691)).toBe(1);
-    expect(themeScale(1382)).toBe(1);
-    expect(themeScale(345.5)).toBe(0.5);
-  });
-
-  test('at full size stands on the owner\'s spot from the grid card, its label on the owner\'s spot beside it', () => {
-    expect(figurePlacement('beside', 'bottom', { width: 691, height: 733, left: 100, top: 50 }, false)).toEqual({
-      left: 756, top: 1054, height: 700, turn: 0, flip: false, label: true, labelLeft: 756 - 0.156 * 700, labelTop: 1054 + 0.166 * 700
-    });
-  });
-
-  test('on the owner\'s 691 × 733 grid card, every template and words position has its own spot, turn, facing and label spot', () => {
-    const at = (template, sits) => {
-      const p = figurePlacement(template, sits, { width: 691, height: 733, left: 0, top: 0 }, false);
-      return [p.left, p.top, p.height, p.turn, p.flip, (p.labelLeft - p.left) / p.height, (p.labelTop - p.top) / p.height].map(n => typeof n === 'number' ? Math.round(n * 1000) / 1000 : n);
-    };
-    expect(at('beside', 'right')).toEqual([870, -29, 440, 0, false, 0.377, -0.107]);
-    expect(at('beside', 'overlay')).toEqual([904, 732, 700, 0, false, -0.121, -0.389]);
-    expect(at('mirror', 'bottom')).toEqual([15, 1030, 695, 0, true, -0.187, 0.039]);
-    expect(at('mirror', 'right')).toEqual([256, -32, 385, 0, true, -0.322, -0.104]);
-    expect(at('mirror', 'overlay')).toEqual([-190, 432, 635, 0, true, 0.036, -0.391]);
-    expect(at('normal', 'bottom')).toEqual([719, 293, 560, 61, false, 0.143, 0.173]);
-    expect(at('normal', 'right')).toEqual([275, -31, 455, -24, true, -0.376, -0.136]);
-    expect(at('normal', 'overlay')).toEqual([-89, 309, 455, -90, false, -0.018, 0.341]);
-  });
-
-  test('on a wider, taller grid card, each spot keeps its offset from the card edges it was placed against, and its size', () => {
-    // 1000 × 1500: 309 px wider and 767 px taller than the owner's card.
-    const at = (template, sits) => {
-      const p = figurePlacement(template, sits, { width: 1000, height: 1500, left: 0, top: 0 }, false);
-      return [p.left, p.top, p.height];
-    };
-    expect(at('beside', 'bottom')).toEqual([656 + 309, 1004 + 767, 700]);
-    expect(at('beside', 'right')).toEqual([870 + 309, -29, 440]);
-    expect(at('beside', 'overlay')).toEqual([904 + 309, 732 + 767, 700]);
-    expect(at('mirror', 'bottom')).toEqual([15, 1030 + 767, 695]);
-    expect(at('mirror', 'right')).toEqual([256, -32, 385]);
-    expect(at('mirror', 'overlay')).toEqual([-190, 432 + 767, 635]);
-    expect(at('normal', 'bottom')).toEqual([719 + 309, 293, 560]);
-    expect(at('normal', 'right')).toEqual([275, -31, 455]);
-    expect(at('normal', 'overlay')).toEqual([-89, 309, 455]);
-  });
-
-  test('a tall grid keeps the character under it, not over its letters; a short one keeps it just under, not below the page', () => {
-    expect(figurePlacement('mirror', 'bottom', { width: 691, height: 1221, left: 0, top: 0 }, false).top).toBe(1221 + 297);
-    expect(figurePlacement('beside', 'bottom', { width: 691, height: 400, left: 0, top: 0 }, false).top).toBe(400 + 271);
-  });
-
-  test('on a smaller grid card, its offsets from the card edges and its size shrink with it; the card\'s own place does not', () => {
-    const near = figurePlacement('normal', 'right', { width: 345.5, height: 400, left: 10, top: 20 }, false);
-    expect(near).toMatchObject({ left: 10 + 137.5, top: 20 - 15.5, height: 227.5, turn: -24, flip: true, labelLeft: 147.5 - 0.376 * 227.5, labelTop: 4.5 - 0.136 * 227.5 });
-    const far = figurePlacement('beside', 'bottom', { width: 345.5, height: 400, left: 10, top: 20 }, false);
-    expect(far).toMatchObject({ left: 10 + 345.5 - 17.5, top: 20 + 400 + 135.5, height: 350 });
-  });
-
-  test('on a phone, every template and words position stands it in one spot, facing left, with no label', () => {
-    ['beside', 'mirror', 'normal'].forEach(template => ['bottom', 'right', 'overlay'].forEach(sits => {
-      expect(figurePlacement(template, sits, { width: 422, height: 900, left: 16, top: 200 }, true))
-        .toEqual({ left: 385, top: 201, height: 140, turn: 0, flip: false, label: false, labelLeft: 385, labelTop: 201 });
-    }));
-  });
-
-  test('on a phone, a grid card narrower than its 422px shrinks the spot with it, never grows past it', () => {
-    expect(figurePlacement('beside', 'bottom', { width: 211, height: 400, left: 0, top: 0 }, true)).toMatchObject({ left: 184.5, top: 0.5, height: 70 });
-    expect(figurePlacement('beside', 'bottom', { width: 844, height: 1600, left: 0, top: 0 }, true)).toMatchObject({ left: 369, top: 1, height: 140 });
-  });
-
-  test('is drawn centred on its spot and turned, mirrored only when flipped', () => {
-    expect(figureTransform({ turn: -24, flip: false })).toBe('translate(-50%, -50%) rotate(-24deg)');
-    expect(figureTransform({ turn: -24, flip: true })).toBe('translate(-50%, -50%) rotate(-24deg) scaleX(-1)');
-  });
-
-  test('caps the words card under the grid at the character\'s height, and not at all on a phone', () => {
-    expect(wordsCap({ height: 347.5 }, false)).toBe('347.5px');
-    expect(wordsCap({ height: 140 }, true)).toBe('none');
   });
 });
 
@@ -372,5 +279,242 @@ describe('printed Colour or Black and white: each time a sheet prints', () => {
 
   test('no character — the list couldn\'t be read — is judged as a whole image', () => {
     expect(printDress('one', { ...roomy(), cardTop: 100 }, undefined, () => 0.99).spot).toBe('left');
+  });
+});
+
+describe('a phone', () => {
+  test('is a window no wider than the play page\'s phone layout, 760px', () => {
+    expect(isPhone(760)).toBe(true);
+    expect(isPhone(761)).toBe(false);
+  });
+});
+
+// TASK-146: the site wears the printout's four spots.
+// The owner's 429 × 472 grid card, 1000 px in and 500 down the page, on a wide screen with nothing
+// beside it: every spot shows.
+const onScreen = (over = {}) => ({
+  card: { left: 1000, top: 500, width: 429, height: 472 }, scale: 1, screen: { left: 0, right: 3000 },
+  words: { left: 0, top: 0, width: 0, height: 0 }, title: { left: 0, top: 0, width: 0, height: 0 },
+  label: { width: 0, height: 0 }, saga: false, phone: false, ...over
+});
+// The box round a spot's whole-image ink on the page.
+const inkOnPage = (spot, frame) => {
+  const p = sitePlacement(spot, frame), ink = inkBox(undefined, p.height, p.turn, p.flip);
+  return { left: p.left + ink.left, right: p.left + ink.right, top: p.top + ink.top, bottom: p.top + ink.bottom };
+};
+const spotOf = (frame, number, character) => siteDress(frame, character, number).spot;
+
+describe('on screen: the spots a page picks from', () => {
+  test('all four, but a Saga\'s play page and any page on a phone only the top corners', () => {
+    expect(siteChoices(false, false)).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect(siteChoices(true, false)).toEqual(['topRight', 'topLeft']);
+    expect(siteChoices(false, true)).toEqual(['topRight', 'topLeft']);
+    expect(siteChoices(true, true)).toEqual(['topRight', 'topLeft']);
+  });
+});
+
+describe('on screen: how big the play page draws the printout\'s picture', () => {
+  test('its grid card against the card the puzzle prints on: the one-grid sheet\'s, or a Saga\'s grid sheet\'s', () => {
+    expect(siteScale(2 * (396.85 + 32), 15, 15, 1, false)).toBeCloseTo(2, 9);
+    expect(siteScale(15 * 36 + 32, 15, 15, 1, true)).toBe(1);
+    expect(siteScale(8 * 54 + 32, 8, 8, 1.5, false)).toBe(1);
+  });
+});
+
+describe('on screen: where the character stands', () => {
+  test('on the owner\'s card at the printout\'s size, each spot where the printout has it, its label beside it', () => {
+    const at = spot => {
+      const p = sitePlacement(spot, onScreen());
+      return [p.left, p.top, p.height, p.turn, p.flip, p.labelLeft - p.left, p.labelTop - p.top].map(n => typeof n === 'number' ? Math.round(n * 1000) / 1000 : n);
+    };
+    expect(at('right')).toEqual([1439, 688, 293, 37, true, 0.3 * 293, 0.52 * 293].map(n => typeof n === 'number' ? Math.round(n * 1000) / 1000 : n));
+    expect(at('left')).toEqual([999, 671, 293, -41, false, -87.9, 152.36]);
+    expect(at('topRight')).toEqual([1378, 487, 213, -3, true, 132.06, -10.65]);
+    expect(at('topLeft')).toEqual([1049, 486, 213, 12, false, -132.06, -10.65]);
+  });
+
+  test('at twice the size, held from the card edge nearest it, twice as far from it, and twice as tall', () => {
+    const frame = onScreen({ card: { left: 0, top: 0, width: 600, height: 300 }, scale: 2 });
+    expect(sitePlacement('right', frame)).toMatchObject({ spot: 'right', left: 600 + 20, top: 376, height: 586 });
+    expect(sitePlacement('topRight', frame)).toMatchObject({ left: 600 - 102, top: -26, height: 426 });
+    expect(sitePlacement('left', frame)).toMatchObject({ left: -2, top: 342 });
+    expect(sitePlacement('topLeft', frame)).toMatchObject({ left: 98, top: -28 });
+  });
+
+  test('the puzzle\'s number picks round the four, the same every visit', () => {
+    expect([1, 2, 3, 4, 5, 50].map(n => spotOf(onScreen(), n))).toEqual(['right', 'left', 'topRight', 'topLeft', 'right', 'left']);
+  });
+
+  test('drawn centred on its spot, turned, mirrored when flipped, its name label beside it', () => {
+    expect(siteDress(onScreen(), undefined, 4)).toEqual({
+      spot: 'topLeft', left: '1049px', top: '486px', height: '213px', transform: 'translate(-50%, -50%) rotate(12deg)',
+      label: true, labelLeft: 1049 - 0.62 * 213 + 'px', labelTop: 486 - 0.05 * 213 + 'px'
+    });
+  });
+
+  test('is drawn centred on its spot and turned, mirrored only when flipped', () => {
+    expect(figureTransform({ turn: -24, flip: false })).toBe('translate(-50%, -50%) rotate(-24deg)');
+    expect(figureTransform({ turn: -24, flip: true })).toBe('translate(-50%, -50%) rotate(-24deg) scaleX(-1)');
+  });
+
+  test('a Saga picks round the top corners; a phone too, with no name label', () => {
+    expect([1, 2, 3].map(n => spotOf(onScreen({ saga: true }), n))).toEqual(['topRight', 'topLeft', 'topRight']);
+    expect([1, 2].map(n => spotOf(onScreen({ phone: true }), n))).toEqual(['topRight', 'topLeft']);
+    expect(siteDress(onScreen({ phone: true }), undefined, 1).label).toBe(false);
+  });
+});
+
+describe('on screen: a spot that doesn\'t show is skipped', () => {
+  test('a side whose character, past the card, runs past the screen\'s edge — exactly at the edge still shows', () => {
+    const right = inkOnPage('right', onScreen()).right, left = inkOnPage('left', onScreen()).left;
+    expect(spotOf(onScreen({ screen: { left: 0, right } }), 1)).toBe('right');
+    expect(spotOf(onScreen({ screen: { left: 0, right: right - 0.001 } }), 1)).toBe('left');
+    expect(spotOf(onScreen({ screen: { left, right: 3000 } }), 2)).toBe('left');
+    expect(spotOf(onScreen({ screen: { left: left + 0.001, right: 3000 } }), 2)).toBe('topRight');
+  });
+
+  test('a top corner whose character runs past either edge of the screen', () => {
+    const topRight = inkOnPage('topRight', onScreen()), topLeft = inkOnPage('topLeft', onScreen());
+    const phone = screen => [1, 2].map(n => spotOf(onScreen({ phone: true, screen }), n));
+    expect(phone({ left: topLeft.left, right: topRight.right })).toEqual(['topRight', 'topLeft']);
+    expect(phone({ left: topLeft.left, right: topRight.right - 0.001 })).toEqual(['topLeft', 'topLeft']);
+    expect(phone({ left: topLeft.left + 0.001, right: 3000 })).toEqual(['topRight', 'topRight']);
+  });
+
+  test('judged by the character\'s inked outline, so a slimmer one shows where its whole image wouldn\'t', () => {
+    const screen = { left: 0, right: inkOnPage('right', onScreen()).right - 1 };
+    expect(spotOf(onScreen({ screen }), 1, undefined)).toBe('left');
+    expect(spotOf(onScreen({ screen }), 1, { outline: lowHalf() })).toBe('right');
+  });
+
+  test('a side the words card beside the grid covers: with the words at the Right, the right two', () => {
+    const words = { left: 1429 + 28, top: 500, width: 300, height: 472 };
+    expect([1, 2, 3].map(n => spotOf(onScreen({ words }), n))).toEqual(['left', 'topLeft', 'left']);
+  });
+
+  test('the words card under a short grid covers the sides; over the grid it covers only what the grid card hides', () => {
+    const short = { left: 1000, top: 500, width: 429, height: 200 };
+    expect([1, 2].map(n => spotOf(onScreen({ card: short, words: { left: 1000, top: 714, width: 429, height: 400 } }), n))).toEqual(['topRight', 'topLeft']);
+    expect([1, 2].map(n => spotOf(onScreen({ words: { left: 1000, top: 500, width: 429, height: 472 } }), n))).toEqual(['right', 'left']);
+  });
+
+  test('a words card only touching the character covers none of it', () => {
+    const box = inkOnPage('right', onScreen());
+    const touching = [
+      { left: box.right, top: 0, width: 100, height: 2000 }, { left: box.left - 100, top: 0, width: 100, height: 2000 },
+      { left: 0, top: box.bottom, width: 3000, height: 100 }, { left: 1500, top: box.top - 100, width: 3000, height: 100 }
+    ];
+    touching.forEach(words => expect(spotOf(onScreen({ words }), 1)).toBe('right'));
+  });
+
+  test('a words card covering it only where it stands behind the grid card, on any side, covers none of it', () => {
+    const inside = [
+      { left: 1000, top: 500, width: 1, height: 472 }, { left: 1428, top: 500, width: 1, height: 472 },
+      { left: 1000, top: 500, width: 429, height: 1 }, { left: 1000, top: 971, width: 429, height: 1 }
+    ];
+    inside.forEach(words => expect([1, 2, 3, 4].map(n => spotOf(onScreen({ words }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']));
+    // On a shorter card the right side's ink reaches below it: a sliver on the card's foot is behind
+    // the card; a pixel past it is not.
+    const card = { left: 1000, top: 500, width: 429, height: 300 };
+    expect(inkOnPage('right', onScreen({ card })).bottom).toBeGreaterThan(801);
+    expect(spotOf(onScreen({ card, words: { left: 1300, top: 799, width: 100, height: 1 } }), 1)).toBe('right');
+    expect(spotOf(onScreen({ card, words: { left: 1300, top: 799, width: 100, height: 2 } }), 1)).not.toBe('right');
+  });
+
+  test('a pixel past the grid card\'s edge, the words card covers the characters standing there', () => {
+    const picks = words => [1, 2, 3, 4].map(n => spotOf(onScreen({ words }), n));
+    // Past its left edge, by the left side and the top left's feet.
+    expect(picks({ left: 999, top: 600, width: 2, height: 10 })).toEqual(['right', 'topRight', 'right', 'topRight']);
+    // Past its right edge, by the right side.
+    expect(picks({ left: 1428, top: 600, width: 2, height: 10 })).toEqual(['left', 'topRight', 'topLeft', 'left']);
+    // Past its top edge, by the top left and the left side's head.
+    expect(picks({ left: 1050, top: 499, width: 10, height: 2 })).toEqual(['right', 'topRight', 'right', 'topRight']);
+    // Past its foot, where no character reaches.
+    expect(picks({ left: 1400, top: 971, width: 10, height: 2 })).toEqual(['right', 'left', 'topRight', 'topLeft']);
+  });
+
+  test('a spot whose name label runs past the screen\'s edge — exactly at the edge still shows', () => {
+    // The right side's label, 200 × 30, centred 87.9 px right of the character: past its ink.
+    const label = { width: 200, height: 30 }, p = sitePlacement('right', onScreen());
+    expect(p.labelLeft + 100).toBeGreaterThan(inkOnPage('right', onScreen()).right);
+    expect(spotOf(onScreen({ label, screen: { left: 0, right: p.labelLeft + 100 } }), 1)).toBe('right');
+    expect(spotOf(onScreen({ label, screen: { left: 0, right: p.labelLeft + 99.999 } }), 1)).toBe('left');
+    // The top left's label, centred 132 px left of it: past its ink on the left.
+    const q = sitePlacement('topLeft', onScreen());
+    expect(q.labelLeft - 100).toBeLessThan(inkOnPage('topLeft', onScreen()).left);
+    const phoneless = left => [1, 2].map(n => spotOf(onScreen({ label, saga: true, screen: { left, right: 3000 } }), n));
+    expect(phoneless(q.labelLeft - 100)).toEqual(['topRight', 'topLeft']);
+    expect(phoneless(q.labelLeft - 99.999)).toEqual(['topRight', 'topRight']);
+  });
+
+  test('a spot whose name label the words card covers, where the character itself is clear', () => {
+    // A tall label, reaching below the character's ink; the words card a pixel into its foot.
+    const label = { width: 200, height: 100 }, p = sitePlacement('right', onScreen());
+    const under = { left: p.labelLeft - 10, top: p.labelTop + 49, width: 20, height: 100 };
+    expect(under.top).toBeGreaterThan(inkOnPage('right', onScreen()).bottom);
+    expect(spotOf(onScreen({ words: under }), 1)).toBe('right');
+    expect(spotOf(onScreen({ label, words: { ...under, top: p.labelTop + 50 } }), 1)).toBe('right');
+    expect(spotOf(onScreen({ label, words: under }), 1)).toBe('left');
+    // Above it, past the character's ink: a words card ending at the label's top leaves it clear,
+    // a pixel lower covers it.
+    const right = inkOnPage('right', onScreen()).right;
+    expect(p.labelLeft + 100).toBeGreaterThan(right + 1);
+    const over = { left: right + 1, top: p.labelTop - 150, width: p.labelLeft + 100 - right - 1, height: 100 };
+    expect(spotOf(onScreen({ label, words: over }), 1)).toBe('right');
+    expect(spotOf(onScreen({ label, words: { ...over, height: 101 } }), 1)).toBe('left');
+  });
+
+  test('a spot whose character would rise over the title is passed over while another keeps clear of it', () => {
+    // A title over the card's top-right corner: the top right's head reaches it.
+    const title = { left: 1300, top: 300, width: 200, height: 80 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title }), n))).toEqual(['right', 'left', 'topLeft', 'right']);
+    // A title just clear of the top right's ink, on each side, takes nothing away.
+    const ink = inkOnPage('topRight', onScreen());
+    const beside = [
+      { left: ink.right, top: 300, width: 100, height: 80 }, { left: ink.left - 100, top: 300, width: 100, height: 80 },
+      { left: 1300, top: ink.top - 80, width: 200, height: 80 }, { left: 1300, top: ink.bottom, width: 200, height: 80 }
+    ];
+    beside.forEach(t => expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title: t }), n))).toContain('topRight'));
+  });
+
+  test('its name label too keeps clear of the title', () => {
+    const label = { width: 200, height: 30 }, p = sitePlacement('topRight', onScreen());
+    const title = { left: p.labelLeft + 99, top: p.labelTop - 15, width: 100, height: 30 };
+    expect(spotOf(onScreen({ title }), 3)).toBe('topRight');
+    expect(spotOf(onScreen({ label, title }), 3)).toBe('topLeft');
+    expect(spotOf(onScreen({ label, title: { ...title, left: p.labelLeft + 100 } }), 3)).toBe('topRight');
+  });
+
+  test('every spot would cover the title, and the page picks as though it weren\'t there', () => {
+    const title = { left: 0, top: 0, width: 3000, height: 2000 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect(siteDress(onScreen({ title, label: { width: 200, height: 30 } }), undefined, 1).label).toBe(true);
+    expect(siteDress(onScreen({ title, label: { width: 4000, height: 30 } }), undefined, 1).label).toBe(false);
+  });
+
+  test('clear of the title without its label wins over the label over the title', () => {
+    // The label, wider than the screen, fits nowhere; without it only the top right clears the title.
+    const title = { left: 0, top: 600, width: 3000, height: 2000 };
+    const frame = onScreen({ title, label: { width: 4000, height: 30 } });
+    expect(siteDress(frame, undefined, 1)).toMatchObject({ spot: 'topRight', label: false });
+  });
+
+  test('none shows with its name label, and the page picks from those that show without it, the label left off', () => {
+    // A label wider than the screen fits no spot; the characters themselves all do.
+    const frame = onScreen({ label: { width: 4000, height: 30 } });
+    expect([1, 2, 3, 4].map(n => spotOf(frame, n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect(siteDress(frame, undefined, 1).label).toBe(false);
+    expect(siteDress(onScreen({ label: { width: 200, height: 30 } }), undefined, 1).label).toBe(true);
+    // Only the left side's character clears a screen edge 100 px into the card, label or no label.
+    expect(inkOnPage('topLeft', onScreen()).right).toBeGreaterThan(1100);
+    const tight = onScreen({ label: { width: 4000, height: 30 }, screen: { left: 0, right: 1100 } });
+    expect([1, 2].map(n => spotOf(tight, n))).toEqual(['left', 'left']);
+  });
+
+  test('none shows even without its label, and the page picks from every one it has, the label left off', () => {
+    const screen = { left: 1000, right: 1429 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ screen }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect([1, 2].map(n => spotOf(onScreen({ screen, phone: true }), n))).toEqual(['topRight', 'topLeft']);
+    expect(siteDress(onScreen({ screen }), undefined, 1).label).toBe(false);
   });
 });
