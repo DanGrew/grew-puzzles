@@ -4,7 +4,7 @@ import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, printedSpread, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, boardScale, textSizeMenu, savedTextSize, saveTextSize,
-  playReach
+  playReach, playMargins
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -798,6 +798,15 @@ describe('how the words fill their card', () => {
     expect(wordsFit('bottom', page({ cardWidth: 1000, pageWidth: 2000 })).columns).toBe(8);
   });
 
+  it('lies across the page as wide as the grid card under or over it; beside it, both cards and the gap', () => {
+    expect(wordsFit('bottom', page()).across).toBe(400);
+    expect(wordsFit('overlay', page()).across).toBe(400);
+    // 400 grid card + 28 gap + 36 edges + one 100px column = 564, tall enough for every word.
+    expect(wordsFit('right', page({ cardHeight: 323 }))).toMatchObject({ sits: 'right', across: 564 });
+    // Too narrow beside it, the words drop under, and lie as wide as the grid card.
+    expect(wordsFit('right', page({ pageWidth: 400 }))).toMatchObject({ sits: 'bottom', across: 400 });
+  });
+
   it('in Overlay fills the grid card\'s height before adding a column', () => {
     // 300 tall holds nine 27px rows: ten words take two columns, though three fit across.
     expect(wordsFit('overlay', page())).toMatchObject({ sits: 'overlay', columns: 2 });
@@ -982,5 +991,27 @@ describe('playReach — the play area past the page column, never over the side 
 
   it('never reaches back inside the column', () => {
     expect(playReach(390, { left: 10, right: 380 }, 0)).toEqual({ left: 0, right: 0 });
+  });
+});
+
+describe('playMargins — the play area reaches no further than its grid and words need', () => {
+  it('a grid and words that fit in the column stay in it, centred under the title', () => {
+    expect(playMargins({ left: 0, right: -276 }, 1072, 692)).toEqual({ left: 0, right: 0 });
+    expect(playMargins({ left: -140, right: -140 }, 1072, 1072)).toEqual({ left: 0, right: 0 });
+  });
+
+  it('beside the side bar, what spills past the column goes right, as far as it needs and no further', () => {
+    expect(playMargins({ left: 0, right: -276 }, 1072, 1172)).toEqual({ left: 0, right: -100 });
+    expect(playMargins({ left: 0, right: -276 }, 1072, 2000)).toEqual({ left: 0, right: -276 });
+  });
+
+  it('with room on both sides, the spill is shared evenly', () => {
+    expect(playMargins({ left: -140, right: -140 }, 1000, 1100)).toEqual({ left: -50, right: -50 });
+    expect(playMargins({ left: -140, right: -140 }, 1000, 2000)).toEqual({ left: -140, right: -140 });
+  });
+
+  it('a side with too little room for its half takes what it can, the other side the rest', () => {
+    expect(playMargins({ left: -20, right: -140 }, 1000, 1100)).toEqual({ left: -20, right: -80 });
+    expect(playMargins({ left: -140, right: -20 }, 1000, 1100)).toEqual({ left: -80, right: -20 });
   });
 });

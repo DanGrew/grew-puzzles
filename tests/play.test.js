@@ -1007,6 +1007,26 @@ test('in Right a 25-column grid has its words beside it whenever the window is w
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(ROOMY);
 });
 
+// TASK-146: the play area reaches only as far as its cards need, so a grid that fits in the column
+// sits centred under the title, however wide the window.
+for (const width of [1440, 1920, 2560]) {
+  test(`on a ${width}px window a grid that fits in the column sits centred under the title, its words under it`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await openWords(page, 'bottom');
+    const title = await box(page, '.play-head'), stage = await box(page, '.stage'), aside = await box(page, 'aside');
+    expect(Math.abs((stage.x + stage.width / 2) - (title.x + title.width / 2))).toBeLessThan(1);
+    expect(Math.abs((aside.x + aside.width / 2) - (title.x + title.width / 2))).toBeLessThan(1);
+  });
+}
+
+test('in Right a grid and words that fit in the column sit centred in it together, under the title', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 900 });
+  await openWords(page, 'right');
+  await expect(page.locator('#play')).toHaveAttribute('data-sits', 'right');
+  const title = await box(page, '.play-head'), stage = await box(page, '.stage'), aside = await box(page, 'aside');
+  expect(Math.abs((stage.x + aside.x + aside.width) / 2 - (title.x + title.width / 2))).toBeLessThan(1);
+});
+
 // A Mirrorise-size puzzle: 25 × 35 letters and 140 words, too many to sit beside the grid at
 // its own letter size in a 1392px play area.
 const MIRRORISE_SIZE_PUZZLE = {

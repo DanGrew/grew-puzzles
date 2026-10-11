@@ -423,6 +423,16 @@ export function playReach(screenWidth, column, sideWidth) {
   return { left: Math.min(0, left - column.left), right: Math.min(0, column.right - (screenWidth - 24)) };
 }
 
+// How far the play area does reach, once its grid and words are laid out across (wordsFit's
+// across): no further than they need, so whatever fits in the column sits centred in it, under the
+// title. What doesn't takes half its spill from each side, as far as each side reaches, the rest
+// from the other. reach is playReach's, the furthest it may go; columnWidth the column's own.
+export function playMargins(reach, columnWidth, across) {
+  const need = Math.max(0, across - columnWidth), roomLeft = -reach.left, roomRight = -reach.right;
+  const left = Math.min(roomLeft, Math.max(need / 2, need - roomRight));
+  return { left: 0 - left, right: 0 - Math.min(roomRight, need - left) };
+}
+
 // ---- How the words fill their card ----
 // The list reads like the paper: down each column, then on to the next, no column more than one
 // word longer than another. Its card takes its size from the grid card: under it, never wider and
@@ -439,16 +449,18 @@ export function playReach(screenWidth, column, sideWidth) {
 // (playBoard's). Themed takes no room from the words: the character peers from behind the cards.
 // sits is where the list goes; cell the grid's letter size, and cardWidth × cardHeight its card
 // at that size; wordSize the words' text size; columns how many, wordWidth each column's, and
-// places each word's [row, column], from 1.
+// places each word's [row, column], from 1; across how wide the grid card and the words card lie
+// across the page together — beside it, both and the gap between; under or over, the grid card's.
 export function wordsFit(layout, measured) {
   var m = Object.assign({}, measured, { naturalCell: wholeCell(measured) });
   var fit = { bottom: underFit, right: besideFit, overlay: overFit }[layout](m);
   var card = gridCard(m, fit.cell);
   var words = wordsAt(m, fit.wordSize);
   var columns = fit.columns(words, card);
+  var across = { bottom: card.width, overlay: card.width, right: besideWidth(words, card) }[fit.sits];
   return {
     sits: fit.sits, cell: fit.cell, wordSize: fit.wordSize, cardWidth: card.width, cardHeight: card.height,
-    columns: columns, wordWidth: words.wordWidth, places: wordPlaces(m.count, columns)
+    columns: columns, wordWidth: words.wordWidth, places: wordPlaces(m.count, columns), across: across
   };
 }
 

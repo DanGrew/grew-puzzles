@@ -5,7 +5,7 @@
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
   printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale, textSizeMenu, savedTextSize, saveTextSize,
-  playReach
+  playReach, playMargins
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import {
@@ -456,11 +456,11 @@ function wireWordsFit() {
 // card's size for the words card to take, the grid's letter size and the words' text size, and
 // each word's column and row. The play area reaches past the page's column to the window's edges,
 // never over the side bar (play-core's playReach, styles/play.css), so the page is measured once it
-// does. The words are measured at the page's own text size, as revealed, the boldest they get.
+// does — then draws back to no further than the grid and words need (playMargins), so what fits in
+// the column sits centred in it, under the title. The words are measured at the page's own text size, as revealed, the boldest they get.
 function layoutWords() {
-  var play = playEl('play'), list = playEl('words'), box = list.parentElement;
-  var reach = playReach(document.documentElement.clientWidth, play.parentElement.getBoundingClientRect(),
-    playEl('site-side').getBoundingClientRect().width);
+  var play = playEl('play'), list = playEl('words'), box = list.parentElement, column = play.parentElement.getBoundingClientRect();
+  var reach = playReach(document.documentElement.clientWidth, column, playEl('site-side').getBoundingClientRect().width);
   play.style.setProperty('--reach-left', reach.left + 'px');
   play.style.setProperty('--reach-right', reach.right + 'px');
   var card = playEl('stage').getBoundingClientRect(), cell = playEl('grid').firstElementChild.getBoundingClientRect().width;
@@ -487,6 +487,9 @@ function layoutWords() {
   list.style.setProperty('--word-w', fit.wordWidth + 'px');
   list.style.setProperty('--word-size', fit.wordSize + 'px');
   fit.places.forEach(function (place, i) { list.children[i].style.gridArea = place[0] + ' / ' + place[1]; });
+  var margins = playMargins(reach, column.width, fit.across);
+  play.style.setProperty('--reach-left', margins.left + 'px');
+  play.style.setProperty('--reach-right', margins.right + 'px');
   placePlayFigure(fit);
 }
 
