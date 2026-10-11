@@ -13,8 +13,8 @@ import {
 import { joinedMaze } from '../../core/maze/progress-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { withSavedMaze, wireMazeProgress, saveMove } from './progress-ui.js';
-import { characterFor, isPhone } from '../../core/theme-core.js';
-import { withCharacters, dressFigure } from '../theme-ui.js';
+import { characterFor, idNumber, isPhone, mazeScale, boxFrom, siteDress } from '../../core/theme-core.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -34,6 +34,9 @@ var MAZE_MINIMAP_EDGES = 10;
 // Each kind's colour on the little map: a property of styles/maze.css's.
 var MAZE_MINIMAP_INKS = { collectible: '--maze-collectible', key: '--maze-key', letter: '--maze-letter', exit: '--fg', end: '--fg' };
 var MAZE_MINIMAP_FADE = { true: 0.3, false: 1 };
+// What the character on screen stands by: the maze's number, and its character once known
+// (dressMaze).
+var mazeFigure = { number: 1, character: undefined };
 
 function mazeEl(id) {
   return document.getElementById(id);
@@ -401,6 +404,7 @@ function showMaze(id, board, play) {
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted, false);
+    placeMazeFigure();
   }
 }
 
@@ -494,8 +498,41 @@ function drawSolution(lines, marks) {
   });
 }
 
-// Themed, the maze's collectibles and blocks wear its theme character — the same one every visit;
-// Plain, a collectible is a dot and a block a solid tile (styles/look.css).
+// Themed, the maze is dressed as a wordsearch is: its own character, its background behind the
+// page, peering from behind the grid card at the printout's spot its number picks — the same every
+// visit (placeMazeFigure) — and its collectibles and blocks wear that character too. Plain shows
+// none of it: a collectible is a dot and a block a solid tile (styles/look.css).
 function dressMaze(hiddenId) {
-  withCharacters(function (characters) { dressFigure(mazeEl('play'), characterFor(characters, hiddenId)); });
+  mazeFigure.number = idNumber(hiddenId);
+  withCharacters(function (characters) {
+    var character = characterFor(characters, hiddenId);
+    mazeFigure.character = character;
+    dressScene(character);
+    dressFigure(mazeEl('play'), character);
+    dressFigure(mazeEl('theme-figure'), character);
+    dressName(mazeEl('name-tag'), character);
+    placeMazeFigure();
+    onLook(placeMazeFigure);
+  });
+}
+
+// The character at the printout's spot the maze's number picks among those that show, measured
+// from the grid card as it now stands on the page, the printout's picture fitted to the card
+// (core/theme-core.js mazeScale, siteDress) — a spot the checklist card or the control pad would
+// cover, or the window's edge cut, skipped (the owner's call, 2026-10-11: the pad counts as the
+// checklist does) — and where none shows, it still never stands behind either, peeking past the
+// window's edge instead. Placed again whenever the card is sized, and when the look changes.
+function placeMazeFigure() {
+  var page = mazeEl('play').getBoundingClientRect(), card = mazeEl('stage').getBoundingClientRect();
+  var title = document.querySelector('.play-head').getBoundingClientRect();
+  var phone = isPhone(document.documentElement.clientWidth);
+  var cards = [boxFrom(mazeEl('checklist-card').getBoundingClientRect(), page), boxFrom(mazeEl('controls').getBoundingClientRect(), page)];
+  placeFigure(mazeEl('theme-figure'), mazeEl('name-tag'), siteDress({
+    card: boxFrom(card, page),
+    scale: mazeScale(card.width, card.height),
+    screen: screenEdges(page.left),
+    covers: cards, never: cards,
+    title: boxFrom(title, page),
+    label: labelSize(phone), saga: false, phone: phone
+  }, mazeFigure.character, mazeFigure.number));
 }

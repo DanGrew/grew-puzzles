@@ -1,6 +1,6 @@
 import {
   charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, idNumber,
-  isPhone, figureTransform, siteChoices, siteScale, sitePlacement, siteDress,
+  isPhone, figureTransform, siteChoices, siteScale, mazeScale, boxFrom, sitePlacement, siteDress,
   printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress
 } from '../../core/theme-core.js';
 
@@ -291,10 +291,10 @@ describe('a phone', () => {
 
 // TASK-146: the site wears the printout's four spots.
 // The owner's 429 × 472 grid card, 1000 px in and 500 down the page, on a wide screen with nothing
-// beside it: every spot shows.
-const onScreen = (over = {}) => ({
+// beside it: every spot shows. A words card, given, is the one other card that may cover it.
+const onScreen = ({ words, ...over } = {}) => ({
   card: { left: 1000, top: 500, width: 429, height: 472 }, scale: 1, screen: { left: 0, right: 3000 },
-  words: { left: 0, top: 0, width: 0, height: 0 }, title: { left: 0, top: 0, width: 0, height: 0 },
+  covers: [words].filter(Boolean), never: [], title: { left: 0, top: 0, width: 0, height: 0 },
   label: { width: 0, height: 0 }, saga: false, phone: false, ...over
 });
 // The box round a spot's whole-image ink on the page.
@@ -318,6 +318,14 @@ describe('on screen: how big the play page draws the printout\'s picture', () =>
     expect(siteScale(2 * (396.85 + 32), 15, 15, 1, false)).toBeCloseTo(2, 9);
     expect(siteScale(15 * 36 + 32, 15, 15, 1, true)).toBe(1);
     expect(siteScale(8 * 54 + 32, 8, 8, 1.5, false)).toBe(1);
+  });
+
+  test('a maze: the card the spots were placed on, 429 × 472, fitted inside the maze card', () => {
+    expect(mazeScale(429, 472)).toBe(1);
+    expect(mazeScale(858, 472)).toBe(1);
+    expect(mazeScale(429, 944)).toBe(1);
+    expect(mazeScale(858, 1416)).toBe(2);
+    expect(mazeScale(1287, 944)).toBe(2);
   });
 });
 
@@ -462,6 +470,32 @@ describe('on screen: a spot that doesn\'t show is skipped', () => {
     const over = { left: right + 1, top: p.labelTop - 150, width: p.labelLeft + 100 - right - 1, height: 100 };
     expect(spotOf(onScreen({ label, words: over }), 1)).toBe('right');
     expect(spotOf(onScreen({ label, words: { ...over, height: 101 } }), 1)).toBe('left');
+  });
+
+  // TASK-104: a maze's checklist above its card and its control pad beside it, each a card.
+  test('several other cards: a spot any one covers is skipped — a maze\'s checklist above, its pad beside', () => {
+    const checklist = { left: 1000, top: 380, width: 429, height: 92 }, pad = { left: 1429 + 28, top: 500, width: 240, height: 344 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ covers: [checklist] }), n))).toEqual(['right', 'left', 'right', 'left']);
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ covers: [pad] }), n))).toEqual(['left', 'topLeft', 'left', 'topLeft']);
+    expect([1, 2, 3].map(n => spotOf(onScreen({ covers: [checklist, pad] }), n))).toEqual(['left', 'left', 'left']);
+    expect([1, 2, 3].map(n => spotOf(onScreen({ covers: [pad, checklist] }), n))).toEqual(['left', 'left', 'left']);
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ covers: [] }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+  });
+
+  test('none shows, and the page still keeps it out from behind the cards it must never stand behind', () => {
+    // A screen no wider than the card: no character shows; the pad beside it covers the right two.
+    const screen = { left: 1000, right: 1429 }, pad = { left: 1429 + 28, top: 500, width: 240, height: 344 };
+    expect([1, 2, 3].map(n => spotOf(onScreen({ screen, covers: [pad], never: [pad] }), n))).toEqual(['left', 'topLeft', 'left']);
+    expect(siteDress(onScreen({ screen, covers: [pad], never: [pad], label: { width: 200, height: 30 } }), undefined, 1).label).toBe(false);
+    // Only a card it must never stand behind counts then; one that merely covers it doesn't.
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ screen, covers: [pad] }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    // Every spot behind one: round every one it has.
+    const everywhere = { left: 0, top: 0, width: 3000, height: 2000 };
+    expect([1, 2].map(n => spotOf(onScreen({ screen, never: [everywhere] }), n))).toEqual(['right', 'left']);
+  });
+
+  test('a box on the window, measured from the page\'s corner', () => {
+    expect(boxFrom({ left: 300, top: 250, width: 40, height: 30, right: 340 }, { left: 100, top: 50 })).toEqual({ left: 200, top: 200, width: 40, height: 30 });
   });
 
   test('a spot whose character would rise over the title is passed over while another keeps clear of it', () => {

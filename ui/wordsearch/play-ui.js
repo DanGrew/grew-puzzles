@@ -506,7 +506,7 @@ function placePlayFigure(fit) {
     card: { left: card.left - page.left, top: card.top - page.top, width: fit.cardWidth, height: fit.cardHeight },
     scale: siteScale(fit.cardWidth, board.cols, board.rows, board.letters, saga),
     screen: screenEdges(page.left),
-    words: { left: words.left - page.left, top: words.top - page.top, width: words.width, height: words.height },
+    covers: [{ left: words.left - page.left, top: words.top - page.top, width: words.width, height: words.height }], never: [],
     title: { left: title.left - page.left, top: title.top - page.top, width: title.width, height: title.height },
     label: labelSize(phone), saga: saga, phone: phone
   }, playFigure.character, playFigure.number));

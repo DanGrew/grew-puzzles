@@ -54,8 +54,9 @@
   :root[data-look="themed"] .tile .theme-figure { left: 88%; top: 84%; height: 29%; filter: drop-shadow(0 3px 4px rgba(15, 42, 36, .2)); }
   :root[data-look="themed"] .tile > :not(.theme-figure) { position: relative; z-index: 1; }
 
-  /* The play page: the character peers from behind the grid card at the printout's spot, measured
-     from the card (ui/wordsearch/play-ui.js); the cards sit where Plain puts them. */
+  /* The play and maze pages: the character peers from behind the grid card at the printout's spot,
+     measured from the card (ui/wordsearch/play-ui.js, ui/maze/play-ui.js); the cards sit where Plain
+     puts them. */
   :root[data-look="themed"] .play { position: relative; }
   :root[data-look="themed"] .play > .theme-figure { z-index: -1; }
 

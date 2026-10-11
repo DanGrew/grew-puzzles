@@ -224,6 +224,19 @@ export function siteScale(cardWidth, cols, rows, letters, saga) {
   return cardWidth / printGridWidth(cols, rows, letters, saga);
 }
 
+// How big a maze page draws it (TASK-104): a maze doesn't print yet, so against the card the owner
+// placed the spots on, the one-grid sheet's 429 × 472 px, fitted inside the maze card — sized to the
+// window's height, so a shorter window's smaller card wears a smaller character.
+export function mazeScale(cardWidth, cardHeight) {
+  return Math.min(cardWidth / 429, cardHeight / 472);
+}
+
+// A box on the window — a card, the title — as siteDress measures it: from origin's top-left
+// corner, the part of the page its character is placed in.
+export function boxFrom(box, origin) {
+  return { left: box.left - origin.left, top: box.top - origin.top, width: box.width, height: box.height };
+}
+
 // A spot on a page: the character's centre, held from the card edge it's held from, and its
 // height, both at the frame's scale; its turn and facing; and its name label's centre. frame.card
 // is the card's left, top, width and height on the page.
@@ -234,14 +247,19 @@ export function sitePlacement(spot, frame) {
 }
 
 // Whether a spot shows: what stands past the card — at the sides only that, at a top corner the
-// whole character — and its name label stay inside the screen's edges, and the words card covers
-// none of either. frame.label is the label's width and height — none, and so not judged, on a
+// whole character — and its name label stay inside the screen's edges, and none of the page's other
+// cards covers either. frame.label is the label's width and height — none, and so not judged, on a
 // phone or without a name.
 function siteShows(spot, frame, outline) {
   const { box, label } = siteBoxes(spot, frame, outline), card = frame.card;
   const shows = { right: [card.left + card.width, box.right], left: [box.left, card.left], topRight: [box.left, box.right], topLeft: [box.left, box.right] }[spot];
   const across = [[Math.min(shows[0], label.left), Math.max(shows[1], label.right)], shows][Number(frame.label.width === 0)];
-  return across[0] >= frame.screen.left && across[1] <= frame.screen.right && !covered(box, frame.words, card) && !covered(label, frame.words, card);
+  return across[0] >= frame.screen.left && across[1] <= frame.screen.right && clearOf(box, frame.covers, card) && clearOf(label, frame.covers, card);
+}
+
+// Whether none of the others covers a part — the character or its name label.
+function clearOf(part, others, card) {
+  return !others.some(other => covered(part, other, card));
 }
 
 // The box round a spot's character's inked outline on the page, and round its name label.
@@ -264,12 +282,13 @@ function clearOfTitle(spot, frame, outline) {
   return !meets(box) && !meets(label);
 }
 
-// Whether the words card covers some of the character where the card it peers from doesn't —
-// beside or under the grid; laid over the grid, it covers only what the grid card already hides.
-function covered(box, words, card) {
+// Whether another card — a wordsearch's words, a maze's checklist or its control pad — covers some
+// of the character where the card it peers from doesn't: beside or under the grid; laid over the
+// grid, it covers only what the grid card already hides.
+function covered(box, other, card) {
   const meet = {
-    left: Math.max(box.left, words.left), right: Math.min(box.right, words.left + words.width),
-    top: Math.max(box.top, words.top), bottom: Math.min(box.bottom, words.top + words.height)
+    left: Math.max(box.left, other.left), right: Math.min(box.right, other.left + other.width),
+    top: Math.max(box.top, other.top), bottom: Math.min(box.bottom, other.top + other.height)
   };
   const behind = meet.left >= card.left && meet.right <= card.left + card.width && meet.top >= card.top && meet.bottom <= card.top + card.height;
   return meet.left < meet.right && meet.top < meet.bottom && !behind;
@@ -277,10 +296,13 @@ function covered(box, words, card) {
 
 // Where a page's character stands: its number round the spots that show with its name label, on a
 // screen wider than a phone; none does, round those that show without it, the label left off as
-// paper leaves it; none does still, round every one it has. Each way, the spots that keep clear of
-// the title come first, where any does. Drawn centred, turned and mirrored when flipped. frame is
-// the card, the scale, the screen's left and right edges on the page, the words card that may cover
-// it (a text page's an empty box), the title, the name label's size, and whether it's a Saga and a
+// paper leaves it; none does still, round those that keep it out from behind the cards it must
+// never stand behind, and failing that round every one it has. Each way, the spots that keep clear
+// of the title come first, where any does. Drawn centred, turned and mirrored when flipped. frame
+// is the card, the scale, the screen's left and right edges on the page, the other cards that may
+// cover it (covers — a wordsearch's words card, a maze's checklist and control pad, a text page
+// none), those of them it never stands behind even then (never — a maze's two, the owner's call
+// 2026-10-11; none elsewhere), the title, the name label's size, and whether it's a Saga and a
 // phone.
 // No character — the list couldn't be read — is judged as a whole image.
 export function siteDress(frame, character, number) {
@@ -294,6 +316,7 @@ export function siteDress(frame, character, number) {
     { spots: unlabelled.filter(spot => clearOfTitle(spot, bare, outline)), label: false },
     { spots: labelled, label: !frame.phone },
     { spots: unlabelled, label: false },
+    { spots: choices.filter(spot => clearOf(siteBoxes(spot, bare, outline).box, frame.never, frame.card)), label: false },
     { spots: choices, label: false }
   ];
   const tier = tiers.find(t => t.spots.length > 0);
