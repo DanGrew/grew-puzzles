@@ -492,6 +492,7 @@ describe('on screen: a spot that doesn\'t show is skipped', () => {
     // Every spot behind one: round every one it has.
     const everywhere = { left: 0, top: 0, width: 3000, height: 2000 };
     expect([1, 2].map(n => spotOf(onScreen({ screen, never: [everywhere] }), n))).toEqual(['right', 'left']);
+    expect(siteDress(onScreen({ screen, never: [everywhere], label: { width: 200, height: 30 } }), undefined, 1).label).toBe(false);
   });
 
   test('a box on the window, measured from the page\'s corner', () => {
