@@ -226,12 +226,12 @@ export function siteScale(cardWidth, cols, rows, letters, saga) {
 
 // How big a maze page draws it (TASK-104): a maze doesn't print yet, so against the card the owner
 // placed the spots on, the one-grid sheet's 429 × 472 px, fitted inside the maze card — sized to the
-// window's height, so a shorter window's smaller card wears a smaller character.
+// screen's height, so a shorter screen's smaller card wears a smaller character.
 export function mazeScale(cardWidth, cardHeight) {
   return Math.min(cardWidth / 429, cardHeight / 472);
 }
 
-// A box on the window — a card, the title — as siteDress measures it: from origin's top-left
+// A box on the screen — a card, the title — as siteDress measures it: from origin's top-left
 // corner, the part of the page its character is placed in.
 export function boxFrom(box, origin) {
   return { left: box.left - origin.left, top: box.top - origin.top, width: box.width, height: box.height };
