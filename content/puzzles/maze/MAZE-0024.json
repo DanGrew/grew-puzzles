@@ -1,0 +1,199 @@
+{
+  "hiddenId": "MAZE-0024",
+  "type": "Keylecticodes",
+  "created": "2026-10-11",
+  "title": "Keylecticodes 001",
+  "difficulty": "Extreme",
+  "width": 32,
+  "height": 40,
+  "walls": [
+    "9551517D1797D3BBD3957D3B91155557",
+    "C7B83E97C105506C52ABBBAC6EC51797",
+    "BD2EA9413EED14795404046D3D3D452B",
+    "AD416E96C55787BA97E9455543AD3B82",
+    "815017C17917C5042B94117D56856C2A",
+    "AE96C17C3AA97BABEAC7E839178557AA",
+    "A903943BC684506AD2BBD686ED2BBBAA",
+    "EEEAEBC43D6D56D2B8287BA95544686A",
+    "953C783D0557D3B86EC07806D13B96D2",
+    "87C57E83C539106A955452C57A84417E",
+    "817FFBEC5542EAD06FFB943BBE87B83B",
+    "A83FFABB957C3C543FFC078445052EC2",
+    "EE8514404795693B857B83C53D47A97E",
+    "95692FFAD3C7D2846D386AFFC57D2853",
+    "EB92EFFED053D2ABD52A96FFBBD3E87E",
+    "B82C3D1156BC3AC6B942EB9386BC3ABB",
+    "AAED47AABBAD6C7906BC12AC07C16846",
+    "AC5391686AA95792E947EEC3E97C5297",
+    "8516E87ABC06B92E94551154383D1443",
+    "ABA956D2C3C3C2ED413BEC7B86ED6952",
+    "EA84153C38543853BA86D552E939787A",
+    "D2E96D47C6B902BEC2ABD5147AC6BC3A",
+    "B8507D555506EEA97AC6956BD2D1296E",
+    "86BED3953D017D42BC3D2D529052807B",
+    "AD055469052A9396AD292B946C7AAC3A",
+    "AD45157E87AC2EABA942C40557D6ABAA",
+    "857969578783A90442D6D3ED157BEC06",
+    "ABD0787BA92E86E9787BD03945145787",
+    "C2D294142EEBEBBC387C3AAE956D3D6B",
+    "96D6C3C3E97C3841469546E92D550796",
+    "C3953ABEBAD16A943D03B956E9396D43",
+    "D047EE8542BABEEBC16EA8795286BD3A",
+    "D417D103D06A857C3C57807ED683AD2A",
+    "954796EED2D44539453D6C157D6AA96A",
+    "853941157A97B9429785556BFF92AABA",
+    "AB843AEFF803C6BEC5415556FFAE8442",
+    "EC2D6EBFFEEAD503D3945151514387BA",
+    "952D3BABB97C17AC106D10783C3AE96A",
+    "87C5042C06D10547EE97AAD2C7EA947A",
+    "ED556D45457EC5555547EC7C557C4556"
+  ],
+  "blocks": [
+    {
+      "row": 10,
+      "col": 3
+    },
+    {
+      "row": 10,
+      "col": 17
+    },
+    {
+      "row": 13,
+      "col": 5
+    },
+    {
+      "row": 13,
+      "col": 22
+    },
+    {
+      "row": 34,
+      "col": 24
+    },
+    {
+      "row": 35,
+      "col": 7
+    }
+  ],
+  "start": {
+    "row": 2,
+    "col": 3
+  },
+  "end": {
+    "row": 32,
+    "col": 19
+  },
+  "guides": [
+    {
+      "row": 9,
+      "col": 21
+    },
+    {
+      "row": 27,
+      "col": 12
+    }
+  ],
+  "collectibles": [
+    {
+      "row": 9,
+      "col": 31
+    },
+    {
+      "row": 26,
+      "col": 2
+    },
+    {
+      "row": 25,
+      "col": 26
+    }
+  ],
+  "keys": [
+    {
+      "key": 1,
+      "row": 0,
+      "col": 7
+    },
+    {
+      "key": 2,
+      "row": 33,
+      "col": 10
+    },
+    {
+      "key": 3,
+      "row": 17,
+      "col": 21
+    }
+  ],
+  "zones": [
+    {
+      "key": 1,
+      "top": 16,
+      "left": 11,
+      "bottom": 19,
+      "right": 18
+    },
+    {
+      "key": 2,
+      "top": 25,
+      "left": 7,
+      "bottom": 27,
+      "right": 16
+    },
+    {
+      "key": 3,
+      "top": 22,
+      "left": 24,
+      "bottom": 27,
+      "right": 30
+    }
+  ],
+  "letters": [
+    {
+      "letter": "A",
+      "row": 14,
+      "col": 26
+    },
+    {
+      "letter": "B",
+      "row": 9,
+      "col": 4
+    },
+    {
+      "letter": "C",
+      "row": 31,
+      "col": 5
+    }
+  ],
+  "exits": [
+    {
+      "row": 32,
+      "col": 19,
+      "code": "BCA"
+    },
+    {
+      "row": 29,
+      "col": 22,
+      "code": "BAC"
+    },
+    {
+      "row": 31,
+      "col": 13,
+      "code": "CBA"
+    },
+    {
+      "row": 22,
+      "col": 16,
+      "code": "ABC"
+    },
+    {
+      "row": 28,
+      "col": 9,
+      "code": "CAB"
+    },
+    {
+      "row": 27,
+      "col": 19,
+      "code": "ACB"
+    }
+  ],
+  "solution": "NESSWSESESESEESSEESENEESSEENENEEEEENENNNWNWWNENWWWWWSSWWWNNENWWWWWNWESEEEEESWSSEEENNEEEEESWSEESESSSWSSESEEEENNEENENENNNNESSSSSSNNNNNNWSSSSWSWSWWSSWWWWNWWSSSWSSSEESNWWNWWSWWSWSWSSSWNWWWSWNWNNNNNWSSWSSWWSESWSWWSWSSSSSESWSESSESWWSEESENENENENEEESSSSEESSESEENNESEEENENWNNWWWSWNWWWWEEEESENEEESSESWSWWWNWSSWWNWNNWWNNNNWWWSWSWSWSWNWWNEENWNNWNENWNNEEWWNNNENEENENWWNNENWWNNENENENWWNWNWNNEESEEWWNWWSSESESEESWSWSWSSEESWSSENEENNENNESSSSSESENEEESWSWSSWWSSSSWWWWSESSNNWNEEEENNNNEENESSESSENEEEENEENESEENEENEEESSWENNNESENENWNNEENWWNWWNENWNWESESWSEESEESWWSSESWSWNWSWWWSWWSWWNWSWWSSSSWWSESESEE"
+}

@@ -206,6 +206,24 @@
       "difficulty": "Hard",
       "width": 100,
       "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0024",
+      "type": "Keylecticodes",
+      "created": "2026-10-11",
+      "title": "Keylecticodes 001",
+      "difficulty": "Extreme",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0026",
+      "type": "Keylecticodes",
+      "created": "2026-10-11",
+      "title": "Keylecticodes Large 001",
+      "difficulty": "Extreme",
+      "width": 100,
+      "height": 100
     }
   ]
 }
