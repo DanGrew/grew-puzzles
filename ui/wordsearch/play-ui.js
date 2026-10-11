@@ -503,6 +503,6 @@ function placePlayFigure(fit) {
     scale: siteScale(fit.cardWidth, board.cols, board.rows, board.letters, saga),
     screen: screenEdges(page.left),
     words: { left: words.left - page.left, top: words.top - page.top, width: words.width, height: words.height },
-    label: labelSize(playEl('name-tag'), phone), saga: saga, phone: phone
+    label: labelSize(phone), saga: saga, phone: phone
   }, playFigure.character, playFigure.number));
 }

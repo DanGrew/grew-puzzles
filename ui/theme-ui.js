@@ -90,9 +90,10 @@ export function screenEdges(origin) {
   return { left: left - origin, right: document.documentElement.clientWidth - origin };
 }
 
-// The name label's size, as siteDress judges a spot by it: shown first, wider than a phone, so it
-// has one; on a phone it's hidden, and has none.
-export function labelSize(tag, phone) {
+// The page's name label's size, as siteDress judges a spot by it: shown first, wider than a phone,
+// so it has one; on a phone it's hidden, and has none.
+export function labelSize(phone) {
+  var tag = document.getElementById('name-tag');
   tag.hidden = phone;
   var box = tag.getBoundingClientRect();
   return { width: box.width, height: box.height };
@@ -140,6 +141,6 @@ function placeTextFigure(character) {
   placeFigure(document.getElementById('theme-figure'), tag, siteDress({
     card: { left: -el.clientLeft, top: -el.clientTop, width: card.width, height: card.height }, scale: 1,
     screen: screenEdges(card.left + el.clientLeft), words: { left: 0, top: 0, width: 0, height: 0 },
-    label: labelSize(tag, phone), saga: false, phone: phone
+    label: labelSize(phone), saga: false, phone: phone
   }, character, textPageNumber()));
 }

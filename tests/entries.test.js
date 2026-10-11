@@ -218,7 +218,15 @@ test('tapping another marked word swaps the popup for its own', async ({ page })
 test('a word with no entry, tapped while a popup is open, only closes it', async ({ page }) => {
   await open(page);
   await word(page, 'Cat').click();
-  await word(page, 'Hen').click();
+  // One the popup doesn't lie over, wherever the list's columns put them.
+  const card = await popup(page).boundingBox();
+  const clear = [];
+  for (const text of ['Ewe', 'Hen', 'Map', 'Pig', 'Piglet']) {
+    const at = await word(page, text).boundingBox();
+    if (at.x + at.width < card.x || card.x + card.width < at.x || at.y + at.height < card.y || card.y + card.height < at.y) clear.push(text);
+  }
+  expect(clear.length).toBeGreaterThan(0);
+  await word(page, clear[0]).click();
   await expect(popup(page)).toBeHidden();
 });
 
