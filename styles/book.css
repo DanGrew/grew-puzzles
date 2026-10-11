@@ -8,6 +8,7 @@
 .title-page h1 { margin: 0; padding: 18px 20px; background: var(--band); color: var(--band-fg); border-bottom: var(--ow) solid var(--line);
   font: var(--dw) 30px/1.2 var(--font-display); text-wrap: balance; }
 .title-page p { margin: 16px 24px; }
+.title-page .byline { font: 600 15px/1.5 var(--font-display); }
 .title-page .book-description { font-size: 17px; text-wrap: balance; }
 .title-page .answers { font-size: 14px; line-height: 1.5; color: var(--muted); text-wrap: balance; }
 .title-page .address { margin-bottom: 22px; font: 600 15px var(--font-display); }
