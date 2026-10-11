@@ -121,9 +121,9 @@ test('a maze\'s book page is exactly its own printout, its number above the titl
   await play.goto('/app/maze.html?id=MAZE-0002');
   await expect(play.locator('#play')).toBeVisible();
   const own = play.locator('#maze-sheet');
-  // The same maze, but for the character it wears: the book's is its number's, as on the collection page.
-  const drawn = async sheet => (await sheet.locator('[data-part="maze"]').innerHTML()).replace(/ href="[^"]*"/g, '');
-  expect(await drawn(inBook)).toBe(await drawn(own));
+  for (const part of ['maze', 'figures']) {
+    expect(await inBook.locator(`[data-part="${part}"]`).innerHTML()).toBe(await own.locator(`[data-part="${part}"]`).innerHTML());
+  }
   expect(await inBook.locator('[data-part="note"]').innerHTML()).toBe(await own.locator('[data-part="note"]').innerHTML());
   await expect(inBook.locator('.maze-sheet-top > .sheet-number')).toHaveText('Puzzle 3');
   const top = await sheets(page).nth(1).boundingBox();

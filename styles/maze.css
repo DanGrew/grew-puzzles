@@ -225,7 +225,9 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
   .note-box[data-long="true"] { padding: 0 1.6pt; }
 
   /* The maze, drawn in cells. */
+  .maze-paper-box { position: relative; }
   .maze-paper { display: block; width: calc(var(--cols) * .2in); height: calc(var(--rows) * .2in); overflow: visible; }
+  .maze-figures { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--cols), .2in); grid-template-rows: repeat(var(--rows), .2in); }
   .ms-start { fill: var(--ms-start); }
   .ms-zone { fill: var(--ms-zone); fill-opacity: var(--ms-zone-fill); stroke: var(--ms-zone); stroke-width: .07; stroke-dasharray: .3 .2; }
   .ms-walls { fill: none; stroke: var(--ms-ink); stroke-width: .12; stroke-linecap: square; }
@@ -243,10 +245,12 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
   .ms-end-text { font-size: .36px; fill: #fff; }
   .maze-paper .ms-zone-text { font-size: .42px; fill: var(--ms-zone); text-anchor: start; dominant-baseline: auto;
     stroke: #fff; stroke-width: .12; paint-order: stroke; }
-  .ms-figure { display: none; }
   /* Colour or Black and white, with the puzzle's character known: it stands in for each collectible's
-     dot, and each block is the character on a white tile. */
-  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-figure { display: inline; }
+     dot, and each block is the character on a white tile. A CSS image, so it loads only when shown. */
+  .ms-figure { display: none; margin: .01in; background: var(--figure, none) center / contain no-repeat; }
+  .ms-figure.block { margin: .04in; }
+  :root[data-print="mono"] .maze-figures { filter: grayscale(1); }
+  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-figure { display: block; }
   :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-dot { display: none; }
   :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-block { fill: #fff; stroke: #000; stroke-width: .04; }
 }

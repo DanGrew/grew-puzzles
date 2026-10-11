@@ -704,17 +704,61 @@ export function printedZone(zone) {
   return 'ZONE ' + zone.key;
 }
 
-// What the sheet draws, in cells, each thing from its top-left corner: the start, each zone, its
-// size and label, each block, the walls, and each stop with what it reads. Nothing the player did.
+// One shape of the sheet: an SVG element's name, its attributes and its text.
+function shape(name, attributes, text) {
+  return { name: name, attributes: attributes, text: text };
+}
+
+// Shapes placed together from a cell's top-left corner, so many cells across and down.
+function placedAt(x, y, shapes) {
+  return { transform: 'translate(' + x + ' ' + y + ')', shapes: shapes };
+}
+
+// Each stop as paper draws it, in its cell: a guide a small dot, a collectible a dot, a key a box
+// reading KEY and its number, a letter a disc, an exit or the end a pill with its letter order or
+// End.
+function stopShapes(stop) {
+  var label = printedLabel(stop);
+  var pill = function (kind) {
+    return [shape('rect', { class: 'ms-' + kind, x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, ''), shape('text', { class: 'ms-' + kind + '-text', x: 0.5, y: 0.51 }, label)];
+  };
+  var shapes = {
+    guide: [shape('circle', { class: 'ms-guide', cx: 0.5, cy: 0.5, r: 0.16 }, '')],
+    collectible: [shape('circle', { class: 'ms-dot', cx: 0.5, cy: 0.5, r: 0.24 }, '')],
+    key: [shape('rect', { class: 'ms-key', x: 0.05, y: 0.18, width: 0.9, height: 0.64, rx: 0.12 }, ''), shape('text', { class: 'ms-key-text', x: 0.5, y: 0.5 }, label)],
+    letter: [shape('circle', { class: 'ms-letter', cx: 0.5, cy: 0.5, r: 0.4 }, ''), shape('text', { class: 'ms-letter-text', x: 0.5, y: 0.52 }, label)],
+    exit: pill('exit'),
+    end: pill('end')
+  };
+  return placedAt(stop.cell[1], stop.cell[0], shapes[stop.kind]);
+}
+
+// A grid area over the maze's cells, from a top-left cell, so many rows down and columns across.
+function areaOf(cell, span) {
+  return (cell[0] + 1) + ' / ' + (cell[1] + 1) + ' / span ' + span + ' / span ' + span;
+}
+
+// What the sheet draws, in cells, in the order it lies on the paper: the start; each zone, shaded
+// and labelled; the walls; each block, over the walls so none crosses it; each stop with what it
+// reads. And where the puzzle's character stands in, printed Colour or Black and white: on each
+// collectible and each block, as grid areas over the cells. Nothing the player did.
 export function printedMaze(board) {
+  var zone = function (z) {
+    return placedAt(z.left, z.top, [
+      shape('rect', { class: 'ms-zone', width: z.right - z.left + 1, height: z.bottom - z.top + 1 }, ''),
+      shape('text', { class: 'ms-zone-text', x: 0.14, y: 0.42 }, printedZone(z))
+    ]);
+  };
+  var block = function (b) { return placedAt(b[1], b[0], [shape('rect', { class: 'ms-block', x: 0.08, y: 0.08, width: 1.84, height: 1.84, rx: 0.15 }, '')]); };
+  var collectibles = board.stops.filter(function (s) { return s.kind === 'collectible'; });
   return {
     viewBox: '0 0 ' + board.cols + ' ' + board.rows,
-    start: { x: board.start[1], y: board.start[0] },
-    zones: board.zones.map(function (z) {
-      return { x: z.left, y: z.top, width: z.right - z.left + 1, height: z.bottom - z.top + 1, label: printedZone(z) };
-    }),
-    blocks: board.blocks.map(function (b) { return { x: b[1], y: b[0] }; }),
-    walls: board.walls,
-    stops: board.stops.map(function (s) { return { kind: s.kind, x: s.cell[1], y: s.cell[0], label: printedLabel(s) }; })
+    groups: [placedAt(board.start[1], board.start[0], [shape('rect', { class: 'ms-start', width: 1, height: 1 }, '')])]
+      .concat(board.zones.map(zone))
+      .concat([placedAt(0, 0, [shape('path', { class: 'ms-walls', d: board.walls }, '')])])
+      .concat(board.blocks.map(block))
+      .concat(board.stops.map(stopShapes)),
+    figures: collectibles.map(function (s) { return { kind: 'collectible', area: areaOf(s.cell, 1) }; })
+      .concat(board.blocks.map(function (b) { return { kind: 'block', area: areaOf(b, 2) }; }))
   };
 }

@@ -144,7 +144,7 @@ test('Plain prints dots and solid tiles, no character and no background, whateve
   await open(page, { look: 'themed' });
   await printIn(page, 'plain');
   await expect(paper(page).locator('.ms-dot').first()).toBeVisible();
-  await expect(paper(page).locator('.ms-figure').first()).toBeHidden();
+  await expect(sheet(page).locator('.ms-figure').first()).toBeHidden();
   await expect(paper(page).locator('.ms-block').first()).toHaveCSS('fill', 'rgb(85, 85, 85)');
   expect(await page.evaluate(() => getComputedStyle(document.body, '::before').content)).toBe('none');
 });
@@ -153,9 +153,16 @@ for (const look of ['plain', 'themed']) {
   test(`Look ${look} and Print Colour: collectibles and blocks wear the maze's character, its background faint behind`, async ({ page }) => {
     await open(page, { look });
     await printIn(page, 'colour');
-    const figure = paper(page).locator('.ms-figure').first();
-    await expect(figure).toBeVisible();
-    expect(await figure.getAttribute('href')).toMatch(/\/content\/characters\/\w+\.webp$/);
+    const figures = sheet(page).locator('.ms-figure');
+    await expect(figures).toHaveCount(EVERY.collectibles.length + EVERY.blocks.length);
+    await expect(figures.first()).toBeVisible();
+    expect(await figures.first().evaluate(f => getComputedStyle(f).backgroundImage)).toMatch(/\/content\/characters\/\w+\.webp"?\)$/);
+    // Each collectible's figure stands on its own cell: 0.2 in square, less its edge.
+    const [col, row] = (await paper(page).locator('.ms-dot').first().evaluate(d => d.parentNode.getAttribute('transform'))).match(/[\d.]+/g).map(Number);
+    const maze = await paper(page).boundingBox();
+    const fig = await figures.first().boundingBox();
+    expect(fig.x + fig.width / 2).toBeCloseTo(maze.x + (col + 0.5) * 0.2 * IN, 0);
+    expect(fig.y + fig.height / 2).toBeCloseTo(maze.y + (row + 0.5) * 0.2 * IN, 0);
     await expect(paper(page).locator('.ms-dot').first()).toBeHidden();
     await expect(paper(page).locator('.ms-block').first()).toHaveCSS('fill', 'rgb(255, 255, 255)');
     expect(await page.evaluate(() => getComputedStyle(document.body, '::before').backgroundImage)).toMatch(/-bg\.webp/);
@@ -165,8 +172,9 @@ for (const look of ['plain', 'themed']) {
 test('Print Black and white is the Colour sheet in greys', async ({ page }) => {
   await open(page);
   await printIn(page, 'mono');
-  await expect(paper(page).locator('.ms-figure').first()).toBeVisible();
+  await expect(sheet(page).locator('.ms-figure').first()).toBeVisible();
   await expect(paper(page)).toHaveCSS('filter', 'grayscale(1)');
+  await expect(sheet(page).locator('[data-part="figures"]')).toHaveCSS('filter', 'grayscale(1)');
 });
 
 test('every real 32×40 maze on the site prints on one page, its note box above the maze', async ({ page }) => {
