@@ -341,9 +341,12 @@ test('a text page picks its character and its background each at random, on thei
   await expect(page.locator('#name-tag')).toBeVisible();
 });
 
-// Each text page's place in the side bar picks its spot, round the four, the same every visit.
+// Each text page's place in the side bar picks its spot, round the four, the same every visit. The
+// character, picked at random, held to one whose ink and name label every spot holds — another's may
+// not fit a spot, which is then rightly skipped.
 for (const [path, spot] of [['how-to-play', 'right'], ['saving', 'left'], ['about', 'topRight'], ['feedback', 'topLeft'], ['privacy', 'right']]) {
   test(`${path} wears its character peering from behind the text card at its own spot, ${spot}, at the printout's size`, async ({ page }) => {
+    await page.addInitScript(() => { Math.random = () => 0.5; });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/app/${path}.html`);
     await expect(page.locator('#name-tag')).not.toBeEmpty();
