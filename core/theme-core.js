@@ -104,8 +104,13 @@ export function printCell(cols, rows, paged, letters) {
 // its 2 px outline — or, on a words sheet, the words card, the paper's whole width less its
 // half-inch edges.
 export function printCardWidth(sheet, cols, rows, letters, paper) {
-  const grid = paged => cols * printCell(cols, rows, paged, letters) + 32;
-  return { one: grid(false), grid: grid(true), words: paper.width - 96 }[sheet];
+  return { one: printGridWidth(cols, rows, letters, false), grid: printGridWidth(cols, rows, letters, true), words: paper.width - 96 }[sheet];
+}
+
+// A printed grid card across, whatever the paper: its cells, on a one-grid sheet or a grid sheet
+// of its own (paged), and 32 px.
+function printGridWidth(cols, rows, letters, paged) {
+  return cols * printCell(cols, rows, paged, letters) + 32;
 }
 
 // How far down the paper that card's top sits, before any rise: the half-inch edge, the book's
@@ -216,7 +221,7 @@ export function siteChoices(saga, phone) {
 // puzzle prints on — the one-grid sheet's, or a Saga's grid sheet's — so the character stands as
 // big against the grid, and as far from its corner, as on paper.
 export function siteScale(cardWidth, cols, rows, letters, saga) {
-  return cardWidth / printCardWidth(['one', 'grid'][Number(saga)], cols, rows, letters, printPaper(false));
+  return cardWidth / printGridWidth(cols, rows, letters, saga);
 }
 
 // A spot on a page: the character's centre, held from the card edge it's held from, and its

@@ -413,6 +413,12 @@ describe('on screen: a spot that doesn\'t show is skipped', () => {
       { left: 1000, top: 500, width: 429, height: 1 }, { left: 1000, top: 971, width: 429, height: 1 }
     ];
     inside.forEach(words => expect([1, 2, 3, 4].map(n => spotOf(onScreen({ words }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']));
+    // On a shorter card the right side's ink reaches below it: a sliver on the card's foot is behind
+    // the card; a pixel past it is not.
+    const card = { left: 1000, top: 500, width: 429, height: 300 };
+    expect(inkOnPage('right', onScreen({ card })).bottom).toBeGreaterThan(801);
+    expect(spotOf(onScreen({ card, words: { left: 1300, top: 799, width: 100, height: 1 } }), 1)).toBe('right');
+    expect(spotOf(onScreen({ card, words: { left: 1300, top: 799, width: 100, height: 2 } }), 1)).not.toBe('right');
   });
 
   test('a pixel past the grid card\'s edge, the words card covers the characters standing there', () => {
@@ -449,6 +455,13 @@ describe('on screen: a spot that doesn\'t show is skipped', () => {
     expect(spotOf(onScreen({ words: under }), 1)).toBe('right');
     expect(spotOf(onScreen({ label, words: { ...under, top: p.labelTop + 50 } }), 1)).toBe('right');
     expect(spotOf(onScreen({ label, words: under }), 1)).toBe('left');
+    // Above it, past the character's ink: a words card ending at the label's top leaves it clear,
+    // a pixel lower covers it.
+    const right = inkOnPage('right', onScreen()).right;
+    expect(p.labelLeft + 100).toBeGreaterThan(right + 1);
+    const over = { left: right + 1, top: p.labelTop - 150, width: p.labelLeft + 100 - right - 1, height: 100 };
+    expect(spotOf(onScreen({ label, words: over }), 1)).toBe('right');
+    expect(spotOf(onScreen({ label, words: { ...over, height: 101 } }), 1)).toBe('left');
   });
 
   test('a spot whose character would rise over the title is passed over while another keeps clear of it', () => {
