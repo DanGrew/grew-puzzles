@@ -294,7 +294,8 @@ describe('a phone', () => {
 // beside it: every spot shows.
 const onScreen = (over = {}) => ({
   card: { left: 1000, top: 500, width: 429, height: 472 }, scale: 1, screen: { left: 0, right: 3000 },
-  words: { left: 0, top: 0, width: 0, height: 0 }, label: { width: 0, height: 0 }, saga: false, phone: false, ...over
+  words: { left: 0, top: 0, width: 0, height: 0 }, title: { left: 0, top: 0, width: 0, height: 0 },
+  label: { width: 0, height: 0 }, saga: false, phone: false, ...over
 });
 // The box round a spot's whole-image ink on the page.
 const inkOnPage = (spot, frame) => {
@@ -448,6 +449,41 @@ describe('on screen: a spot that doesn\'t show is skipped', () => {
     expect(spotOf(onScreen({ words: under }), 1)).toBe('right');
     expect(spotOf(onScreen({ label, words: { ...under, top: p.labelTop + 50 } }), 1)).toBe('right');
     expect(spotOf(onScreen({ label, words: under }), 1)).toBe('left');
+  });
+
+  test('a spot whose character would rise over the title is passed over while another keeps clear of it', () => {
+    // A title over the card's top-right corner: the top right's head reaches it.
+    const title = { left: 1300, top: 300, width: 200, height: 80 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title }), n))).toEqual(['right', 'left', 'topLeft', 'right']);
+    // A title just clear of the top right's ink, on each side, takes nothing away.
+    const ink = inkOnPage('topRight', onScreen());
+    const beside = [
+      { left: ink.right, top: 300, width: 100, height: 80 }, { left: ink.left - 100, top: 300, width: 100, height: 80 },
+      { left: 1300, top: ink.top - 80, width: 200, height: 80 }, { left: 1300, top: ink.bottom, width: 200, height: 80 }
+    ];
+    beside.forEach(t => expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title: t }), n))).toContain('topRight'));
+  });
+
+  test('its name label too keeps clear of the title', () => {
+    const label = { width: 200, height: 30 }, p = sitePlacement('topRight', onScreen());
+    const title = { left: p.labelLeft + 99, top: p.labelTop - 15, width: 100, height: 30 };
+    expect(spotOf(onScreen({ title }), 3)).toBe('topRight');
+    expect(spotOf(onScreen({ label, title }), 3)).toBe('topLeft');
+    expect(spotOf(onScreen({ label, title: { ...title, left: p.labelLeft + 100 } }), 3)).toBe('topRight');
+  });
+
+  test('every spot would cover the title, and the page picks as though it weren\'t there', () => {
+    const title = { left: 0, top: 0, width: 3000, height: 2000 };
+    expect([1, 2, 3, 4].map(n => spotOf(onScreen({ title }), n))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect(siteDress(onScreen({ title, label: { width: 200, height: 30 } }), undefined, 1).label).toBe(true);
+    expect(siteDress(onScreen({ title, label: { width: 4000, height: 30 } }), undefined, 1).label).toBe(false);
+  });
+
+  test('clear of the title without its label wins over the label over the title', () => {
+    // The label, wider than the screen, fits nowhere; without it only the top right clears the title.
+    const title = { left: 0, top: 600, width: 3000, height: 2000 };
+    const frame = onScreen({ title, label: { width: 4000, height: 30 } });
+    expect(siteDress(frame, undefined, 1)).toMatchObject({ spot: 'topRight', label: false });
   });
 
   test('none shows with its name label, and the page picks from those that show without it, the label left off', () => {

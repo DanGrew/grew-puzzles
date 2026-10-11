@@ -233,15 +233,30 @@ export function sitePlacement(spot, frame) {
 // none of either. frame.label is the label's width and height — none, and so not judged, on a
 // phone or without a name.
 function siteShows(spot, frame, outline) {
-  const p = sitePlacement(spot, frame), ink = inkBox(outline, p.height, p.turn, p.flip), card = frame.card;
-  const box = { left: p.left + ink.left, right: p.left + ink.right, top: p.top + ink.top, bottom: p.top + ink.bottom };
-  const label = {
-    left: p.labelLeft - frame.label.width / 2, right: p.labelLeft + frame.label.width / 2,
-    top: p.labelTop - frame.label.height / 2, bottom: p.labelTop + frame.label.height / 2
-  };
+  const { box, label } = siteBoxes(spot, frame, outline), card = frame.card;
   const shows = { right: [card.left + card.width, box.right], left: [box.left, card.left], topRight: [box.left, box.right], topLeft: [box.left, box.right] }[spot];
   const across = [[Math.min(shows[0], label.left), Math.max(shows[1], label.right)], shows][Number(frame.label.width === 0)];
   return across[0] >= frame.screen.left && across[1] <= frame.screen.right && !covered(box, frame.words, card) && !covered(label, frame.words, card);
+}
+
+// The box round a spot's character's inked outline on the page, and round its name label.
+function siteBoxes(spot, frame, outline) {
+  const p = sitePlacement(spot, frame), ink = inkBox(outline, p.height, p.turn, p.flip);
+  return {
+    box: { left: p.left + ink.left, right: p.left + ink.right, top: p.top + ink.top, bottom: p.top + ink.bottom },
+    label: {
+      left: p.labelLeft - frame.label.width / 2, right: p.labelLeft + frame.label.width / 2,
+      top: p.labelTop - frame.label.height / 2, bottom: p.labelTop + frame.label.height / 2
+    }
+  };
+}
+
+// Whether a spot keeps its character and its name label off the page's title, the owner's call
+// 2026-10-11 — frame.title the title's box, its left, top, width and height.
+function clearOfTitle(spot, frame, outline) {
+  const { box, label } = siteBoxes(spot, frame, outline), t = frame.title;
+  const meets = b => b.left < t.left + t.width && t.left < b.right && b.top < t.top + t.height && t.top < b.bottom;
+  return !meets(box) && !meets(label);
 }
 
 // Whether the words card covers some of the character where the card it peers from doesn't —
@@ -257,18 +272,23 @@ function covered(box, words, card) {
 
 // Where a page's character stands: its number round the spots that show with its name label, on a
 // screen wider than a phone; none does, round those that show without it, the label left off as
-// paper leaves it; none does still, round every one it has. Drawn centred, turned and mirrored
-// when flipped. frame is the card, the scale, the screen's left and right edges on the page, the
-// words card that may cover it (a text page's an empty box), the name label's size, and whether
-// it's a Saga and a phone.
+// paper leaves it; none does still, round every one it has. Each way, the spots that keep clear of
+// the title come first, where any does. Drawn centred, turned and mirrored when flipped. frame is
+// the card, the scale, the screen's left and right edges on the page, the words card that may cover
+// it (a text page's an empty box), the title, the name label's size, and whether it's a Saga and a
+// phone.
 // No character — the list couldn't be read — is judged as a whole image.
 export function siteDress(frame, character, number) {
   const outline = [character].filter(Boolean).map(c => c.outline)[0];
   const choices = siteChoices(frame.saga, frame.phone);
   const bare = { ...frame, label: { width: 0, height: 0 } };
+  const labelled = choices.filter(spot => siteShows(spot, frame, outline));
+  const unlabelled = choices.filter(spot => siteShows(spot, bare, outline));
   const tiers = [
-    { spots: choices.filter(spot => siteShows(spot, frame, outline)), label: !frame.phone },
-    { spots: choices.filter(spot => siteShows(spot, bare, outline)), label: false },
+    { spots: labelled.filter(spot => clearOfTitle(spot, frame, outline)), label: !frame.phone },
+    { spots: unlabelled.filter(spot => clearOfTitle(spot, bare, outline)), label: false },
+    { spots: labelled, label: !frame.phone },
+    { spots: unlabelled, label: false },
     { spots: choices, label: false }
   ];
   const tier = tiers.find(t => t.spots.length > 0);

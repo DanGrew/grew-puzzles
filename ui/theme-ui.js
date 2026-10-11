@@ -137,10 +137,12 @@ function textPageNumber() {
 // The text card's spot, measured from inside its outline, where its character is placed from.
 function placeTextFigure(character) {
   var el = document.querySelector('.page-card'), card = el.getBoundingClientRect(), tag = document.getElementById('name-tag');
+  var title = document.getElementById('page-title').getBoundingClientRect(), x = card.left + el.clientLeft, y = card.top + el.clientTop;
   var phone = isPhone(document.documentElement.clientWidth);
   placeFigure(document.getElementById('theme-figure'), tag, siteDress({
     card: { left: -el.clientLeft, top: -el.clientTop, width: card.width, height: card.height }, scale: 1,
-    screen: screenEdges(card.left + el.clientLeft), words: { left: 0, top: 0, width: 0, height: 0 },
+    screen: screenEdges(x), words: { left: 0, top: 0, width: 0, height: 0 },
+    title: { left: title.left - x, top: title.top - y, width: title.width, height: title.height },
     label: labelSize(phone), saga: false, phone: phone
   }, character, textPageNumber()));
 }

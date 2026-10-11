@@ -499,13 +499,15 @@ function layoutWords() {
 // skipped.
 function placePlayFigure(fit) {
   var page = playEl('play').getBoundingClientRect(), card = playEl('stage').getBoundingClientRect();
-  var words = playEl('words-list').getBoundingClientRect(), board = playFigure.board, saga = board.sheets.length > 0;
+  var words = playEl('words-list').getBoundingClientRect(), title = document.querySelector('.play-head').getBoundingClientRect();
+  var board = playFigure.board, saga = board.sheets.length > 0;
   var phone = isPhone(document.documentElement.clientWidth);
   placeFigure(playEl('theme-figure'), playEl('name-tag'), siteDress({
     card: { left: card.left - page.left, top: card.top - page.top, width: fit.cardWidth, height: fit.cardHeight },
     scale: siteScale(fit.cardWidth, board.cols, board.rows, board.letters, saga),
     screen: screenEdges(page.left),
     words: { left: words.left - page.left, top: words.top - page.top, width: words.width, height: words.height },
+    title: { left: title.left - page.left, top: title.top - page.top, width: title.width, height: title.height },
     label: labelSize(phone), saga: saga, phone: phone
   }, playFigure.character, playFigure.number));
 }
