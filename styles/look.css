@@ -3,9 +3,9 @@
    while Themed is on. On paper, every rule waits on the print choice instead (the last block): Plain
    prints today's sheet, whatever the look. A page's parts carry their character as CSS images, set
    by ui/theme-ui.js: --scene, the page's background, and --figure, a character. The placements are
-   the owner's, from the product's docs/MOCKUP-THEMED.html (the play page, placed by
-   ui/wordsearch/play-ui.js), MOCKUP-THEMED-PAGES.html (the landing tiles and the text pages) and
-   MOCKUP-THEMED-PRINT.html (the printout and the book). */
+   the owner's: the landing tiles' from the product's docs/MOCKUP-THEMED-PAGES.html, and everything
+   else — the play page, the text pages, the printout and the book — the four spots of
+   MOCKUP-THEMED-PRINT.html (core/theme-core.js). */
 .theme-figure, .name-tag, .print-figure { display: none; }
 
 @media screen {
@@ -54,39 +54,23 @@
   :root[data-look="themed"] .tile .theme-figure { left: 88%; top: 84%; height: 29%; filter: drop-shadow(0 3px 4px rgba(15, 42, 36, .2)); }
   :root[data-look="themed"] .tile > :not(.theme-figure) { position: relative; z-index: 1; }
 
-  /* The play page: the character's spot is measured from the grid card (ui/wordsearch/play-ui.js),
-     always behind the cards. Under the grid, templates beside and mirror narrow the
-     words card to leave the character room — on the right, or on the left in the mirror. */
+  /* The play page: the character peers from behind the grid card at the printout's spot, measured
+     from the card (ui/wordsearch/play-ui.js); the cards sit where Plain puts them. */
   :root[data-look="themed"] .play { position: relative; }
   :root[data-look="themed"] .play > .theme-figure { z-index: -1; }
-  :root[data-look="themed"] .play[data-sits="bottom"]:is([data-template="beside"], [data-template="mirror"]) aside {
-    width: calc(min(var(--card-w), 100%) - var(--words-room)); }
-  :root[data-look="themed"] .play[data-sits="bottom"][data-template="beside"] aside { margin-right: var(--words-room); }
-  :root[data-look="themed"] .play[data-sits="bottom"][data-template="mirror"] aside { margin-left: var(--words-room); }
-  /* Under the grid, a long list scrolls in a words card no taller than the character beside it. */
-  :root[data-look="themed"] .play[data-sits="bottom"] .words-box { max-height: var(--words-cap, none); }
-  :root[data-look="themed"] .play[data-sits="bottom"] ul.words { overflow-y: auto; }
 
   /* A maze: its collectibles and its blocks wear the puzzle's character (ui/maze/play-ui.js sets
      --figure on the page) — Plain keeps the dot and the solid tile (styles/maze.css). */
   :root[data-look="themed"] .maze .stop.collectible { inset: 2%; border-radius: 0; background: var(--figure, none) center / contain no-repeat; }
   :root[data-look="themed"] .maze .block { background: var(--surface) var(--figure, none) center / contain no-repeat; }
 
-  /* A text page: the words on a card at a reading width, mid-page, and the character beside the
-     card, behind it, its name label under its feet — or, on a window too narrow for that, smaller,
-     standing over the card's top edge in front of it. Spots from the card's top-left. */
+  /* A text page: the words on a card at a reading width, mid-page, and the character peering from
+     behind the card at the printout's spot, placed by ui/theme-ui.js. */
   :root[data-look="themed"] .page { max-width: 732px; margin-inline: auto; }
   :root[data-look="themed"] .page h1 { margin-bottom: 32px; }
   :root[data-look="themed"] .page-card { position: relative; padding: 24px; background: var(--surface); border: var(--ow) solid var(--line);
     border-radius: var(--r); box-shadow: var(--shadow); }
-  :root[data-look="themed"] .page-card .theme-figure { left: 818px; top: 362px; height: 230px; z-index: -1; }
-  :root[data-look="themed"] .page-card .name-tag { left: calc(818px - .01 * 230px); top: calc(362px + .56 * 230px); }
-}
-
-/* Beside the side bar, the card's right has room for the character only from 1380px wide. */
-@media screen and (max-width: 1379px) {
-  :root[data-look="themed"] .page-card .theme-figure { left: 300px; top: -70px; height: 120px; z-index: 2; }
-  :root[data-look="themed"] .page-card .name-tag { left: 300px; top: calc(-70px + .52 * 120px); z-index: 3; }
+  :root[data-look="themed"] .page-card .theme-figure { z-index: -1; }
 }
 
 /* Printed Colour or Black and white — the player's print choice (components/site-bar.js), never the

@@ -9,8 +9,8 @@ const WRONG_RED = 'rgb(224, 71, 59)';
 const LAYOUT_KEY = 'grew-puzzles.words-layout';
 const LOOK_KEY = 'grew-puzzles.look';
 
-// Plain, the site as it always was: a test of the cards' own arrangement holds it, since Themed
-// may leave the character room beside the words (tests/theme.test.js).
+// Plain, the site as it always was: a test of the cards' own arrangement holds it, so no character
+// stands among them (tests/theme.test.js).
 async function plain(page) {
   await page.addInitScript(key => localStorage.setItem(key, 'plain'), LOOK_KEY);
 }
