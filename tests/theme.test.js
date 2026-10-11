@@ -341,9 +341,12 @@ test('a text page picks its character and its background each at random, on thei
   await expect(page.locator('#name-tag')).toBeVisible();
 });
 
-// Each text page's place in the side bar picks its spot, round the four, the same every visit.
+// Each text page's place in the side bar picks its spot, round the four, the same every visit. The
+// character, picked at random, held to one whose ink and name label every spot holds — another's may
+// not fit a spot, which is then rightly skipped.
 for (const [path, spot] of [['how-to-play', 'right'], ['saving', 'left'], ['about', 'topRight'], ['feedback', 'topLeft'], ['privacy', 'right']]) {
   test(`${path} wears its character peering from behind the text card at its own spot, ${spot}, at the printout's size`, async ({ page }) => {
+    await page.addInitScript(() => { Math.random = () => 0.5; });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/app/${path}.html`);
     await expect(page.locator('#name-tag')).not.toBeEmpty();
@@ -390,4 +393,114 @@ test('a list of characters that cannot be read dresses nothing, and every page s
   await expect(page.locator('.tiles .tile').first()).toBeVisible();
   await page.goto('/app/privacy.html');
   await expect(page.locator('#name-tag')).toBeHidden();
+});
+
+// TASK-104: a maze is dressed as a wordsearch is — the published mazes, on the real characters list.
+async function openMaze(page, id) {
+  await page.goto('/app/maze.html?id=' + id);
+  await expect(page.locator('#name-tag')).not.toBeEmpty();
+  await page.evaluate(() => document.fonts.ready);
+}
+
+test('Themed, a maze wears the character its ID number lands on, background and name, the same every visit', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openMaze(page, 'MAZE-0002');
+  const owner = CHARACTERS[1];
+  await expect(page.locator('#name-tag')).toHaveText(owner.name);
+  expect(await css(page.locator('#theme-figure'), 'background-image')).toBe(url(owner.figure));
+  expect(await sceneOf(page)).toBe(url(owner.scene));
+  await expect(page.locator('#theme-figure')).toBeVisible();
+  await page.reload();
+  await expect(page.locator('#name-tag')).toHaveText(owner.name);
+  await expect.poll(() => spotOf(page)).toBe('left');
+});
+
+test('a maze\'s character peers from behind the left of its card, clear of the checklist above it and the control pad beside it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const id of ['MAZE-0001', 'MAZE-0002', 'MAZE-0003', 'MAZE-0004', 'MAZE-0006', 'MAZE-0024']) {
+    await openMaze(page, id);
+    await expect.poll(() => spotOf(page)).toBe('left');
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.x + figure.width / 2).toBeLessThan(stage.x);
+    expect(overlaps(figure, await page.locator('#checklist-card').boundingBox())).toBe(false);
+    expect(overlaps(figure, await page.locator('#controls').boundingBox())).toBe(false);
+    // Its name label, where it has room for one, as clear.
+    for (const tag of [await page.locator('#name-tag').boundingBox()].filter(Boolean)) {
+      for (const card of ['.stage', '#checklist-card', '#controls']) expect(overlaps(tag, await page.locator(card).boundingBox())).toBe(false);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1440);
+  }
+});
+
+test('where no spot shows, a maze\'s character still never stands behind the control pad: it peeks past the side bar on the left', async ({ page }) => {
+  // Bunnosaur on a 1920 px window: the left side's ears reach behind the side bar.
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await openMaze(page, 'MAZE-0001');
+  await expect.poll(() => spotOf(page)).toBe('left');
+  await expect(page.locator('#name-tag')).toBeHidden();
+  const figure = await page.locator('#theme-figure').boundingBox(), side = await page.locator('#site-side').boundingBox();
+  expect(figure.x).toBeLessThan(side.x + side.width);
+  expect(overlaps(figure, await page.locator('#controls').boundingBox())).toBe(false);
+});
+
+test('a maze\'s character stands as big against its card as the printout\'s against its own, and shrinks with the card on a shorter window', async ({ page }) => {
+  const measure = async () => {
+    const stage = await page.locator('.stage').boundingBox();
+    const height = parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height));
+    return { stage, height };
+  };
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openMaze(page, 'MAZE-0002');
+  await expect.poll(() => spotOf(page)).toBe('left');
+  const tall = await measure();
+  expect(tall.height).toBeCloseTo(293 * Math.min(tall.stage.width / 429, tall.stage.height / 472), 0);
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await expect.poll(async () => (await measure()).height).toBeLessThan(tall.height);
+  const short = await measure();
+  expect(short.stage.height).toBeLessThan(tall.stage.height);
+  expect(short.height).toBeCloseTo(293 * Math.min(short.stage.width / 429, short.stage.height / 472), 0);
+});
+
+test('on a phone a maze\'s character peers over a top corner of its card, behind it, with no label', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const [id, spot] of [['MAZE-0001', 'topRight'], ['MAZE-0002', 'topLeft']]) {
+    await openMaze(page, id);
+    await expect.poll(() => spotOf(page)).toBe(spot);
+    await expect(page.locator('#name-tag')).toBeHidden();
+    expect(await css(page.locator('#theme-figure'), 'z-index')).toBe('-1');
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.y + figure.height / 2).toBeLessThan(stage.y);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  }
+});
+
+test('Plain, a maze shows no character, name or background, and never asks for a character image; switching to Themed dresses it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await lookAs(page, 'plain');
+  const asked = imageRequests(page);
+  await openMaze(page, 'MAZE-0010');
+  await expect(page.locator('#theme-figure')).toBeHidden();
+  await expect(page.locator('#name-tag')).toBeHidden();
+  expect(await sceneOf(page)).toBe('none');
+  await expect(page.locator('#grid .stop.collectible').first()).toHaveCSS('background-image', 'none');
+  expect(asked).toEqual([]);
+  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await expect(page.locator('#theme-figure')).toBeVisible();
+  await expect(page.locator('#name-tag')).toBeVisible();
+  expect(await spotOf(page)).toBe('left');
+});
+
+test('in a collection, its mazes wear the characters in its order, round again after the last, as its wordsearches do', async ({ page }) => {
+  const puzzles = [['WSCH-0001', 1], ['MAZE-0001', 2], ['MAZE-0002', 3], ['WSCH-0002', 4], ['MAZE-0003', 13]].map(([id, number]) => ({ id, number }));
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
+    { slug: 'mixed', name: 'Mixed', description: 'Both kinds.', created: '2026-10-11', puzzles }
+  ] } }));
+  await page.goto('/app/collection.html?slug=mixed');
+  const tiles = page.locator('.tiles .tile');
+  await expect(tiles).toHaveCount(5);
+  for (const [i, number] of [1, 2, 3, 4, 13].entries()) {
+    expect(await css(tiles.nth(i).locator('.theme-figure'), 'background-image')).toBe(url(CHARACTERS[(number - 1) % CHARACTERS.length].figure));
+  }
+  await expect(tiles.nth(1)).toHaveAttribute('href', /maze\.html\?id=MAZE-0001/);
 });

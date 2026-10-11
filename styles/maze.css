@@ -3,7 +3,8 @@
    generator's editor colours (grew-puzzles-tooling), so the owner's maze reads the same here: guides
    blue, collectibles amber, keys and their zones purple, letters pink, exits white pills with their
    code, the solution's main path blue and its detours green, the right exit dotted and the wrong
-   ones crossed in red. Themed, collectibles and blocks wear the puzzle's character (look.css). */
+   ones crossed in red. Themed, the page wears the puzzle's background and character, and its
+   collectibles and blocks the character too (look.css). */
 :root {
   --maze-guide: #2a6df5; --maze-collectible: #e8a317; --maze-key: #7b4fd6; --maze-key-fg: #5b32b8;
   --maze-letter: #d6336c; --maze-main: #2a6df5; --maze-detour: #1b9a46; --maze-exit: #d62a1e;
