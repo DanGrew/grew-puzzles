@@ -671,3 +671,50 @@ export function minimapTrail(trail) {
 export function dragView(view, from, to, scale, frame, board) {
   return onMaze({ cell: view.cell, x: view.x + (to.x - from.x) / scale, y: view.y + (to.y - from.y) / scale }, frame, board);
 }
+
+// ---- Paper ----
+// A maze prints on one 8.5×11 page, 0.2 in a cell, only at 32×40, which fills it (the owner's call,
+// 2026-10-08): a bigger maze plays on the site alone, and has no Print and no page in a book. The
+// sheet is always the blank maze: no trail, nothing found, never the solution.
+
+export function mazePrints(cols, rows) {
+  return cols === 32 && rows === 40;
+}
+
+// The note box at the sheet's top right (the owner's pick, 2026-10-11: Grouped): what the maze has
+// to find, a line a group, every box empty: Guides, Keys numbered and Collectibles as the
+// checklist has them, then Letters and Exits as rows of boxes each labelled with its own, or End.
+export function printedNote(board) {
+  var labels = function (k) { return board.stops.filter(function (s) { return s.kind === k; }).map(function (s) { return s.label; }); };
+  var groups = checklist(newMazePlay(board), board).filter(function (line) { return line.boxes.length > 0; }).map(function (line) {
+    return { name: line.text, boxes: line.boxes.map(function (b) { return b.label; }) };
+  });
+  var rows = [['Letters', labels('letter').sort()], ['Exits', labels('exit')], ['End', labels('end').map(function () { return ''; })]];
+  return groups.concat(rows.filter(function (row) { return row[1].length > 0; }).map(function (row) { return { name: row[0], boxes: row[1] }; }));
+}
+
+// What a stop reads on paper, where no colour tells a key from a letter: a key KEY and its number,
+// a letter its letter, an exit its letter order, the end End; a guide or collectible nothing.
+export function printedLabel(stop) {
+  return { true: 'KEY ' + stop.label, false: stop.label }[stop.kind === 'key'];
+}
+
+// A zone on paper is labelled with its key's number, ZONE 1 to ZONE 4.
+export function printedZone(zone) {
+  return 'ZONE ' + zone.key;
+}
+
+// What the sheet draws, in cells, each thing from its top-left corner: the start, each zone, its
+// size and label, each block, the walls, and each stop with what it reads. Nothing the player did.
+export function printedMaze(board) {
+  return {
+    viewBox: '0 0 ' + board.cols + ' ' + board.rows,
+    start: { x: board.start[1], y: board.start[0] },
+    zones: board.zones.map(function (z) {
+      return { x: z.left, y: z.top, width: z.right - z.left + 1, height: z.bottom - z.top + 1, label: printedZone(z) };
+    }),
+    blocks: board.blocks.map(function (b) { return { x: b[1], y: b[0] }; }),
+    walls: board.walls,
+    stops: board.stops.map(function (s) { return { kind: s.kind, x: s.cell[1], y: s.cell[0], label: printedLabel(s) }; })
+  };
+}

@@ -13,9 +13,17 @@
 <link rel="stylesheet" href="../styles/maze.css">
 <link rel="stylesheet" href="../styles/look.css">
 </head>
-<body>
+<body class="play-page maze-page">
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="maze"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="maze">
+    <!-- Only a 32×40 maze prints: ui/maze/play-ui.js shows the menu once it knows the size. -->
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="colour">Colour</button>
+      <button type="button" data-print="mono">Black and white</button>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
+  </header>
 
   <header class="play-head">
     <h1 id="title"></h1>
@@ -132,6 +140,19 @@
       <p class="slip slip-note" id="save-note" hidden><span class="dot" aria-hidden="true"></span>Progress not saved — reconnecting</p>
     </div>
   </main>
+
+  <!-- The printout, paper only: the title, the note box of what to find, and the blank maze, drawn
+       by ui/maze/sheet-ui.js. The book prints a copy of it. -->
+  <section class="maze-sheet" id="maze-sheet">
+    <div class="maze-sheet-top">
+      <header class="play-head">
+        <h1 data-part="title"></h1>
+        <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
+      </header>
+      <div class="maze-note" data-part="note"></div>
+    </div>
+    <svg class="maze-paper" data-part="maze" aria-hidden="true"></svg>
+  </section>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>

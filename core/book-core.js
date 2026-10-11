@@ -1,8 +1,11 @@
 // The collection book's rules: what its title page says, and which puzzle each page after it
 // prints, in number order, headed with its number — the number its character goes by, as on the
-// collection page. The pages themselves are the play page's
-// printout (ui/wordsearch/play-ui.js drawSheet) — nothing here says how a puzzle looks. Nothing
-// the book adds names a hidden ID or gives an answer: the answers stay on the site.
+// collection page. The pages themselves are each kind's own printout — a wordsearch's the play
+// page's (ui/wordsearch/play-ui.js drawSheet), a maze's the maze page's (ui/maze/sheet-ui.js
+// drawMazeSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID or
+// gives an answer: the answers stay on the site.
+import { kindOf } from './kind-core.js';
+import { mazePrints } from './maze/play-core.js';
 // The print styles a book or a puzzle's page prints in, as the side bar lists them: Colour, Black
 // and white (mono), Plain.
 export const PRINT_STYLES = ['colour', 'mono', 'plain'];
@@ -14,10 +17,10 @@ export function printStyleOf(search) {
   return PRINT_STYLES.includes(style) ? style : 'plain';
 }
 
-export function bookView(collections, slug) {
+export function bookView(collections, slug, mazes) {
   const collection = collections.find(c => c.slug === slug);
   const missing = { found: false, name: 'Collection not found', description: '', address: '', answers: '', back: '', pages: [] };
-  return collection ? book(collection) : missing;
+  return collection ? book(collection, mazes) : missing;
 }
 
 // Each puzzle's page numbers, in book order, given each one's board (play-core's playBoard): a
@@ -32,16 +35,23 @@ export function pageNumbers(boards) {
   }));
 }
 
-// Only a wordsearch prints in the book. A maze is played on the site alone, and is left out: only
-// a 32×40 maze will ever print, and none prints yet (TASK-88).
-function prints(id) {
-  return id.startsWith('WSCH-');
+// A wordsearch always prints in the book; a maze only at 32×40 (play-core's mazePrints), told by
+// its width and height in the mazes' index (mazes, its entries). A bigger maze, or one the index
+// doesn't list, plays on the site alone and is left out, its number skipped.
+function printsIn(mazes) {
+  const sizes = new Map(mazes.map(m => [m.hiddenId, m]));
+  const PRINTS = {
+    wordsearch: () => true,
+    maze: id => [sizes.get(id)].filter(Boolean).some(m => mazePrints(m.width, m.height)),
+  };
+  return id => PRINTS[kindOf(id)](id);
 }
 
-function book(collection) {
+function book(collection, mazes) {
+  const prints = printsIn(mazes);
   const pages = collection.puzzles.filter(p => prints(p.id))
     .sort((a, b) => a.number - b.number)
-    .map(({ id, number }) => ({ heading: `Puzzle ${number}`, number, search: `?id=${id}` }));
+    .map(({ id, number }) => ({ heading: `Puzzle ${number}`, number, kind: kindOf(id), search: `?id=${id}` }));
   return {
     found: true,
     name: collection.name,

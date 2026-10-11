@@ -186,3 +186,67 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
   .maze-world.glide { transition: none; }
   .trail.drawing, .here.drawing { animation: none; }
 }
+
+/* ---- The printout ----
+   A 32×40 maze prints on one 8.5×11 page, drawn by ui/maze/sheet-ui.js into .maze-sheet, the maze
+   page's own or the book's copy: the maze 0.2 in a cell, 1 in clear at its sides and foot and 2 in
+   at the top, where the title sits centred and the note box at the top right (the owner's pick,
+   2026-10-11: Grouped), its right edge on the maze's, in smaller print never under 7 pt. Paper is
+   always the blank puzzle — never the trail, the ticks or the solution. Plain prints black: dots
+   and solid tiles. Colour prints the editor colours and the puzzle's character on its collectibles
+   and blocks, its background faint behind (styles/look.css); Black and white is Colour in greys.
+   The page keeps its own half inch inside, so no margin is set, as the book's (styles/book.css),
+   which loads this file first so its own pages stay its. */
+@page { size: 8.5in 11in; margin: 0; }
+@page themed { size: 8.5in 11in; margin: 0; }
+.maze-sheet { display: none; }
+@media print {
+  .maze-page .wrap { max-width: none; padding: .5in .5in 0; }
+  .maze-page .site-main > :not(.maze-sheet) { display: none; }
+
+  .maze-sheet { --ms-ink: #000; --ms-zone: #000; --ms-key: #000; --ms-letter: #000; --ms-guide: #000; --ms-dot: #000;
+    --ms-start: #d9d9d9; --ms-zone-fill: .07;
+    display: grid; grid-template-rows: 1.5in auto; justify-items: center; color: #000; break-inside: avoid; }
+  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet { --ms-zone: var(--maze-key); --ms-key: var(--maze-key-fg);
+    --ms-letter: var(--maze-letter); --ms-guide: var(--maze-guide); --ms-dot: var(--maze-collectible); --ms-start: #bfe0d5; --ms-zone-fill: .13; }
+  :root[data-print="mono"] .maze-paper { filter: grayscale(1); }
+  .maze-sheet-top { position: relative; width: 100%; }
+  .maze-sheet .play-head { margin: 0 auto; }
+
+  /* The note box: a line a group, its name on the left and its boxes on the right, wrapping. */
+  .maze-note { position: absolute; top: -.05in; right: calc((100% - var(--cols) * .2in) / 2); display: grid; gap: 3pt; width: 1.6in;
+    box-sizing: border-box; padding: 4pt 6pt; background: #fff; border: 1pt solid #000; border-radius: 4pt; font: 400 7.5pt/1 var(--font-body); }
+  .maze-note:empty { display: none; }
+  .note-line { display: flex; align-items: start; justify-content: space-between; gap: 6pt; }
+  .note-name { flex: none; padding-top: .5pt; font-weight: 600; }
+  .note-boxes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 1.6pt; flex: 1 1 0; min-width: 0; }
+  .note-box { box-sizing: border-box; display: grid; place-items: center; min-width: 7.5pt; height: 7.5pt; padding: 0 1pt;
+    border: .8pt solid #000; border-radius: 1.2pt; font: 700 7pt/1 var(--font-body); font-variant-numeric: tabular-nums; }
+  .note-box[data-long="true"] { padding: 0 1.6pt; }
+
+  /* The maze, drawn in cells. */
+  .maze-paper { display: block; width: calc(var(--cols) * .2in); height: calc(var(--rows) * .2in); overflow: visible; }
+  .ms-start { fill: var(--ms-start); }
+  .ms-zone { fill: var(--ms-zone); fill-opacity: var(--ms-zone-fill); stroke: var(--ms-zone); stroke-width: .07; stroke-dasharray: .3 .2; }
+  .ms-walls { fill: none; stroke: var(--ms-ink); stroke-width: .12; stroke-linecap: square; }
+  .ms-block { fill: #555; }
+  .ms-guide { fill: var(--ms-guide); }
+  .ms-dot { fill: var(--ms-dot); }
+  .ms-key, .ms-exit { fill: #fff; stroke: var(--ms-key); stroke-width: .05; }
+  .ms-exit { stroke: var(--ms-ink); }
+  .ms-letter { fill: var(--ms-letter); }
+  .ms-end { fill: var(--ms-ink); }
+  .maze-paper text { font-family: var(--font-body); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+  .ms-key-text { font-size: .27px; fill: var(--ms-key); letter-spacing: -.01px; }
+  .ms-letter-text { font-size: .5px; fill: #fff; }
+  .ms-exit-text { font-size: .36px; fill: var(--ms-ink); letter-spacing: -.01px; }
+  .ms-end-text { font-size: .36px; fill: #fff; }
+  .maze-paper .ms-zone-text { font-size: .42px; fill: var(--ms-zone); text-anchor: start; dominant-baseline: auto;
+    stroke: #fff; stroke-width: .12; paint-order: stroke; }
+  .ms-figure { display: none; }
+  /* Colour or Black and white, with the puzzle's character known: it stands in for each collectible's
+     dot, and each block is the character on a white tile. */
+  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-figure { display: inline; }
+  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-dot { display: none; }
+  :root:is([data-print="colour"], [data-print="mono"]) .maze-sheet[data-dressed="true"] .ms-block { fill: #fff; stroke: #000; stroke-width: .04; }
+}

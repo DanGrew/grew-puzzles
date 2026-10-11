@@ -8,13 +8,14 @@ import {
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, wallPath, mazeFrame,
   openView, refitView, centreOn, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow,
   windowHolds, windowCells, windowMarks, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
-  collectedSteps, collectedDash, windowSteps, minimapCollected
+  collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints
 } from '../../core/maze/play-core.js';
 import { joinedMaze } from '../../core/maze/progress-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { withSavedMaze, wireMazeProgress, saveMove } from './progress-ui.js';
+import { drawMazeSheet, dressMazeSheet } from './sheet-ui.js';
 import { characterFor, idNumber, isPhone, mazeScale, boxFrom, siteDress } from '../../core/theme-core.js';
-import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook } from '../theme-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
@@ -37,6 +38,11 @@ var MAZE_MINIMAP_FADE = { true: 0.3, false: 1 };
 // What the character on screen stands by: the maze's number, and its character once known
 // (dressMaze).
 var mazeFigure = { number: 1, character: undefined };
+// What printing the maze's sheet in a style needs loaded first: nothing, until its character is
+// known (dressMaze).
+var mazePrintLoad = function () { return Promise.resolve(); };
+// Only a 32×40 maze prints: its sheet is drawn and Print page shows; any other has neither.
+var MAZE_SHEETS = { true: showSheet, false: noop };
 
 function mazeEl(id) {
   return document.getElementById(id);
@@ -47,6 +53,9 @@ function noop() {}
 // A signed-in player's maze waits for what they saved, so it first draws as they left it.
 export function openMazePage(search) {
   var id = new URLSearchParams(search).get('id');
+  mazeEl('print').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { printIn(b.dataset.print, mazePrintLoad); });
+  });
   Promise.resolve(search)
     .then(mazeUrl)
     .then(function (url) { return fetch(url); })
@@ -104,6 +113,7 @@ function showMaze(id, board, play) {
   mazeEl('collected').setAttribute('stroke-dashoffset', dash.offset);
   drawSolution(mazeEl('solution-lines'), solutionMarks(board));
   checklist(play, board).forEach(function (line) { mazeEl('checklist').appendChild(checklistLine(line)); });
+  MAZE_SHEETS[mazePrints(board.cols, board.rows)](board);
   mazeEl('play').hidden = false;
   dressMaze(id);
   wireFlip(function () { mazeEl('pad').inert = mazeEl('card').classList.contains('flipped'); });
@@ -408,6 +418,12 @@ function showMaze(id, board, play) {
   }
 }
 
+// The printout: always the blank maze, whatever the player has done on screen.
+function showSheet(board) {
+  drawMazeSheet(mazeEl('maze-sheet'), board);
+  mazeEl('print').hidden = false;
+}
+
 // An animation started again from its beginning: a new move cuts the last one short.
 function restart(el, name) {
   el.classList.remove(name);
@@ -511,6 +527,8 @@ function dressMaze(hiddenId) {
     dressFigure(mazeEl('play'), character);
     dressFigure(mazeEl('theme-figure'), character);
     dressName(mazeEl('name-tag'), character);
+    dressMazeSheet(mazeEl('maze-sheet'), document.documentElement, character);
+    mazePrintLoad = function () { return printImages(character); };
     placeMazeFigure();
     onLook(placeMazeFigure);
   });

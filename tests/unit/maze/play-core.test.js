@@ -6,7 +6,7 @@ import {
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
   windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
-  collectedSteps, collectedDash, windowSteps, minimapCollected
+  collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints, printedNote, printedLabel, printedZone, printedMaze
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -915,5 +915,60 @@ describe('the little map', () => {
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 0, y: 0 }, { x: 5, y: -2.5 }, 2.5, frame, big)).toEqual({ cell: 20, x: 12, y: 9 });
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 50, y: 50 }, { x: 0, y: 500 }, 1, frame, big)).toEqual({ cell: 20, x: 0, y: 60 });
     expect(dragView({ cell: 20, x: 10, y: 10 }, { x: 10, y: 10 }, { x: 13, y: 5 }, 1, frame, big)).toEqual({ cell: 20, x: 13, y: 5 });
+  });
+});
+
+describe('on paper', () => {
+  it('only a 32×40 maze prints', () => {
+    expect(mazePrints(32, 40)).toBe(true);
+    expect([[40, 32], [100, 100], [32, 41], [31, 40], [6, 6]].map(([c, r]) => mazePrints(c, r))).toEqual([false, false, false, false, false]);
+  });
+
+  it('the note box lists what the maze has, a line a group: Guides, Keys numbered, Collectibles, then Letters and Exits labelled', () => {
+    expect(printedNote(BOARD)).toEqual([
+      { name: 'Guides', boxes: [''] },
+      { name: 'Keys', boxes: ['1'] },
+      { name: 'Collectibles', boxes: ['', ''] },
+      { name: 'Letters', boxes: ['A', 'B', 'C'] },
+      { name: 'Exits', boxes: ['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA'] },
+    ]);
+  });
+
+  it('letters run A to Z whatever order the file lists them, and keys in number order', () => {
+    const letters = [{ letter: 'C', row: 0, col: 3 }, { letter: 'A', row: 5, col: 1 }, { letter: 'B', row: 3, col: 1 }];
+    const keys = [3, 1, 2].map((key, i) => ({ key, row: 5, col: i + 2 }));
+    const board = mazeBoard({ ...structuredClone(MAZE), letters, keys, zones: [] });
+    expect(printedNote(board).find(l => l.name === 'Letters').boxes).toEqual(['A', 'B', 'C']);
+    expect(printedNote(board).find(l => l.name === 'Keys').boxes).toEqual(['1', '2', '3']);
+  });
+
+  it('a maze without letters ends in End, one box, and lists nothing it hasn\'t', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), guides: [], keys: [], zones: [], letters: [], exits: [] });
+    expect(printedNote(board)).toEqual([{ name: 'Collectibles', boxes: ['', ''] }, { name: 'End', boxes: [''] }]);
+  });
+
+  it('a key reads KEY and its number, a zone ZONE and its key\'s; everything else its own label', () => {
+    const label = kind => printedLabel(BOARD.stops.find(s => s.kind === kind));
+    expect(['key', 'letter', 'exit', 'guide', 'collectible'].map(label)).toEqual(['KEY 1', 'A', 'ABC', '', '']);
+    expect(printedLabel({ kind: 'end', label: 'End' })).toBe('End');
+    expect(printedZone(BOARD.zones[0])).toBe('ZONE 1');
+  });
+
+  it('the sheet draws the blank maze in cells: start, zones sized and labelled, blocks, walls, and every stop with what it reads', () => {
+    const maze = printedMaze(BOARD);
+    expect(maze.viewBox).toBe('0 0 6 6');
+    expect(maze.start).toEqual({ x: 0, y: 0 });
+    expect(maze.zones).toEqual([{ x: 2, y: 1, width: 2, height: 1, label: 'ZONE 1' }]);
+    expect(maze.blocks).toEqual(MAZE.blocks.map(b => ({ x: b.col, y: b.row })));
+    expect(maze.walls).toBe(BOARD.walls);
+    expect(maze.stops).toEqual(BOARD.stops.map(s => ({ kind: s.kind, x: s.cell[1], y: s.cell[0], label: printedLabel(s) })));
+    expect(maze.stops.find(s => s.kind === 'key')).toEqual({ kind: 'key', x: 1, y: 2, label: 'KEY 1' });
+  });
+
+  it('a zone several rows deep and columns wide is drawn its full size', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), zones: [{ key: 1, top: 1, left: 2, bottom: 4, right: 3 }] });
+    expect(printedMaze(board).zones).toEqual([{ x: 2, y: 1, width: 2, height: 4, label: 'ZONE 1' }]);
+    const tall = mazeBoard({ ...structuredClone(MAZE), width: 32, height: 40, walls: Array(40).fill('0'.repeat(32)) });
+    expect(printedMaze(tall).viewBox).toBe('0 0 32 40');
   });
 });
