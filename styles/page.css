@@ -7,9 +7,11 @@
 /* Saving your progress: one short paragraph a point, each led in bold, with no headings between. */
 .saving p + p { margin-top: 12px; }
 
-/* How to play: the types listed at the top, each a link to its section; then a section a type,
-   its picture beside its words, the sides alternating down the page as in the owner's book — on a
-   phone, the picture above the words. */
+/* How to play: the types listed at the top, a group a kind, each type a link to its section; then
+   a section a type, its picture beside its words, the sides alternating down the page as in the
+   owner's book — on a phone, the picture above the words. */
+.how-to-play .type-group + .type-group { margin-top: 12px; }
+.how-to-play .group-name { display: block; margin-bottom: 4px; font: var(--dw) 15px var(--font-display); }
 .how-to-play .types ul { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 0; list-style: none; }
 .how-to-play .type { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; margin-top: 32px; scroll-margin-top: 16px; }
 .how-to-play .type img { width: 100%; height: auto; border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }

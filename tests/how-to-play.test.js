@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 // The How to play page, in the owner's words (the product's docs/CONTENT.md, How to play): one
 // section per type, each beside its picture (tooling's tools/grew-puzzles-how-to-play) and at its
 // own address, reached from the side bar on every page.
-const TYPES = [
+const WORDSEARCH_TYPES = [
   ['vanilla', 'Vanilla', 'Vanilla wordsearches', 'A nice calming wordsearch. No tricks, no challenges; just a normal puzzle: find the words in the list. Words can run in any direction, including diagonally. Of course, they can overlap, but rest assured that words within words (like \'grape\' within \'grapefruit\') appear as two separate words in the grid.', 'A Vanilla wordsearch, with the word BULLOCK found in the grid.'],
   ['missing-words', 'Missing words', 'Missing words wordsearches', 'This is the first type of challenge! The word list includes one or more words that aren\'t in the puzzle… You might have been looking so hard for a word that isn\'t actually in the puzzle! What fun!', 'A Missing words wordsearch with every word found; the leftover words in the list aren\'t in the grid.'],
   ['repeating-words', 'Repeating words', 'Repeating words wordsearches', 'The next challenge doesn\'t involve any trickery, but it does test your focus! The puzzle contains only one word… but lots of it. What starts off as a novelty might leave you seeing the word \'sheep\' in your sleep!', 'A Repeating words wordsearch where every word is SHEEP, with one copy found.'],
@@ -11,6 +11,16 @@ const TYPES = [
   ['saga', 'Saga', 'Saga wordsearches', 'No more rules, just lots of words! These puzzles have a huge list of words split across several grids. And you guessed it, you have no idea which words are in which grid!', 'A Saga wordsearch: one long word list split across several grids.'],
   ['mirrage', 'Mirra?e', 'Mirra?e wordsearches', 'The ultimate challenge: every trick at once! Two puzzle grids, a word list with words that aren\'t really there, \'?\' wildcards hiding letters, and one word hidden five times across both grids. Like any good mirage, not everything you see is real… Good luck!', 'A Mirra?e wordsearch with \'?\' letters, showing a second copy of TELESCOPE found.'],
 ];
+// The mazes, after every wordsearch, each address ending -maze so a Vanilla maze is never a
+// Vanilla wordsearch.
+const MAZE_TYPES = [
+  ['vanilla-maze', 'Vanilla', 'Vanilla mazes', 'A nice calming maze. Find your way from the start to the end, and pick up the guides as you go. They\'re all on the right path, so if you\'ve found one, you\'re heading the right way!', 'A Vanilla maze with a trail started from the start, passing two guides.'],
+  ['collectibles-maze', 'Collectibles', 'Collectibles mazes', 'There\'s treasure off the beaten track! Collectibles are hidden down the side paths, never on the way to the end. Find every one, then make your way out.', 'A Collectibles maze with a trail started from the start, reaching its first collectible.'],
+  ['code-breaker-maze', 'Code Breaker', 'Code Breaker mazes', 'Six exits, but only one is right! Find A, B and C, hidden down side paths. Follow the one true route from the start, and the order you pass their turnings is the code. That\'s your exit! Want to finish the whole maze? Find all six exits: the right one gets a ✓ and the rest get a ✗.', 'A Code Breaker maze with a trail started from the start, reaching the letter B.'],
+  ['keys-maze', 'Keys', 'Keys mazes', 'Some of the maze is locked! Bump into a locked zone and it\'ll show you the number of the key it needs. That key is somewhere outside the zone. Find it and the zone opens up. Pick up every key to finish!', 'A Keys maze with a trail started from the start, reaching Key 1 and opening its zone.'],
+  ['keylecticodes-maze', 'Keylecticodes', 'Keylecticodes mazes', 'Everything at once! Guides, collectibles, keys and zones, A, B and C and six exits, all in one maze. Good luck!', 'A Keylecticodes maze with a trail started from the start, passing a guide and reaching Key 1.'],
+];
+const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES];
 
 test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
@@ -56,6 +66,24 @@ test('the top of the page lists every type, and picking one goes to its section'
   await expect(page.locator('#saga h2')).toBeInViewport();
 });
 
+test('the list at the top has two groups, Wordsearches then Mazes, each holding its own kind\'s types', async ({ page }) => {
+  await page.goto('/app/how-to-play.html');
+  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes']);
+  await expect(page.getByRole('list', { name: 'Wordsearches' }).locator('a')).toHaveText(WORDSEARCH_TYPES.map(([, name]) => name));
+  await expect(page.getByRole('list', { name: 'Mazes' }).locator('a')).toHaveText(MAZE_TYPES.map(([, name]) => name));
+});
+
+test('tapping a maze type in the list jumps to its section, not the wordsearch of the same name', async ({ page, baseURL }) => {
+  await page.goto('/app/how-to-play.html');
+  await page.getByRole('list', { name: 'Mazes' }).getByRole('link', { name: 'Vanilla' }).click();
+  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#vanilla-maze`);
+  await expect(page.locator('#vanilla-maze h2')).toHaveText('Vanilla mazes');
+  await expect(page.locator('#vanilla-maze h2')).toBeInViewport();
+  await page.getByRole('list', { name: 'Wordsearches' }).getByRole('link', { name: 'Vanilla' }).click();
+  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#vanilla`);
+  await expect(page.locator('#vanilla h2')).toHaveText('Vanilla wordsearches');
+});
+
 for (const [id] of TYPES) {
   test(`opening how-to-play.html#${id} lands on that type's section`, async ({ page }) => {
     await page.goto(`/app/how-to-play.html#${id}`);
@@ -74,7 +102,7 @@ test('on a wide screen each picture sits beside its words, alternating sides dow
     expect(words.y).toBeLessThan(picture.y + picture.height);
     sides.push(picture.x < words.x ? 'left' : 'right');
   }
-  expect(sides).toEqual(['left', 'right', 'left', 'right', 'left', 'right']);
+  expect(sides).toEqual(TYPES.map((_, i) => (i % 2 ? 'right' : 'left')));
 });
 
 test('on a phone each picture sits above its words', async ({ page }) => {
