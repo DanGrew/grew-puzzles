@@ -224,6 +224,114 @@
       "difficulty": "Extreme",
       "width": 100,
       "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0027",
+      "type": "Vanilla",
+      "created": "2026-10-11",
+      "title": "Vanilla 003",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0028",
+      "type": "Vanilla",
+      "created": "2026-10-11",
+      "title": "Vanilla 004",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0029",
+      "type": "Vanilla",
+      "created": "2026-10-11",
+      "title": "Vanilla 005",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0030",
+      "type": "Vanilla",
+      "created": "2026-10-11",
+      "title": "Vanilla Blind 004",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0031",
+      "type": "Vanilla",
+      "created": "2026-10-11",
+      "title": "Vanilla Blind 005",
+      "difficulty": "Easy",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0032",
+      "type": "Code Breaker",
+      "created": "2026-10-11",
+      "title": "Code Breaker 003",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0033",
+      "type": "Code Breaker",
+      "created": "2026-10-11",
+      "title": "Code Breaker 004",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0034",
+      "type": "Code Breaker",
+      "created": "2026-10-11",
+      "title": "Code Breaker 005",
+      "difficulty": "Medium",
+      "width": 32,
+      "height": 40
+    },
+    {
+      "hiddenId": "MAZE-0035",
+      "type": "Code Breaker",
+      "created": "2026-10-11",
+      "title": "Code Breaker Large 002",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0036",
+      "type": "Code Breaker",
+      "created": "2026-10-11",
+      "title": "Code Breaker Large 003",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0037",
+      "type": "Keylecticodes",
+      "created": "2026-10-11",
+      "title": "Keylecticodes Large 003",
+      "difficulty": "Extreme",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MAZE-0038",
+      "type": "Collectibles",
+      "created": "2026-10-11",
+      "title": "Collectibles XL 001",
+      "difficulty": "Hard",
+      "width": 200,
+      "height": 200
     }
   ]
 }
