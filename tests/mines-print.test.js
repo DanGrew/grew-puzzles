@@ -40,11 +40,11 @@ function pageSizes(pdf) {
   return [...pdf.matchAll(/\/Type\s*\/Page[^s][\s\S]*?\/MediaBox\s*\[([^\]]*)\]/g)].map(m => m[1].trim().split(/\s+/).map(Number));
 }
 
-test('a board that prints has Print page in its side bar: Plain', async ({ page }) => {
+test('a board that prints has Print page in its side bar: Colour, Black and white, Plain', async ({ page }) => {
   await open(page);
   await expect(page.locator('#site-side #print')).toBeVisible();
   await expect(page.locator('#site-side #print .print-name')).toHaveText('Print page');
-  await expect(page.locator('#site-side #print button')).toHaveText(['Plain']);
+  await expect(page.locator('#site-side #print button')).toHaveText(['Colour', 'Black and white', 'Plain']);
 });
 
 test('a board over 30 squares a side has no Print page, and draws no sheet', async ({ page }) => {
@@ -133,7 +133,9 @@ test('paper is black and white, and even a 30×30 board\'s numbers print at 7 pt
 
 test('nothing I marked prints, and there\'s no answer: the sheet is the blank board, whatever I did', async ({ page }) => {
   await open(page);
-  const before = await sheet(page).innerHTML();
+  // The sheet's own parts; its character is dressed apart, picked afresh each print.
+  const drawn = () => sheet(page).locator('[data-part]').evaluateAll(parts => parts.map(p => p.outerHTML));
+  const before = await drawn();
   const squares = page.locator('#grid .mines-square');
   // A dot, a mine, and a number tapped.
   await squares.nth(0).click();
@@ -142,14 +144,14 @@ test('nothing I marked prints, and there\'s no answer: the sheet is the blank bo
   await squares.nth(2).click();
   await page.locator('#flip').click();
   await printIn(page);
-  expect(await sheet(page).innerHTML()).toBe(before);
+  expect(await drawn()).toEqual(before);
   await expect(page.locator('#grid, #solution-grid')).toHaveCount(2);
   for (const id of ['grid', 'solution-grid']) await expect(page.locator('#' + id)).toBeHidden();
   await expect(sheet(page).locator('[data-mark], .back-face')).toHaveCount(0);
   expect(await paper(page).locator('span').evaluateAll(spans => spans.map(s => getComputedStyle(s, '::after').content))).toEqual(Array(100).fill('none'));
 });
 
-test('a board the side bar\'s look dresses Themed still prints plain: no background behind the paper', async ({ page }) => {
+test('a board the side bar\'s look dresses Themed prints plain on Print page\'s Plain: no background behind the paper', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('grew-puzzles.look', 'themed'));
   await open(page);
   await printIn(page);

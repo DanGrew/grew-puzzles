@@ -11,22 +11,19 @@ import { minesUrl, minesBoard } from '../core/minesweeper/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
-import { drawMinesSheet } from './minesweeper/sheet-ui.js';
+import { drawMinesSheet, dressMinesSheet } from './minesweeper/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
-// that page dressed in its character. A maze and a minesweeper board are always one sheet, and a
-// board's sheet stays plain until it wears its theme on paper (TASK-140).
+// that page dressed in its character. A maze and a minesweeper board are always one sheet.
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
-  minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: noop },
+  minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: dressMinesPage },
 };
-
-function noop() {}
 
 function bookEl(id) {
   return document.getElementById(id);
@@ -115,6 +112,10 @@ function dressWordsearchPage(page, board, character) {
 
 function dressMazePage(page, board, character) {
   dressMazeSheet(page.querySelector('.maze-sheet'), page, character);
+}
+
+function dressMinesPage(page, board, character) {
+  dressMinesSheet(page.querySelector('.mines-sheet'), page, board, character, true, Math.random);
 }
 
 function sizeBookWords() {
