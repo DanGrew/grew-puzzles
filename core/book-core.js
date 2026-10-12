@@ -69,7 +69,7 @@ export function printedPages(pages, boards) {
 // The note on the book's page, on screen, naming each puzzle left out as too big to print — none,
 // no note.
 export function leftOutNote(numbers) {
-  const list = new Intl.ListFormat('en-GB', { type: 'conjunction' }).format(numbers.map(String));
+  const list = new Intl.ListFormat('en-GB').format(numbers.map(String));
   if (numbers.length === 0) return '';
   if (numbers.length === 1) return `Puzzle ${list} is too big to print, so it plays on the site only.`;
   return `Puzzles ${list} are too big to print, so they play on the site only.`;
