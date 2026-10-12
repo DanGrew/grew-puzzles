@@ -3,7 +3,7 @@
 // (core/wordsearch/play-core.js, core/wordsearch/progress-core.js). Only the files of puzzles the
 // player has saved a find in are ever opened, never every puzzle on the page. The same read says
 // which started puzzles are still in play, for the landing page's Continue playing rail, and in
-// what order, mazes and minesweeper boards among them. Pure — the reading is ui/wordsearch/done-ui.js.
+// what order, mazes, minesweeper boards and criss-crosses among them. Pure — the reading is ui/wordsearch/done-ui.js.
 import { playBoard, restoredPlay, finished } from './play-core.js';
 import { restoredFinds } from './progress-core.js';
 
@@ -49,7 +49,8 @@ export function playingPuzzles(rows, started, opened, done) {
 
 // When each puzzle was last played: the latest time among its saved rows, column naming the time a
 // row holds — a wordsearch's lines their found_at, a maze's place its moved_at and its finds their
-// found_at (core/maze/done-core.js), a minesweeper board's marks their tapped_at.
+// found_at (core/maze/done-core.js), a minesweeper board's marks their tapped_at and a
+// criss-cross's words their placed_at.
 export function lastPlayed(rows, column) {
   var last = new Map(rows.map(function (row) { return [row.puzzle, '']; }));
   rows.forEach(function (row) { last.set(row.puzzle, [last.get(row.puzzle), row[column]].sort()[1]); });

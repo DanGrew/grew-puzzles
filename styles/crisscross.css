@@ -102,6 +102,8 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
 .chip.used:hover { background: #f4f7f5; }
 .chip:disabled { cursor: default; }
 .help { margin: 18px 4px 0; font-size: 13px; color: var(--muted); line-height: 1.55; }
+/* Saved progress's slip (play.css) under the Words card. */
+#words-card > .save-line { margin-top: 14px; }
 
 /* On a phone, the slot picked's words just under the shape, compact, so a group of five or so
    shows whole beside the little map; a bigger group scrolls in its own box, never the page. */

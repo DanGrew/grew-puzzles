@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // Continue playing. Supabase is stood in for — nothing here reaches it: mines_marks keeps one row
 // per player and board, saved over only by an upsert, the database stamping tapped_at on each; on
 // demand it cuts the connection, or slows or fails the next save. The wordsearch's progress table
-// and the maze tables answer reads only. A signed-in player is a session already in the browser, as
+// the maze tables and the criss-cross table answer reads only. A signed-in player is a session already in the browser, as
 // Supabase keeps it; signing in itself is sign-in.test.js's. The boards are the fixtures, served as
 // MINE-0001 — a 10×10 Easy of 15 mines — MINE-0003, the same board again, and MINE-0002, a 40×40
 // Hard.
@@ -44,12 +44,13 @@ const marks = (mines, noMines, { puzzle = 'MINE-0001', finished = false, user = 
 const saved = (mines, noMines, finished = false, puzzle = 'MINE-0001') => ({ user_id: PLAYER.id, puzzle, mines, no_mines: noMines, finished });
 const boardsSaved = db => db.boards.map(({ tapped_at, ...row }) => row);
 
-// lines are the wordsearch's progress table, finds and places the maze tables, all read only.
-function minesTable({ boards = [], lines = [], finds = [], places = [] } = {}) {
-  return { boards: [...boards], lines, finds, places, reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
+// lines are the wordsearch's progress table, finds and places the maze tables, shapes the
+// criss-cross table, all read only.
+function minesTable({ boards = [], lines = [], finds = [], places = [], shapes = [] } = {}) {
+  return { boards: [...boards], lines, finds, places, shapes, reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
 }
 
-const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places' };
+const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places', '/rest/v1/criss_words': 'shapes' };
 
 // The player is whoever the request's token names; a request with no player's token — signed out —
 // or to any other table is a stray.
