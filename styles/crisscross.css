@@ -120,7 +120,8 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
    crissPrints), drawn by ui/crisscross/sheet-ui.js into .criss-sheet, the criss-cross page's own or
    the book's copy: the title, its difficulty and code, the one-line rule, the empty shape with its
    starting word written in, in a grid card under its type's band, then the list grouped by length
-   in four columns in a Words card under it, black and white. Paper is always the empty shape: never
+   in four columns in a Words card under it, black and white — Colour or Black and white, on its
+   background with its character (styles/look.css). Paper is always the empty shape: never
    a word the player placed, never the answer. The shape is as big as fits 6.9 in across and 4.4 in
    down, its squares never over 0.36 in, so the Words card keeps room under the tallest, clear of a
    book page's number; each square's 1.5 pt outline — two whole pixels, so no browser thins it —
@@ -138,8 +139,10 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
   .criss-sheet .play-head { margin: 0; text-align: center; }
   .criss-sheet-rule { margin: 10pt 0 14pt; text-align: center; font: 400 11pt/1.5 var(--font-body); white-space: nowrap; }
   /* The cards are the wordsearch printout's (styles/play.css): the shape's under its type's band,
-     the list's under Words, 165 mm wide as the wordsearch's words card is. */
-  .criss-paper-card { width: max-content; margin-bottom: 20px; }
+     the list's under Words, 165 mm wide as the wordsearch's words card is. Printed Colour or Black
+     and white, the character peers from behind the shape's card (styles/look.css). */
+  .criss-print-card { margin-bottom: 20px; }
+  .criss-paper-card { width: max-content; }
   .criss-paper-list { width: 165mm; }
   .criss-paper { display: grid; grid-template-columns: repeat(var(--cols), var(--sq)); grid-template-rows: repeat(var(--rows), var(--sq)); padding: .75pt; }
   .criss-paper > span { box-sizing: border-box; display: grid; place-items: center; width: calc(var(--sq) + 1.5pt); height: calc(var(--sq) + 1.5pt);

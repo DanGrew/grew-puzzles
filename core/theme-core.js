@@ -83,6 +83,8 @@ export function figureTransform(placement) {
 const PRINT_REACH = 24;
 // A minesweeper sheet's title on its tag and its rule, down to its grid card's top, in px.
 const MINES_SHEET_HEAD = 162.66;
+// A criss-cross sheet's, the same way.
+const CRISS_SHEET_HEAD = 129.98;
 
 // A printed sheet is one of three: a puzzle of one grid, its grid card over its words; a puzzle of
 // several grids' words sheet, its words card alone; or one of its grid sheets.
@@ -216,6 +218,20 @@ export function minesPrintFrame(cols, rows, numbered) {
     paper: printPaper(true),
     cardWidth: 691.2 * cols / Math.max(cols, rows) + 5,
     cardTop: 48 + 29 * Number(numbered) + MINES_SHEET_HEAD
+  };
+}
+
+// A criss-cross's printed sheet (TASK-154), a one-grid sheet of its own, its grid card over its
+// Words card as a wordsearch's is: the US Letter page it always prints on, its grid card — the
+// shape's squares, each as big as fits 6.9 in across and 4.4 in down and never over 0.36 in
+// (styles/crisscross.css), and the 34 px its padding and outline add — and that card's top: the
+// half-inch edge, the book's puzzle number, then the title on its white tag and the rule on its
+// own, measured from the printout itself.
+export function crissPrintFrame(cols, rows, numbered) {
+  return {
+    paper: printPaper(true),
+    cardWidth: cols * Math.min(34.56, 662.4 / cols, 422.4 / rows) + 34,
+    cardTop: 48 + 29 * Number(numbered) + CRISS_SHEET_HEAD
   };
 }
 
