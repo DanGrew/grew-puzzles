@@ -36,13 +36,13 @@ function blankSquare(cell, board) {
   return cell[0] < board.rows && cell[1] < board.cols && !(cell.join(',') in board.numbers);
 }
 
-// The board as it was left, from its saved rows — none, and it's new. Nothing is set off, so a board
-// finished before doesn't celebrate again.
+// The board as it was left, from its saved rows — none, and it's new; a row always has both lists,
+// empty at the least. Nothing is set off, so a board finished before doesn't celebrate again.
 export function restoredMines(board, rows) {
   var play = newMinesPlay();
   rows.slice(0, 1).forEach(function (row) {
     [['no_mines', 'dot'], ['mines', 'mine']].forEach(function (list) {
-      (row[list[0]] || []).filter(function (cell) { return blankSquare(cell, board); }).forEach(function (cell) { play.marks[cell.join(',')] = list[1]; });
+      row[list[0]].filter(function (cell) { return blankSquare(cell, board); }).forEach(function (cell) { play.marks[cell.join(',')] = list[1]; });
     });
   });
   return play;

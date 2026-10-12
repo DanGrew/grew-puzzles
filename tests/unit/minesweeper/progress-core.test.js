@@ -82,11 +82,6 @@ describe('a saved board coming back', () => {
     expect(restoredMines(SMALL, [row([[1, 2]], [])]).marks).toEqual({});
   });
 
-  it('a row missing a list reads it as empty', () => {
-    expect(restoredMines(SMALL, [{ puzzle: 'MINE-0009', mines: [[0, 1]] }]).marks).toEqual({ '0,1': 'mine' });
-    expect(restoredMines(SMALL, [{ puzzle: 'MINE-0009', no_mines: [[0, 1]] }]).marks).toEqual({ '0,1': 'dot' });
-  });
-
   it('only the first row counts — there is only ever one', () => {
     expect(restoredMines(SMALL, [row([[0, 1]], []), row([[1, 0]], [])]).marks).toEqual({ '0,1': 'mine' });
   });
