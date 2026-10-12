@@ -139,6 +139,101 @@ test('saved as a PDF, a book with a maze is every page 8.5×11 in, the maze on o
   expect(pageSizes(pdf)).toEqual([LETTER, LETTER, LETTER, LETTER]);
 });
 
+// Boards for a book (TASK-138): the 10×10 (MINE-0001) and a 30×30 (MINE-0003, the 40×40 cut down)
+// print; the 40×40 (MINE-0002) is too big. No board's size is in the index: each one's file tells.
+const MINE_10 = require('./fixtures/MINE-0001.json');
+const MINE_40 = require('./fixtures/MINE-0002.json');
+const MINE_30 = {
+  ...MINE_40, hiddenId: 'MINE-0003', title: 'Edge Field', width: 30, height: 30,
+  numbers: MINE_40.numbers.slice(0, 30).map(row => row.slice(0, 30)),
+  mines: MINE_40.mines.filter(m => m.row < 30 && m.col < 30),
+};
+const MINES = { 'MINE-0001': MINE_10, 'MINE-0002': MINE_40, 'MINE-0003': MINE_30 };
+const boardsBook = {
+  slug: 'boards', name: 'Boards', description: 'Three boards and a wordsearch.', created: '2026-10-12',
+  puzzles: [{ id: 'MINE-0002', number: 2 }, { id: 'WSCH-0007', number: 3 }, { id: 'MINE-0001', number: 1 }, { id: 'MINE-0003', number: 4 }],
+};
+
+async function openBoards(page, style = 'plain') {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [boardsBook] } }));
+  await page.route(/\/content\/puzzles\/minesweeper\/MINE-\d+\.json$/, r => r.fulfill({ json: MINES[r.request().url().match(/(MINE-\d+)\.json$/)[1]] }));
+  await catchPrint(page);
+  await page.goto(`/app/book.html?slug=boards&print=${style}`);
+  await expect(page.locator('#ready')).toBeVisible();
+}
+
+test('a board takes its page in its collection\'s book in number order with the rest; one too big to print is left out, named on the book\'s page', async ({ page }) => {
+  await openBoards(page);
+  await expect(page.locator('#left-out')).toHaveText('Puzzle 2 is too big to print, so it plays on the site only.');
+  await expect(page.locator('#left-out')).toBeVisible();
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4']);
+  await expect(sheets(page).locator('.mines-sheet h1')).toHaveText(['Garden Patch', 'Edge Field']);
+  await expect(page.locator('.sheet .page-number')).toHaveText(['3', '4', '5']);
+  // The note is the screen's: no page of the book carries it.
+  await expect(page.locator('#left-out')).toBeHidden();
+  await expect(page.locator('#sheets')).not.toContainText('too big');
+});
+
+test('a book that leaves no board out has no note', async ({ page }) => {
+  await openMixed(page);
+  await expect(page.locator('#left-out')).toBeHidden();
+  await expect(page.locator('#left-out')).toHaveText('');
+});
+
+test('a board\'s book page is exactly its own printout, its number above the title, never a mark or the answer', async ({ page, browser }) => {
+  await openBoards(page);
+  await page.emulateMedia({ media: 'print' });
+  const inBook = sheets(page).nth(0).locator('.mines-sheet');
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/minesweeper/MINE-0001.json', r => r.fulfill({ json: MINE_10 }));
+  await play.goto('/app/minesweeper.html?id=MINE-0001');
+  await expect(play.locator('#play')).toBeVisible();
+  await play.emulateMedia({ media: 'print' });
+  const own = play.locator('#mines-sheet');
+  for (const part of ['title', 'rule', 'grid', 'ident']) {
+    expect(await inBook.locator(`[data-part="${part}"]`).innerHTML()).toBe(await own.locator(`[data-part="${part}"]`).innerHTML());
+  }
+  for (const part of ['grid', 'rule']) {
+    const [b, o] = [await inBook.locator(`[data-part="${part}"]`).boundingBox(), await own.locator(`[data-part="${part}"]`).boundingBox()];
+    expect([b.width, b.height]).toEqual([o.width, o.height]);
+  }
+  await expect(inBook.locator('> .sheet-number')).toHaveText('Puzzle 1');
+  const number = await inBook.locator('.sheet-number').boundingBox();
+  const title = await inBook.locator('h1').boundingBox();
+  expect(number.y + number.height).toBeLessThanOrEqual(title.y);
+  await expect(page.locator('.sheet [data-mark], .sheet .back-face .mines-square')).toHaveCount(0);
+  await play.close();
+});
+
+test('every board page fits its page: the grid ends above its page number, which keeps clear of the foot', async ({ page }) => {
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await openBoards(page);
+  await page.emulateMedia({ media: 'print' });
+  for (const depth of await page.evaluate(pageDepths)) {
+    expect(depth.content).toBeLessThan(depth.numberTop);
+    expect(depth.numberBottom).toBeLessThanOrEqual(11 - 0.25);
+  }
+});
+
+test('saved as a PDF, a book with boards passes as a wordsearch book does: every page 8.5×11 in, every font embedded, no links, notes or bookmarks', async ({ page }) => {
+  await openBoards(page);
+  const pdf = await savePdf(page);
+  // The title and copyright pages, then Puzzles 1, 3 and 4.
+  expect(pageSizes(pdf)).toEqual(Array(5).fill(LETTER));
+  expect(unembeddedFonts(pdf)).toEqual([]);
+  for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
+});
+
+test('a book with boards saved Colour is still a KDP bleed interior, every page 8.625 × 11.25 in, its boards printed plain', async ({ page }) => {
+  await page.setViewportSize({ width: 828, height: 1080 });
+  await openBoards(page, 'colour');
+  expect(pageSizes(await savePdf(page))).toEqual(Array(5).fill([0, 0, 621.12, 810]));
+  await page.emulateMedia({ media: 'print' });
+  expect(await sheets(page).nth(0).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toBe('none');
+});
+
 test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {
   await openBook(page);
   await page.emulateMedia({ media: 'print' });

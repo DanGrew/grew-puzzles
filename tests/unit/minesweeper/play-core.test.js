@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   minesUrl, minesFile, minesBoard, newMinesPlay, tapMines, minesFinished, minesSquares, numberState, squareMarks,
-  minesCount, answerSquares, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind
+  minesCount, answerSquares, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind,
+  minesPrints, printedRule
 } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/play-core.js, against MINE-0001 — a real 10×10 Easy board of 15 mines made by
@@ -211,6 +212,23 @@ describe('what the board shows', () => {
       { key: '0,2', cell: [0, 2], number: '', mine: false }, { key: '1,0', cell: [1, 0], number: '', mine: true },
       { key: '1,1', cell: [1, 1], number: '', mine: false }, { key: '1,2', cell: [1, 2], number: '1', mine: false }
     ]);
+  });
+});
+
+describe('paper', () => {
+  it('a board prints while its longer side is at most 30 squares, whichever way it lies', () => {
+    expect(minesPrints(10, 10)).toBe(true);
+    expect(minesPrints(30, 30)).toBe(true);
+    expect(minesPrints(1, 30)).toBe(true);
+    expect(minesPrints(31, 10)).toBe(false);
+    expect(minesPrints(10, 31)).toBe(false);
+    expect(minesPrints(40, 40)).toBe(false);
+  });
+
+  it('the sheet\'s rule says to shade the board\'s own mines', () => {
+    expect(printedRule(BOARD)).toBe('Shade the 15 mines. Each number counts the mines in the eight squares around it. A numbered square is never a mine.');
+    expect(printedRule(SMALL)).toMatch(/^Shade the 2 mines\. /);
+    expect(printedRule({ ...SMALL, mines: ['0,1'] })).toMatch(/^Shade the 1 mine\. /);
   });
 });
 

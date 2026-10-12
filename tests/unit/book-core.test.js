@@ -1,4 +1,4 @@
-import { bookView, pageNumbers, printStyleOf, PRINT_STYLES } from '../../core/book-core.js';
+import { bookView, pageNumbers, printStyleOf, PRINT_STYLES, printedPages, leftOutNote } from '../../core/book-core.js';
 
 const collections = () => [
   { slug: 'other', name: 'Other', description: 'Not this one.', created: '2026-10-01', puzzles: [{ id: 'WSCH-0001', number: 1 }] },
@@ -43,14 +43,34 @@ describe('book-core.js', () => {
     expect(bookView(mixed, 'mixed', []).pages.map(p => p.number)).toEqual([3]);
   });
 
-  test('a minesweeper board is left out of the book, its number skipped, until boards print', () => {
+  test('a minesweeper board takes its place in number order, its file opened whatever its size', () => {
     const boards = [{
       slug: 'boards', name: 'Boards', description: '', created: '2026-10-12',
-      puzzles: [{ id: 'MINE-0001', number: 1 }, { id: 'WSCH-0001', number: 2 }],
+      puzzles: [{ id: 'WSCH-0001', number: 2 }, { id: 'MINE-0001', number: 1 }],
     }];
     expect(bookView(boards, 'boards', []).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'minesweeper', search: '?id=MINE-0001' },
       { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0001' },
     ]);
+  });
+
+  test('once the boards are in, a board up to 30 squares along its longer side keeps its page; a bigger one is left out, by number', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const pages = [page(1, 'minesweeper'), page(2, 'wordsearch'), page(3, 'minesweeper'), page(4, 'maze'), page(5, 'minesweeper'), page(6, 'minesweeper')];
+    const boards = [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 31, rows: 10 }, { cols: 32, rows: 40 }, { cols: 10, rows: 31 }, { cols: 10, rows: 10 }];
+    expect(printedPages(pages, boards)).toEqual({
+      pages: [page(1, 'minesweeper'), page(2, 'wordsearch'), page(4, 'maze'), page(6, 'minesweeper')],
+      boards: [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 32, rows: 40 }, { cols: 10, rows: 10 }],
+      left: [3, 5],
+    });
+    expect(printedPages([], [])).toEqual({ pages: [], boards: [], left: [] });
+  });
+
+  test('the book\'s page names each board left out as too big to print; none left out, no note', () => {
+    expect(leftOutNote([])).toBe('');
+    expect(leftOutNote([7])).toBe('Puzzle 7 is too big to print, so it plays on the site only.');
+    expect(leftOutNote([4, 7])).toBe('Puzzles 4 and 7 are too big to print, so they play on the site only.');
+    expect(leftOutNote([2, 4, 7])).toBe('Puzzles 2, 4 and 7 are too big to print, so they play on the site only.');
   });
 
   test('nothing the book adds names a hidden ID', () => {

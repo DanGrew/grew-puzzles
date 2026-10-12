@@ -47,3 +47,30 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
 
 /* Saved progress's slip (play.css) under the Mines card. */
 #mines-card > .save-line { margin-top: 14px; }
+
+/* ---- The printout ----
+   A board up to 30 squares a side prints on one 8.5×11 page, drawn by ui/minesweeper/sheet-ui.js
+   into .mines-sheet, the minesweeper page's own or the book's copy, after the product's
+   docs/MOCKUP-MINESWEEPER.html: the title, its difficulty and code, the one-line rule, then the
+   grid as big as the page allows — its longer side 7.2 in, the page's 7.5 in less its border —
+   black and white. Paper is always the blank board: never a mark, never the answer. Its lines
+   hold up on cheap printing: 0.75 pt between squares and a 2.25 pt border round the grid, each a
+   whole pixel so the browser never thins it. The page keeps its own half inch inside, so no margin
+   is set, as the book's (styles/book.css), which loads this file first so its own pages stay its. */
+@page { size: 8.5in 11in; margin: 0; }
+.mines-sheet { display: none; }
+@media print {
+  .mines-page .wrap { max-width: none; padding: .5in .5in 0; }
+  .mines-page .site-main > :not(.mines-sheet) { display: none; }
+
+  .mines-sheet { --sq: calc(7.2in / max(var(--cols), var(--rows)));
+    display: flex; flex-direction: column; align-items: center; color: #000; break-inside: avoid; }
+  .mines-sheet .play-head { margin: 0; text-align: center; }
+  .mines-sheet-rule { max-width: 34em; margin: 14pt 0 18pt; text-align: center; font: 400 11pt/1.5 var(--font-body); text-wrap: balance; }
+  /* Each square draws its right and bottom line; the grid's own border is thinner on those sides by
+     as much, so all four edges print 2.25 pt. */
+  .mines-paper { display: grid; grid-template-columns: repeat(var(--cols), var(--sq)); grid-auto-rows: var(--sq);
+    border: solid #000; border-width: 2.25pt 1.5pt 1.5pt 2.25pt; }
+  .mines-paper > span { box-sizing: border-box; display: grid; place-items: center; border: solid #000; border-width: 0 .75pt .75pt 0;
+    font: 700 calc(var(--sq) * .5)/1 var(--font-body); font-variant-numeric: tabular-nums; }
+}
