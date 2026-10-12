@@ -1,10 +1,11 @@
 // The minesweeper play page's DOM: loads the board a play URL names, draws it and its answer from
 // play-core's board, and wires the taps, the zoom and moving round a big board, the flip and the
-// completion pop. Every rule lives in core/minesweeper/play-core.js; nothing here decides anything.
-// Saving the player's marks is ui/minesweeper/progress-ui.js.
+// completion pop, and the print menu. Every rule lives in core/minesweeper/play-core.js; nothing
+// here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
+// sheet is ui/minesweeper/sheet-ui.js.
 import {
   minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
-  minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind
+  minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, minesPrints
 } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
@@ -12,11 +13,16 @@ import { isPhone } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedMines } from '../../core/minesweeper/progress-core.js';
 import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
+import { drawMinesSheet } from './sheet-ui.js';
+import { printIn } from '../theme-ui.js';
 
 // Beside the grid card, the Mines card and the gap before it; on a phone it sits underneath.
 var MINES_SIDE_ROOM = { true: 0, false: 330 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MINES_WINDOW_MARGIN = 24;
+// Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; any other
+// has neither.
+var MINES_SHEETS = { true: showSheet, false: noop };
 
 function minesEl(id) {
   return document.getElementById(id);
@@ -27,6 +33,9 @@ function noop() {}
 // A signed-in player's board waits for what they saved, so it first draws as they left it.
 export function openMinesPage(search) {
   var id = new URLSearchParams(search).get('id');
+  minesEl('print').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { printIn(b.dataset.print, noPrintLoad); });
+  });
   Promise.resolve(search)
     .then(minesUrl)
     .then(function (url) { return fetch(url); })
@@ -35,6 +44,17 @@ export function openMinesPage(search) {
       var board = minesBoard(puzzle);
       withSavedMines(id, board, function (play) { showBoard(id, board, play); });
     }, showMissing);
+}
+
+// Plain paper needs nothing loaded before the dialog opens.
+function noPrintLoad() {
+  return Promise.resolve();
+}
+
+// The printout: always the blank board, whatever the player has marked on screen.
+function showSheet(board) {
+  drawMinesSheet(minesEl('mines-sheet'), board);
+  minesEl('print').hidden = false;
 }
 
 function showMissing() {
@@ -80,6 +100,7 @@ function showBoard(id, board, play) {
     minesEl('grid').appendChild(button);
   });
   answerSquares(board).forEach(function (s) { minesEl('solution-grid').appendChild(answerSquare(s)); });
+  MINES_SHEETS[minesPrints(board.cols, board.rows)](board);
   minesEl('play').hidden = false;
   wireFlip(noop);
   wirePress();

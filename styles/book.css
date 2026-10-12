@@ -18,6 +18,7 @@
   border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: var(--shadow); cursor: pointer; }
 .book-status p { margin: 0 0 10px; }
 .book-hint { font-size: 13px; color: var(--muted); }
+#left-out:empty { display: none; }
 .sheets, .copyright-page { display: none; }
 .sheet-number { margin: 0 0 6px; text-align: center; font: 600 15px var(--font-display); letter-spacing: .02em; }
 

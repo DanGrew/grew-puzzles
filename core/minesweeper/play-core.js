@@ -1,6 +1,6 @@
 // The minesweeper play page's rules: which board a play URL names, what its board holds, what a
 // tap does to the player's marks, how each number reads against them, when the board is solved,
-// and how the board sits in its frame. Pure — the DOM work is ui/minesweeper/play-ui.js. The board
+// how the board sits in its frame, and whether it prints. Pure — the DOM work is ui/minesweeper/play-ui.js. The board
 // file is grew-puzzles-tooling's docs/PUZZLE-FORMAT.md: the site only reads its numbers and its
 // mines, and never works a board out. A number fades or turns red, and a tap on it fills its
 // squares, from the player's own marks counted against it, never from the answer.
@@ -160,6 +160,22 @@ export function answerSquares(board) {
   return minesSquares(board).map(function (s) {
     return { key: s.key, cell: s.cell, number: s.number, mine: board.mines.includes(s.key) };
   });
+}
+
+// ---- Paper ----
+
+// A board prints on one 8.5×11 sheet, and goes into a book, only while its numbers stay readable
+// there: at most 30 squares along its longer side (a call made for the owner, 2026-10-11, as for
+// mazes). A bigger board plays on the site alone, with no Print and no page in a book.
+export function minesPrints(cols, rows) {
+  return Math.max(cols, rows) <= 30;
+}
+
+// The sheet's one-line rule, under the title, with the board's own mine count. Paper is shaded
+// with a pencil, so it says shade where the screen says find.
+export function printedRule(board) {
+  var mines = board.mines.length + { true: ' mine', false: ' mines' }[board.mines.length === 1];
+  return 'Shade the ' + mines + '. Each number counts the mines in the eight squares around it. A numbered square is never a mine.';
 }
 
 // ---- The frame ----

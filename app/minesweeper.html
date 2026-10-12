@@ -14,7 +14,14 @@
 </head>
 <body class="play-page mines-page">
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="minesweeper"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="minesweeper">
+    <!-- Only a board up to 30 squares a side prints: ui/minesweeper/play-ui.js shows the menu once
+         it knows the size. Plain alone until the board wears its theme on paper (TASK-140). -->
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
+  </header>
 
   <header class="play-head">
     <h1 id="title"></h1>
@@ -90,6 +97,17 @@
       </div>
     </aside>
   </main>
+
+  <!-- The printout, paper only: the title, the rule and the blank board, drawn by
+       ui/minesweeper/sheet-ui.js. The book prints a copy of it. -->
+  <section class="mines-sheet" id="mines-sheet">
+    <header class="play-head">
+      <h1 data-part="title"></h1>
+      <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
+    </header>
+    <p class="mines-sheet-rule" data-part="rule"></p>
+    <div class="mines-paper" data-part="grid" aria-hidden="true"></div>
+  </section>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>
