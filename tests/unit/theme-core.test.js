@@ -1,7 +1,8 @@
+import { readFileSync } from 'node:fs';
 import {
   charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, idNumber,
   isPhone, figureTransform, siteChoices, siteScale, mazeScale, boxFrom, sitePlacement, siteDress,
-  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress
+  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress, minesPrintFrame
 } from '../../core/theme-core.js';
 
 // Three characters stand in for the owner's list, in order.
@@ -132,6 +133,28 @@ describe('printed Colour or Black and white: the sheet', () => {
   test('its top sits under the half-inch edge, the title and its 16 px — a words sheet 20 px more, a grid sheet\'s title without its date — and in the book under the puzzle\'s number', () => {
     expect([printCardTop('one', false), printCardTop('words', false), printCardTop('grid', false)]).toEqual([140, 160, 121]);
     expect([printCardTop('one', true), printCardTop('words', true), printCardTop('grid', true)]).toEqual([169, 189, 150]);
+  });
+});
+
+// TASK-140: a minesweeper board prints on Letter, its grid as big as the page allows.
+describe('printed Colour or Black and white: a minesweeper board\'s sheet', () => {
+  test('it is always US Letter, its card the board\'s longer side at 7.2 in and the 5 px its border adds', () => {
+    expect(minesPrintFrame(10, 10, false).paper).toEqual({ width: 816, height: 1056 });
+    expect(minesPrintFrame(10, 10, false).cardWidth).toBeCloseTo(691.2 + 5, 5);
+    expect(minesPrintFrame(30, 15, false).cardWidth).toBeCloseTo(691.2 + 5, 5);
+    expect(minesPrintFrame(15, 30, false).cardWidth).toBeCloseTo(345.6 + 5, 5);
+  });
+
+  test('its card\'s top sits under the half inch, the title on its tag and the rule — in the book under the puzzle\'s number too', () => {
+    expect(minesPrintFrame(10, 10, false).cardTop).toBeCloseTo(48 + 162.66, 5);
+    expect(minesPrintFrame(10, 10, true).cardTop).toBeCloseTo(48 + 29 + 162.66, 5);
+  });
+
+  test('Bunnosaur peers only over a top corner of a full-width board; slimmer Catosaur may peek past a side too', () => {
+    const { characters } = JSON.parse(readFileSync(new URL('../../content/characters/index.json', import.meta.url), 'utf8'));
+    const outline = name => characters.find(c => c.name === name).outline;
+    expect(printChoices('one', minesPrintFrame(10, 10, false), outline('Bunnosaur'))).toEqual(['topRight', 'topLeft']);
+    expect(printChoices('one', minesPrintFrame(10, 10, false), outline('Catosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
   });
 });
 

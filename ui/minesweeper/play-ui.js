@@ -1,7 +1,7 @@
 // The minesweeper play page's DOM: loads the board a play URL names, draws it and its answer from
 // play-core's board, and wires the taps, the zoom and moving round a big board, the flip and the
-// completion pop, and the print menu. Every rule lives in core/minesweeper/play-core.js; nothing
-// here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
+// completion pop, and the print menu, and dresses it Themed in its character. Every rule lives in
+// core/minesweeper/play-core.js and core/theme-core.js; nothing here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
 // sheet is ui/minesweeper/sheet-ui.js.
 import {
   minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
@@ -9,12 +9,12 @@ import {
 } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
-import { isPhone } from '../../core/theme-core.js';
+import { characterFor, idNumber, isPhone, boxFrom, siteDress, minesPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedMines } from '../../core/minesweeper/progress-core.js';
 import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
-import { drawMinesSheet } from './sheet-ui.js';
-import { printIn } from '../theme-ui.js';
+import { drawMinesSheet, dressMinesSheet } from './sheet-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
 
 // Beside the grid card, the Mines card and the gap before it; on a phone it sits underneath.
 var MINES_SIDE_ROOM = { true: 0, false: 330 };
@@ -23,6 +23,12 @@ var MINES_WINDOW_MARGIN = 24;
 // Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; any other
 // has neither.
 var MINES_SHEETS = { true: showSheet, false: noop };
+// What the character on screen stands by: the board, its number and its character once known
+// (dressMines).
+var minesFigure = { board: undefined, number: 1, character: undefined };
+// What printing the sheet in a style needs loaded first: nothing, until its character is known
+// (dressMines).
+var minesPrintLoad = function () { return Promise.resolve(); };
 
 function minesEl(id) {
   return document.getElementById(id);
@@ -34,7 +40,7 @@ function noop() {}
 export function openMinesPage(search) {
   var id = new URLSearchParams(search).get('id');
   minesEl('print').querySelectorAll('button').forEach(function (b) {
-    b.addEventListener('click', function () { printIn(b.dataset.print, noPrintLoad); });
+    b.addEventListener('click', function () { printIn(b.dataset.print, minesPrintLoad); });
   });
   Promise.resolve(search)
     .then(minesUrl)
@@ -42,13 +48,9 @@ export function openMinesPage(search) {
     .then(playJson)
     .then(function (puzzle) {
       var board = minesBoard(puzzle);
+      dressMines(id, board);
       withSavedMines(id, board, function (play) { showBoard(id, board, play); });
     }, showMissing);
-}
-
-// Plain paper needs nothing loaded before the dialog opens.
-function noPrintLoad() {
-  return Promise.resolve();
 }
 
 // The printout: always the blank board, whatever the player has marked on screen.
@@ -238,7 +240,52 @@ function showBoard(id, board, play) {
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted);
+    placeMinesFigure();
   }
+}
+
+// Themed, the board is dressed as a wordsearch is: its own character, its background behind the
+// page, peering from behind the grid card at the printout's spot its number picks — the same every
+// visit (placeMinesFigure) — and each mine marked, and each on the answer side, wears that
+// character on a pastel red (styles/look.css). Plain shows none of it: a mine is a ringed dot.
+// Printed Colour or Black and white, the sheet wears it too, its spot picked again each time it
+// prints, and its images in before the dialog opens.
+function dressMines(hiddenId, board) {
+  minesFigure.board = board;
+  minesFigure.number = idNumber(hiddenId);
+  withCharacters(function (characters) {
+    var character = characterFor(characters, hiddenId);
+    var printout = function () { dressMinesSheet(minesEl('mines-sheet'), document.documentElement, board, character, false, Math.random); };
+    minesFigure.character = character;
+    dressScene(character);
+    dressFigure(minesEl('play'), character);
+    dressFigure(minesEl('theme-figure'), character);
+    dressName(minesEl('name-tag'), character);
+    printout();
+    window.addEventListener('beforeprint', printout);
+    minesPrintLoad = function () { return printImages(character); };
+    placeMinesFigure();
+    onLook(placeMinesFigure);
+  });
+}
+
+// The character at the printout's spot the board's number picks among those that show, measured
+// from the grid card as it now stands on the page, the printout's picture at the card's size against
+// the board's printed card (core/theme-core.js minesPrintFrame, siteDress) — a spot the Mines card
+// would cover, or the window's edge cut, skipped. Placed again whenever the card is sized, and when
+// the look changes.
+function placeMinesFigure() {
+  var page = minesEl('play').getBoundingClientRect(), card = minesEl('stage').getBoundingClientRect();
+  var title = document.querySelector('.play-head').getBoundingClientRect();
+  var board = minesFigure.board, phone = isPhone(document.documentElement.clientWidth);
+  placeFigure(minesEl('theme-figure'), minesEl('name-tag'), siteDress({
+    card: boxFrom(card, page),
+    scale: card.width / minesPrintFrame(board.cols, board.rows, false).cardWidth,
+    screen: screenEdges(page.left),
+    covers: [boxFrom(minesEl('mines-card').getBoundingClientRect(), page)], never: [],
+    title: boxFrom(title, page),
+    label: labelSize(phone), saga: false, phone: phone
+  }, minesFigure.character, minesFigure.number));
 }
 
 // A square on the front is a button, its number on it, or blank: a tap marks it, or fills round
