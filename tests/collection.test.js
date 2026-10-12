@@ -1,8 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
-// Stand-in indexes: the collection page reads only the indexes — every kind's, minesweeper and
-// criss-cross with none, and the collections' — so each is served in place of the real one; no
-// puzzle file is ever needed.
+// Stand-in indexes: the collection page reads only the indexes — every kind's and the collections'
+// — so each is served in place of the real one; no puzzle file is ever needed.
 const puzzles = [
   { hiddenId: 'WSCH-0001', type: 'Vanilla', created: '2026-01-01', title: 'Farm Animals' },
   { hiddenId: 'WSCH-0002', type: 'Missing', created: '2026-01-02', title: 'Flowers' },
