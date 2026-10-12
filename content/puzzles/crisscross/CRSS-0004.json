@@ -1,0 +1,913 @@
+{
+  "hiddenId": "CRSS-0004",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Fruit And Veg",
+  "difficulty": "Medium",
+  "width": 49,
+  "height": 50,
+  "wordGroups": [
+    "fruit-and-veg"
+  ],
+  "squares": [
+    "...........#.#...................................",
+    "...........#.#...................................",
+    "...........#.#...#...............................",
+    "...........#.#####...............................",
+    "...........#.#...#...............................",
+    ".........#########...............................",
+    ".................#.#.............................",
+    "...............######............................",
+    "..............#..#.#.#.####......................",
+    ".......#########...#####.........................",
+    "..............#....#.#.#...#.....................",
+    "..............#....#.#.#...#.....................",
+    "..........#######....#.#...#.....................",
+    "..............#....#.########....................",
+    "..............#.######.#.#.#.....................",
+    "..............#.#..#.....#.#.....................",
+    "............##########.#.#.......................",
+    "................#..#..######.....................",
+    "................#..#...#.#.......................",
+    "...............#...#.....#.......................",
+    "..............#######.####.......................",
+    "...............#...#..#..........................",
+    "..........#....#......######.....................",
+    "..........#....#..#...#.........#######..........",
+    "........####.###..#.#.#.#.#.#.........#.....#....",
+    "..........#....######.#.#.#.#.....#...###########",
+    "#.........#.......#.#######.#...#.#...#.....#...#",
+    "#.#.....#.#....####.#.#.#.#.#..#####.##########.#",
+    "############.....#....#...#.#...#.#...#...#.#...#",
+    "#.#..#..#.#......#....#...#.#...#.#.#.#...#.#...#",
+    "#.#.#####........#...########..########...#.#...#",
+    "#.#..#..#...#....#...#....#.#...#.#.#.#...#.#...#",
+    "#.#..#..#...####.#####..#########...#.....#.#...#",
+    "#.#.....#...#........#.#.#...#......#.....#.....#",
+    "#.#.....######....######.#...#.#....#...........#",
+    "........#...#.#......#.#.#...#.#.#..#............",
+    "............#.#..........#..######..#............",
+    "............#.#....#########.#.#.#..#............",
+    ".........#..#.#.#..#.....#...#.#.#...............",
+    "........##########.#.........#.#.#...............",
+    ".........#..#.#.#..#..#....#...#.................",
+    ".........#......##########.#.####...#............",
+    ".........#..#####..#..#....#.#......#............",
+    "................#.#######..#####..#.#............",
+    "...........#..#.#...#.#....#.#....#.#............",
+    "...........#..#.#...#.#....#.#....#.#............",
+    "........##########..#......##########............",
+    "...........#..#.#...#......#.#....#..............",
+    "...........#..#.#...#.............#..............",
+    "......######..#.................................."
+  ],
+  "given": "Banana",
+  "words": [
+    {
+      "word": "Fig",
+      "start": {
+        "row": 24,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Pea",
+      "start": {
+        "row": 33,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Yam",
+      "start": {
+        "row": 16,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Date",
+      "start": {
+        "row": 27,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Kale",
+      "start": {
+        "row": 24,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Kiwi",
+      "start": {
+        "row": 41,
+        "col": 29
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Leek",
+      "start": {
+        "row": 24,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Lime",
+      "start": {
+        "row": 8,
+        "col": 23
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Okra",
+      "start": {
+        "row": 32,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Pear",
+      "start": {
+        "row": 24,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Plum",
+      "start": {
+        "row": 20,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Apple",
+      "start": {
+        "row": 9,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Chard",
+      "start": {
+        "row": 27,
+        "col": 31
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Cress",
+      "start": {
+        "row": 28,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Grape",
+      "start": {
+        "row": 42,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Guava",
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Lemon",
+      "start": {
+        "row": 43,
+        "col": 27
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Mango",
+      "start": {
+        "row": 38,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Melon",
+      "start": {
+        "row": 30,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Olive",
+      "start": {
+        "row": 23,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Onion",
+      "start": {
+        "row": 32,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Peach",
+      "start": {
+        "row": 35,
+        "col": 33
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Swede",
+      "start": {
+        "row": 14,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Banana",
+      "start": {
+        "row": 30,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Carrot",
+      "start": {
+        "row": 17,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Celery",
+      "start": {
+        "row": 41,
+        "col": 36
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Cherry",
+      "start": {
+        "row": 43,
+        "col": 34
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Chilli",
+      "start": {
+        "row": 43,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Damson",
+      "start": {
+        "row": 7,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Endive",
+      "start": {
+        "row": 25,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Fennel",
+      "start": {
+        "row": 40,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Garlic",
+      "start": {
+        "row": 44,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Ginger",
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Jicama",
+      "start": {
+        "row": 49,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Lychee",
+      "start": {
+        "row": 35,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Marrow",
+      "start": {
+        "row": 22,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Orange",
+      "start": {
+        "row": 36,
+        "col": 28
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Papaya",
+      "start": {
+        "row": 44,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Pomelo",
+      "start": {
+        "row": 10,
+        "col": 27
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Potato",
+      "start": {
+        "row": 6,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Quince",
+      "start": {
+        "row": 34,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Radish",
+      "start": {
+        "row": 34,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Squash",
+      "start": {
+        "row": 14,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Tomato",
+      "start": {
+        "row": 27,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Turnip",
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Apricot",
+      "start": {
+        "row": 32,
+        "col": 25
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Avocado",
+      "start": {
+        "row": 37,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Cabbage",
+      "start": {
+        "row": 19,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Coconut",
+      "start": {
+        "row": 43,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Currant",
+      "start": {
+        "row": 25,
+        "col": 34
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Edamame",
+      "start": {
+        "row": 26,
+        "col": 20
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Kumquat",
+      "start": {
+        "row": 41,
+        "col": 29
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Lettuce",
+      "start": {
+        "row": 8,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Parsnip",
+      "start": {
+        "row": 20,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Pumpkin",
+      "start": {
+        "row": 23,
+        "col": 32
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Rhubarb",
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Salsify",
+      "start": {
+        "row": 27,
+        "col": 42
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Satsuma",
+      "start": {
+        "row": 2,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Shallot",
+      "start": {
+        "row": 26,
+        "col": 32
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Spinach",
+      "start": {
+        "row": 8,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Beetroot",
+      "start": {
+        "row": 30,
+        "col": 21
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Cucumber",
+      "start": {
+        "row": 13,
+        "col": 21
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Honeydew",
+      "start": {
+        "row": 34,
+        "col": 31
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Jalapeño",
+      "start": {
+        "row": 22,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Kohlrabi",
+      "start": {
+        "row": 40,
+        "col": 27
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Mandarin",
+      "start": {
+        "row": 27,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Mushroom",
+      "start": {
+        "row": 13,
+        "col": 25
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Plantain",
+      "start": {
+        "row": 30,
+        "col": 31
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Tamarind",
+      "start": {
+        "row": 32,
+        "col": 29
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Artichoke",
+      "start": {
+        "row": 37,
+        "col": 19
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Asparagus",
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Aubergine",
+      "start": {
+        "row": 26,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Blueberry",
+      "start": {
+        "row": 24,
+        "col": 44
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Courgette",
+      "start": {
+        "row": 24,
+        "col": 28
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Cranberry",
+      "start": {
+        "row": 27,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Mangetout",
+      "start": {
+        "row": 32,
+        "col": 24
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Nectarine",
+      "start": {
+        "row": 23,
+        "col": 38
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Pineapple",
+      "start": {
+        "row": 8,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Radicchio",
+      "start": {
+        "row": 13,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Raspberry",
+      "start": {
+        "row": 29,
+        "col": 36
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Starfruit",
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Sweetcorn",
+      "start": {
+        "row": 24,
+        "col": 26
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Blackberry",
+      "start": {
+        "row": 46,
+        "col": 27
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Clementine",
+      "start": {
+        "row": 16,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Gooseberry",
+      "start": {
+        "row": 31,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Grapefruit",
+      "start": {
+        "row": 46,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Mangosteen",
+      "start": {
+        "row": 27,
+        "col": 37
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Redcurrant",
+      "start": {
+        "row": 25,
+        "col": 48
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Strawberry",
+      "start": {
+        "row": 41,
+        "col": 16
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Watermelon",
+      "start": {
+        "row": 39,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Cauliflower",
+      "start": {
+        "row": 25,
+        "col": 38
+      },
+      "direction": "E",
+      "length": 11
+    },
+    {
+      "word": "Horseradish",
+      "start": {
+        "row": 38,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Pomegranate",
+      "start": {
+        "row": 20,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 11
+    },
+    {
+      "word": "Blackcurrant",
+      "start": {
+        "row": 28,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 12
+    }
+  ]
+}
