@@ -1,0 +1,76 @@
+{
+  "puzzles": [
+    {
+      "hiddenId": "MINE-0001",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla 001",
+      "difficulty": "Easy",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0002",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla 002",
+      "difficulty": "Easy",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0003",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 001",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0004",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 002",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0005",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 003",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0006",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 004",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0007",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 005",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0008",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Vanilla Medium 006",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    }
+  ]
+}
