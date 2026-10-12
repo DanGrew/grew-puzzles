@@ -1,10 +1,11 @@
 // The criss-cross play page's DOM: loads the shape a play URL names, draws it and its answer from
 // play-core's board, and wires the taps on squares and words, the zoom, moving round a big shape and
-// its little map, the flip and the completion pop. Every rule lives in core/crisscross/play-core.js;
-// nothing here decides anything. Saving the player's words is ui/crisscross/progress-ui.js.
+// its little map, the flip and the completion pop, and the print menu. Every rule lives in
+// core/crisscross/play-core.js; nothing here decides anything. Saving the player's words is
+// ui/crisscross/progress-ui.js; the printed sheet is ui/crisscross/sheet-ui.js.
 import {
   crissUrl, crissBoard, tapSquare, tapWord, crissSquares, squareMarks, placedSquares, crissCount,
-  wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares
+  wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares, crissPrints
 } from '../../core/crisscross/play-core.js';
 import { minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform, minimapFit, minimapPens, minimapBox, dragView } from '../../core/maze/play-core.js';
@@ -13,6 +14,8 @@ import { isPhone } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedCriss } from '../../core/crisscross/progress-core.js';
 import { withSavedCriss, wireCrissProgress, saveTap } from './progress-ui.js';
+import { drawCrissSheet } from './sheet-ui.js';
+import { printIn } from '../theme-ui.js';
 
 // Beside the grid card, the Words card and the gap before it; on a phone it sits underneath.
 var CRISS_SIDE_ROOM = { true: 0, false: 330 };
@@ -30,6 +33,9 @@ var CRISS_MINIMAP_EDGES = 10;
 var CRISS_MINIMAP_INKS = { empty: '--rule', filled: '--muted', picked: '--select' };
 // How long refused squares stay red.
 var CRISS_CLASH_MS = 700;
+// Only a shape whose squares and list fit one sheet prints: its sheet is drawn and Print page
+// shows; any other has neither.
+var CRISS_SHEETS = { true: showSheet, false: noop };
 
 function crissEl(id) {
   return document.getElementById(id);
@@ -40,6 +46,9 @@ function noop() {}
 // A signed-in player's shape waits for what they saved, so it first draws as they left it.
 export function openCrissPage(search) {
   var id = new URLSearchParams(search).get('id');
+  crissEl('print').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { printIn(b.dataset.print, noPrintLoad); });
+  });
   Promise.resolve(search)
     .then(crissUrl)
     .then(function (url) { return fetch(url); })
@@ -48,6 +57,17 @@ export function openCrissPage(search) {
       var board = crissBoard(puzzle);
       withSavedCriss(id, board, function (play) { showShape(id, board, play); });
     }, showMissing);
+}
+
+// Plain paper needs nothing loaded before the dialog opens.
+function noPrintLoad() {
+  return Promise.resolve();
+}
+
+// The printout: always the empty shape and its starting word, whatever the player has placed.
+function showSheet(board) {
+  drawCrissSheet(crissEl('criss-sheet'), board);
+  crissEl('print').hidden = false;
 }
 
 function showMissing() {
@@ -99,6 +119,7 @@ function showShape(id, board, play) {
     crissEl('grid').appendChild(button);
   });
   answerSquares(board).forEach(function (s) { crissEl('solution-grid').appendChild(answerSquare(s)); });
+  CRISS_SHEETS[crissPrints(board)](board);
   wordGroups(play, board).forEach(function (g) {
     var group = groupBox(g);
     g.words.forEach(function (w) {

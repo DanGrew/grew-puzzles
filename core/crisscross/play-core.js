@@ -239,6 +239,28 @@ export function answerSquares(board) {
   return crissSquares(board).map(function (s) { return Object.assign(s, { letter: letters.get(s.key) }); });
 }
 
+// ---- Paper ----
+
+// The sheet's one-line rule, under the title.
+export var CRISS_PRINTED_RULE = 'Fit every word into the shape. Words cross where they share a letter.';
+
+// The most lines the sheet's Words card has room for under the tallest shape that prints: its four
+// columns of ten lines, less a line each for a group's heading pushed to the next column's top.
+var CRISS_PRINT_LINES = 36;
+
+// The lines the sheet's list takes: a heading a length, then a word a line.
+function printedLines(board) {
+  return board.words.length + new Set(board.words.map(function (w) { return w.letters.length; })).size;
+}
+
+// A shape prints on one 8.5×11 sheet, and goes into a book, only while its squares stay big enough
+// to write in — at most 25 along its longer side (a call made for the owner, 2026-10-11) — and its
+// list fits under it on the same page. Its letters never shrink to fit: any other shape plays on
+// the site alone, with no Print and no page in a book.
+export function crissPrints(board) {
+  return Math.max(board.cols, board.rows) <= 25 && printedLines(board) <= CRISS_PRINT_LINES;
+}
+
 // ---- The frame ----
 // The grid card shows the shape through its frame, as the minesweeper page does
 // (core/minesweeper/play-core.js), whose view, zoom and drag the page takes as they are: a shape

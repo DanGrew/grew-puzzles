@@ -66,6 +66,29 @@ describe('book-core.js', () => {
     expect(printedPages([], [])).toEqual({ pages: [], boards: [], left: [] });
   });
 
+  test('a criss-cross takes its place in number order, its file opened whatever its size', () => {
+    const shapes = [{
+      slug: 'shapes', name: 'Shapes', description: '', created: '2026-10-12',
+      puzzles: [{ id: 'WSCH-0001', number: 2 }, { id: 'CRSS-0001', number: 1 }],
+    }];
+    expect(bookView(shapes, 'shapes', []).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'crisscross', search: '?id=CRSS-0001' },
+      { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0001' },
+    ]);
+  });
+
+  test('once the shapes are in, a criss-cross whose squares and list fit one sheet keeps its page; any other is left out, by number', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const shape = (cols, rows, words) => ({ cols, rows, words: Array.from({ length: words }, () => ({ letters: 'CAT' })) });
+    const pages = [page(1, 'crisscross'), page(2, 'wordsearch'), page(3, 'crisscross'), page(4, 'crisscross'), page(5, 'minesweeper')];
+    const boards = [shape(17, 15, 20), { sheets: [] }, shape(29, 30, 20), shape(10, 10, 36), { cols: 10, rows: 10 }];
+    expect(printedPages(pages, boards)).toEqual({
+      pages: [page(1, 'crisscross'), page(2, 'wordsearch'), page(5, 'minesweeper')],
+      boards: [shape(17, 15, 20), { sheets: [] }, { cols: 10, rows: 10 }],
+      left: [3, 4],
+    });
+  });
+
   test('the book\'s page names each board left out as too big to print; none left out, no note', () => {
     expect(leftOutNote([])).toBe('');
     expect(leftOutNote([7])).toBe('Puzzle 7 is too big to print, so it plays on the site only.');
