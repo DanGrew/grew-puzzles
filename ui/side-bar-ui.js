@@ -1,10 +1,12 @@
-// The side bar's kinds (components/site-bar.js): Wordsearches and Mazes, each with its puzzle count
-// and its types beneath, a dot in each type's difficulty colour, then Collections' count — read
-// from the indexes, never a puzzle file (core/kind-core.js). The landing page's Wordsearches |
-// Mazes switch, shown on a phone, is filled from the same map. An entry is marked current for the
-// page's place: the page's own data-current, or — on the landing page, whose place is its address —
-// what markPlace is told. A site with no maze index, or no collections file, reads as none.
+// The side bar's kinds (components/site-bar.js): Wordsearches, Mazes and Minesweeper, each with its
+// puzzle count and its types beneath, a dot by each type (core/kind-core.js dotTone), then
+// Collections' count — read from the indexes, never a puzzle file (ui/indexes-ui.js). The landing
+// page's Words | Mazes | Mines switch, shown on a phone, is filled from the same map. An
+// entry is marked current for the page's place: the page's own data-current, or — on the landing
+// page, whose place is its address — what markPlace is told. A kind with no index yet, or a site
+// with no collections file, reads as none.
 import { sideBar, sideMarks, markOf } from '../core/kind-core.js';
+import { readPuzzles } from './indexes-ui.js';
 
 var bar = document.querySelector('[data-site-bar]');
 var home = bar.dataset.home;
@@ -41,8 +43,9 @@ function kindEntry(kind) {
   return [a, types];
 }
 
+// The phone's switch names each kind short — Words | Mazes | Mines — as three full names don't fit.
 function switchEntry(kind) {
-  var a = link('', kind);
+  var a = link('', { name: kind.short, query: kind.query, mark: kind.mark });
   a.appendChild(part('small', 'count', kind.count));
   return a;
 }
@@ -51,8 +54,8 @@ function paint() {
   document.querySelectorAll('[data-mark]').forEach(function (a) { a.setAttribute('aria-current', markOf(marks, a.dataset.mark)); });
 }
 
-function fill([index, mazes, published]) {
-  var map = sideBar(index.puzzles.concat(mazes.puzzles), published.collections);
+function fill([puzzles, published]) {
+  var map = sideBar(puzzles, published.collections);
   document.querySelector('.side-kinds').replaceChildren.apply(document.querySelector('.side-kinds'), map.kinds.flatMap(kindEntry));
   document.querySelectorAll('.kind-switch').forEach(function (nav) { nav.replaceChildren.apply(nav, map.kinds.map(switchEntry)); });
   var collections = document.querySelector('.side-collections');
@@ -70,7 +73,6 @@ export function markPlace(place, types) {
 
 paint();
 export var ready = Promise.all([
-  fetch('../content/puzzles/wordsearch/index.json').then(function (r) { return r.json(); }).catch(function () { return { puzzles: [] }; }),
-  fetch('../content/puzzles/maze/index.json').then(function (r) { return r.json(); }).catch(function () { return { puzzles: [] }; }),
+  readPuzzles(),
   fetch('../content/collections/index.json').then(function (r) { return r.json(); }).catch(function () { return { collections: [] }; }),
 ]).then(fill);

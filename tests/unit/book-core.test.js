@@ -43,6 +43,16 @@ describe('book-core.js', () => {
     expect(bookView(mixed, 'mixed', []).pages.map(p => p.number)).toEqual([3]);
   });
 
+  test('a minesweeper board is left out of the book, its number skipped, until boards print', () => {
+    const boards = [{
+      slug: 'boards', name: 'Boards', description: '', created: '2026-10-12',
+      puzzles: [{ id: 'MINE-0001', number: 1 }, { id: 'WSCH-0001', number: 2 }],
+    }];
+    expect(bookView(boards, 'boards', []).pages).toEqual([
+      { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0001' },
+    ]);
+  });
+
   test('nothing the book adds names a hidden ID', () => {
     const { pages, ...added } = bookView(collections(), 'issue-1', []);
     expect(JSON.stringify(added)).not.toContain('WSCH');

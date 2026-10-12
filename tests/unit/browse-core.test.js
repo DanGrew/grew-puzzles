@@ -52,13 +52,16 @@ describe('browse-core.js', () => {
     const index = [
       { hiddenId: id(1), type: 'Vanilla' }, { hiddenId: id(2), type: 'Mirra?e' }, { hiddenId: id(3), type: 'Missing' },
       { hiddenId: 'MAZE-0001', type: 'Keys' }, { hiddenId: 'MAZE-0002', type: 'Vanilla', difficulty: 'Extreme' },
+      { hiddenId: 'MINE-0001', type: 'Vanilla', difficulty: 'Hard' }, { hiddenId: 'MINE-0002', type: 'Vanilla', difficulty: 'Easy' },
     ];
     expect(filterOptions(index)).toEqual({
       wordsearch: { levels: ['Easy', 'Hard', 'Extreme'], types: ['Vanilla', 'Missing', 'Mirra?e'] },
       maze: { levels: ['Hard', 'Extreme'], types: ['Vanilla', 'Keys'] },
+      minesweeper: { levels: ['Easy', 'Hard'], types: ['Vanilla'] },
       collections: { levels: [], types: [] },
     });
-    expect(filterOptions([])).toEqual({ wordsearch: { levels: [], types: [] }, maze: { levels: [], types: [] }, collections: { levels: [], types: [] } });
+    const none = { levels: [], types: [] };
+    expect(filterOptions([])).toEqual({ wordsearch: none, maze: none, minesweeper: none, collections: none });
   });
 
   test('a place has nothing to filter only with no types and nobody signed in', () => {
@@ -426,6 +429,13 @@ describe('browse-core.js', () => {
     expect(playHref('xMAZE-0001')).toBe('play.html?id=xMAZE-0001');
   });
 
+  test('a minesweeper board\'s tile links to the minesweeper page, and reads its size under its type as a maze\'s does', () => {
+    const board = { hiddenId: 'MINE-0001', type: 'Vanilla', created: '2026-10-11', title: 'Garden Patch', difficulty: 'Easy', width: 10, height: 10 };
+    expect(playHref('MINE-0001')).toBe('minesweeper.html?id=MINE-0001');
+    expect(tileDetail(board)).toEqual(['Vanilla', '10×10']);
+    expect(browseItems([board], [])[0]).toMatchObject({ place: 'minesweeper', href: 'minesweeper.html?id=MINE-0001', lines: ['Vanilla', '10×10'] });
+  });
+
   test('the total reads in puzzles, singular for one', () => {
     expect(totalLabel([])).toBe('0 puzzles');
     expect(totalLabel(browseItems(puzzles(1), []))).toBe('1 puzzle');
@@ -478,6 +488,14 @@ describe('browse-core.js', () => {
     const ids = [maze(1), maze(2), ...Array.from({ length: 10 }, (_, i) => id(i + 1))];
     expect(kindBreakdown(collection('A', '', ids))).toEqual(['10 Wordsearches', '2 Mazes']);
     expect(kindBreakdown(collection('A', '', [id(1), maze(1)]))).toEqual(['1 Wordsearch', '1 Maze']);
+  });
+
+  test('a collection holding boards counts them on a line of their own, after the other kinds: "3 Minesweepers", "1 Minesweeper"', () => {
+    const maze = n => `MAZE-${String(n).padStart(4, '0')}`;
+    const board = n => `MINE-${String(n).padStart(4, '0')}`;
+    expect(kindBreakdown(collection('A', '', [board(1), id(1), board(2), maze(1), board(3)])))
+      .toEqual(['1 Wordsearch', '1 Maze', '3 Minesweepers']);
+    expect(kindBreakdown(collection('A', '', [board(1)]))).toEqual(['1 Minesweeper']);
   });
 
   test('an empty collection has no breakdown line', () => {
