@@ -1,14 +1,17 @@
 // The minesweeper play page's DOM: loads the board a play URL names, draws it and its answer from
 // play-core's board, and wires the taps, the zoom and moving round a big board, the flip and the
 // completion pop. Every rule lives in core/minesweeper/play-core.js; nothing here decides anything.
+// Saving the player's marks is ui/minesweeper/progress-ui.js.
 import {
-  minesUrl, minesBoard, newMinesPlay, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
+  minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
   minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind
 } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { isPhone } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
+import { joinedMines } from '../../core/minesweeper/progress-core.js';
+import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
 
 // Beside the grid card, the Mines card and the gap before it; on a phone it sits underneath.
 var MINES_SIDE_ROOM = { true: 0, false: 330 };
@@ -21,12 +24,17 @@ function minesEl(id) {
 
 function noop() {}
 
+// A signed-in player's board waits for what they saved, so it first draws as they left it.
 export function openMinesPage(search) {
+  var id = new URLSearchParams(search).get('id');
   Promise.resolve(search)
     .then(minesUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(function (puzzle) { showBoard(minesBoard(puzzle)); }, showMissing);
+    .then(function (puzzle) {
+      var board = minesBoard(puzzle);
+      withSavedMines(id, board, function (play) { showBoard(id, board, play); });
+    }, showMissing);
 }
 
 function showMissing() {
@@ -37,9 +45,10 @@ function showMissing() {
 }
 
 // The board on its own play page: the board in the grid card, its answer on the card's back, and
-// the Mines card beside it — under it on a phone.
-function showBoard(board) {
-  var play = newMinesPlay();
+// the Mines card beside it — under it on a phone — play, as the player left it, already in place,
+// so nothing pops in and a board finished before doesn't celebrate again. It is saved under its
+// hidden ID.
+function showBoard(id, board, play) {
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The first frame opens the board; every one after refits it.
@@ -76,12 +85,22 @@ function showBoard(board) {
   wirePress();
   wireZoom();
   wireSize();
+  wireMinesProgress(id, board, function () { return play; }, joinSaved);
   render();
 
+  // Every tap that changes the marks is saved, signed in.
   function onTap(cell) {
-    play = tapMines(play, cell, board);
+    var next = tapMines(play, cell, board);
+    saveTap(id, board, play, next);
+    play = next;
     render();
     play.events.forEach(function (e) { MINES_EVENTS[e](); });
+  }
+
+  // Signed in mid-board: the board saved elsewhere joins the one on screen.
+  function joinSaved(saved) {
+    play = joinedMines(play, saved);
+    render();
   }
 
   // Each square as the marks have it, the Mines card's count, and the finish's line.
