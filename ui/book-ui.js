@@ -13,7 +13,7 @@ import { crissUrl, crissBoard } from '../core/crisscross/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
-import { drawMinesSheet } from './minesweeper/sheet-ui.js';
+import { drawMinesSheet, dressMinesSheet } from './minesweeper/sheet-ui.js';
 import { drawCrissSheet } from './crisscross/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
@@ -22,12 +22,11 @@ var BOOK_SHOWS = { true: printBook, false: showMissing };
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
 // that page dressed in its character. A maze, a minesweeper board and a criss-cross are always one
-// sheet, and a board's sheet stays plain until it wears its theme on paper (TASK-140), a
-// criss-cross's until it does (TASK-154).
+// sheet, and a criss-cross's stays plain until it wears its theme on paper (TASK-154).
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
-  minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: noop },
+  minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: dressMinesPage },
   crisscross: { url: crissUrl, board: crissBoard, sheets: function () { return { sheets: [] }; }, page: crissPage, dress: noop },
 };
 
@@ -122,6 +121,10 @@ function dressWordsearchPage(page, board, character) {
 
 function dressMazePage(page, board, character) {
   dressMazeSheet(page.querySelector('.maze-sheet'), page, character);
+}
+
+function dressMinesPage(page, board, character) {
+  dressMinesSheet(page.querySelector('.mines-sheet'), page, board, character, true, Math.random);
 }
 
 function sizeBookWords() {

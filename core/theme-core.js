@@ -81,6 +81,8 @@ export function figureTransform(placement) {
 // Paper is measured at 96 px to the inch, as the browser prints it. A sheet keeps half an inch
 // inside the paper's edge; a printer reaches to a quarter inch of it.
 const PRINT_REACH = 24;
+// A minesweeper sheet's title on its tag and its rule, down to its grid card's top, in px.
+const MINES_SHEET_HEAD = 162.66;
 
 // A printed sheet is one of three: a puzzle of one grid, its grid card over its words; a puzzle of
 // several grids' words sheet, its words card alone; or one of its grid sheets.
@@ -202,6 +204,18 @@ export function printDress(sheet, frame, character, random) {
   return {
     spot, left: 'calc(' + p.far * 100 + '% + ' + p.fromEdge + 'px)', top: p.y + 'px', height: p.height + 'px',
     transform: figureTransform(p), rise: printRise(spot, frame, outline) + 'px'
+  };
+}
+
+// A minesweeper board's printed sheet (TASK-140), a one-grid sheet of its own: the US Letter page
+// it always prints on, its grid card — the board's squares, its longer side 7.2 in, and the 5 px
+// its border adds — and that card's top: the half-inch edge, the book's puzzle number, then the
+// title on its white tag and the rule on its own, measured from the printout itself.
+export function minesPrintFrame(cols, rows, numbered) {
+  return {
+    paper: printPaper(true),
+    cardWidth: 691.2 * cols / Math.max(cols, rows) + 5,
+    cardTop: 48 + 29 * Number(numbered) + MINES_SHEET_HEAD
   };
 }
 

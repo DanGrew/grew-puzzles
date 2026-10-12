@@ -65,6 +65,15 @@
   :root[data-look="themed"] .maze .stop.collectible { inset: 2%; border-radius: 0; background: var(--figure, none) center / contain no-repeat; }
   :root[data-look="themed"] .maze .block { background: var(--surface) var(--figure, none) center / contain no-repeat; }
 
+  /* A minesweeper board: a marked mine, and each mine on the answer side, wears the puzzle's
+     character (ui/minesweeper/play-ui.js sets --figure on the page), on a pastel red ringed in red
+     so it's easy to spot, the owner's pick 2026-10-12 — Plain keeps the ringed dot
+     (styles/minesweeper.css). */
+  :root[data-look="themed"] .mines .mines-square[data-mark="mine"] { background: #fbe1df;
+    box-shadow: inset 0 0 0 max(2px, calc(var(--cell) * .07)) #c9605a; }
+  :root[data-look="themed"] .mines .mines-square[data-mark="mine"]::after { width: 92%; height: 92%; border-radius: 0; box-shadow: none;
+    background: var(--figure, none) center / contain no-repeat; }
+
   /* A text page: the words on a card at a reading width, mid-page, and the character peering from
      behind the card at the printout's spot, placed by ui/theme-ui.js. */
   :root[data-look="themed"] .page { max-width: 732px; margin-inline: auto; }
@@ -117,6 +126,8 @@
   :root:is([data-print="colour"], [data-print="mono"]) :is(.sheet-number, .page-number) { width: fit-content;
     padding: 2px 8px; background: #fff; border-radius: 6px; }
   :root:is([data-print="colour"], [data-print="mono"]) .sheet-number { margin-inline: auto; }
+  /* A minesweeper board's squares on white, so its numbers read over the background. */
+  :root:is([data-print="colour"], [data-print="mono"]) .mines-paper { background: #fff; }
   /* The difficulty's pill in its colour, as on screen — in greys, Black and white. */
   :root:is([data-print="colour"], [data-print="mono"]) .play-head .difficulty { background: var(--tone); }
   :root[data-print="mono"] .play-head .difficulty { filter: grayscale(1); }
