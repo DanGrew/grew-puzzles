@@ -20,7 +20,11 @@ const MAZE_TYPES = [
   ['keys-maze', 'Keys', 'Keys mazes', 'Some of the maze is locked! Bump into a locked zone and it\'ll show you the number of the key it needs. That key is somewhere outside the zone. Find it and the zone opens up. Pick up every key to finish!', 'A Keys maze with a trail started from the start, reaching Key 1 and opening its zone.'],
   ['keylecticodes-maze', 'Keylecticodes', 'Keylecticodes mazes', 'Everything at once! Guides, collectibles, keys and zones, A, B and C and six exits, all in one maze. Good luck!', 'A Keylecticodes maze with a trail started from the start, passing a guide and reaching Key 1.'],
 ];
-const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES];
+// Minesweeper, after the mazes: one section for the kind, its picture a board part solved.
+const MINESWEEPER_TYPES = [
+  ['minesweeper', 'Minesweeper', 'Minesweeper', 'No luck needed, just a little thinking! Some squares show a number. Each number counts the mines in the eight squares around it, and a square with a number is never a mine. Tap a square once to mark it safe with a dot, again to mark a mine, and again to clear it. When a number has all its mines marked, it fades away. In a hurry? Tap a number. If all its mines are marked, its other squares get dots. If its empty squares must all be mines, they\'re marked for you. Every board can be solved by logic alone, so you\'ll never have to guess. Mark every mine to finish!', 'A Minesweeper board, part solved: the squares around a 0 dotted, and a number\'s mines marked.'],
+];
+const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES, ...MINESWEEPER_TYPES];
 
 test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
@@ -66,11 +70,19 @@ test('the top of the page lists every type, and picking one goes to its section'
   await expect(page.locator('#saga h2')).toBeInViewport();
 });
 
-test('the list at the top has two groups, Wordsearches then Mazes, each holding its own kind\'s types', async ({ page }) => {
+test('the list at the top has three groups, Wordsearches, Mazes then Minesweeper, each holding its own kind\'s types', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
-  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes']);
+  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes', 'Minesweeper']);
   await expect(page.getByRole('list', { name: 'Wordsearches' }).locator('a')).toHaveText(WORDSEARCH_TYPES.map(([, name]) => name));
   await expect(page.getByRole('list', { name: 'Mazes' }).locator('a')).toHaveText(MAZE_TYPES.map(([, name]) => name));
+  await expect(page.getByRole('list', { name: 'Minesweeper' }).locator('a')).toHaveText(MINESWEEPER_TYPES.map(([, name]) => name));
+});
+
+test('tapping Minesweeper in the list jumps to its section, after the mazes', async ({ page, baseURL }) => {
+  await page.goto('/app/how-to-play.html');
+  await page.getByRole('list', { name: 'Minesweeper' }).getByRole('link', { name: 'Minesweeper' }).click();
+  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#minesweeper`);
+  await expect(page.locator('#minesweeper h2')).toBeInViewport();
 });
 
 test('tapping a maze type in the list jumps to its section, not the wordsearch of the same name', async ({ page, baseURL }) => {
