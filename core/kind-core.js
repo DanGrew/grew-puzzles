@@ -1,5 +1,5 @@
-// The site's kinds of puzzle — Wordsearches, Mazes and Minesweeper — and the side bar that maps the
-// site by them: which kind a puzzle is, how hard each kind's types are, and where each side bar entry goes.
+// The site's kinds of puzzle — Wordsearches, Mazes, Minesweeper and Criss-cross — and the side bar
+// that maps the site by them: which kind a puzzle is, how hard each kind's types are, and where each side bar entry goes.
 // The kind is where the player is; the type is what they filter within it. A type is always taken
 // with its kind — each kind has its own Vanilla. Collections is a place of its own, beside the
 // kinds, holding every collection whatever its puzzles' kinds. Reads only the indexes' entries —
@@ -8,13 +8,14 @@
 export const COLLECTIONS = 'collections';
 
 // Every kind, in the side bar's order: its address name, what players call it — one of it, several
-// counted ("3 Minesweepers", the owner's call, 2026-10-11), and short, on a phone's switch, where
-// three full names don't fit (TASK-135) — its hidden IDs' prefix and its play page.
+// counted ("3 Minesweepers", "2 Criss-crosses", the owner's calls, 2026-10-11), and short, on a
+// phone's switch, where the full names don't fit (TASK-135) — its hidden IDs' prefix and its play page.
 export function kinds() {
   return [
     { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', many: 'Wordsearches', short: 'Words', prefix: 'WSCH', page: 'play.html' },
     { kind: 'maze', name: 'Mazes', one: 'Maze', many: 'Mazes', short: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
     { kind: 'minesweeper', name: 'Minesweeper', one: 'Minesweeper', many: 'Minesweepers', short: 'Mines', prefix: 'MINE', page: 'minesweeper.html' },
+    { kind: 'crisscross', name: 'Criss-cross', one: 'Criss-cross', many: 'Criss-crosses', short: 'Criss-cross', prefix: 'CRSS', page: 'crisscross.html' },
   ];
 }
 
@@ -93,16 +94,14 @@ function query(params) {
   return text ? `?${text}` : '';
 }
 
-// A type's side bar dot: a wordsearch or minesweeper type's in its difficulty's tone; a maze type's
-// in its own shade, light blue to deep violet, telling the types apart without claiming a
-// difficulty — each maze's is its own. Vanilla, and any maze type not listed here, is Sky.
+// A type's side bar dot: a maze type's in its own shade, light blue to deep violet, telling the
+// types apart without claiming a difficulty — each maze's is its own, and Vanilla, and any maze type
+// not listed here, is Sky; every other kind's type in its difficulty's tone.
 export function dotTone(kind, type) {
   const shades = new Map([
     ['Collectibles', 'Azure'], ['Code Breaker', 'Periwinkle'], ['Keys', 'Lavender'], ['Keylecticodes', 'Violet'],
   ]);
-  const byDifficulty = () => difficultyOf(kind, type);
-  const tones = { wordsearch: byDifficulty, maze: () => shades.get(type) ?? 'Sky', minesweeper: byDifficulty };
-  return tones[kind]();
+  return kind === 'maze' ? shades.get(type) ?? 'Sky' : difficultyOf(kind, type);
 }
 
 // The side bar's map of the site: each kind with its puzzle count — and its short name, for a
