@@ -26,10 +26,11 @@ const BOARDS = [
   { ...puzzle('MINE', 1, 'Vanilla', 'Garden Patch'), ...saved('Easy', 10, 10) },
   { ...puzzle('MINE', 2, 'Vanilla', 'Big Field'), ...saved('Hard', 40, 40) },
 ];
-// A criss-cross's index entry carries the owner's difficulty and its size, as a board's does.
+// A criss-cross's index entry carries the owner's difficulty and its size, as a board's does, and
+// its word count.
 const CRISSES = [
-  { ...puzzle('CRSS', 1, 'Vanilla', 'Big Holiday'), ...saved('Hard', 29, 30) },
-  { ...puzzle('CRSS', 2, 'Vanilla', 'Summer Holidays'), ...saved('Easy', 17, 15) },
+  { ...puzzle('CRSS', 1, 'Vanilla', 'Big Holiday'), ...saved('Hard', 29, 30), wordCount: 60 },
+  { ...puzzle('CRSS', 2, 'Vanilla', 'Summer Holidays'), ...saved('Easy', 17, 15), wordCount: 20 },
 ];
 
 async function serve(page) {
@@ -295,7 +296,7 @@ test('Criss-cross shows only criss-crosses, easiest first, and Filters picks the
   expect(fileRequests).toEqual([]);
 });
 
-test('a criss-cross\'s tile wears the criss-cross picture, its own, and opens the criss-cross page', async ({ page }) => {
+test('a criss-cross\'s tile wears the criss-cross picture, its own, reads its word count, not its size, and opens the criss-cross page', async ({ page }) => {
   const fileRequests = await serve(page);
   const pictureOf = async address => {
     await page.goto(address);
@@ -310,6 +311,8 @@ test('a criss-cross\'s tile wears the criss-cross picture, its own, and opens th
   others.forEach(other => expect(crisses[0]).not.toBe(other));
   expect(crisses[0]).not.toContain('<text');
   const tile = page.locator('#tiles .tile', { hasText: 'Summer Holidays' });
+  await expect(tile.locator('.detail .line')).toHaveText(['Vanilla', '20 words']);
+  await expect(page.locator('#tiles .tile', { hasText: 'Big Holiday' }).locator('.detail .line')).toHaveText(['Vanilla', '60 words']);
   await expect(tile).toHaveAttribute('href', 'crisscross.html?id=CRSS-0002');
   await expect(tile).toHaveAttribute('data-tone', 'Easy');
   await expect(page.locator('#tiles .tile', { hasText: 'Big Holiday' })).toHaveAttribute('data-tone', 'Hard');

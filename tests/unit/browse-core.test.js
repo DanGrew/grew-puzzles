@@ -431,8 +431,13 @@ describe('browse-core.js', () => {
     expect(playHref('xMAZE-0001')).toBe('play.html?id=xMAZE-0001');
   });
 
-  test('a criss-cross\'s tile links to the criss-cross page', () => {
+  test('a criss-cross\'s tile links to the criss-cross page, and reads its word count under its type, never its size', () => {
+    const criss = { hiddenId: 'CRSS-0001', type: 'Vanilla', created: '2026-10-11', title: 'Summer Holidays', difficulty: 'Easy', width: 17, height: 15 };
     expect(playHref('CRSS-0001')).toBe('crisscross.html?id=CRSS-0001');
+    expect(tileDetail({ ...criss, wordCount: 20 })).toEqual(['Vanilla', '20 words']);
+    expect(tileDetail({ ...criss, wordCount: 1 })).toEqual(['Vanilla', '1 word']);
+    // An entry saved before it carried the count reads its size, as a board's does.
+    expect(tileDetail(criss)).toEqual(['Vanilla', '17×15']);
   });
 
   test('a minesweeper board\'s tile links to the minesweeper page, and reads its size under its type as a maze\'s does', () => {
