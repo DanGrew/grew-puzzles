@@ -1,29 +1,34 @@
 // The collection book's DOM: the title page, then one copy of each puzzle's own printout — a
 // wordsearch the play page's, drawn by its drawSheet; a maze the maze page's sheet, drawn by its
-// drawMazeSheet; a minesweeper board the minesweeper page's sheet, drawn by its drawMinesSheet —
-// and the print dialog once every page is drawn. Every rule lives in core/book-core.js; how a
-// puzzle's page looks is styles/play.css's, styles/maze.css's and styles/minesweeper.css's.
+// drawMazeSheet; a minesweeper board the minesweeper page's sheet, drawn by its drawMinesSheet; a
+// criss-cross the criss-cross page's sheet, drawn by its drawCrissSheet — and the print dialog once
+// every page is drawn. Every rule lives in core/book-core.js; how a puzzle's page looks is
+// styles/play.css's, styles/maze.css's, styles/minesweeper.css's and styles/crisscross.css's.
 import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers, printStyleOf, printedPages, leftOutNote } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { mazeUrl, mazeBoard } from '../core/maze/play-core.js';
 import { minesUrl, minesBoard } from '../core/minesweeper/play-core.js';
+import { crissUrl, crissBoard } from '../core/crisscross/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
 import { drawMinesSheet } from './minesweeper/sheet-ui.js';
+import { drawCrissSheet } from './crisscross/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
-// that page dressed in its character. A maze and a minesweeper board are always one sheet, and a
-// board's sheet stays plain until it wears its theme on paper (TASK-140).
+// that page dressed in its character. A maze, a minesweeper board and a criss-cross are always one
+// sheet, and a board's sheet stays plain until it wears its theme on paper (TASK-140), a
+// criss-cross's until it does (TASK-154).
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
   minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: noop },
+  crisscross: { url: crissUrl, board: crissBoard, sheets: function () { return { sheets: [] }; }, page: crissPage, dress: noop },
 };
 
 function noop() {}
@@ -50,6 +55,7 @@ export function openBook(search) {
     fetch('play.html').then(function (r) { return r.text(); }),
     fetch('maze.html').then(function (r) { return r.text(); }),
     fetch('minesweeper.html').then(function (r) { return r.text(); }),
+    fetch('crisscross.html').then(function (r) { return r.text(); }),
   ]).then(function (got) {
     var book = bookView(got[0].collections, slugOf(search), got[1].puzzles);
     showTitlePage(book);
@@ -57,6 +63,7 @@ export function openBook(search) {
       wordsearch: sheetTemplate(got[2], ['.play-head', 'main.play']),
       maze: sheetTemplate(got[3], ['.maze-sheet']),
       minesweeper: sheetTemplate(got[4], ['.mines-sheet']),
+      crisscross: sheetTemplate(got[5], ['.criss-sheet']),
     }, scene);
   });
 }
@@ -176,6 +183,17 @@ function minesPage(template, heading, board, numbers) {
   number.textContent = heading;
   page.querySelector('.mines-sheet').prepend(number);
   drawMinesSheet(page.querySelector('.mines-sheet'), board);
+  return numbered(page, numbers);
+}
+
+// One criss-cross's page, drawn exactly as the criss-cross page draws its printout, its number
+// heading the sheet, above the title.
+function crissPage(template, heading, board, numbers) {
+  var page = template.cloneNode(true);
+  var number = page.querySelector('.sheet-number');
+  number.textContent = heading;
+  page.querySelector('.criss-sheet').prepend(number);
+  drawCrissSheet(page.querySelector('.criss-sheet'), board);
   return numbered(page, numbers);
 }
 

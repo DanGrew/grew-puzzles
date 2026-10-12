@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="../styles/play.css">
 <link rel="stylesheet" href="../styles/maze.css">
 <link rel="stylesheet" href="../styles/minesweeper.css">
+<link rel="stylesheet" href="../styles/crisscross.css">
 <link rel="stylesheet" href="../styles/book.css">
 <link rel="stylesheet" href="../styles/look.css">
 </head>
@@ -37,7 +38,8 @@
     <div class="book-status" id="ready" hidden>
       <p><button type="button" id="print-again">Print book</button> <a id="back">Back to the collection</a></p>
       <p class="book-hint" id="hint">To save it as a PDF, print from Chrome, pick Save as PDF and keep the default settings.</p>
-      <!-- Each minesweeper board too big to print, named by book-core's leftOutNote; none, empty. -->
+      <!-- Each minesweeper board or criss-cross too big to print, named by book-core's leftOutNote;
+           none, empty. -->
       <p class="book-hint" id="left-out"></p>
     </div>
     <p class="book-status" id="failed" hidden>The book couldn't be put together. <a href="">Try again</a>.</p>
@@ -46,8 +48,8 @@
   <div class="sheets" id="sheets"></div>
 </div>
 <!-- A book page: its puzzle's number, then its kind's own printout — the play page's, the maze
-     page's sheet or the minesweeper page's — copied in by ui/book-ui.js, and its page number at the
-     foot. -->
+     page's sheet, the minesweeper page's or the criss-cross page's — copied in by ui/book-ui.js, and
+     its page number at the foot. -->
 <template id="sheet"><section class="sheet"><p class="sheet-number"></p><p class="page-number"></p></section></template>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>

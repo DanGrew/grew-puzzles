@@ -234,6 +234,85 @@ test('a book with boards saved Colour is still a KDP bleed interior, every page 
   expect(await sheets(page).nth(0).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toBe('none');
 });
 
+// Criss-crosses for a book (TASK-152): the 17×15 (CRSS-0001) and the tallest with the longest list
+// (CRSS-0003) print; the 29×30 (CRSS-0002) is too big. Each one's own file tells.
+const CRSS = Object.fromEntries(['CRSS-0001', 'CRSS-0002', 'CRSS-0003'].map(id => [id, require(`./fixtures/${id}.json`)]));
+const crissBook = {
+  slug: 'criss', name: 'Criss', description: 'Three criss-crosses and a wordsearch.', created: '2026-10-12',
+  puzzles: [{ id: 'CRSS-0002', number: 2 }, { id: 'WSCH-0007', number: 3 }, { id: 'CRSS-0001', number: 1 }, { id: 'CRSS-0003', number: 4 }],
+};
+
+async function openCriss(page, style = 'plain') {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [crissBook] } }));
+  await page.route(/\/content\/puzzles\/crisscross\/CRSS-\d+\.json$/, r => r.fulfill({ json: CRSS[r.request().url().match(/(CRSS-\d+)\.json$/)[1]] }));
+  await catchPrint(page);
+  await page.goto(`/app/book.html?slug=criss&print=${style}`);
+  await expect(page.locator('#ready')).toBeVisible();
+}
+
+test('a criss-cross takes its page in its collection\'s book in number order with the rest; one too big to print is left out, named on the book\'s page', async ({ page }) => {
+  await openCriss(page);
+  await expect(page.locator('#left-out')).toHaveText('Puzzle 2 is too big to print, so it plays on the site only.');
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4']);
+  await expect(sheets(page).locator('.criss-sheet h1')).toHaveText(['Summer Holidays', 'Tall Order']);
+  await expect(page.locator('.sheet .page-number')).toHaveText(['3', '4', '5']);
+  await expect(page.locator('#sheets')).not.toContainText('too big');
+});
+
+test('a criss-cross\'s book page is exactly its own printout, its number above the title, never a word placed or the answer', async ({ page, browser }) => {
+  await openCriss(page);
+  await page.emulateMedia({ media: 'print' });
+  const inBook = sheets(page).nth(0).locator('.criss-sheet');
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/crisscross/CRSS-0001.json', r => r.fulfill({ json: CRSS['CRSS-0001'] }));
+  await play.goto('/app/crisscross.html?id=CRSS-0001');
+  await expect(play.locator('#play')).toBeVisible();
+  await play.emulateMedia({ media: 'print' });
+  const own = play.locator('#criss-sheet');
+  for (const part of ['title', 'ident', 'rule', 'grid', 'words']) {
+    expect(await inBook.locator(`[data-part="${part}"]`).innerHTML()).toBe(await own.locator(`[data-part="${part}"]`).innerHTML());
+  }
+  for (const part of ['grid', 'words']) {
+    const [b, o] = [await inBook.locator(`[data-part="${part}"]`).boundingBox(), await own.locator(`[data-part="${part}"]`).boundingBox()];
+    expect([b.width, b.height]).toEqual([o.width, o.height]);
+  }
+  await expect(inBook.locator('> .sheet-number')).toHaveText('Puzzle 1');
+  const number = await inBook.locator('.sheet-number').boundingBox();
+  const title = await inBook.locator('h1').boundingBox();
+  expect(number.y + number.height).toBeLessThanOrEqual(title.y);
+  await expect(page.locator('.sheet:has(.criss-sheet) :is(.back-face, .criss-square)')).toHaveCount(0);
+  await play.close();
+});
+
+test('every criss-cross page fits its page, the tallest shape and longest list too: the list ends above its page number, which keeps clear of the foot', async ({ page }) => {
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await openCriss(page);
+  await page.emulateMedia({ media: 'print' });
+  for (const depth of await page.evaluate(pageDepths)) {
+    expect(depth.content).toBeLessThan(depth.numberTop);
+    expect(depth.numberBottom).toBeLessThanOrEqual(11 - 0.25);
+  }
+});
+
+test('saved as a PDF, a book with criss-crosses passes as a wordsearch book does: every page 8.5×11 in, every font embedded, no links, notes or bookmarks', async ({ page }) => {
+  await openCriss(page);
+  const pdf = await savePdf(page);
+  // The title and copyright pages, then Puzzles 1, 3 and 4.
+  expect(pageSizes(pdf)).toEqual(Array(5).fill(LETTER));
+  expect(unembeddedFonts(pdf)).toEqual([]);
+  for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
+});
+
+test('a book with criss-crosses saved Colour is still a KDP bleed interior, every page 8.625 × 11.25 in, its criss-crosses printed plain', async ({ page }) => {
+  await page.setViewportSize({ width: 828, height: 1080 });
+  await openCriss(page, 'colour');
+  expect(pageSizes(await savePdf(page))).toEqual(Array(5).fill([0, 0, 621.12, 810]));
+  await page.emulateMedia({ media: 'print' });
+  expect(await sheets(page).nth(0).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toBe('none');
+});
+
 test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {
   await openBook(page);
   await page.emulateMedia({ media: 'print' });

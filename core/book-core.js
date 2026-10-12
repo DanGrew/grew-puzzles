@@ -3,11 +3,13 @@
 // collection page. The pages themselves are each kind's own printout — a wordsearch's the play
 // page's (ui/wordsearch/play-ui.js drawSheet), a maze's the maze page's (ui/maze/sheet-ui.js
 // drawMazeSheet), a minesweeper board's the minesweeper page's (ui/minesweeper/sheet-ui.js
-// drawMinesSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID or
-// gives an answer: the answers stay on the site.
+// drawMinesSheet), a criss-cross's the criss-cross page's (ui/crisscross/sheet-ui.js
+// drawCrissSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID
+// or gives an answer: the answers stay on the site.
 import { kindOf } from './kind-core.js';
 import { mazePrints } from './maze/play-core.js';
 import { minesPrints } from './minesweeper/play-core.js';
+import { crissPrints } from './crisscross/play-core.js';
 // The print styles a book or a puzzle's page prints in, as the side bar lists them: Colour, Black
 // and white (mono), Plain.
 export const PRINT_STYLES = ['colour', 'mono', 'plain'];
@@ -40,14 +42,15 @@ export function pageNumbers(boards) {
 // A wordsearch always prints in the book; a maze only at 32×40 (play-core's mazePrints), told by
 // its width and height in the mazes' index (mazes, its entries). A bigger maze, or one the index
 // doesn't list, plays on the site alone and is left out, its number skipped — as is any kind with
-// no rule here, a criss-cross until it prints (TASK-152). A minesweeper board's file is opened
-// whatever its size, and printedPages decides.
+// no rule here. A minesweeper board's or a criss-cross's file is opened whatever its size, and
+// printedPages decides.
 function printsIn(mazes) {
   const sizes = new Map(mazes.map(m => [m.hiddenId, m]));
   const PRINTS = {
     wordsearch: () => true,
     maze: id => [sizes.get(id)].filter(Boolean).some(m => mazePrints(m.width, m.height)),
     minesweeper: () => true,
+    crisscross: () => true,
   };
   return id => Object.hasOwn(PRINTS, kindOf(id)) && PRINTS[kindOf(id)](id);
 }
@@ -55,10 +58,11 @@ function printsIn(mazes) {
 // Which of the book's puzzles take a page, once each one's board is in (its kind's own, as
 // pageNumbers takes): a minesweeper board only while its numbers stay readable on one sheet
 // (play-core's minesPrints) — told by its own file, as its index entry carries its size only with a
-// difficulty. A board too big is left out, its number skipped, and named in the note on the book's
-// page (leftOutNote).
+// difficulty — and a criss-cross only while its squares and its list fit one (play-core's
+// crissPrints). A puzzle too big is left out, its number skipped, and named in the note on the
+// book's page (leftOutNote).
 export function printedPages(pages, boards) {
-  const PRINTS = { minesweeper: board => minesPrints(board.cols, board.rows) };
+  const PRINTS = { minesweeper: board => minesPrints(board.cols, board.rows), crisscross: crissPrints };
   const prints = pages.map((page, i) => !Object.hasOwn(PRINTS, page.kind) || PRINTS[page.kind](boards[i]));
   return {
     pages: pages.filter((_, i) => prints[i]),

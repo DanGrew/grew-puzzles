@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   crissUrl, crissFile, wordLetters, crissBoard, newCrissPlay, crissFull, crissFinished, tapSquare, tapWord, crissSquares,
-  squareMarks, placedSquares, crissCount, wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares
+  squareMarks, placedSquares, crissCount, wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares,
+  crissPrints, CRISS_PRINTED_RULE
 } from '../../../core/crisscross/play-core.js';
 const require = createRequire(import.meta.url);
 // core/crisscross/play-core.js, against CRSS-0001 — a real 17×15 Easy shape made by tooling's
@@ -375,6 +376,36 @@ describe('the line over the words', () => {
 
   it('a note about the last tap comes first', () => {
     expect(pickingLine(tapWord(newCrissPlay(SMALL), CAT, SMALL), SMALL)).toEqual(['Pick a slot first, then the word.', '', '']);
+  });
+});
+
+describe('paper', () => {
+  // A shape of cols × rows whose list has a word of each of these lengths.
+  const sized = (cols, rows, lengths) => ({ cols, rows, words: lengths.map(n => ({ word: 'x', letters: 'X'.repeat(n) })) });
+  // count words, spread over `groups` lengths from 3.
+  const listOf = (count, groups) => Array.from({ length: count }, (_, i) => 3 + (i % groups));
+
+  it('a shape prints while its squares stay big enough to write in: at most 25 along its longer side', () => {
+    expect(crissPrints(SHAPE)).toBe(true);
+    expect(crissPrints(SMALL)).toBe(true);
+    expect(crissPrints(sized(25, 25, listOf(20, 6)))).toBe(true);
+    expect(crissPrints(sized(1, 25, listOf(20, 6)))).toBe(true);
+    expect(crissPrints(sized(26, 10, listOf(20, 6)))).toBe(false);
+    expect(crissPrints(sized(10, 26, listOf(20, 6)))).toBe(false);
+    expect(crissPrints(sized(29, 30, listOf(20, 6)))).toBe(false);
+  });
+
+  it('and while its list, a line a heading and a line a word, fits under it: 44 lines at most', () => {
+    expect(crissPrints(sized(25, 25, listOf(36, 8)))).toBe(true);
+    expect(crissPrints(sized(25, 25, listOf(37, 8)))).toBe(false);
+    // The headings count: 43 words of one length fit, of two they don't.
+    expect(crissPrints(sized(10, 10, listOf(43, 1)))).toBe(true);
+    expect(crissPrints(sized(10, 10, listOf(43, 2)))).toBe(false);
+    expect(crissPrints(sized(10, 10, listOf(44, 1)))).toBe(false);
+  });
+
+  it('the sheet\'s one-line rule', () => {
+    expect(CRISS_PRINTED_RULE).toBe('Fit every word into the shape. Words cross where they share a letter.');
   });
 });
 

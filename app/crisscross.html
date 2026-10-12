@@ -14,7 +14,14 @@
 </head>
 <body class="play-page criss-page">
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="crisscross"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="crisscross">
+    <!-- Only a shape whose squares and list fit one sheet prints: ui/crisscross/play-ui.js shows the
+         menu once it knows. Plain alone until the shape wears its theme on paper (TASK-154). -->
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
+  </header>
 
   <header class="play-head">
     <h1 id="title"></h1>
@@ -101,6 +108,18 @@
       <p class="help">Tap a square to pick its slot. Tap again where two slots cross to switch direction. Then tap a word to put it in. Tap a crossed-off word to take it back out. Every puzzle can be solved by reasoning alone: no guessing needed.</p>
     </aside>
   </main>
+
+  <!-- The printout, paper only: the title, the rule, the empty shape with its starting word, and
+       the list, drawn by ui/crisscross/sheet-ui.js. The book prints a copy of it. -->
+  <section class="criss-sheet" id="criss-sheet">
+    <header class="play-head">
+      <h1 data-part="title"></h1>
+      <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
+    </header>
+    <p class="criss-sheet-rule" data-part="rule"></p>
+    <div class="criss-paper" data-part="grid" aria-hidden="true"></div>
+    <div class="criss-paper-words" data-part="words"></div>
+  </section>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>

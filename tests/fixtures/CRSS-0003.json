@@ -1,0 +1,366 @@
+{
+  "hiddenId": "CRSS-0003",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Tall Order",
+  "difficulty": "Medium",
+  "width": 25,
+  "height": 25,
+  "wordGroups": [
+    "holidays"
+  ],
+  "squares": [
+    "###..........####........",
+    "####.........#####.......",
+    "#####........######......",
+    "######.......#######.....",
+    "#######......########....",
+    "########.....#########...",
+    "#########....##########..",
+    "##########...###.........",
+    "###..........####........",
+    "####.........#####.......",
+    "#####........######......",
+    "######...................",
+    "#######..................",
+    "########.................",
+    "#########................",
+    "##########...............",
+    "###......................",
+    "####.....................",
+    "#####....................",
+    "######...................",
+    "#######..................",
+    "########.................",
+    "#########................",
+    "##########...............",
+    "###......................"
+  ],
+  "given": "Wma",
+  "words": [
+    {
+      "word": "Wma",
+      "start": {
+        "row": 0,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Wmmb",
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wmmmc",
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Wmmmmd",
+      "start": {
+        "row": 3,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Wmmmmme",
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wmmmmmmf",
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Wmmmmmmmg",
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Wmmmmmmmmh",
+      "start": {
+        "row": 7,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wmi",
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Wmmj",
+      "start": {
+        "row": 9,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wmmmk",
+      "start": {
+        "row": 10,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Wmmmml",
+      "start": {
+        "row": 11,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Wmmmmmm",
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wmmmmmmn",
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Wmmmmmmmo",
+      "start": {
+        "row": 14,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Wmmmmmmmmp",
+      "start": {
+        "row": 15,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wmq",
+      "start": {
+        "row": 16,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Wmmr",
+      "start": {
+        "row": 17,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wmmms",
+      "start": {
+        "row": 18,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Wmmmmt",
+      "start": {
+        "row": 19,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Wmmmmmu",
+      "start": {
+        "row": 20,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wmmmmmmv",
+      "start": {
+        "row": 21,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Wmmmmmmmw",
+      "start": {
+        "row": 22,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Wmmmmmmmmx",
+      "start": {
+        "row": 23,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wmy",
+      "start": {
+        "row": 24,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Wmmz",
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wmmma",
+      "start": {
+        "row": 1,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Wmmmmb",
+      "start": {
+        "row": 2,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Wmmmmmc",
+      "start": {
+        "row": 3,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wmmmmmmd",
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Wmmmmmmme",
+      "start": {
+        "row": 5,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Wmmmmmmmmf",
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Wmg",
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Wmmh",
+      "start": {
+        "row": 8,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wmmmi",
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Wmmmmj",
+      "start": {
+        "row": 10,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 6
+    }
+  ]
+}

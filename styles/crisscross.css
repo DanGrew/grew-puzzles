@@ -114,3 +114,35 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .criss-square.clash, .criss-square .ch.drop { animation: none; }
 }
+
+/* ---- The printout ----
+   A shape whose squares and list fit one 8.5×11 page prints there (core/crisscross/play-core.js
+   crissPrints), drawn by ui/crisscross/sheet-ui.js into .criss-sheet, the criss-cross page's own or
+   the book's copy: the title, its difficulty and code, the one-line rule, the empty shape with its
+   starting word written in, then the list grouped by length in four columns under it, black and
+   white. Paper is always the empty shape: never a word the player placed, never the answer. The
+   shape is as big as fits 7.2 in across and 5.2 in down, its squares never over 0.36 in, so the
+   list keeps room under the tallest; each square's 1.5 pt outline — two whole pixels, so no
+   browser thins it — hangs half past its place, so neighbours share one line. The page keeps its own half inch inside, so no margin is set, as the
+   book's (styles/book.css), which loads this file first so its own pages stay its. */
+@page { size: 8.5in 11in; margin: 0; }
+.criss-sheet { display: none; }
+@media print {
+  .criss-page .wrap { max-width: none; padding: .5in .5in 0; }
+  .criss-page .site-main > :not(.criss-sheet) { display: none; }
+
+  .criss-sheet { --sq: min(.36in, calc(7.2in / var(--cols)), calc(5.2in / var(--rows)));
+    display: flex; flex-direction: column; align-items: center; color: #000; break-inside: avoid; }
+  .criss-sheet .play-head { margin: 0; text-align: center; }
+  .criss-sheet-rule { max-width: 34em; margin: 14pt 0 18pt; text-align: center; font: 400 11pt/1.5 var(--font-body); text-wrap: balance; }
+  .criss-paper { display: grid; grid-template-columns: repeat(var(--cols), var(--sq)); grid-template-rows: repeat(var(--rows), var(--sq)); padding: .75pt; }
+  .criss-paper > span { box-sizing: border-box; display: grid; place-items: center; width: calc(var(--sq) + 1.5pt); height: calc(var(--sq) + 1.5pt);
+    margin: -.75pt; border: 1.5pt solid #000; font: 600 calc(var(--sq) * .55)/1 var(--font-body); text-transform: uppercase; }
+  /* Four columns of twelve lines: a group's heading never ends a column, so it takes the next
+     one's top (play-core's CRISS_PRINT_LINES counts on it). */
+  .criss-paper-words { box-sizing: border-box; width: 7.2in; margin-top: 18pt; columns: 4; column-gap: 18pt; column-fill: auto;
+    height: calc(12 * 15pt); font: 400 10.5pt/15pt var(--font-body); }
+  .criss-paper-group h3 { margin: 0; font: 600 8pt/15pt var(--font-body); letter-spacing: .08em; text-transform: uppercase; break-after: avoid; }
+  .criss-paper-group p { margin: 0; break-inside: avoid; }
+  .criss-paper-group p.given { text-decoration: line-through; }
+}
