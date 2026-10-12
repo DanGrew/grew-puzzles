@@ -246,7 +246,8 @@ test.describe('a shape too big for the screen', () => {
     const frame = await page.locator('#view').boundingBox();
     while (await page.locator('#zoom-out').isEnabled()) await page.click('#zoom-out');
     const whole = await page.locator('#world').boundingBox();
-    expect(Math.round(whole.height)).toBe(Math.round(frame.height));
+    // The frame keeps a pixel round the shape for its outer squares' borders.
+    expect(Math.round(whole.height + 2)).toBe(Math.round(frame.height));
     await expect(page.locator('#minimap')).toBeHidden();
     while (await page.locator('#zoom-in').isEnabled()) await page.click('#zoom-in');
     await expect.poll(() => cellSize(page)).toBe('48px');
