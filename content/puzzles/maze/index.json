@@ -22,7 +22,7 @@
       "hiddenId": "MAZE-0003",
       "type": "Vanilla",
       "created": "2026-10-09",
-      "title": "Vanilla Blind 001",
+      "title": "Vanilla 003",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -31,7 +31,7 @@
       "hiddenId": "MAZE-0004",
       "type": "Vanilla",
       "created": "2026-10-09",
-      "title": "Vanilla Blind 002",
+      "title": "Vanilla 004",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -40,7 +40,7 @@
       "hiddenId": "MAZE-0005",
       "type": "Vanilla",
       "created": "2026-10-10",
-      "title": "Vanilla Blind 003",
+      "title": "Vanilla 005",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -49,7 +49,7 @@
       "hiddenId": "MAZE-0006",
       "type": "Vanilla",
       "created": "2026-10-10",
-      "title": "Vanilla Large 001",
+      "title": "Vanilla 006",
       "difficulty": "Easy",
       "width": 100,
       "height": 100
@@ -58,7 +58,7 @@
       "hiddenId": "MAZE-0007",
       "type": "Vanilla",
       "created": "2026-10-10",
-      "title": "Vanilla Large 002",
+      "title": "Vanilla 007",
       "difficulty": "Easy",
       "width": 100,
       "height": 100
@@ -67,7 +67,7 @@
       "hiddenId": "MAZE-0008",
       "type": "Vanilla",
       "created": "2026-10-10",
-      "title": "Vanilla Large Blind 001",
+      "title": "Vanilla 008",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -76,7 +76,7 @@
       "hiddenId": "MAZE-0009",
       "type": "Vanilla",
       "created": "2026-10-10",
-      "title": "Vanilla Large Blind 002",
+      "title": "Vanilla 009",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -121,7 +121,7 @@
       "hiddenId": "MAZE-0014",
       "type": "Collectibles",
       "created": "2026-10-10",
-      "title": "Collectibles Large 001",
+      "title": "Collectibles 003",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -157,7 +157,7 @@
       "hiddenId": "MAZE-0018",
       "type": "Keys",
       "created": "2026-10-10",
-      "title": "Keys Large 001",
+      "title": "Keys 005",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -166,7 +166,7 @@
       "hiddenId": "MAZE-0019",
       "type": "Keys",
       "created": "2026-10-10",
-      "title": "Keys Large 002",
+      "title": "Keys 006",
       "difficulty": "Extreme",
       "width": 100,
       "height": 100
@@ -175,7 +175,7 @@
       "hiddenId": "MAZE-0020",
       "type": "Collectibles",
       "created": "2026-10-10",
-      "title": "Collectibles Large 002",
+      "title": "Collectibles 004",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -184,7 +184,7 @@
       "hiddenId": "MAZE-0021",
       "type": "Collectibles",
       "created": "2026-10-10",
-      "title": "Collectibles Large 003",
+      "title": "Collectibles 005",
       "difficulty": "Medium",
       "width": 100,
       "height": 100
@@ -202,7 +202,7 @@
       "hiddenId": "MAZE-0023",
       "type": "Code Breaker",
       "created": "2026-10-10",
-      "title": "Code Breaker Large 001",
+      "title": "Code Breaker 003",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -220,7 +220,7 @@
       "hiddenId": "MAZE-0026",
       "type": "Keylecticodes",
       "created": "2026-10-11",
-      "title": "Keylecticodes Large 001",
+      "title": "Keylecticodes 002",
       "difficulty": "Extreme",
       "width": 100,
       "height": 100
@@ -229,7 +229,7 @@
       "hiddenId": "MAZE-0027",
       "type": "Vanilla",
       "created": "2026-10-11",
-      "title": "Vanilla 003",
+      "title": "Vanilla 010",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -238,7 +238,7 @@
       "hiddenId": "MAZE-0028",
       "type": "Vanilla",
       "created": "2026-10-11",
-      "title": "Vanilla 004",
+      "title": "Vanilla 011",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -247,7 +247,7 @@
       "hiddenId": "MAZE-0029",
       "type": "Vanilla",
       "created": "2026-10-11",
-      "title": "Vanilla 005",
+      "title": "Vanilla 012",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -256,7 +256,7 @@
       "hiddenId": "MAZE-0030",
       "type": "Vanilla",
       "created": "2026-10-11",
-      "title": "Vanilla Blind 004",
+      "title": "Vanilla 013",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -265,7 +265,7 @@
       "hiddenId": "MAZE-0031",
       "type": "Vanilla",
       "created": "2026-10-11",
-      "title": "Vanilla Blind 005",
+      "title": "Vanilla 014",
       "difficulty": "Easy",
       "width": 32,
       "height": 40
@@ -274,7 +274,7 @@
       "hiddenId": "MAZE-0032",
       "type": "Code Breaker",
       "created": "2026-10-11",
-      "title": "Code Breaker 003",
+      "title": "Code Breaker 004",
       "difficulty": "Medium",
       "width": 32,
       "height": 40
@@ -283,7 +283,7 @@
       "hiddenId": "MAZE-0033",
       "type": "Code Breaker",
       "created": "2026-10-11",
-      "title": "Code Breaker 004",
+      "title": "Code Breaker 005",
       "difficulty": "Medium",
       "width": 32,
       "height": 40
@@ -292,7 +292,7 @@
       "hiddenId": "MAZE-0034",
       "type": "Code Breaker",
       "created": "2026-10-11",
-      "title": "Code Breaker 005",
+      "title": "Code Breaker 006",
       "difficulty": "Medium",
       "width": 32,
       "height": 40
@@ -301,7 +301,7 @@
       "hiddenId": "MAZE-0035",
       "type": "Code Breaker",
       "created": "2026-10-11",
-      "title": "Code Breaker Large 002",
+      "title": "Code Breaker 007",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -310,7 +310,7 @@
       "hiddenId": "MAZE-0036",
       "type": "Code Breaker",
       "created": "2026-10-11",
-      "title": "Code Breaker Large 003",
+      "title": "Code Breaker 008",
       "difficulty": "Hard",
       "width": 100,
       "height": 100
@@ -319,7 +319,7 @@
       "hiddenId": "MAZE-0037",
       "type": "Keylecticodes",
       "created": "2026-10-11",
-      "title": "Keylecticodes Large 003",
+      "title": "Keylecticodes 003",
       "difficulty": "Extreme",
       "width": 100,
       "height": 100
@@ -328,7 +328,7 @@
       "hiddenId": "MAZE-0038",
       "type": "Collectibles",
       "created": "2026-10-11",
-      "title": "Collectibles XL 001",
+      "title": "Collectibles 006",
       "difficulty": "Hard",
       "width": 200,
       "height": 200
@@ -337,7 +337,7 @@
       "hiddenId": "MAZE-0039",
       "type": "Keylecticodes",
       "created": "2026-10-11",
-      "title": "Keylecticodes XL 001",
+      "title": "Keylecticodes 004",
       "difficulty": "Extreme",
       "width": 200,
       "height": 200
