@@ -395,13 +395,13 @@ describe('paper', () => {
     expect(crissPrints(sized(29, 30, listOf(20, 6)))).toBe(false);
   });
 
-  it('and while its list, a line a heading and a line a word, fits under it: 44 lines at most', () => {
-    expect(crissPrints(sized(25, 25, listOf(36, 8)))).toBe(true);
-    expect(crissPrints(sized(25, 25, listOf(37, 8)))).toBe(false);
-    // The headings count: 43 words of one length fit, of two they don't.
-    expect(crissPrints(sized(10, 10, listOf(43, 1)))).toBe(true);
-    expect(crissPrints(sized(10, 10, listOf(43, 2)))).toBe(false);
-    expect(crissPrints(sized(10, 10, listOf(44, 1)))).toBe(false);
+  it('and while its list, a line a heading and a line a word, fits under it: 36 lines at most', () => {
+    expect(crissPrints(sized(25, 25, listOf(28, 8)))).toBe(true);
+    expect(crissPrints(sized(25, 25, listOf(29, 8)))).toBe(false);
+    // The headings count: 35 words of one length fit, of two they don't.
+    expect(crissPrints(sized(10, 10, listOf(35, 1)))).toBe(true);
+    expect(crissPrints(sized(10, 10, listOf(35, 2)))).toBe(false);
+    expect(crissPrints(sized(10, 10, listOf(36, 1)))).toBe(false);
   });
 
   it('the sheet\'s one-line rule', () => {

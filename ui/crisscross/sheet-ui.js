@@ -1,6 +1,7 @@
 // A criss-cross's printout: one 8.5×11 sheet, its title, difficulty and code, the one-line rule, the
-// empty shape with its starting word written in, and the list grouped by length under it, black and
-// white (styles/crisscross.css). Drawn from the shape alone into a .criss-sheet — the criss-cross
+// empty shape with its starting word written in, in a grid card under its type's band, and the list
+// grouped by length in a Words card under it, black and white, as the wordsearch's printout has its
+// cards (styles/crisscross.css). Drawn from the shape alone into a .criss-sheet — the criss-cross
 // page's own, or the book's copy of it — so the printout and the book's page are one layout, and
 // nothing the player placed can reach the paper. Every rule is core/crisscross/play-core.js's: the
 // shape as a fresh play shows it (squareMarks), the list as the Words card groups it (wordGroups).
@@ -16,6 +17,7 @@ export function drawCrissSheet(sheet, board) {
   part('title').textContent = board.title;
   drawIdent(part, board);
   part('rule').textContent = CRISS_PRINTED_RULE;
+  part('label').textContent = board.label;
   sheet.style.setProperty('--cols', board.cols);
   sheet.style.setProperty('--rows', board.rows);
   part('grid').replaceChildren.apply(part('grid'), crissSquares(board).map(function (s, i) { return paperSquare(s, marks[i].letter); }));

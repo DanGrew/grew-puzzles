@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // under it, black and white, never a word placed or the answer. Only a shape at most 25 squares a
 // side whose list fits under it prints. The fixtures: CRSS-0001, a real 17×15 Easy of 20 words;
 // CRSS-0002, a real 29×30 Hard of 60; CRSS-0003, the tallest shape that prints with the longest
-// list that does, 25×25 and 44 lines, in wide letters. LONG is it with one word more, its list too
+// list that does, 25×25 and 36 lines, in wide letters. LONG is it with one word more, its list too
 // long to share the page — paper never checks a shape solves.
 const SHAPE = require('./fixtures/CRSS-0001.json');
 const BIG = require('./fixtures/CRSS-0002.json');
@@ -81,6 +81,32 @@ test('on paper: the title, Easy · CRSS-0001, the rule, the shape, then the list
   boxes.slice(1).forEach((box, i) => expect(box.y).toBeGreaterThanOrEqual(boxes[i].y + boxes[i].height));
 });
 
+test('as on a wordsearch\'s printout, the shape sits in a card under its type\'s black band, and the list in a Words card', async ({ page }) => {
+  await open(page);
+  await printIn(page);
+  const card = sheet(page).locator('.criss-paper-card');
+  const words = sheet(page).locator('.criss-paper-list');
+  await expect(card.locator('.band')).toHaveText('Vanilla');
+  await expect(words.locator('.list-head')).toHaveText('Words');
+  for (const box of [card, words]) {
+    await expect(box).toHaveCSS('border-top-color', 'rgb(0, 0, 0)');
+    await expect(box).toHaveCSS('box-shadow', 'rgb(0, 0, 0) 4px 4px 0px 0px');
+  }
+  for (const band of [card.locator('.band'), words.locator('.list-head')]) {
+    await expect(band).toHaveCSS('background-color', 'rgb(0, 0, 0)');
+  }
+  // The same cards as the wordsearch's: its band and its words card's head, drawn alike.
+  const own = await page.context().newPage();
+  await own.goto('/app/play.html?id=WSCH-0007');
+  await expect(own.locator('#play')).toBeVisible();
+  await own.emulateMedia({ media: 'print' });
+  const look = el => el.evaluate(e => ['borderTopWidth', 'borderRadius', 'boxShadow', 'fontSize', 'fontWeight'].map(k => getComputedStyle(e)[k]));
+  expect(await look(card)).toEqual(await look(own.locator('.front-face')));
+  expect(await look(card.locator('.band'))).toEqual(await look(own.locator('#label')));
+  expect(await look(words.locator('.list-head h2'))).toEqual(await look(own.locator('.list-head h2')));
+  await own.close();
+});
+
 test('the shape is its squares in use, where the shape has them, the starting word written in and every other square blank', async ({ page }) => {
   await open(page);
   await printIn(page);
@@ -111,7 +137,8 @@ test('the shape and the list stay inside the page\'s edges, the shape centred, i
     const words = await list(page).boundingBox();
     // The last column's words, past the list's own right edge, would be a list too long for its room.
     const right = await list(page).locator('p').evaluateAll(ps => Math.max(...ps.map(p => p.getBoundingClientRect().right)));
-    expect(square.width).toBeGreaterThanOrEqual(0.2 * IN);
+    // The tallest shape's 25 rows share 4.4 in: each square still a pencil's room, over 4 mm.
+    expect(square.width).toBeGreaterThanOrEqual(0.17 * IN);
     expect(square.width).toBeLessThanOrEqual(0.36 * IN + 1.5 * PT);
     expect(grid.x).toBeGreaterThanOrEqual(0.5 * IN);
     expect(grid.x + grid.width).toBeLessThanOrEqual(8 * IN);

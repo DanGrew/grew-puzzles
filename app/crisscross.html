@@ -109,16 +109,23 @@
     </aside>
   </main>
 
-  <!-- The printout, paper only: the title, the rule, the empty shape with its starting word, and
-       the list, drawn by ui/crisscross/sheet-ui.js. The book prints a copy of it. -->
+  <!-- The printout, paper only: the title, the rule, the empty shape with its starting word in a
+       grid card under its type's band, and the list in a Words card, as the wordsearch's printout
+       has them, drawn by ui/crisscross/sheet-ui.js. The book prints a copy of it. -->
   <section class="criss-sheet" id="criss-sheet">
     <header class="play-head">
       <h1 data-part="title"></h1>
       <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
     </header>
     <p class="criss-sheet-rule" data-part="rule"></p>
-    <div class="criss-paper" data-part="grid" aria-hidden="true"></div>
-    <div class="criss-paper-words" data-part="words"></div>
+    <div class="face criss-paper-card">
+      <div class="band" data-part="label"></div>
+      <div class="criss-paper" data-part="grid" aria-hidden="true"></div>
+    </div>
+    <div class="words-box criss-paper-list">
+      <div class="list-head"><h2>Words</h2></div>
+      <div class="criss-paper-words" data-part="words"></div>
+    </div>
   </section>
 </div>
 <script src="../components/site-bar.js"></script>

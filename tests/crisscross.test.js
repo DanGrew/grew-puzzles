@@ -258,7 +258,7 @@ test.describe('a shape too big for the screen', () => {
     await open(page, 'CRSS-0002');
     const card = await page.locator('#stage').boundingBox();
     const map = await page.locator('#map-box').boundingBox();
-    const words = await page.locator('.words-box').boundingBox();
+    const words = await page.locator('#words-card .words-box').boundingBox();
     expect(Math.round(words.y + words.height)).toBeLessThanOrEqual(Math.round(card.y + card.height));
     expect(map.y).toBeGreaterThanOrEqual(card.y - 1);
     const groups = page.locator('#groups');
@@ -277,7 +277,7 @@ test.describe('a shape too big for the screen', () => {
   test('the little map sits over the Words card, and dragging its box looks round the shape', async ({ page }) => {
     await open(page, 'CRSS-0002');
     const map = await page.locator('#minimap').boundingBox();
-    const words = await page.locator('.words-box').boundingBox();
+    const words = await page.locator('#words-card .words-box').boundingBox();
     expect(map.y + map.height).toBeLessThanOrEqual(words.y);
     const world = page.locator('#world');
     const before = await world.evaluate(el => el.style.transform);

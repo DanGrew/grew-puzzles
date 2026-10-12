@@ -81,7 +81,7 @@ describe('book-core.js', () => {
     const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
     const shape = (cols, rows, words) => ({ cols, rows, words: Array.from({ length: words }, () => ({ letters: 'CAT' })) });
     const pages = [page(1, 'crisscross'), page(2, 'wordsearch'), page(3, 'crisscross'), page(4, 'crisscross'), page(5, 'minesweeper')];
-    const boards = [shape(17, 15, 20), { sheets: [] }, shape(29, 30, 20), shape(10, 10, 44), { cols: 10, rows: 10 }];
+    const boards = [shape(17, 15, 20), { sheets: [] }, shape(29, 30, 20), shape(10, 10, 36), { cols: 10, rows: 10 }];
     expect(printedPages(pages, boards)).toEqual({
       pages: [page(1, 'crisscross'), page(2, 'wordsearch'), page(5, 'minesweeper')],
       boards: [shape(17, 15, 20), { sheets: [] }, { cols: 10, rows: 10 }],

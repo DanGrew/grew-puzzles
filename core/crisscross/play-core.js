@@ -244,9 +244,9 @@ export function answerSquares(board) {
 // The sheet's one-line rule, under the title.
 export var CRISS_PRINTED_RULE = 'Fit every word into the shape. Words cross where they share a letter.';
 
-// The most lines the sheet's list has room for under the tallest shape that prints: its four
-// columns of twelve lines, less a line each for a group's heading pushed to the next column's top.
-var CRISS_PRINT_LINES = 44;
+// The most lines the sheet's Words card has room for under the tallest shape that prints: its four
+// columns of ten lines, less a line each for a group's heading pushed to the next column's top.
+var CRISS_PRINT_LINES = 36;
 
 // The lines the sheet's list takes: a heading a length, then a word a line.
 function printedLines(board) {
