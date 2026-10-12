@@ -84,7 +84,7 @@ async function standInForGoogle(context, { agree = true, user = PLAYER, reachabl
     }
     // A signed-in page reads the player's saved lines, maze finds and maze places for its ticks and
     // rail — none here; done.test.js's and maze-saving.test.js's.
-    if (['/rest/v1/progress', '/rest/v1/maze_found', '/rest/v1/maze_position'].includes(url.pathname)) return route.fulfill({ headers: CORS, json: [] });
+    if (['/rest/v1/progress', '/rest/v1/maze_found', '/rest/v1/maze_position', '/rest/v1/mines_marks'].includes(url.pathname)) return route.fulfill({ headers: CORS, json: [] });
     asked.other.push(url.href);
     return route.abort();
   });

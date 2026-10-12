@@ -55,7 +55,7 @@ const sameKey = (a, b, keys) => keys.every(k => a[k] === b[k]);
 
 // The player is whoever the request's token names; a request with no player's token — signed out —
 // or to any other table is a stray. The wordsearch's progress table answers every read with the
-// player's lines.
+// player's lines, and the minesweeper table with none.
 async function standInForSupabase(context, db) {
   await context.route(`${SUPABASE}/**`, async route => {
     const request = route.request();
@@ -65,6 +65,7 @@ async function standInForSupabase(context, db) {
     if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
     if (url.pathname === '/rest/v1/progress' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: db.lines });
+    if (url.pathname === '/rest/v1/mines_marks' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
     const table = TABLES[url.pathname];
     if (!table || !token.includes('.')) {
       db.strays.push(`${request.method()} ${url.pathname}`);
