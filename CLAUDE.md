@@ -33,6 +33,7 @@ Root holds only this file and `README.md`; everything else is `docs/`, flat, are
 |---|---|---|
 | `README.md` | what the site is, for a human arriving cold | you're new here, or explaining it to someone |
 | `docs/GATES.md` | every local gate, including the puzzle check, the pre-push hook and the on-demand mutation sweep | before pushing, or a gate went red |
+| `docs/PRINT-LIMITS.md` | the paper sizes, and how big each kind can be and still print | you're asking whether a puzzle will print, or changing a print limit |
 
 ## The shape of the site
 
