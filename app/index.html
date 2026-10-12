@@ -63,6 +63,7 @@ import {
 } from '../core/browse-core.js';
 import { placeName } from '../core/kind-core.js';
 import { markPlace } from '../ui/side-bar-ui.js';
+import { readPuzzles } from '../ui/indexes-ui.js';
 import { kindPicture } from '../ui/kind-picture-ui.js';
 import { wireDone, withDone, paintDone } from '../ui/wordsearch/done-ui.js';
 import { tileCharacter, randomCharacter, charactersFile, charactersOf } from '../core/theme-core.js';
@@ -351,8 +352,7 @@ function follow(press) {
   [press.target.closest('a[href]')].filter(Boolean).forEach(a => FOLLOWS[inPlace(a.href, location.href, press)](press, a));
 }
 
-function load([index, mazes, published, owned]) {
-  const puzzles = index.puzzles.concat(mazes.puzzles);
+function load([puzzles, published, owned]) {
   options = filterOptions(puzzles);
   characters = owned;
   dressScene(randomCharacter(characters, Math.random));
@@ -364,11 +364,10 @@ function load([index, mazes, published, owned]) {
   document.addEventListener('click', follow, true);
 }
 
-// A site with no collections has no collections file, and one with no mazes no maze index: each
+// A site with no collections has no collections file, and a kind not yet published no index: each
 // reads as none. Characters that can't be read dress nothing — the tiles still draw.
 Promise.all([
-  fetch('../content/puzzles/wordsearch/index.json').then(r => r.json()),
-  fetch('../content/puzzles/maze/index.json').then(r => r.json()).catch(() => ({ puzzles: [] })),
+  readPuzzles(),
   fetch('../content/collections/index.json').then(r => r.json()).catch(() => ({ collections: [] })),
   fetch(charactersFile()).then(r => r.json()).then(charactersOf).catch(() => []),
 ]).then(load);

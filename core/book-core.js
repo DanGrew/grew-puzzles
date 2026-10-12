@@ -37,12 +37,14 @@ export function pageNumbers(boards) {
 
 // A wordsearch always prints in the book; a maze only at 32×40 (play-core's mazePrints), told by
 // its width and height in the mazes' index (mazes, its entries). A bigger maze, or one the index
-// doesn't list, plays on the site alone and is left out, its number skipped.
+// doesn't list, plays on the site alone and is left out, its number skipped — as is every
+// minesweeper board, until boards print (TASK-138).
 function printsIn(mazes) {
   const sizes = new Map(mazes.map(m => [m.hiddenId, m]));
   const PRINTS = {
     wordsearch: () => true,
     maze: id => [sizes.get(id)].filter(Boolean).some(m => mazePrints(m.width, m.height)),
+    minesweeper: () => false,
   };
   return id => PRINTS[kindOf(id)](id);
 }
