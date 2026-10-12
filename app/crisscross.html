@@ -11,14 +11,17 @@
 <link rel="stylesheet" href="../styles/site-bar.css">
 <link rel="stylesheet" href="../styles/play.css">
 <link rel="stylesheet" href="../styles/crisscross.css">
+<link rel="stylesheet" href="../styles/look.css">
 </head>
 <body class="play-page criss-page">
 <div class="wrap">
   <header class="site" data-site-bar data-home="index.html" data-current="crisscross">
     <!-- Only a shape whose squares and list fit one sheet prints: ui/crisscross/play-ui.js shows the
-         menu once it knows. Plain alone until the shape wears its theme on paper (TASK-154). -->
+         menu once it knows. -->
     <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
       <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="colour">Colour</button>
+      <button type="button" data-print="mono">Black and white</button>
       <button type="button" data-print="plain">Plain</button>
     </div>
   </header>
@@ -31,6 +34,9 @@
   <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
 
   <main class="play criss" id="play" hidden>
+    <!-- Themed, the shape's character and its name, placed from the grid card (styles/look.css). -->
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
     <div class="criss-col">
       <div class="stage" id="stage">
         <div class="card" id="card">
@@ -111,16 +117,20 @@
 
   <!-- The printout, paper only: the title, the rule, the empty shape with its starting word in a
        grid card under its type's band, and the list in a Words card, as the wordsearch's printout
-       has them, drawn by ui/crisscross/sheet-ui.js. The book prints a copy of it. -->
+       has them, drawn by ui/crisscross/sheet-ui.js — printed Colour or Black and white, the character
+       peering from behind the shape's card. The book prints a copy of it. -->
   <section class="criss-sheet" id="criss-sheet">
     <header class="play-head">
       <h1 data-part="title"></h1>
       <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
     </header>
     <p class="criss-sheet-rule" data-part="rule"></p>
-    <div class="face criss-paper-card">
-      <div class="band" data-part="label"></div>
-      <div class="criss-paper" data-part="grid" aria-hidden="true"></div>
+    <div class="print-card criss-print-card">
+      <span class="print-figure" aria-hidden="true"></span>
+      <div class="face criss-paper-card">
+        <div class="band" data-part="label"></div>
+        <div class="criss-paper" data-part="grid" aria-hidden="true"></div>
+      </div>
     </div>
     <div class="words-box criss-paper-list">
       <div class="list-head"><h2>Words</h2></div>

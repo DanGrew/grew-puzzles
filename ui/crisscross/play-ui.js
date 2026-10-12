@@ -1,8 +1,9 @@
 // The criss-cross play page's DOM: loads the shape a play URL names, draws it and its answer from
 // play-core's board, and wires the taps on squares and words, the zoom, moving round a big shape and
-// its little map, the flip and the completion pop, and the print menu. Every rule lives in
-// core/crisscross/play-core.js; nothing here decides anything. Saving the player's words is
-// ui/crisscross/progress-ui.js; the printed sheet is ui/crisscross/sheet-ui.js.
+// its little map, the flip and the completion pop, and the print menu, and dresses it Themed in its
+// character. Every rule lives in core/crisscross/play-core.js and core/theme-core.js; nothing here
+// decides anything. Saving the player's words is ui/crisscross/progress-ui.js; the printed sheet is
+// ui/crisscross/sheet-ui.js.
 import {
   crissUrl, crissBoard, tapSquare, tapWord, crissSquares, squareMarks, placedSquares, crissCount,
   wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares, crissPrints
@@ -10,12 +11,12 @@ import {
 import { minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform, minimapFit, minimapPens, minimapBox, dragView } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
-import { isPhone } from '../../core/theme-core.js';
+import { characterFor, idNumber, isPhone, boxFrom, siteDress, crissPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedCriss } from '../../core/crisscross/progress-core.js';
 import { withSavedCriss, wireCrissProgress, saveTap } from './progress-ui.js';
-import { drawCrissSheet } from './sheet-ui.js';
-import { printIn } from '../theme-ui.js';
+import { drawCrissSheet, dressCrissSheet } from './sheet-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
 
 // Beside the grid card, the Words card and the gap before it; on a phone it sits underneath.
 var CRISS_SIDE_ROOM = { true: 0, false: 330 };
@@ -36,6 +37,12 @@ var CRISS_CLASH_MS = 700;
 // Only a shape whose squares and list fit one sheet prints: its sheet is drawn and Print page
 // shows; any other has neither.
 var CRISS_SHEETS = { true: showSheet, false: noop };
+// What the character on screen stands by: the shape, its number and its character once known
+// (dressCriss).
+var crissFigure = { board: undefined, number: 1, character: undefined };
+// What printing the sheet in a style needs loaded first: nothing, until its character is known
+// (dressCriss).
+var crissPrintLoad = function () { return Promise.resolve(); };
 
 function crissEl(id) {
   return document.getElementById(id);
@@ -47,7 +54,7 @@ function noop() {}
 export function openCrissPage(search) {
   var id = new URLSearchParams(search).get('id');
   crissEl('print').querySelectorAll('button').forEach(function (b) {
-    b.addEventListener('click', function () { printIn(b.dataset.print, noPrintLoad); });
+    b.addEventListener('click', function () { printIn(b.dataset.print, crissPrintLoad); });
   });
   Promise.resolve(search)
     .then(crissUrl)
@@ -55,13 +62,52 @@ export function openCrissPage(search) {
     .then(playJson)
     .then(function (puzzle) {
       var board = crissBoard(puzzle);
+      dressCriss(id, board);
       withSavedCriss(id, board, function (play) { showShape(id, board, play); });
     }, showMissing);
 }
 
-// Plain paper needs nothing loaded before the dialog opens.
-function noPrintLoad() {
-  return Promise.resolve();
+// Themed, the shape is dressed as a wordsearch is: its own character, its background behind the
+// page, peering from behind the grid card at the printout's spot its number picks — the same every
+// visit (placeCrissFigure). Its letters stay plain, since a character won't read inside a square (a
+// call made for the owner, 2026-10-11). Plain shows none of it. Printed Colour or Black and white,
+// the sheet wears it too, its spot picked again each time it prints, and its images in before the
+// dialog opens.
+function dressCriss(hiddenId, board) {
+  crissFigure.board = board;
+  crissFigure.number = idNumber(hiddenId);
+  withCharacters(function (characters) {
+    var character = characterFor(characters, hiddenId);
+    var printout = function () { dressCrissSheet(crissEl('criss-sheet'), document.documentElement, board, character, false, Math.random); };
+    crissFigure.character = character;
+    dressScene(character);
+    dressFigure(crissEl('theme-figure'), character);
+    dressName(crissEl('name-tag'), character);
+    printout();
+    window.addEventListener('beforeprint', printout);
+    crissPrintLoad = function () { return printImages(character); };
+    placeCrissFigure();
+    onLook(placeCrissFigure);
+  });
+}
+
+// The character at the printout's spot the shape's number picks among those that show, measured
+// from the grid card as it now stands on the page, the printout's picture at the card's size against
+// the shape's printed card (core/theme-core.js crissPrintFrame, siteDress) — a spot the Words card or
+// the little map over it would cover, or the window's edge cut, skipped. Placed again whenever the
+// card is sized, and when the look changes.
+function placeCrissFigure() {
+  var page = crissEl('play').getBoundingClientRect(), card = crissEl('stage').getBoundingClientRect();
+  var title = document.querySelector('.play-head').getBoundingClientRect();
+  var board = crissFigure.board, phone = isPhone(document.documentElement.clientWidth);
+  placeFigure(crissEl('theme-figure'), crissEl('name-tag'), siteDress({
+    card: boxFrom(card, page),
+    scale: card.width / crissPrintFrame(board.cols, board.rows, false).cardWidth,
+    screen: screenEdges(page.left),
+    covers: ['words-card', 'map-box'].map(function (id) { return boxFrom(crissEl(id).getBoundingClientRect(), page); }), never: [],
+    title: boxFrom(title, page),
+    label: labelSize(phone), saga: false, phone: phone
+  }, crissFigure.character, crissFigure.number));
 }
 
 // The printout: always the empty shape and its starting word, whatever the player has placed.
@@ -369,6 +415,7 @@ function showShape(id, board, play) {
     // Beside the card, the map and the Words card take no more than its height.
     playEl.style.setProperty('--card-h', crissEl('stage').offsetHeight + 'px');
     playEl.style.setProperty('--map-h', crissEl('map-box').offsetHeight + 'px');
+    placeCrissFigure();
   }
 }
 
