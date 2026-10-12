@@ -1,7 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
-// Stand-in indexes: the collection page reads only the indexes — both kinds' and the collections'
-// — so each is served in place of the real one; no puzzle file is ever needed.
+// Stand-in indexes: the collection page reads only the indexes — every kind's, minesweeper and
+// criss-cross with none, and the collections' — so each is served in place of the real one; no
+// puzzle file is ever needed.
 const puzzles = [
   { hiddenId: 'WSCH-0001', type: 'Vanilla', created: '2026-01-01', title: 'Farm Animals' },
   { hiddenId: 'WSCH-0002', type: 'Missing', created: '2026-01-02', title: 'Flowers' },
@@ -21,6 +22,7 @@ async function serve(page) {
   const fileRequests = [];
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles } }));
   await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: mazes } }));
+  await page.route(/\/content\/puzzles\/(minesweeper|crisscross)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, mixed] } }));
   await page.route(/\/puzzles\/.*(WSCH|MAZE)-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.fulfill({ json: {} }); });
   return fileRequests;

@@ -3,7 +3,8 @@ const { test, expect } = require('@playwright/test');
 // The site bar and the side bar every page shares (components/site-bar.js, ui/side-bar-ui.js): the
 // name and sign-in across the top; down the left, Wordsearches, Mazes, Minesweeper and Criss-cross, each with its count and
 // its types, then Collections, the text pages and the look. On a phone the side bar is a drawer
-// behind a burger at the top left. The indexes are stand-ins, so the counts are known.
+// behind a burger at the top left. The indexes are stand-ins, so the counts are known — no
+// minesweeper board or criss-cross among them.
 
 function puzzle(kind, n, type) {
   return { hiddenId: `${kind}-${String(n).padStart(4, '0')}`, type, created: '2026-10-08', title: `${kind} ${n}` };
@@ -16,6 +17,7 @@ const ISSUE = { slug: 'issue-1', name: 'Issue #1', description: 'Both kinds.', c
 async function serve(page, { collections = [ISSUE], mazes = MAZES } = {}) {
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles: WORDSEARCHES } }));
   await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: mazes } }));
+  await page.route(/\/content\/puzzles\/(minesweeper|crisscross)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
   await page.route('**/content/collections/index.json', r => r.fulfill(
     collections.length ? { json: { collections } } : { status: 404, body: 'Not found' },
   ));
