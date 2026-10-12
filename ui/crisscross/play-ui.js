@@ -329,6 +329,9 @@ function showShape(board) {
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted);
+    // Beside the card, the map and the Words card take no more than its height.
+    playEl.style.setProperty('--card-h', crissEl('stage').offsetHeight + 'px');
+    playEl.style.setProperty('--map-h', crissEl('map-box').offsetHeight + 'px');
   }
 }
 

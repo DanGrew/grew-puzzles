@@ -254,6 +254,26 @@ test.describe('a shape too big for the screen', () => {
     await expect(page.locator('#minimap')).toBeVisible();
   });
 
+  test('the map and the Words card are no taller than the grid card, the words scrolling inside it', async ({ page }) => {
+    await open(page, 'CRSS-0002');
+    const card = await page.locator('#stage').boundingBox();
+    const map = await page.locator('#map-box').boundingBox();
+    const words = await page.locator('.words-box').boundingBox();
+    expect(Math.round(words.y + words.height)).toBeLessThanOrEqual(Math.round(card.y + card.height));
+    expect(map.y).toBeGreaterThanOrEqual(card.y - 1);
+    const groups = page.locator('#groups');
+    expect(await groups.evaluate(el => el.scrollHeight > el.clientHeight)).toBe(true);
+    await expect(page.locator('#picking')).toBeVisible();
+    // Scrolled to its end, the last word shows inside the card, the line over the words still there.
+    const top = await page.locator('#picking').boundingBox();
+    await groups.evaluate(el => { el.scrollTop = el.scrollHeight; });
+    const last = await chip(page, 'Sightseeing').boundingBox();
+    const box = await groups.boundingBox();
+    expect(last.y + last.height).toBeLessThanOrEqual(box.y + box.height);
+    expect(last.y).toBeGreaterThanOrEqual(box.y);
+    expect(await page.locator('#picking').boundingBox()).toEqual(top);
+  });
+
   test('the little map sits over the Words card, and dragging its box looks round the shape', async ({ page }) => {
     await open(page, 'CRSS-0002');
     const map = await page.locator('#minimap').boundingBox();

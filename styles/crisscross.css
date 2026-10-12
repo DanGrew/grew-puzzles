@@ -13,6 +13,13 @@
 .play.criss .map-box { grid-area: map; }
 .play.criss > aside { grid-area: words; max-width: none; }
 .play.criss .pick-strip { display: none; }
+/* Beside the card, the little map and the Words card together are no taller than the grid card
+   (--card-h, --map-h, measured by ui/crisscross/play-ui.js), the words scrolling inside the card
+   under its band and the line over them — never under 320px, for a small shape's short card. */
+@media (min-width: 761px) {
+  .play.criss .words-box { display: flex; flex-direction: column; max-height: max(320px, calc(var(--card-h, 100vh) - var(--map-h, 0px) - 18px)); box-sizing: border-box; }
+  .play.criss .groups { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+}
 @media (max-width: 760px) {
   .play.criss { grid-template-columns: 100%; grid-template-rows: none; grid-template-areas: "card" "dock" "words"; justify-items: center; gap: 20px; }
   .play.criss > .criss-dock { grid-area: dock; display: flex; align-items: flex-start; gap: 12px; width: 100%; }
