@@ -53,15 +53,17 @@ describe('browse-core.js', () => {
       { hiddenId: id(1), type: 'Vanilla' }, { hiddenId: id(2), type: 'Mirra?e' }, { hiddenId: id(3), type: 'Missing' },
       { hiddenId: 'MAZE-0001', type: 'Keys' }, { hiddenId: 'MAZE-0002', type: 'Vanilla', difficulty: 'Extreme' },
       { hiddenId: 'MINE-0001', type: 'Vanilla', difficulty: 'Hard' }, { hiddenId: 'MINE-0002', type: 'Vanilla', difficulty: 'Easy' },
+      { hiddenId: 'CRSS-0001', type: 'Vanilla', difficulty: 'Medium' },
     ];
     expect(filterOptions(index)).toEqual({
       wordsearch: { levels: ['Easy', 'Hard', 'Extreme'], types: ['Vanilla', 'Missing', 'Mirra?e'] },
       maze: { levels: ['Hard', 'Extreme'], types: ['Vanilla', 'Keys'] },
       minesweeper: { levels: ['Easy', 'Hard'], types: ['Vanilla'] },
+      crisscross: { levels: ['Medium'], types: ['Vanilla'] },
       collections: { levels: [], types: [] },
     });
     const none = { levels: [], types: [] };
-    expect(filterOptions([])).toEqual({ wordsearch: none, maze: none, minesweeper: none, collections: none });
+    expect(filterOptions([])).toEqual({ wordsearch: none, maze: none, minesweeper: none, crisscross: none, collections: none });
   });
 
   test('a place has nothing to filter only with no types and nobody signed in', () => {
@@ -429,6 +431,15 @@ describe('browse-core.js', () => {
     expect(playHref('xMAZE-0001')).toBe('play.html?id=xMAZE-0001');
   });
 
+  test('a criss-cross\'s tile links to the criss-cross page, and reads its word count under its type, never its size', () => {
+    const criss = { hiddenId: 'CRSS-0001', type: 'Vanilla', created: '2026-10-11', title: 'Summer Holidays', difficulty: 'Easy', width: 17, height: 15 };
+    expect(playHref('CRSS-0001')).toBe('crisscross.html?id=CRSS-0001');
+    expect(tileDetail({ ...criss, wordCount: 20 })).toEqual(['Vanilla', '20 words']);
+    expect(tileDetail({ ...criss, wordCount: 1 })).toEqual(['Vanilla', '1 word']);
+    // An entry saved before it carried the count reads its size, as a board's does.
+    expect(tileDetail(criss)).toEqual(['Vanilla', '17×15']);
+  });
+
   test('a minesweeper board\'s tile links to the minesweeper page, and reads its size under its type as a maze\'s does', () => {
     const board = { hiddenId: 'MINE-0001', type: 'Vanilla', created: '2026-10-11', title: 'Garden Patch', difficulty: 'Easy', width: 10, height: 10 };
     expect(playHref('MINE-0001')).toBe('minesweeper.html?id=MINE-0001');
@@ -496,6 +507,14 @@ describe('browse-core.js', () => {
     expect(kindBreakdown(collection('A', '', [board(1), id(1), board(2), maze(1), board(3)])))
       .toEqual(['1 Wordsearch', '1 Maze', '3 Minesweepers']);
     expect(kindBreakdown(collection('A', '', [board(1)]))).toEqual(['1 Minesweeper']);
+  });
+
+  test('a collection holding criss-crosses counts them on a line of their own, last: "2 Criss-crosses", "1 Criss-cross"', () => {
+    const board = n => `MINE-${String(n).padStart(4, '0')}`;
+    const criss = n => `CRSS-${String(n).padStart(4, '0')}`;
+    expect(kindBreakdown(collection('A', '', [criss(1), id(1), board(1), criss(2)])))
+      .toEqual(['1 Wordsearch', '1 Minesweeper', '2 Criss-crosses']);
+    expect(kindBreakdown(collection('A', '', [criss(1)]))).toEqual(['1 Criss-cross']);
   });
 
   test('an empty collection has no breakdown line', () => {

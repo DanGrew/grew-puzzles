@@ -4,12 +4,13 @@
   box-shadow: var(--shadow); padding: 10px 20px; }
 .browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
 .browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
-/* On a phone, with no side bar beside the grid, a Words | Mazes | Mines switch above it, the current kind filled. */
+/* On a phone, with no side bar beside the grid, a Words | Mazes | Mines | Criss-cross switch above it, the
+   current kind filled. Where the four don't fit, the switch scrolls sideways inside itself, never the page (TASK-149). */
 .kind-switch { display: none; }
 @media (max-width: 759px) {
   .kind-switch { display: flex; margin: 0 0 20px; background: var(--surface); border: var(--ow) solid var(--line);
-    border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
-  .kind-switch a { flex: 1; display: flex; justify-content: center; align-items: baseline; gap: 6px; padding: 11px 12px;
+    border-radius: var(--r); box-shadow: var(--shadow); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .kind-switch a { flex: 1 0 auto; display: flex; justify-content: center; align-items: baseline; gap: 6px; padding: 11px 12px;
     font: 700 15px var(--font-display); color: var(--fg); text-decoration: none; white-space: nowrap; }
   .kind-switch a + a { border-left: var(--ow) solid var(--line); }
   .kind-switch a[aria-current="page"] { background: var(--band); color: var(--band-fg); }
