@@ -187,6 +187,8 @@ test('the Filters button counts the types picked', async ({ page }) => {
 test('the popup opens over the page without moving the tiles, and closes back to its button', async ({ page }) => {
   await serve(page, mixed(9));
   await page.goto('/app/');
+  // Measured once the tiles are drawn, so the grid's height is theirs, not an empty grid's.
+  await expect(page.locator('.tiles .tile').first()).toBeVisible();
   const before = await page.locator('#tiles').boundingBox();
   await openFilters(page);
   await expect(filterButton(page)).toHaveAttribute('aria-expanded', 'true');
