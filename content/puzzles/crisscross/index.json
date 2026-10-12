@@ -1,3 +1,54 @@
 {
-  "puzzles": []
+  "puzzles": [
+    {
+      "hiddenId": "CRSS-0001",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Anniversaries",
+      "difficulty": "Easy",
+      "width": 20,
+      "height": 20,
+      "wordCount": 41
+    },
+    {
+      "hiddenId": "CRSS-0002",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Birthdays",
+      "difficulty": "Easy",
+      "width": 20,
+      "height": 20,
+      "wordCount": 35
+    },
+    {
+      "hiddenId": "CRSS-0003",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Christmas",
+      "difficulty": "Hard",
+      "width": 50,
+      "height": 42,
+      "wordCount": 91
+    },
+    {
+      "hiddenId": "CRSS-0004",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Fruit And Veg",
+      "difficulty": "Medium",
+      "width": 49,
+      "height": 50,
+      "wordCount": 94
+    },
+    {
+      "hiddenId": "CRSS-0005",
+      "type": "Vanilla",
+      "created": "2026-10-12",
+      "title": "Trees",
+      "difficulty": "Easy",
+      "width": 20,
+      "height": 20,
+      "wordCount": 39
+    }
+  ]
 }

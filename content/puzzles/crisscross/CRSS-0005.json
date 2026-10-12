@@ -1,0 +1,388 @@
+{
+  "hiddenId": "CRSS-0005",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Trees",
+  "difficulty": "Easy",
+  "width": 20,
+  "height": 20,
+  "wordGroups": [
+    "trees"
+  ],
+  "squares": [
+    "....#...#..#.###.#..",
+    "..########.#..#..#..",
+    "....#...#..#..####..",
+    "..#.#..######.#..#..",
+    "..#.#...#..#.#####.#",
+    "#######....#.#.....#",
+    "..#.....#..#.####..#",
+    "..#..#####...#.....#",
+    "####....#.#..#.#####",
+    "..#....########....#",
+    "..#...#.#.#...#..#.#",
+    ".########.#...#..#.#",
+    ".#....#...###.#..#.#",
+    "#####.#..#...#######",
+    ".#....#..#.#.#..#.#.",
+    ".#.#####.#.#.#..#.#.",
+    "....#.#..#.#.#..#.#.",
+    "....#....#.#.#..#.#.",
+    "....#.########...###",
+    "..###....#.#......#."
+  ],
+  "given": "Eucalyptus",
+  "words": [
+    {
+      "word": "Elm",
+      "start": {
+        "row": 12,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Fig",
+      "start": {
+        "row": 18,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Fir",
+      "start": {
+        "row": 19,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Oak",
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Lime",
+      "start": {
+        "row": 10,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Palm",
+      "start": {
+        "row": 6,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Pear",
+      "start": {
+        "row": 2,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Teak",
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Apple",
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Birch",
+      "start": {
+        "row": 0,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Cedar",
+      "start": {
+        "row": 7,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Ebony",
+      "start": {
+        "row": 9,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Elder",
+      "start": {
+        "row": 15,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Hazel",
+      "start": {
+        "row": 8,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Holly",
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Larch",
+      "start": {
+        "row": 0,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Lemon",
+      "start": {
+        "row": 15,
+        "col": 3
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Maple",
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Olive",
+      "start": {
+        "row": 13,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Peach",
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Rowan",
+      "start": {
+        "row": 13,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Acacia",
+      "start": {
+        "row": 3,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Banyan",
+      "start": {
+        "row": 6,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Baobab",
+      "start": {
+        "row": 14,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Cherry",
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Orange",
+      "start": {
+        "row": 0,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Poplar",
+      "start": {
+        "row": 4,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Apricot",
+      "start": {
+        "row": 13,
+        "col": 9
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Buckeye",
+      "start": {
+        "row": 5,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cypress",
+      "start": {
+        "row": 13,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Dogwood",
+      "start": {
+        "row": 10,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Juniper",
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Sequoia",
+      "start": {
+        "row": 13,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Hawthorn",
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Hornbeam",
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Mahogany",
+      "start": {
+        "row": 18,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Sycamore",
+      "start": {
+        "row": 9,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Jacaranda",
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Eucalyptus",
+      "start": {
+        "row": 4,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 10
+    }
+  ]
+}

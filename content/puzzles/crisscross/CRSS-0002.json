@@ -1,0 +1,352 @@
+{
+  "hiddenId": "CRSS-0002",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Birthdays",
+  "difficulty": "Easy",
+  "width": 20,
+  "height": 20,
+  "wordGroups": [
+    "birthdays"
+  ],
+  "squares": [
+    "............#####...",
+    "..#............#....",
+    "#.#.....#......#####",
+    "#.#.#####......#...#",
+    "#.#.....#......#.#.#",
+    "#.########....####.#",
+    "###..#....#....#.#.#",
+    "#..#.#..#.######.#.#",
+    "..####..###..#...#.#",
+    "...#.#..#.#..#...#.#",
+    ".#.#.#######.#.#....",
+    ".#.#....#.#.######..",
+    ".###......#..#.#....",
+    ".#.#.######..#.#..#.",
+    "..#..#........######",
+    ".########.#.#..#..#.",
+    "..#..#....#.#.....#.",
+    "..#.#######.#.....#.",
+    "..#.......#######.#.",
+    "..........#.#.....#."
+  ],
+  "given": "Balloons",
+  "words": [
+    {
+      "word": "Age",
+      "start": {
+        "row": 8,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Fun",
+      "start": {
+        "row": 12,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Toy",
+      "start": {
+        "row": 6,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Cake",
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Gift",
+      "start": {
+        "row": 10,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Hats",
+      "start": {
+        "row": 8,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wish",
+      "start": {
+        "row": 5,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Cards",
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Clown",
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Dance",
+      "start": {
+        "row": 7,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Disco",
+      "start": {
+        "row": 15,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Games",
+      "start": {
+        "row": 2,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Icing",
+      "start": {
+        "row": 15,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Pizza",
+      "start": {
+        "row": 3,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Theme",
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Banner",
+      "start": {
+        "row": 10,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Cheers",
+      "start": {
+        "row": 13,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Family",
+      "start": {
+        "row": 1,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Guests",
+      "start": {
+        "row": 5,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Helium",
+      "start": {
+        "row": 14,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Photos",
+      "start": {
+        "row": 4,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Piñata",
+      "start": {
+        "row": 11,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Ribbon",
+      "start": {
+        "row": 7,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Treats",
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Bunting",
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Candles",
+      "start": {
+        "row": 18,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Cupcake",
+      "start": {
+        "row": 13,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Invites",
+      "start": {
+        "row": 17,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Napkins",
+      "start": {
+        "row": 7,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Sticker",
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Balloons",
+      "start": {
+        "row": 15,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Laughter",
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Magician",
+      "start": {
+        "row": 0,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Presents",
+      "start": {
+        "row": 6,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Surprise",
+      "start": {
+        "row": 2,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 8
+    }
+  ]
+}

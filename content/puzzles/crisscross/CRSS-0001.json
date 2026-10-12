@@ -1,0 +1,406 @@
+{
+  "hiddenId": "CRSS-0001",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Anniversaries",
+  "difficulty": "Easy",
+  "width": 20,
+  "height": 20,
+  "wordGroups": [
+    "anniversaries"
+  ],
+  "squares": [
+    "..#####......####...",
+    "..#..........#......",
+    "####...####.###.#...",
+    "..#...#...#..#.#####",
+    ".####.###.#..#..#..#",
+    ".#..#.#..#########.#",
+    ".#..#.#...#..#..#..#",
+    ".#..######.#.#####.#",
+    "....#.#...####.#...#",
+    "...#..####.#.#.#....",
+    "..###.#.#..#..#####.",
+    ".#.#..#.#.#....#..#.",
+    "######.#########..#.",
+    ".#.....#..#....#..#.",
+    ".#..#####.#..####.#.",
+    ".#.....#..#....#..#.",
+    ".#.#.#.#..#..#######",
+    "########..#....#..#.",
+    ".#.#.#............#.",
+    "....######..#######."
+  ],
+  "given": "Candle",
+  "words": [
+    {
+      "word": "Hug",
+      "start": {
+        "row": 4,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Spa",
+      "start": {
+        "row": 16,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Tin",
+      "start": {
+        "row": 10,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Vow",
+      "start": {
+        "row": 2,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 3
+    },
+    {
+      "word": "Cake",
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Date",
+      "start": {
+        "row": 16,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Gift",
+      "start": {
+        "row": 9,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Gold",
+      "start": {
+        "row": 9,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Kiss",
+      "start": {
+        "row": 14,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lace",
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Poem",
+      "start": {
+        "row": 7,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Rose",
+      "start": {
+        "row": 8,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Trip",
+      "start": {
+        "row": 2,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wine",
+      "start": {
+        "row": 4,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Wood",
+      "start": {
+        "row": 4,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Wool",
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "China",
+      "start": {
+        "row": 14,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Dance",
+      "start": {
+        "row": 4,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Paper",
+      "start": {
+        "row": 2,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Pearl",
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Photo",
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Rings",
+      "start": {
+        "row": 10,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Toast",
+      "start": {
+        "row": 7,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Years",
+      "start": {
+        "row": 3,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Candle",
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Copper",
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Cotton",
+      "start": {
+        "row": 12,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Hearts",
+      "start": {
+        "row": 2,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Memory",
+      "start": {
+        "row": 19,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Silver",
+      "start": {
+        "row": 3,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Bouquet",
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Partner",
+      "start": {
+        "row": 16,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Wedding",
+      "start": {
+        "row": 11,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Keepsake",
+      "start": {
+        "row": 17,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Together",
+      "start": {
+        "row": 11,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Celebrate",
+      "start": {
+        "row": 12,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Champagne",
+      "start": {
+        "row": 3,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Jewellery",
+      "start": {
+        "row": 5,
+        "col": 9
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Chocolates",
+      "start": {
+        "row": 0,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Sweetheart",
+      "start": {
+        "row": 10,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Anniversary",
+      "start": {
+        "row": 7,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 11
+    }
+  ]
+}
