@@ -87,7 +87,7 @@ export function withSignIn(state, signedIn) {
 }
 
 // A collection tile's breakdown: how many of each kind it holds, a line each in the side bar's
-// order — "10 Wordsearches", "2 Mazes", "3 Minesweepers" — a kind it doesn't hold left out. Never its types: two
+// order — "10 Wordsearches", "2 Mazes", "3 Minesweepers", "2 Criss-crosses" — a kind it doesn't hold left out. Never its types: two
 // kinds' Vanillas would add together, and a tile has no room for both kinds' (the owner's call,
 // 2026-10-10, for every collection alike).
 export function kindBreakdown(collection) {

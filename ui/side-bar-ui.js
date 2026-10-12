@@ -1,7 +1,7 @@
-// The side bar's kinds (components/site-bar.js): Wordsearches, Mazes and Minesweeper, each with its
-// puzzle count and its types beneath, a dot by each type (core/kind-core.js dotTone), then
-// Collections' count — read from the indexes, never a puzzle file (ui/indexes-ui.js). The landing
-// page's Words | Mazes | Mines switch, shown on a phone, is filled from the same map. An
+// The side bar's kinds (components/site-bar.js): Wordsearches, Mazes, Minesweeper and Criss-cross,
+// each with its puzzle count and its types beneath, a dot by each type (core/kind-core.js dotTone),
+// then Collections' count — read from the indexes, never a puzzle file (ui/indexes-ui.js). The landing
+// page's Words | Mazes | Mines | Criss-cross switch, shown on a phone, is filled from the same map. An
 // entry is marked current for the page's place: the page's own data-current, or — on the landing
 // page, whose place is its address — what markPlace is told. A kind with no index yet, or a site
 // with no collections file, reads as none.
@@ -43,15 +43,26 @@ function kindEntry(kind) {
   return [a, types];
 }
 
-// The phone's switch names each kind short — Words | Mazes | Mines — as three full names don't fit.
+// The phone's switch names each kind short — Words | Mazes | Mines | Criss-cross — as the full names
+// don't fit.
 function switchEntry(kind) {
   var a = link('', { name: kind.short, query: kind.query, mark: kind.mark });
   a.appendChild(part('small', 'count', kind.count));
   return a;
 }
 
+// Where the switch scrolls sideways, it scrolls just enough to show the current kind whole; the
+// page itself never moves.
+function showCurrent(a) {
+  var nav = a.parentElement;
+  var room = nav.getBoundingClientRect();
+  var box = a.getBoundingClientRect();
+  nav.scrollLeft += Math.max(0, box.right - room.right) + Math.min(0, box.left - room.left);
+}
+
 function paint() {
   document.querySelectorAll('[data-mark]').forEach(function (a) { a.setAttribute('aria-current', markOf(marks, a.dataset.mark)); });
+  document.querySelectorAll('.kind-switch [aria-current="page"]').forEach(showCurrent);
 }
 
 function fill([puzzles, published]) {
@@ -76,3 +87,5 @@ export var ready = Promise.all([
   readPuzzles(),
   fetch('../content/collections/index.json').then(function (r) { return r.json(); }).catch(function () { return { collections: [] }; }),
 ]).then(fill);
+// The switch's names widen once the site's fonts are in, so the current kind is shown again then.
+ready.then(function () { return document.fonts.ready; }).then(paint);
