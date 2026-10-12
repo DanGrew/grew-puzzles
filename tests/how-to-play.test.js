@@ -24,7 +24,12 @@ const MAZE_TYPES = [
 const MINESWEEPER_TYPES = [
   ['minesweeper', 'Minesweeper', 'Minesweeper', 'No luck needed, just a little thinking! Some squares show a number. Each number counts the mines in the eight squares around it, and a square with a number is never a mine. Tap a square once to mark it safe with a dot, again to mark a mine, and again to clear it. When a number has all its mines marked, it fades away. In a hurry? Tap a number. If all its mines are marked, its other squares get dots. If its empty squares must all be mines, they\'re marked for you. Every board can be solved by logic alone, so you\'ll never have to guess. Mark every mine to finish!', 'A Minesweeper board, part solved: the squares around a 0 dotted, and a number\'s mines marked.'],
 ];
-const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES, ...MINESWEEPER_TYPES];
+// Criss-cross, after Minesweeper: one section for the kind, its picture a shape with its starting
+// word in place and the only word of its length placed next.
+const CRISS_TYPES = [
+  ['criss-cross', 'Criss-cross', 'Criss-cross', 'A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn\'t fit the letters already there, it won\'t go in. Changed your mind? Tap a word you\'ve placed to take it back out. Every puzzle can be solved by logic alone, so you\'ll never have to guess. Fill every slot to finish!', 'A Criss-cross puzzle with its starting word in place, and ANNIVERSARY placed beside it.'],
+];
+const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES, ...MINESWEEPER_TYPES, ...CRISS_TYPES];
 
 test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
@@ -70,12 +75,13 @@ test('the top of the page lists every type, and picking one goes to its section'
   await expect(page.locator('#saga h2')).toBeInViewport();
 });
 
-test('the list at the top has three groups, Wordsearches, Mazes then Minesweeper, each holding its own kind\'s types', async ({ page }) => {
+test('the list at the top has four groups, Wordsearches, Mazes, Minesweeper then Criss-cross, each holding its own kind\'s types', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
-  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes', 'Minesweeper']);
+  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes', 'Minesweeper', 'Criss-cross']);
   await expect(page.getByRole('list', { name: 'Wordsearches' }).locator('a')).toHaveText(WORDSEARCH_TYPES.map(([, name]) => name));
   await expect(page.getByRole('list', { name: 'Mazes' }).locator('a')).toHaveText(MAZE_TYPES.map(([, name]) => name));
   await expect(page.getByRole('list', { name: 'Minesweeper' }).locator('a')).toHaveText(MINESWEEPER_TYPES.map(([, name]) => name));
+  await expect(page.getByRole('list', { name: 'Criss-cross' }).locator('a')).toHaveText(CRISS_TYPES.map(([, name]) => name));
 });
 
 test('tapping Minesweeper in the list jumps to its section, after the mazes', async ({ page, baseURL }) => {
@@ -83,6 +89,13 @@ test('tapping Minesweeper in the list jumps to its section, after the mazes', as
   await page.getByRole('list', { name: 'Minesweeper' }).getByRole('link', { name: 'Minesweeper' }).click();
   await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#minesweeper`);
   await expect(page.locator('#minesweeper h2')).toBeInViewport();
+});
+
+test('tapping Criss-cross in the list jumps to its section, after Minesweeper', async ({ page, baseURL }) => {
+  await page.goto('/app/how-to-play.html');
+  await page.getByRole('list', { name: 'Criss-cross' }).getByRole('link', { name: 'Criss-cross' }).click();
+  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#criss-cross`);
+  await expect(page.locator('#criss-cross h2')).toBeInViewport();
 });
 
 test('tapping a maze type in the list jumps to its section, not the wordsearch of the same name', async ({ page, baseURL }) => {
