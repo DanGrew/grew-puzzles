@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import {
   charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, idNumber,
   isPhone, figureTransform, siteChoices, siteScale, mazeScale, boxFrom, sitePlacement, siteDress,
-  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress, minesPrintFrame
+  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress, minesPrintFrame, crissPrintFrame
 } from '../../core/theme-core.js';
 
 // Three characters stand in for the owner's list, in order.
@@ -155,6 +155,31 @@ describe('printed Colour or Black and white: a minesweeper board\'s sheet', () =
     const outline = name => characters.find(c => c.name === name).outline;
     expect(printChoices('one', minesPrintFrame(10, 10, false), outline('Bunnosaur'))).toEqual(['topRight', 'topLeft']);
     expect(printChoices('one', minesPrintFrame(10, 10, false), outline('Catosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+  });
+});
+
+// TASK-154: a criss-cross prints on Letter, its shape as big as fits 6.9 in across and 4.4 in down,
+// its squares never over 0.36 in.
+describe('printed Colour or Black and white: a criss-cross\'s sheet', () => {
+  test('it is always US Letter, its card the shape\'s squares and the 34 px its padding and outline add', () => {
+    expect(crissPrintFrame(17, 15, false).paper).toEqual({ width: 816, height: 1056 });
+    // 15 rows share 4.4 in; 25 columns share 6.9 in; 5 squares a side stop at 0.36 in.
+    expect(crissPrintFrame(17, 15, false).cardWidth).toBeCloseTo(17 * 422.4 / 15 + 34, 5);
+    expect(crissPrintFrame(25, 8, false).cardWidth).toBeCloseTo(662.4 + 34, 5);
+    expect(crissPrintFrame(5, 5, false).cardWidth).toBeCloseTo(5 * 34.56 + 34, 5);
+  });
+
+  test('its card\'s top sits under the half inch, the title on its tag and the rule — in the book under the puzzle\'s number too', () => {
+    expect(crissPrintFrame(17, 15, false).cardTop).toBeCloseTo(48 + 129.98, 5);
+    expect(crissPrintFrame(17, 15, true).cardTop).toBeCloseTo(48 + 29 + 129.98, 5);
+  });
+
+  test('a wide shape leaves Bunnosaur only a top corner, where a 17×15 lets it peek past a side; slim Catosaur may on either', () => {
+    const { characters } = JSON.parse(readFileSync(new URL('../../content/characters/index.json', import.meta.url), 'utf8'));
+    const outline = name => characters.find(c => c.name === name).outline;
+    expect(printChoices('one', crissPrintFrame(17, 15, false), outline('Bunnosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+    expect(printChoices('one', crissPrintFrame(25, 8, false), outline('Bunnosaur'))).toEqual(['topRight', 'topLeft']);
+    expect(printChoices('one', crissPrintFrame(25, 8, false), outline('Catosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
   });
 });
 

@@ -42,11 +42,11 @@ function pageSizes(pdf) {
   return [...pdf.matchAll(/\/Type\s*\/Page[^s][\s\S]*?\/MediaBox\s*\[([^\]]*)\]/g)].map(m => m[1].trim().split(/\s+/).map(Number));
 }
 
-test('a shape that prints has Print page in its side bar: Plain', async ({ page }) => {
+test('a shape that prints has Print page in its side bar: Colour, Black and white, Plain', async ({ page }) => {
   await open(page);
   await expect(page.locator('#site-side #print')).toBeVisible();
   await expect(page.locator('#site-side #print .print-name')).toHaveText('Print page');
-  await expect(page.locator('#site-side #print button')).toHaveText(['Plain']);
+  await expect(page.locator('#site-side #print button')).toHaveText(['Colour', 'Black and white', 'Plain']);
 });
 
 for (const [name, id] of [['over 25 squares a side', 'CRSS-0002'], ['whose list is too long to share its page', 'CRSS-0004']]) {
@@ -178,7 +178,7 @@ test('nothing I placed prints, and there\'s no answer: the sheet is the empty sh
   await expect(paper(page).locator('span', { hasText: /./ })).toHaveCount(8);
 });
 
-test('a shape the side bar\'s look dresses Themed still prints plain: no background behind the paper', async ({ page }) => {
+test('a shape the side bar\'s look dresses Themed prints plain on Print page\'s Plain: no background behind the paper', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('grew-puzzles.look', 'themed'));
   await open(page);
   await printIn(page);
