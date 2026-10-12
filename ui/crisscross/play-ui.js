@@ -1,9 +1,9 @@
 // The criss-cross play page's DOM: loads the shape a play URL names, draws it and its answer from
 // play-core's board, and wires the taps on squares and words, the zoom, moving round a big shape and
 // its little map, the flip and the completion pop. Every rule lives in core/crisscross/play-core.js;
-// nothing here decides anything.
+// nothing here decides anything. Saving the player's words is ui/crisscross/progress-ui.js.
 import {
-  crissUrl, crissBoard, newCrissPlay, tapSquare, tapWord, crissSquares, squareMarks, placedSquares, crissCount,
+  crissUrl, crissBoard, tapSquare, tapWord, crissSquares, squareMarks, placedSquares, crissCount,
   wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares
 } from '../../core/crisscross/play-core.js';
 import { minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind } from '../../core/minesweeper/play-core.js';
@@ -11,6 +11,8 @@ import { zoomFactor, pinchFactor, wheelFactor, worldTransform, minimapFit, minim
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { isPhone } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
+import { joinedCriss } from '../../core/crisscross/progress-core.js';
+import { withSavedCriss, wireCrissProgress, saveTap } from './progress-ui.js';
 
 // Beside the grid card, the Words card and the gap before it; on a phone it sits underneath.
 var CRISS_SIDE_ROOM = { true: 0, false: 330 };
@@ -35,12 +37,17 @@ function crissEl(id) {
 
 function noop() {}
 
+// A signed-in player's shape waits for what they saved, so it first draws as they left it.
 export function openCrissPage(search) {
+  var id = new URLSearchParams(search).get('id');
   Promise.resolve(search)
     .then(crissUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(function (puzzle) { showShape(crissBoard(puzzle)); }, showMissing);
+    .then(function (puzzle) {
+      var board = crissBoard(puzzle);
+      withSavedCriss(id, board, function (play) { showShape(id, board, play); });
+    }, showMissing);
 }
 
 function showMissing() {
@@ -52,9 +59,9 @@ function showMissing() {
 
 // The shape on its own play page: the shape in the grid card, its answer on the card's back, the
 // Words card beside it — under it on a phone, where the words of the slot picked sit just under the
-// shape too.
-function showShape(board) {
-  var play = newCrissPlay(board);
+// shape too — play, as the player left it, already in place, so nothing pops in and a shape finished
+// before doesn't celebrate again. It is saved under its hidden ID.
+function showShape(id, board, play) {
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The first frame opens the shape; every one after refits it.
@@ -110,6 +117,7 @@ function showShape(board) {
   wireZoom();
   wireMinimap();
   wireSize();
+  wireCrissProgress(id, board, function () { return play; }, joinSaved);
   render();
 
   function wordChip(w, home) {
@@ -122,11 +130,19 @@ function showShape(board) {
     return chip;
   }
 
+  // Every tap that puts a word in, takes one out or moves one is saved, signed in.
   function onTap(next) {
+    saveTap(id, board, play, next);
     before = play;
     play = next;
     render();
     play.events.forEach(function (e) { CRISS_EVENTS[e](); });
+  }
+
+  // Signed in mid-shape: the shape saved elsewhere joins the one on screen.
+  function joinSaved(saved) {
+    play = joinedCriss(play, saved, board);
+    render();
   }
 
   // Each square as the play has it, the words crossed off and the groups dimmed, the line over the
