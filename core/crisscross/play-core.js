@@ -39,10 +39,6 @@ function placeCells(w) {
   return Array.from({ length: w.length }, function (_, k) { return [w.start.row + step[0] * k, w.start.col + step[1] * k]; });
 }
 
-function readingOrder(a, b) {
-  return a[0] - b[0] || a[1] - b[1];
-}
-
 // What the page needs of a shape file: its title, difficulty and code, its type's band, its size,
 // its squares in use, its words as listed, and a slot for each word's place — slot i is word i's,
 // numbered as a crossword's starts are, row by row. The list's order is the file's: shortest first,
@@ -51,12 +47,12 @@ export function crissBoard(puzzle) {
   var slots = puzzle.words.map(function (w) {
     return { cells: placeCells(w), length: w.length, across: w.direction === 'E', answer: wordLetters(w.word) };
   });
-  var starts = Array.from(new Set(slots.map(function (s) { return keyOf(s.cells[0]); })))
-    .map(function (k) { return k.split(',').map(Number); }).sort(readingOrder).map(keyOf);
   var squares = [];
   puzzle.squares.forEach(function (row, r) {
     row.split('').forEach(function (mark, c) { if (mark === '#') squares.push([r, c]); });
   });
+  var firsts = slots.map(function (s) { return keyOf(s.cells[0]); });
+  var starts = squares.map(keyOf).filter(function (k) { return firsts.includes(k); });
   return {
     title: puzzle.title,
     difficulty: puzzleDifficulty(puzzle),
@@ -95,12 +91,12 @@ function after(play, changes) {
   return Object.assign({ placed: play.placed, picked: play.picked, events: [], clashes: [], note: '' }, changes);
 }
 
+// The slot a word is in, or undefined.
 function slotHolding(play, word) {
-  var held = Object.keys(play.placed).find(function (s) { return play.placed[s] === word; });
-  return held === undefined ? -1 : Number(held);
+  return Object.keys(play.placed).map(Number).find(function (s) { return play.placed[s] === word; });
 }
 
-// The letter a square shows: the one any filled slot through it gives it, but the slot left out.
+// The letter a square shows: the one any filled slot through it gives it, but the slot left out, if any.
 function letterAt(play, board, cell, leaveOut) {
   var filled = slotsAt(board, cell).filter(function (s) { return s !== leaveOut && s in play.placed; });
   return filled.map(function (s) {
@@ -137,7 +133,7 @@ export function tapSquare(play, cell, board) {
 export function tapWord(play, word, board) {
   if (crissFinished(play, board) || word === board.given) return after(play, {});
   var held = slotHolding(play, word);
-  if (held >= 0 && [-1, held].includes(play.picked)) return after(play, { placed: without(play.placed, held) });
+  if (held !== undefined && [-1, held].includes(play.picked)) return after(play, { placed: without(play.placed, held) });
   if (play.picked < 0) return after(play, { note: 'Pick a slot first, then the word.' });
   return placeIn(play, word, held, board);
 }
@@ -178,12 +174,10 @@ export function crissSquares(board) {
 // What each square shows: its letter, whether it's in the slot picked, whether the starting word
 // gave it, and what a screen reader hears of it.
 export function squareMarks(play, board) {
-  var picked = (board.slots[play.picked] || { cells: [] }).cells.map(keyOf);
-  var given = board.slots[board.given].cells.map(keyOf);
   return board.squares.map(function (cell) {
-    var letter = letterAt(play, board, cell, -1);
+    var letter = letterAt(play, board, cell), through = slotsAt(board, cell);
     return {
-      key: keyOf(cell), letter: letter, picked: picked.includes(keyOf(cell)), given: given.includes(keyOf(cell)),
+      key: keyOf(cell), letter: letter, picked: through.includes(play.picked), given: through.includes(board.given),
       label: 'Row ' + (cell[0] + 1) + ', column ' + (cell[1] + 1) + ', ' + (letter || 'empty')
     };
   });
@@ -204,16 +198,16 @@ export function crissCount(play, board) {
 // of another length is picked; a word in the shape is crossed off, the starting word for good. A
 // word shows under the shape too, on a phone, while a slot its length is picked.
 export function wordGroups(play, board) {
-  var length = (board.slots[play.picked] || { length: 0 }).length;
+  var slot = board.slots[play.picked];
   var lengths = Array.from(new Set(board.words.map(function (w) { return w.letters.length; }))).sort(function (a, b) { return a - b; });
   var used = Object.keys(play.placed).map(function (s) { return play.placed[s]; });
   return lengths.map(function (n) {
     return {
-      length: n, heading: n + ' letters', dim: length > 0 && n !== length,
+      length: n, heading: n + ' letters', dim: slot !== undefined && n !== slot.length,
       words: board.words.map(function (w, i) { return i; }).filter(function (i) { return board.words[i].letters.length === n; }).map(function (i) {
         var given = i === board.given, inShape = used.includes(i);
         return {
-          index: i, word: board.words[i].word, used: inShape, given: given, picked: n === length,
+          index: i, word: board.words[i].word, used: inShape, given: given, picked: n === slot?.length,
           title: given ? 'Given to start you off' : inShape ? 'Tap to take it out' : ''
         };
       })

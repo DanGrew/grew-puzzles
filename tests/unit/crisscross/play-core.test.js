@@ -332,6 +332,11 @@ describe('the Words card', () => {
     expect(wordGroups(newCrissPlay(SHAPE), SHAPE).map(g => g.length)).toEqual([3, 4, 5, 6, 7, 8]);
   });
 
+  it('shortest first whatever order the list is in', () => {
+    const longFirst = crissBoard({ ...SHAPE_FILE, words: [...SHAPE_FILE.words].reverse() });
+    expect(wordGroups(newCrissPlay(longFirst), longFirst).map(g => g.length)).toEqual([3, 4, 5, 6, 7, 8]);
+  });
+
   it('the starting word is crossed off for good, the others as they go in', () => {
     const play = put(newCrissPlay(SMALL), CAT, CAT, SMALL);
     const words = wordGroups(play, SMALL).flatMap(g => g.words);
