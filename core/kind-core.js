@@ -1,5 +1,5 @@
-// The site's kinds of puzzle — Wordsearches and Mazes — and the side bar that maps the site by
-// them: which kind a puzzle is, how hard each kind's types are, and where each side bar entry goes.
+// The site's kinds of puzzle — Wordsearches, Mazes, Minesweeper and Criss-cross — and the side bar
+// that maps the site by them: which kind a puzzle is, how hard each kind's types are, and where each side bar entry goes.
 // The kind is where the player is; the type is what they filter within it. A type is always taken
 // with its kind — each kind has its own Vanilla. Collections is a place of its own, beside the
 // kinds, holding every collection whatever its puzzles' kinds. Reads only the indexes' entries —
@@ -7,13 +7,21 @@
 
 export const COLLECTIONS = 'collections';
 
-// Every kind, in the side bar's order: its address name, what players call it — and one of it —
-// its hidden IDs' prefix and its play page.
+// Every kind, in the side bar's order: its address name, what players call it — one of it, several
+// counted ("3 Minesweepers", "2 Criss-crosses", the owner's calls, 2026-10-11), and short, on a
+// phone's switch, where the full names don't fit (TASK-135) — its hidden IDs' prefix and its play page.
 export function kinds() {
   return [
-    { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', prefix: 'WSCH', page: 'play.html' },
-    { kind: 'maze', name: 'Mazes', one: 'Maze', prefix: 'MAZE', page: 'maze.html' },
+    { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', many: 'Wordsearches', short: 'Words', prefix: 'WSCH', page: 'play.html' },
+    { kind: 'maze', name: 'Mazes', one: 'Maze', many: 'Mazes', short: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+    { kind: 'minesweeper', name: 'Minesweeper', one: 'Minesweeper', many: 'Minesweepers', short: 'Mines', prefix: 'MINE', page: 'minesweeper.html' },
+    { kind: 'crisscross', name: 'Criss-cross', one: 'Criss-cross', many: 'Criss-crosses', short: 'Criss-cross', prefix: 'CRSS', page: 'crisscross.html' },
   ];
+}
+
+// Each kind's index, in the side bar's order — where every page reads the puzzles from.
+export function indexFiles() {
+  return kinds().map(k => `../content/puzzles/${k.kind}/index.json`);
 }
 
 // A puzzle's kind, by its hidden ID's prefix — a prefix no kind has is a wordsearch's.
@@ -86,24 +94,24 @@ function query(params) {
   return text ? `?${text}` : '';
 }
 
-// A type's side bar dot: a wordsearch type's in its difficulty's tone; a maze type's in its own
-// shade, light blue to deep violet, telling the types apart without claiming a difficulty — each
-// maze's is its own. Vanilla, and any maze type not listed here, is Sky.
+// A type's side bar dot: a maze type's in its own shade, light blue to deep violet, telling the
+// types apart without claiming a difficulty — each maze's is its own, and Vanilla, and any maze type
+// not listed here, is Sky; every other kind's type in its difficulty's tone.
 export function dotTone(kind, type) {
   const shades = new Map([
     ['Collectibles', 'Azure'], ['Code Breaker', 'Periwinkle'], ['Keys', 'Lavender'], ['Keylecticodes', 'Violet'],
   ]);
-  const tones = { wordsearch: () => difficultyOf(kind, type), maze: () => shades.get(type) ?? 'Sky' };
-  return tones[kind]();
+  return kind === 'maze' ? shades.get(type) ?? 'Sky' : difficultyOf(kind, type);
 }
 
-// The side bar's map of the site: each kind with its puzzle count, then its types, each with its
-// dot's tone, opening that kind filtered to that type alone; then Collections, with its
-// count, shown only while a collection exists. Each entry's mark is what it's current for.
+// The side bar's map of the site: each kind with its puzzle count — and its short name, for a
+// phone's switch — then its types, each with its dot's tone, opening that kind filtered to that
+// type alone; then Collections, with its count, shown only while a collection exists. Each entry's
+// mark is what it's current for.
 export function sideBar(puzzles, collections) {
   return {
     kinds: kinds().map(k => ({
-      mark: k.kind, name: k.name, count: String(puzzles.filter(p => kindOf(p.hiddenId) === k.kind).length),
+      mark: k.kind, name: k.name, short: k.short, count: String(puzzles.filter(p => kindOf(p.hiddenId) === k.kind).length),
       query: query(placeParams(k.kind, [])),
       types: typesOf(k.kind, puzzles).map(type => ({
         mark: `${k.kind}:${type}`, name: type, tone: dotTone(k.kind, type), query: query(placeParams(k.kind, [type])),

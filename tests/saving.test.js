@@ -1,14 +1,14 @@
 const { test, expect } = require('@playwright/test');
 
 // The Saving your progress page, in the owner's words (the product's docs/CONTENT.md, Saving your
-// progress), reached from the side bar on every page, after How to play.
+// progress), reached from the side bar on every page, after How to play. Its words name puzzles,
+// never kinds (FEAT-48), so no kind needs a line of its own.
 const WORDS = [
-  'Sign in with Google and we\'ll save your progress as you play: every word, the moment you find it! Close the page, come back tomorrow, and pick up right where you left off.',
-  'Play anywhere. Start a puzzle on your phone and finish it on your laptop! Sign in with the same Google account and your finds will be waiting. Playing on two at once? Just reopen the puzzle on the other one to catch up.',
-  'Lost your connection? Don\'t worry, we\'ll keep trying until your finds are saved. A little note under the words lets you know until they are, so keep the puzzle open.',
+  'Sign in with Google and we\'ll save your progress as you play, the moment you make it! Close the page, come back tomorrow, and pick up right where you left off.',
+  'Play anywhere. Start a puzzle on your phone and finish it on your laptop! Sign in with the same Google account and your progress will be waiting. Playing on two at once? Just reopen the puzzle on the other one to catch up.',
+  'Lost your connection? Don\'t worry, we\'ll keep trying until your progress is saved. A little note on the puzzle lets you know until it is, so keep the puzzle open.',
   'Ticks and Continue playing. Finished a puzzle? It gets a ✓ on its tile. Wandered off halfway? It\'ll be waiting for you under Continue playing at the top of the page.',
-  'Not signed in? That\'s fine too. Every puzzle plays just the same, we just can\'t remember where you got to. Sign in partway through and the words you\'ve found in that puzzle are saved.',
-  'Mazes too. Every time you stop, we save where you are and everything you\'ve picked up. Come back later and your trail will be waiting, right up to where you left off.',
+  'Not signed in? That\'s fine too. Every puzzle plays just the same, we just can\'t remember where you got to. Sign in partway through and your progress in that puzzle is saved.',
 ];
 
 test.beforeEach(async ({ context }) => {
@@ -33,7 +33,8 @@ test('the Saving your progress page is worded exactly as the owner wrote it, eac
   await expect(page.locator('main h1')).toHaveText('Saving your progress');
   await expect(page.locator('main h2')).toHaveCount(0);
   await expect(page.locator('main p')).toHaveText(WORDS);
-  await expect(page.locator('main p strong')).toHaveText(['Play anywhere.', 'Lost your connection?', 'Ticks and Continue playing.', 'Not signed in?', 'Mazes too.']);
+  await expect(page.locator('main p strong')).toHaveText(['Play anywhere.', 'Lost your connection?', 'Ticks and Continue playing.', 'Not signed in?']);
+  for (const kind of ['Mazes', 'Minesweeper', 'Wordsearch', 'maze', 'board', 'word']) await expect(page.locator('main')).not.toContainText(kind);
   await expect(page.locator('main a')).toHaveCount(0);
   await expect(page.locator('main img')).toHaveCount(0);
 });

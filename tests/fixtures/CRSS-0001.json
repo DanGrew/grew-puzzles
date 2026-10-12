@@ -1,0 +1,212 @@
+{
+  "hiddenId": "CRSS-0001",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Summer Holidays",
+  "difficulty": "Easy",
+  "width": 17,
+  "height": 15,
+  "wordGroups": [
+    "holidays"
+  ],
+  "squares": [
+    "......#....####.#",
+    ".########.....#.#",
+    "......#....######",
+    "......#...#...#..",
+    "#######.########.",
+    "...#..#...#...#..",
+    "..######..#.#....",
+    "...#...#######...",
+    "########..#.#....",
+    "#..#......#......",
+    "#..#.######......",
+    "#..#.#...........",
+    "#...####.........",
+    "#....#...........",
+    "#.#######........"
+  ],
+  "given": "Aquarium",
+  "words": [
+    {
+      "word": "Hat",
+      "start": {
+        "row": 0,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Ice",
+      "start": {
+        "row": 6,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Map",
+      "start": {
+        "row": 6,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Sand",
+      "start": {
+        "row": 12,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Swim",
+      "start": {
+        "row": 0,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Beach",
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Bikini",
+      "start": {
+        "row": 6,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Breeze",
+      "start": {
+        "row": 10,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Museum",
+      "start": {
+        "row": 0,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Sunset",
+      "start": {
+        "row": 2,
+        "col": 11
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Bonfire",
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Caravan",
+      "start": {
+        "row": 7,
+        "col": 7
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Fishing",
+      "start": {
+        "row": 14,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Lantern",
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Seaside",
+      "start": {
+        "row": 4,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Aquarium",
+      "start": {
+        "row": 4,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Barbecue",
+      "start": {
+        "row": 8,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Postcard",
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Sailboat",
+      "start": {
+        "row": 4,
+        "col": 3
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Sunbathe",
+      "start": {
+        "row": 3,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 8
+    }
+  ]
+}

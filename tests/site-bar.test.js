@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The site bar and the side bar every page shares (components/site-bar.js, ui/side-bar-ui.js): the
-// name and sign-in across the top; down the left, Wordsearches and Mazes, each with its count and
+// name and sign-in across the top; down the left, Wordsearches, Mazes, Minesweeper and Criss-cross, each with its count and
 // its types, then Collections, the text pages and the look. On a phone the side bar is a drawer
 // behind a burger at the top left. The indexes are stand-ins, so the counts are known.
 
@@ -51,13 +51,15 @@ test('the brand returns to the landing page', async ({ page }) => {
 test('the side bar lists each kind with its count and its types, then Collections, the text pages and the look', async ({ page }) => {
   await serve(page);
   await page.goto('/app/');
-  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Collections1']);
+  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
   await expect(side(page).locator('.types').first().locator('.type')).toHaveText(['Vanilla', 'Saga', 'Mirra?e']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveText(['Vanilla', 'Keys', 'Keylecticodes']);
   await expect(side(page).locator('.page')).toHaveText(['How to play', 'Saving your progress', 'About us', 'Feedback', 'Privacy']);
   await expect(side(page).locator('> *:visible').last()).toHaveClass(/\blook\b/);
   await expect(side(page).locator('.kind').nth(1)).toHaveAttribute('href', 'index.html?kind=maze');
-  await expect(side(page).locator('.kind').nth(2)).toHaveAttribute('href', 'index.html?kind=collections');
+  await expect(side(page).locator('.kind').nth(2)).toHaveAttribute('href', 'index.html?kind=minesweeper');
+  await expect(side(page).locator('.kind').nth(3)).toHaveAttribute('href', 'index.html?kind=crisscross');
+  await expect(side(page).locator('.kind').nth(4)).toHaveAttribute('href', 'index.html?kind=collections');
   await expect(side(page).locator('.types').nth(1).locator('.type', { hasText: 'Keys' })).toHaveAttribute('href', 'index.html?kind=maze&type=Keys');
   await expect(side(page).locator('.page').last()).toHaveAttribute('href', 'privacy.html');
 });
@@ -78,7 +80,7 @@ test('each wordsearch type\'s dot is its difficulty\'s colour; each maze type\'s
 test('Mazes with no mazes yet counts 0 and lists no types; Collections hides with no collections', async ({ page }) => {
   await serve(page, { collections: [], mazes: [] });
   await page.goto('/app/');
-  await expect(side(page).locator('.kind:visible')).toHaveText(['Wordsearches4', 'Mazes0']);
+  await expect(side(page).locator('.kind:visible')).toHaveText(['Wordsearches4', 'Mazes0', 'Minesweeper0', 'Criss-cross0']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveCount(0);
 });
 
@@ -87,7 +89,7 @@ for (const address of PAGES) {
     await serve(page);
     await page.route(/\/content\/puzzles\/(wordsearch|maze)\/(WSCH|MAZE)-\d+\.json$/, r => r.fulfill({ status: 404, body: 'Not found' }));
     await page.goto(address);
-    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Collections1']);
+    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
     await expect(page.locator('.site .burger')).toBeHidden();
     const bar = await side(page).boundingBox();
     expect(bar.x).toBeLessThan(40);
@@ -144,7 +146,7 @@ test.describe('on a phone', () => {
     const drawer = await side(page).boundingBox();
     expect(drawer.x).toBe(0);
     expect(drawer.width).toBeLessThan(390);
-    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Collections1']);
+    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
   });
 
   test('the burger, from the keyboard, closes the drawer again', async ({ page }) => {

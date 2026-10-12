@@ -78,7 +78,7 @@ async function standInForSupabase(context, table) {
     if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
     // The ticks and the rail read the player's maze finds and places too — none here; maze-saving.test.js's.
-    if (['/rest/v1/maze_found', '/rest/v1/maze_position'].includes(url.pathname) && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
+    if (['/rest/v1/maze_found', '/rest/v1/maze_position', '/rest/v1/mines_marks'].includes(url.pathname) && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
     if (url.pathname !== '/rest/v1/progress' || !token.includes('.')) {
       table.strays.push(`${request.method()} ${url.pathname}`);
       return route.abort();

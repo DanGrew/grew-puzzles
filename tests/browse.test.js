@@ -619,7 +619,7 @@ test('with no collections, Collections is not in the side bar, and an old Collec
   await expect(chips(page)).toHaveText(['Vanilla', 'Missing', 'Mirra?e']);
   await expect(filterButton(page)).toHaveText('Filters');
   await expect(page.locator('#total')).toHaveText('3 puzzles');
-  await expect(page.locator('#site-side .kind:visible')).toHaveText([/^Wordsearches/, /^Mazes/]);
+  await expect(page.locator('#site-side .kind:visible')).toHaveText([/^Wordsearches/, /^Mazes/, /^Minesweeper/, /^Criss-cross/]);
 });
 
 test('Collections in the side bar opens every collection, marked current', async ({ page }) => {

@@ -87,7 +87,7 @@ export function withSignIn(state, signedIn) {
 }
 
 // A collection tile's breakdown: how many of each kind it holds, a line each in the side bar's
-// order — "10 Wordsearches", "2 Mazes" — a kind it doesn't hold left out. Never its types: two
+// order — "10 Wordsearches", "2 Mazes", "3 Minesweepers", "2 Criss-crosses" — a kind it doesn't hold left out. Never its types: two
 // kinds' Vanillas would add together, and a tile has no room for both kinds' (the owner's call,
 // 2026-10-10, for every collection alike).
 export function kindBreakdown(collection) {
@@ -95,7 +95,7 @@ export function kindBreakdown(collection) {
   return kinds()
     .map(k => ({ ...k, n: ids.filter(id => kindOf(id) === k.kind).length }))
     .filter(k => k.n > 0)
-    .map(k => `${k.n} ${k.n === 1 ? k.one : k.name}`);
+    .map(k => `${k.n} ${k.n === 1 ? k.one : k.many}`);
 }
 
 export function collectionHref(slug) {
@@ -237,11 +237,14 @@ export function dirLabel(state) {
   return labels[state.sort][state.dir];
 }
 
-// The small lines beneath a tile's title: its type as written, then — a maze whose index entry
-// has it — its size, width by height, a line each. No date: the Date sort reads it, no tile shows it.
+// The small lines beneath a tile's title: its type as written, then — a maze or minesweeper board
+// whose index entry has it — its size, width by height, a line each; a criss-cross's entry carries
+// its word count, which it reads instead of its size, since the count is what a player weighs (the
+// owner's call, 2026-10-11). No date: the Date sort reads it, no tile shows it.
 export function tileDetail(puzzle) {
-  const size = [puzzle].filter(p => p.width && p.height).map(p => `${p.width}×${p.height}`);
-  return [puzzle.type, ...size];
+  const words = [puzzle].filter(p => p.wordCount).map(p => counted(p.wordCount, 'word'));
+  const size = [puzzle].filter(p => p.width && p.height && !p.wordCount).map(p => `${p.width}×${p.height}`);
+  return [puzzle.type, ...words, ...size];
 }
 
 // A puzzle's play page, its kind's: a maze plays on its own page, a wordsearch on the play page.

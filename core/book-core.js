@@ -2,10 +2,12 @@
 // prints, in number order, headed with its number — the number its character goes by, as on the
 // collection page. The pages themselves are each kind's own printout — a wordsearch's the play
 // page's (ui/wordsearch/play-ui.js drawSheet), a maze's the maze page's (ui/maze/sheet-ui.js
-// drawMazeSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID or
+// drawMazeSheet), a minesweeper board's the minesweeper page's (ui/minesweeper/sheet-ui.js
+// drawMinesSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID or
 // gives an answer: the answers stay on the site.
 import { kindOf } from './kind-core.js';
 import { mazePrints } from './maze/play-core.js';
+import { minesPrints } from './minesweeper/play-core.js';
 // The print styles a book or a puzzle's page prints in, as the side bar lists them: Colour, Black
 // and white (mono), Plain.
 export const PRINT_STYLES = ['colour', 'mono', 'plain'];
@@ -37,14 +39,41 @@ export function pageNumbers(boards) {
 
 // A wordsearch always prints in the book; a maze only at 32×40 (play-core's mazePrints), told by
 // its width and height in the mazes' index (mazes, its entries). A bigger maze, or one the index
-// doesn't list, plays on the site alone and is left out, its number skipped.
+// doesn't list, plays on the site alone and is left out, its number skipped — as is any kind with
+// no rule here, a criss-cross until it prints (TASK-152). A minesweeper board's file is opened
+// whatever its size, and printedPages decides.
 function printsIn(mazes) {
   const sizes = new Map(mazes.map(m => [m.hiddenId, m]));
   const PRINTS = {
     wordsearch: () => true,
     maze: id => [sizes.get(id)].filter(Boolean).some(m => mazePrints(m.width, m.height)),
+    minesweeper: () => true,
   };
-  return id => PRINTS[kindOf(id)](id);
+  return id => Object.hasOwn(PRINTS, kindOf(id)) && PRINTS[kindOf(id)](id);
+}
+
+// Which of the book's puzzles take a page, once each one's board is in (its kind's own, as
+// pageNumbers takes): a minesweeper board only while its numbers stay readable on one sheet
+// (play-core's minesPrints) — told by its own file, as its index entry carries its size only with a
+// difficulty. A board too big is left out, its number skipped, and named in the note on the book's
+// page (leftOutNote).
+export function printedPages(pages, boards) {
+  const PRINTS = { minesweeper: board => minesPrints(board.cols, board.rows) };
+  const prints = pages.map((page, i) => !Object.hasOwn(PRINTS, page.kind) || PRINTS[page.kind](boards[i]));
+  return {
+    pages: pages.filter((_, i) => prints[i]),
+    boards: boards.filter((_, i) => prints[i]),
+    left: pages.filter((_, i) => !prints[i]).map(page => page.number),
+  };
+}
+
+// The note on the book's page, on screen, naming each puzzle left out as too big to print — none,
+// no note.
+export function leftOutNote(numbers) {
+  const list = new Intl.ListFormat('en-GB').format(numbers.map(String));
+  if (numbers.length === 0) return '';
+  if (numbers.length === 1) return `Puzzle ${list} is too big to print, so it plays on the site only.`;
+  return `Puzzles ${list} are too big to print, so they play on the site only.`;
 }
 
 function book(collection, mazes) {

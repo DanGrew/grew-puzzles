@@ -1,15 +1,24 @@
 import {
-  COLLECTIONS, kinds, kindOf, places, placeName, difficultyOf, difficulties, dotTone, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
+  COLLECTIONS, kinds, indexFiles, kindOf, places, placeName, difficultyOf, difficulties, dotTone, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
 } from '../../core/kind-core.js';
 
 const puzzle = (hiddenId, type) => ({ hiddenId, type, created: '2026-10-08', title: hiddenId });
 const collection = name => ({ slug: name.toLowerCase(), name, description: '', created: '2026-10-08', puzzles: [] });
 
 describe('kind-core.js', () => {
-  test('the kinds, in the side bar\'s order: Wordsearches, then Mazes, each with its name for one, its prefix and play page', () => {
+  test('the kinds, in the side bar\'s order: Wordsearches, Mazes, Minesweeper, then Criss-cross, each with its names for one, several and short, its prefix and play page', () => {
     expect(kinds()).toEqual([
-      { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', prefix: 'WSCH', page: 'play.html' },
-      { kind: 'maze', name: 'Mazes', one: 'Maze', prefix: 'MAZE', page: 'maze.html' },
+      { kind: 'wordsearch', name: 'Wordsearches', one: 'Wordsearch', many: 'Wordsearches', short: 'Words', prefix: 'WSCH', page: 'play.html' },
+      { kind: 'maze', name: 'Mazes', one: 'Maze', many: 'Mazes', short: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
+      { kind: 'minesweeper', name: 'Minesweeper', one: 'Minesweeper', many: 'Minesweepers', short: 'Mines', prefix: 'MINE', page: 'minesweeper.html' },
+      { kind: 'crisscross', name: 'Criss-cross', one: 'Criss-cross', many: 'Criss-crosses', short: 'Criss-cross', prefix: 'CRSS', page: 'crisscross.html' },
+    ]);
+  });
+
+  test('each kind\'s puzzles are read from its own index, in the side bar\'s order', () => {
+    expect(indexFiles()).toEqual([
+      '../content/puzzles/wordsearch/index.json', '../content/puzzles/maze/index.json', '../content/puzzles/minesweeper/index.json',
+      '../content/puzzles/crisscross/index.json',
     ]);
   });
 
@@ -19,12 +28,14 @@ describe('kind-core.js', () => {
     expect(kindOf('MAZEX-0001')).toBe('wordsearch');
     expect(kindOf('xMAZE-0001')).toBe('wordsearch');
     expect(kindOf('MAZE')).toBe('maze');
+    expect(kindOf('MINE-0001')).toBe('minesweeper');
+    expect(kindOf('CRSS-0001')).toBe('crisscross');
   });
 
   test('the places are each kind, then Collections, and each has its name', () => {
-    expect(places()).toEqual(['wordsearch', 'maze', 'collections']);
+    expect(places()).toEqual(['wordsearch', 'maze', 'minesweeper', 'crisscross', 'collections']);
     expect(COLLECTIONS).toBe('collections');
-    expect(places().map(placeName)).toEqual(['Wordsearches', 'Mazes', 'Collections']);
+    expect(places().map(placeName)).toEqual(['Wordsearches', 'Mazes', 'Minesweeper', 'Criss-cross', 'Collections']);
   });
 
   test('a wordsearch\'s types: Vanilla Easy, Saga and Wildcards Medium, Missing and Repeats Hard, Mirra?e Extreme', () => {
@@ -107,24 +118,44 @@ describe('kind-core.js', () => {
     expect(dotTone('maze', 'constructor')).toBe('Sky');
   });
 
+  test('a minesweeper type\'s dot is its difficulty\'s tone, as a wordsearch type\'s is: Vanilla Easy', () => {
+    expect(dotTone('minesweeper', 'Vanilla')).toBe('Easy');
+    expect(dotTone('minesweeper', 'Keys')).toBe('Easy');
+  });
+
+  test('a criss-cross type\'s dot is its difficulty\'s tone too: Vanilla Easy, never a maze\'s shade', () => {
+    expect(dotTone('crisscross', 'Vanilla')).toBe('Easy');
+    expect(dotTone('crisscross', 'Keys')).toBe('Easy');
+    expect(dotTone('crisscross', 'Brand New')).toBe('Easy');
+  });
+
   test('the side bar lists each kind with its count and its types, each with its dot\'s tone and address', () => {
     const index = [puzzle('WSCH-0001', 'Saga'), puzzle('WSCH-0002', 'Vanilla'), puzzle('MAZE-0001', 'Vanilla'), puzzle('MAZE-0002', 'Keys'),
-      puzzle('MAZE-0003', 'Keys')];
+      puzzle('MAZE-0003', 'Keys'), { ...puzzle('MINE-0001', 'Vanilla'), difficulty: 'Hard' }, puzzle('MINE-0002', 'Vanilla'),
+      puzzle('CRSS-0001', 'Vanilla')];
     expect(sideBar(index, [collection('Issue')])).toEqual({
       kinds: [
         {
-          mark: 'wordsearch', name: 'Wordsearches', count: '2', query: '',
+          mark: 'wordsearch', name: 'Wordsearches', short: 'Words', count: '2', query: '',
           types: [
             { mark: 'wordsearch:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?type=Vanilla' },
             { mark: 'wordsearch:Saga', name: 'Saga', tone: 'Medium', query: '?type=Saga' },
           ],
         },
         {
-          mark: 'maze', name: 'Mazes', count: '3', query: '?kind=maze',
+          mark: 'maze', name: 'Mazes', short: 'Mazes', count: '3', query: '?kind=maze',
           types: [
             { mark: 'maze:Vanilla', name: 'Vanilla', tone: 'Sky', query: '?kind=maze&type=Vanilla' },
             { mark: 'maze:Keys', name: 'Keys', tone: 'Lavender', query: '?kind=maze&type=Keys' },
           ],
+        },
+        {
+          mark: 'minesweeper', name: 'Minesweeper', short: 'Mines', count: '2', query: '?kind=minesweeper',
+          types: [{ mark: 'minesweeper:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?kind=minesweeper&type=Vanilla' }],
+        },
+        {
+          mark: 'crisscross', name: 'Criss-cross', short: 'Criss-cross', count: '1', query: '?kind=crisscross',
+          types: [{ mark: 'crisscross:Vanilla', name: 'Vanilla', tone: 'Easy', query: '?kind=crisscross&type=Vanilla' }],
         },
       ],
       collections: { count: '1', query: '?kind=collections', hidden: false },
@@ -133,7 +164,9 @@ describe('kind-core.js', () => {
 
   test('a kind with no puzzles still shows, counting 0 with no types; Collections hides with none', () => {
     const bar = sideBar([puzzle('WSCH-0001', 'Vanilla')], []);
-    expect(bar.kinds[1]).toEqual({ mark: 'maze', name: 'Mazes', count: '0', query: '?kind=maze', types: [] });
+    expect(bar.kinds[1]).toEqual({ mark: 'maze', name: 'Mazes', short: 'Mazes', count: '0', query: '?kind=maze', types: [] });
+    expect(bar.kinds[2]).toEqual({ mark: 'minesweeper', name: 'Minesweeper', short: 'Mines', count: '0', query: '?kind=minesweeper', types: [] });
+    expect(bar.kinds[3]).toEqual({ mark: 'crisscross', name: 'Criss-cross', short: 'Criss-cross', count: '0', query: '?kind=crisscross', types: [] });
     expect(bar.collections).toEqual({ count: '0', query: '?kind=collections', hidden: true });
   });
 

@@ -1,25 +1,32 @@
 // The collection book's DOM: the title page, then one copy of each puzzle's own printout — a
 // wordsearch the play page's, drawn by its drawSheet; a maze the maze page's sheet, drawn by its
-// drawMazeSheet — and the print dialog once every page is drawn. Every rule lives in
-// core/book-core.js; how a puzzle's page looks is styles/play.css's and styles/maze.css's.
+// drawMazeSheet; a minesweeper board the minesweeper page's sheet, drawn by its drawMinesSheet —
+// and the print dialog once every page is drawn. Every rule lives in core/book-core.js; how a
+// puzzle's page looks is styles/play.css's, styles/maze.css's and styles/minesweeper.css's.
 import { slugOf } from '../core/collection-core.js';
-import { bookView, pageNumbers, printStyleOf } from '../core/book-core.js';
+import { bookView, pageNumbers, printStyleOf, printedPages, leftOutNote } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { mazeUrl, mazeBoard } from '../core/maze/play-core.js';
+import { minesUrl, minesBoard } from '../core/minesweeper/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
+import { drawMinesSheet } from './minesweeper/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
-// that page dressed in its character. A maze is always one sheet.
+// that page dressed in its character. A maze and a minesweeper board are always one sheet, and a
+// board's sheet stays plain until it wears its theme on paper (TASK-140).
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
+  minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: noop },
 };
+
+function noop() {}
 
 function bookEl(id) {
   return document.getElementById(id);
@@ -32,7 +39,7 @@ function readJson(url) {
 // Themed, the page behind the print dialog wears a background, as the collection page does — the
 // paper never does (styles/look.css is screen only). The book prints in the style its address
 // names — Print book's pick on the collection page — every time it prints. The mazes' index tells
-// which of the collection's mazes print: only 32×40.
+// which of the collection's mazes print: only 32×40. Every board is opened, and its own size tells.
 export function openBook(search) {
   document.documentElement.dataset.print = printStyleOf(search);
   bookEl('print-again').addEventListener('click', function () { window.print(); });
@@ -42,10 +49,15 @@ export function openBook(search) {
     readJson('../content/puzzles/maze/index.json').catch(function () { return { puzzles: [] }; }),
     fetch('play.html').then(function (r) { return r.text(); }),
     fetch('maze.html').then(function (r) { return r.text(); }),
+    fetch('minesweeper.html').then(function (r) { return r.text(); }),
   ]).then(function (got) {
     var book = bookView(got[0].collections, slugOf(search), got[1].puzzles);
     showTitlePage(book);
-    BOOK_SHOWS[book.found](book, { wordsearch: sheetTemplate(got[2], ['.play-head', 'main.play']), maze: sheetTemplate(got[3], ['.maze-sheet']) }, scene);
+    BOOK_SHOWS[book.found](book, {
+      wordsearch: sheetTemplate(got[2], ['.play-head', 'main.play']),
+      maze: sheetTemplate(got[3], ['.maze-sheet']),
+      minesweeper: sheetTemplate(got[4], ['.mines-sheet']),
+    }, scene);
   });
 }
 
@@ -69,22 +81,26 @@ function showMissing() {
 // the fonts in, each page's word columns are sized as the play page sizes its own. Printed Colour
 // or Black and white, each puzzle wears its character in number order, round again after the last,
 // as on the collection page, each wordsearch page at a spot of its own picked again every time the
-// book prints, and every character's images are in before the dialog opens.
+// book prints, and every character's images are in before the dialog opens. A board too big to
+// print is left out once its file is in, and named on the book's page.
 function printBook(book, templates, scene) {
-  var kinds = book.pages.map(function (page) { return BOOK_KINDS[page.kind]; });
+  var fetched = book.pages.map(function (page) { return BOOK_KINDS[page.kind]; });
   Promise.all([
-    Promise.all(book.pages.map(function (page, i) { return fetch(kinds[i].url(page.search)).then(playJson); })),
+    Promise.all(book.pages.map(function (page, i) { return fetch(fetched[i].url(page.search)).then(playJson); })),
     withCharacters(function (characters) { return characters; }),
   ])
     .then(function (got) {
-      var boards = got[0].map(function (puzzle, i) { return kinds[i].board(puzzle); });
+      var printed = printedPages(book.pages, got[0].map(function (puzzle, i) { return fetched[i].board(puzzle); }));
+      var pages = printed.pages, boards = printed.boards;
+      var kinds = pages.map(function (page) { return BOOK_KINDS[page.kind]; });
       var numbers = pageNumbers(boards.map(function (board, i) { return kinds[i].sheets(board); }));
-      var wearers = book.pages.map(function (page) { return characterAt(got[1], page.number); });
-      var pages = boards.map(function (board, i) { return kinds[i].page(templates[book.pages[i].kind], book.pages[i].heading, board, numbers[i]); });
+      var wearers = pages.map(function (page) { return characterAt(got[1], page.number); });
+      var sheets = boards.map(function (board, i) { return kinds[i].page(templates[pages[i].kind], pages[i].heading, board, numbers[i]); });
       var printout = function () {
-        pages.forEach(function (page, i) { kinds[i].dress(page, boards[i], wearers[i]); });
+        sheets.forEach(function (sheet, i) { kinds[i].dress(sheet, boards[i], wearers[i]); });
       };
-      bookEl('sheets').replaceChildren.apply(bookEl('sheets'), pages);
+      bookEl('left-out').textContent = leftOutNote(printed.left);
+      bookEl('sheets').replaceChildren.apply(bookEl('sheets'), sheets);
       printout();
       window.addEventListener('beforeprint', printout);
       return Promise.all([document.fonts.ready, scene].concat(wearers.map(printImages)));
@@ -149,6 +165,17 @@ function mazePage(template, heading, board, numbers) {
   number.textContent = heading;
   page.querySelector('.maze-sheet-top').prepend(number);
   drawMazeSheet(page.querySelector('.maze-sheet'), board);
+  return numbered(page, numbers);
+}
+
+// One board's page, drawn exactly as the minesweeper page draws its printout, its number heading
+// the sheet, above the title.
+function minesPage(template, heading, board, numbers) {
+  var page = template.cloneNode(true);
+  var number = page.querySelector('.sheet-number');
+  number.textContent = heading;
+  page.querySelector('.mines-sheet').prepend(number);
+  drawMinesSheet(page.querySelector('.mines-sheet'), board);
   return numbered(page, numbers);
 }
 

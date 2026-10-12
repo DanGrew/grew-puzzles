@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/play.css">
+<link rel="stylesheet" href="../styles/minesweeper.css">
+</head>
+<body class="play-page mines-page">
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="minesweeper">
+    <!-- Only a board up to 30 squares a side prints: ui/minesweeper/play-ui.js shows the menu once
+         it knows the size. Plain alone until the board wears its theme on paper (TASK-140). -->
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
+  </header>
+
+  <header class="play-head">
+    <h1 id="title"></h1>
+    <p class="ident" id="ident" hidden><span class="difficulty" id="difficulty"></span> · <span class="code" id="code"></span></p>
+  </header>
+
+  <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
+
+  <main class="play mines" id="play" hidden>
+    <div class="mines-col">
+      <div class="stage" id="stage">
+        <div class="card" id="card">
+          <div class="face front-face" id="front">
+            <div class="band" id="label"></div>
+            <!-- The frame: the board behind it, at the player's zoom. -->
+            <div class="board" id="board">
+              <div class="mines-view" id="view">
+                <div class="mines-world" id="world">
+                  <div class="mines-grid" id="grid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="face back-face" id="back" aria-hidden="true" inert>
+            <div class="band" id="solution-label"></div>
+            <div class="board">
+              <div class="mines-view">
+                <div class="mines-world" id="solution-world">
+                  <div class="mines-grid" id="solution-grid"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="corner zoom-out" id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9"/></svg>
+        </button>
+        <button class="corner zoom-in" id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M8 3.5v9"/></svg>
+        </button>
+        <button class="corner flip" id="flip" type="button" aria-pressed="false" aria-label="Show solution" title="Show solution">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
+        </button>
+      </div>
+      <div class="complete" id="complete" hidden>Solved — every mine found</div>
+    </div>
+
+    <!-- Beside the board, or under it on a phone: how many mines are marked, and the rule. -->
+    <aside id="mines-card">
+      <div class="words-box">
+        <div class="list-head">
+          <h2>Mines</h2>
+          <span class="count" id="count"></span>
+        </div>
+        <p class="mines-rule">Find every mine. Each number counts the mines in the eight squares around it. A numbered square is never a mine.</p>
+        <div class="mines-legend">
+          <span class="mines-square" data-mark="dot"></span><span>Tap once: no mine</span>
+          <span class="mines-square" data-mark="mine"></span><span>Tap again: mine</span>
+          <span class="mines-square" data-mark="blank"></span><span>Tap again: clear</span>
+          <span class="mines-square" data-mark="number" data-state="met">2</span><span>A number fades once you've marked that many mines around it</span>
+          <span class="mines-square" data-mark="number">3</span><span>Tap a number to fill in the squares around it once its count settles them</span>
+        </div>
+      </div>
+
+      <!-- Signed out, the invitation to sign in; signed in, a note while the board isn't saved —
+           under the Mines card. -->
+      <div class="save-line" id="save-line" role="status" hidden>
+        <p class="slip" id="save-hint" hidden>
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15.5H5a3.5 3.5 0 0 1-.4-7A5 5 0 0 1 14.3 7 4 4 0 0 1 15 15.5h-1"/><path d="M10 16.5V10M7.5 12.3 10 9.8l2.5 2.5"/></svg>
+          <span><button class="sign-in-link" id="save-sign-in" type="button">Sign in</button> to save your progress — or just play.</span>
+        </p>
+        <p class="slip slip-note" id="save-note" hidden><span class="dot" aria-hidden="true"></span>Progress not saved — reconnecting</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- The printout, paper only: the title, the rule and the blank board, drawn by
+       ui/minesweeper/sheet-ui.js. The book prints a copy of it. -->
+  <section class="mines-sheet" id="mines-sheet">
+    <header class="play-head">
+      <h1 data-part="title"></h1>
+      <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
+    </header>
+    <p class="mines-sheet-rule" data-part="rule"></p>
+    <div class="mines-paper" data-part="grid" aria-hidden="true"></div>
+  </section>
+</div>
+<script src="../components/site-bar.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
+<script type="module">
+import { openMinesPage } from '../ui/minesweeper/play-ui.js';
+openMinesPage(location.search);
+</script>
+</body>
+</html>
