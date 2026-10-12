@@ -1,0 +1,587 @@
+{
+  "hiddenId": "CRSS-0002",
+  "type": "Vanilla",
+  "created": "2026-10-12",
+  "title": "Long Summer",
+  "difficulty": "Hard",
+  "width": 29,
+  "height": 30,
+  "wordGroups": [
+    "holidays"
+  ],
+  "squares": [
+    "......#########....#....#....",
+    "............#......#..#.#.#..",
+    "........#...#...#..#..#.#.#..",
+    "......########..#.##########.",
+    "........#...#.#.#.#...#.#.#..",
+    "........#...#.#.#.#...#.#.#..",
+    "......######..#.#.#...#.#.#..",
+    "....#...#..#..#.#.#...#...#..",
+    "....#.#....#..#.#.#..........",
+    "..#.#.#.#..#.#######.........",
+    "..#.#####..#.#..#............",
+    "..#.#.#.######..........#....",
+    "..#...#.#..#.######.######.#.",
+    "..#...#.#...............#..#.",
+    ".######.#.........#.#########",
+    "..#.....#########.#.#.#.#..#.",
+    "........#.#.......#.#.#.#..#.",
+    ".....#..#####..###########.#.",
+    "..#..#....#....#..#.#.#..#.#.",
+    ".##########.#..#..#.#....#.#.",
+    "#.#..#..#.#.#..#..#.#....#...",
+    "####.#..#.######....#..#.#...",
+    "#....#..#.#....#.#..#.######.",
+    "#......#..#...####.#.#.#.#..#",
+    "#....######....#.#.#.#.#.#..#",
+    "#....#.#.........#######.#..#",
+    ".....#...........#.#.#.#....#",
+    "....####.....######....#....#",
+    ".....#...........#....#######",
+    "..........########.....#....#"
+  ],
+  "given": "Adventure",
+  "words": [
+    {
+      "word": "Ice",
+      "start": {
+        "row": 19,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Map",
+      "start": {
+        "row": 23,
+        "col": 7
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Dive",
+      "start": {
+        "row": 23,
+        "col": 14
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Lake",
+      "start": {
+        "row": 21,
+        "col": 0
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Park",
+      "start": {
+        "row": 18,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Pier",
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Pool",
+      "start": {
+        "row": 0,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Sand",
+      "start": {
+        "row": 23,
+        "col": 19
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Swim",
+      "start": {
+        "row": 23,
+        "col": 21
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Tent",
+      "start": {
+        "row": 27,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Tour",
+      "start": {
+        "row": 19,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Beach",
+      "start": {
+        "row": 7,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Canoe",
+      "start": {
+        "row": 10,
+        "col": 4
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "Relax",
+      "start": {
+        "row": 17,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 5
+    },
+    {
+      "word": "River",
+      "start": {
+        "row": 14,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Towel",
+      "start": {
+        "row": 24,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 5
+    },
+    {
+      "word": "Abroad",
+      "start": {
+        "row": 27,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Airbed",
+      "start": {
+        "row": 22,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Arcade",
+      "start": {
+        "row": 14,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Breeze",
+      "start": {
+        "row": 21,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Cruise",
+      "start": {
+        "row": 11,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Flight",
+      "start": {
+        "row": 20,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Hiking",
+      "start": {
+        "row": 2,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Island",
+      "start": {
+        "row": 0,
+        "col": 12
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Marina",
+      "start": {
+        "row": 4,
+        "col": 14
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Museum",
+      "start": {
+        "row": 12,
+        "col": 20
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Picnic",
+      "start": {
+        "row": 17,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 6
+    },
+    {
+      "word": "Resort",
+      "start": {
+        "row": 12,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Tennis",
+      "start": {
+        "row": 6,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Travel",
+      "start": {
+        "row": 24,
+        "col": 5
+      },
+      "direction": "E",
+      "length": 6
+    },
+    {
+      "word": "Airport",
+      "start": {
+        "row": 9,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bonfire",
+      "start": {
+        "row": 8,
+        "col": 6
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Bubbles",
+      "start": {
+        "row": 23,
+        "col": 28
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Fishing",
+      "start": {
+        "row": 14,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Frisbee",
+      "start": {
+        "row": 28,
+        "col": 22
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Goggles",
+      "start": {
+        "row": 1,
+        "col": 22
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Lantern",
+      "start": {
+        "row": 1,
+        "col": 26
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Packing",
+      "start": {
+        "row": 9,
+        "col": 13
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Popcorn",
+      "start": {
+        "row": 3,
+        "col": 18
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Scooter",
+      "start": {
+        "row": 0,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Slushie",
+      "start": {
+        "row": 6,
+        "col": 11
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Sunburn",
+      "start": {
+        "row": 11,
+        "col": 24
+      },
+      "direction": "S",
+      "length": 7
+    },
+    {
+      "word": "Tanning",
+      "start": {
+        "row": 25,
+        "col": 17
+      },
+      "direction": "E",
+      "length": 7
+    },
+    {
+      "word": "Barbecue",
+      "start": {
+        "row": 12,
+        "col": 27
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Heatwave",
+      "start": {
+        "row": 22,
+        "col": 17
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Sailboat",
+      "start": {
+        "row": 3,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Souvenir",
+      "start": {
+        "row": 17,
+        "col": 15
+      },
+      "direction": "S",
+      "length": 8
+    },
+    {
+      "word": "Sunbathe",
+      "start": {
+        "row": 29,
+        "col": 10
+      },
+      "direction": "E",
+      "length": 8
+    },
+    {
+      "word": "Adventure",
+      "start": {
+        "row": 15,
+        "col": 8
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Deckchair",
+      "start": {
+        "row": 9,
+        "col": 8
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Excursion",
+      "start": {
+        "row": 0,
+        "col": 6
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Fireworks",
+      "start": {
+        "row": 2,
+        "col": 16
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Guidebook",
+      "start": {
+        "row": 17,
+        "col": 25
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Lifeguard",
+      "start": {
+        "row": 21,
+        "col": 23
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Sunscreen",
+      "start": {
+        "row": 14,
+        "col": 20
+      },
+      "direction": "S",
+      "length": 9
+    },
+    {
+      "word": "Surfboard",
+      "start": {
+        "row": 14,
+        "col": 20
+      },
+      "direction": "E",
+      "length": 9
+    },
+    {
+      "word": "Playground",
+      "start": {
+        "row": 3,
+        "col": 18
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Sandcastle",
+      "start": {
+        "row": 19,
+        "col": 1
+      },
+      "direction": "E",
+      "length": 10
+    },
+    {
+      "word": "Volleyball",
+      "start": {
+        "row": 15,
+        "col": 10
+      },
+      "direction": "S",
+      "length": 10
+    },
+    {
+      "word": "Sightseeing",
+      "start": {
+        "row": 17,
+        "col": 15
+      },
+      "direction": "E",
+      "length": 11
+    }
+  ]
+}
