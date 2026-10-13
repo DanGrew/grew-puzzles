@@ -6,7 +6,7 @@ import {
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
   windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
-  collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints, printedNote, printedLabel, printedZone, printedMaze
+  collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints, printedNote, printedZone, printedMaze
 } from '../../../core/maze/play-core.js';
 const require = createRequire(import.meta.url);
 // core/maze/play-core.js, against the fixture with every element: a guide, two collectibles, Key 1
@@ -947,10 +947,7 @@ describe('on paper', () => {
     expect(printedNote(board)).toEqual([{ name: 'Collectibles', boxes: ['', ''] }, { name: 'End', boxes: [''] }]);
   });
 
-  it('a key reads KEY and its number, a zone ZONE and its key\'s; everything else its own label', () => {
-    const label = kind => printedLabel(BOARD.stops.find(s => s.kind === kind));
-    expect(['key', 'letter', 'exit', 'guide', 'collectible'].map(label)).toEqual(['KEY 1', 'A', 'ABC', '', '']);
-    expect(printedLabel({ kind: 'end', label: 'End' })).toBe('End');
+  it('a zone reads ZONE and its key\'s number', () => {
     expect(printedZone(BOARD.zones[0])).toBe('ZONE 1');
   });
 
@@ -970,7 +967,7 @@ describe('on paper', () => {
       [stops[0], ['ms-guide']],
       [stops[1], ['ms-dot']],
       [stops[2], ['ms-dot']],
-      [stops[3], ['ms-key', 'ms-key-text:KEY 1']],
+      [stops[3], ['ms-key', 'ms-key-text:1']],
       [stops[4], ['ms-letter', 'ms-letter-text:A']],
       [stops[5], ['ms-letter', 'ms-letter-text:B']],
       [stops[6], ['ms-letter', 'ms-letter-text:C']],
@@ -989,10 +986,10 @@ describe('on paper', () => {
     expect(of('ms-guide')).toEqual({ name: 'circle', attributes: { class: 'ms-guide', cx: 0.5, cy: 0.5, r: 0.16 }, text: '' });
     expect(of('ms-dot')).toEqual({ name: 'circle', attributes: { class: 'ms-dot', cx: 0.5, cy: 0.5, r: 0.24 }, text: '' });
     expect(of('ms-key')).toEqual({ name: 'rect', attributes: { class: 'ms-key', x: 0.05, y: 0.18, width: 0.9, height: 0.64, rx: 0.12 }, text: '' });
-    expect(of('ms-key-text')).toEqual({ name: 'text', attributes: { class: 'ms-key-text', x: 0.5, y: 0.5 }, text: 'KEY 1' });
+    expect(of('ms-key-text')).toEqual({ name: 'text', attributes: { class: 'ms-key-text', x: 0.5, y: 0.5 }, text: '1' });
     expect(of('ms-letter')).toEqual({ name: 'circle', attributes: { class: 'ms-letter', cx: 0.5, cy: 0.5, r: 0.4 }, text: '' });
     expect(of('ms-letter-text')).toEqual({ name: 'text', attributes: { class: 'ms-letter-text', x: 0.5, y: 0.52 }, text: 'A' });
-    expect(of('ms-exit')).toEqual({ name: 'rect', attributes: { class: 'ms-exit', x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, text: '' });
+    expect(of('ms-exit')).toEqual({ name: 'rect', attributes: { class: 'ms-exit', x: -0.1, y: 0.24, width: 1.2, height: 0.52, rx: 0.26 }, text: '' });
     expect(of('ms-exit-text')).toEqual({ name: 'text', attributes: { class: 'ms-exit-text', x: 0.5, y: 0.51 }, text: 'ABC' });
   });
 
@@ -1002,7 +999,7 @@ describe('on paper', () => {
     expect(end).toEqual({
       transform: `translate(${MAZE.end.col} ${MAZE.end.row})`,
       shapes: [
-        { name: 'rect', attributes: { class: 'ms-end', x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, text: '' },
+        { name: 'rect', attributes: { class: 'ms-end', x: -0.1, y: 0.24, width: 1.2, height: 0.52, rx: 0.26 }, text: '' },
         { name: 'text', attributes: { class: 'ms-end-text', x: 0.5, y: 0.51 }, text: 'End' },
       ],
     });

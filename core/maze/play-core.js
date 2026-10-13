@@ -693,12 +693,6 @@ export function printedNote(board) {
   return groups.concat(rows.filter(function (row) { return row[1].length > 0; }).map(function (row) { return { name: row[0], boxes: row[1] }; }));
 }
 
-// What a stop reads on paper, where no colour tells a key from a letter: a key KEY and its number,
-// a letter its letter, an exit its letter order, the end End; a guide or collectible nothing.
-export function printedLabel(stop) {
-  return { true: 'KEY ' + stop.label, false: stop.label }[stop.kind === 'key'];
-}
-
 // A zone on paper is labelled with its key's number, ZONE 1 to ZONE 4.
 export function printedZone(zone) {
   return 'ZONE ' + zone.key;
@@ -715,12 +709,13 @@ function placedAt(x, y, shapes) {
 }
 
 // Each stop as paper draws it, in its cell: a guide a small dot, a collectible a dot, a key a box
-// reading KEY and its number, a letter a disc, an exit or the end a pill with its letter order or
-// End.
+// reading its number, a letter a disc, an exit or the end a pill with its letter order or End. Every
+// label prints at 7 pt, half a cell, where a letter order is wider than a cell: its pill is 1.2 cells
+// wide, over the middle of the walls beside it (the owner's pick, 2026-10-13, TASK-105).
 function stopShapes(stop) {
-  var label = printedLabel(stop);
+  var label = stop.label;
   var pill = function (kind) {
-    return [shape('rect', { class: 'ms-' + kind, x: 0.03, y: 0.24, width: 0.94, height: 0.52, rx: 0.26 }, ''), shape('text', { class: 'ms-' + kind + '-text', x: 0.5, y: 0.51 }, label)];
+    return [shape('rect', { class: 'ms-' + kind, x: -0.1, y: 0.24, width: 1.2, height: 0.52, rx: 0.26 }, ''), shape('text', { class: 'ms-' + kind + '-text', x: 0.5, y: 0.51 }, label)];
   };
   var shapes = {
     guide: [shape('circle', { class: 'ms-guide', cx: 0.5, cy: 0.5, r: 0.16 }, '')],

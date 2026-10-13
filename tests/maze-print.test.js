@@ -115,16 +115,31 @@ test('a maze of guides alone lists Guides and End, nothing else', async ({ page 
   await expect(note(page).locator('.note-name')).toHaveText(['Guides', 'End']);
 });
 
-test('on paper zones are shaded and read ZONE 1, keys KEY 1, and each exit its letter order', async ({ page }) => {
+test('on paper zones are shaded and read ZONE 1, keys their number, and each exit its letter order', async ({ page }) => {
   await open(page);
   await printIn(page, 'plain');
   await expect(paper(page).locator('.ms-zone')).toHaveCount(1);
   await expect(paper(page).locator('.ms-zone-text')).toHaveText(['ZONE 1']);
-  await expect(paper(page).locator('.ms-key-text')).toHaveText(['KEY 1']);
+  await expect(paper(page).locator('.ms-key-text')).toHaveText(['1']);
   await expect(paper(page).locator('.ms-letter-text')).toHaveText(['A', 'B', 'C']);
   await expect(paper(page).locator('.ms-exit-text')).toHaveText(['ABC', 'ACB', 'BAC', 'BCA', 'CAB', 'CBA']);
   expect(Number(await paper(page).locator('.ms-zone').evaluate(z => getComputedStyle(z).fillOpacity))).toBeGreaterThan(0);
   await expect(paper(page).locator('.ms-start')).toHaveCount(1);
+});
+
+// The owner's pick, 2026-10-13 (TASK-105, option 2): at 7 pt a key reads its number alone, and an
+// exit's or the end's pill is 1.2 cells wide, over the middle of the walls beside it.
+test('at 7 pt every key number, exit order and End sits inside its own box or pill', async ({ page }) => {
+  for (const maze of [EVERY, BIG]) {
+    await open(page, { maze });
+    await printIn(page, 'plain');
+    const spills = await paper(page).evaluate(svg => [...svg.querySelectorAll('.ms-key-text, .ms-exit-text, .ms-end-text')].map(t => {
+      const [text, box] = [t.getBoundingClientRect(), t.previousElementSibling.getBoundingClientRect()];
+      return { label: t.textContent, left: text.left - box.left, right: box.right - text.right };
+    }).filter(s => s.left < 0 || s.right < 0));
+    expect(spills).toEqual([]);
+    await page.emulateMedia({ media: 'screen' });
+  }
 });
 
 test('my trail, my ticks and the solution never print: the sheet is the blank maze, whatever I did', async ({ page }) => {

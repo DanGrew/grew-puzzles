@@ -239,11 +239,13 @@ button.zoom-out svg, button.zoom-in svg { display: block; }
   .ms-letter { fill: var(--ms-letter); }
   .ms-end { fill: var(--ms-ink); }
   .maze-paper text { font-family: var(--font-body); font-weight: 700; text-anchor: middle; dominant-baseline: central; }
-  .ms-key-text { font-size: .27px; fill: var(--ms-key); letter-spacing: -.01px; }
-  .ms-letter-text { font-size: .5px; fill: #fff; }
-  .ms-exit-text { font-size: .36px; fill: var(--ms-ink); letter-spacing: -.01px; }
-  .ms-end-text { font-size: .36px; fill: #fff; }
-  .maze-paper .ms-zone-text { font-size: .42px; fill: var(--ms-zone); text-anchor: start; dominant-baseline: auto;
+  /* Every label half a cell: 7.2 pt at 0.2 in a cell, over KDP's 7 pt floor (TASK-105). */
+  .maze-paper text { font-size: .5px; }
+  .ms-key-text { fill: var(--ms-key); }
+  .ms-letter-text { fill: #fff; }
+  .ms-exit-text { fill: var(--ms-ink); letter-spacing: -.01px; }
+  .ms-end-text { fill: #fff; }
+  .maze-paper .ms-zone-text { fill: var(--ms-zone); text-anchor: start; dominant-baseline: auto;
     stroke: #fff; stroke-width: .12; paint-order: stroke; }
   /* Colour or Black and white, with the puzzle's character known: it stands in for each collectible's
      dot, and each block is the character on a white tile. A CSS image, so it loads only when shown. */
