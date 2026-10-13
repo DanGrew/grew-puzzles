@@ -139,6 +139,90 @@ test('saved as a PDF, a book with a maze is every page 8.5×11 in, the maze on o
   expect(pageSizes(pdf)).toEqual([LETTER, LETTER, LETTER, LETTER]);
 });
 
+// A book of mazes for KDP (TASK-105): the 32×40 wearing the 6×6's keys, zone, collectibles, letters
+// and exits, so every label a maze page can carry is on it, then the 32×40 of guides alone, its End.
+const MAZE_6 = require('./fixtures/MAZE-0001.json');
+const MAZE_EVERY = {
+  ...MAZE_32, hiddenId: 'MAZE-0004', title: 'Every Thing', keys: MAZE_6.keys, zones: MAZE_6.zones,
+  collectibles: MAZE_6.collectibles, letters: MAZE_6.letters, exits: MAZE_6.exits,
+};
+const mazesBook = {
+  slug: 'mazes', name: 'Mazes', description: 'Two mazes.', created: '2026-10-13',
+  puzzles: [{ id: 'MAZE-0004', number: 1 }, { id: 'MAZE-0002', number: 2 }],
+};
+
+async function openMazes(page, style = 'plain') {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [mazesBook] } }));
+  await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: [MAZE_EVERY, MAZE_32].map(m => ({ hiddenId: m.hiddenId, width: m.width, height: m.height })) } }));
+  await page.route('**/content/puzzles/maze/MAZE-0002.json', r => r.fulfill({ json: MAZE_32 }));
+  await page.route('**/content/puzzles/maze/MAZE-0004.json', r => r.fulfill({ json: MAZE_EVERY }));
+  await catchPrint(page);
+  await page.goto(`/app/book.html?slug=mazes&print=${style}`);
+  await expect(page.locator('#ready')).toBeVisible();
+}
+
+// Every label on the book's maze pages, as printed, in points: the note box's names and boxes, and
+// every word the maze itself carries, its size in cells scaled to the paper the maze is drawn on.
+function mazeLabelSizes() {
+  const pt = el => parseFloat(getComputedStyle(el).fontSize) * 0.75;
+  return [...document.querySelectorAll('.sheet .maze-sheet')].flatMap(sheet => {
+    const svg = sheet.querySelector('[data-part="maze"]');
+    const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+    return [
+      ...[...sheet.querySelectorAll('.note-name, .note-box')].map(el => ({ label: el.className + ' ' + el.textContent, pt: pt(el) })),
+      ...[...svg.querySelectorAll('text')].map(el => ({ label: el.getAttribute('class') + ' ' + el.textContent, pt: pt(el) * scale })),
+    ];
+  });
+}
+
+test('every label on a book\'s maze pages prints at 7 pt or more — zone and key numbers, A, B and C, the six exit orders, End and every line of the note box', async ({ page }) => {
+  await openMazes(page);
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await page.emulateMedia({ media: 'print' });
+  const labels = await page.evaluate(mazeLabelSizes);
+  const texts = labels.map(l => l.label.replace(/^\S+ /, ''));
+  for (const kind of ['ZONE 1', '1', 'A', 'B', 'C', 'ABC', 'CBA', 'End', 'Guides', 'Exits']) expect(texts).toContain(kind);
+  expect(labels.filter(l => l.pt < 7 - 0.01)).toEqual([]);
+});
+
+test('every maze page of the book fits inside KDP\'s margins: its number, title, note box, maze and hidden ID all at least 0.25 in from the top and 0.5 in from either side, above its page number, nothing on a second page', async ({ page }) => {
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await openMazes(page);
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 2']);
+  await expect(sheets(page).locator('.maze-sheet .ident')).toHaveText([/MAZE-0004$/, /MAZE-0002$/], { useInnerText: true });
+  for (const depth of await page.evaluate(pageDepths)) {
+    expect(depth.content).toBeLessThan(depth.numberTop);
+    expect(depth.numberBottom).toBeLessThanOrEqual(11 - 0.25);
+  }
+  // Every part of each maze page, the maze's own words too, inside KDP's margins: 0.25 in at the top
+  // and the outside, and 0.5 in at the gutter — a book of up to 300 pages — so either side, as a
+  // page falls left or right. A line of words is measured by its words, not its line.
+  const edges = await page.evaluate(() => [...document.querySelectorAll('.sheet')].map(sheet => {
+    const page = sheet.getBoundingClientRect();
+    const box = el => { if (el instanceof SVGElement) return el.getBoundingClientRect(); const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect(); };
+    const parts = sheet.querySelectorAll('.sheet-number, h1, .ident, [data-part="note"], [data-part="maze"], [data-part="maze"] text');
+    return [...parts].map(el => {
+      const r = box(el);
+      return { part: el.getAttribute('class') || el.tagName, left: (r.left - page.left) / 96, right: (page.right - r.right) / 96, top: (r.top - page.top) / 96 };
+    }).filter(p => Math.min(p.left, p.right) < 0.5 || p.top < 0.25);
+  }));
+  expect(edges).toEqual([[], []]);
+  const pdf = await savePdf(page);
+  // The title and copyright pages, then a page a maze.
+  expect(pageSizes(pdf)).toEqual(Array(4).fill(LETTER));
+});
+
+test('saved as a PDF, a book of mazes passes as a wordsearch book does: every font embedded, no links, notes or bookmarks, even pages on the left', async ({ page }) => {
+  await openMazes(page);
+  await page.emulateMedia({ media: 'print' });
+  expect(await page.locator('.sheet .page-number').evaluateAll(n => n.map(el => [el.textContent, el.dataset.side]))).toEqual([['3', 'right'], ['4', 'left']]);
+  const pdf = await savePdf(page);
+  expect(unembeddedFonts(pdf)).toEqual([]);
+  for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
+});
+
 // Boards for a book (TASK-138): the 10×10 (MINE-0001) and a 30×30 (MINE-0003, the 40×40 cut down)
 // print; the 40×40 (MINE-0002) is too big. No board's size is in the index: each one's file tells.
 const MINE_10 = require('./fixtures/MINE-0001.json');
