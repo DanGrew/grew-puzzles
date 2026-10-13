@@ -33,6 +33,20 @@ button.mines-square:focus-visible { outline: 2px solid var(--select); outline-of
 .mines-square[data-mark="dot"]::after { content: ""; width: 16%; height: 16%; border-radius: 50%; background: var(--muted); }
 .back-face .mines-square[data-mark="mine"]::after { background: var(--band); box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--band); }
 
+/* Check's ring: a mark the answer disagrees with, ringed in red on the square's edge — over its
+   fill, so a red number, and Themed's ringed mine (styles/look.css), still read inside it. */
+.mines-square[data-checked="wrong"] { --ring: max(3px, calc(var(--cell) * .11)); outline: var(--ring) solid var(--wrong); outline-offset: calc(-1 * var(--ring)); }
+
+/* Check and Undo under the board, and the line Check leaves under them. */
+.mines-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+.mines-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; }
+.mines-tools .tool:hover:not(:disabled) { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
+.mines-tools .tool:disabled { opacity: .45; cursor: default; box-shadow: none; }
+.check-line { width: max-content; max-width: 100%; box-sizing: border-box; margin: 10px auto 0; padding: 5px 14px; font-size: 14px; font-weight: 600;
+  text-align: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; }
+.check-line[hidden] { display: none; }
+
 /* Zoom out and in at the card's top-left, while the board zooms. */
 button.zoom-out { left: 0; transform: translate(-35%, -35%); }
 button.zoom-in { left: 37px; transform: translateY(-35%); }

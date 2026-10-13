@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { minesBoard, newMinesPlay, tapMines } from '../../../core/minesweeper/play-core.js';
-import { marksRow, tapRows, restoredMines, syncRows, joinedMines } from '../../../core/minesweeper/progress-core.js';
+import { marksRow, tapRows, restoredMines, syncRows, joinedMines, joinedHistory } from '../../../core/minesweeper/progress-core.js';
 // core/minesweeper/progress-core.js, against a small board, two rows of three:
 //   2 . .      the 2 touches (0,1), (1,0) and (1,1); the 1 touches (0,1), (0,2) and (1,1)
 //   . . 1      its mines are (0,1) and (1,0)
@@ -108,5 +108,11 @@ describe('signing in mid-board', () => {
   it('with nothing marked on screen, the saved board comes back', () => {
     const saved = { marks: { '0,1': 'mine' }, events: [] };
     expect(joinedMines(newMinesPlay(), saved)).toBe(saved);
+  });
+
+  it('Undo keeps its history with the marks on screen, and starts over once the saved board replaces them', () => {
+    const history = [{ marks: {}, events: [] }];
+    expect(joinedHistory(taps([[0, 2]]), history)).toBe(history);
+    expect(joinedHistory(newMinesPlay(), history)).toEqual([]);
   });
 });

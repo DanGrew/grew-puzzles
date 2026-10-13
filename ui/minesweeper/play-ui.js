@@ -1,17 +1,17 @@
 // The minesweeper play page's DOM: loads the board a play URL names, draws it and its answer from
-// play-core's board, and wires the taps, the zoom and moving round a big board, the flip and the
+// play-core's board, and wires the taps, Check and Undo, the zoom and moving round a big board, the flip and the
 // completion pop, and the print menu, and dresses it Themed in its character. Every rule lives in
 // core/minesweeper/play-core.js and core/theme-core.js; nothing here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
 // sheet is ui/minesweeper/sheet-ui.js.
 import {
   minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
-  minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, minesPrints
+  minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, minesPrints
 } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { characterFor, idNumber, isPhone, boxFrom, siteDress, minesPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
-import { joinedMines } from '../../core/minesweeper/progress-core.js';
+import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
 import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
 import { drawMinesSheet, dressMinesSheet } from './sheet-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
@@ -69,8 +69,9 @@ function showMissing() {
 // The board on its own play page: the board in the grid card, its answer on the card's back, and
 // the Mines card beside it — under it on a phone — play, as the player left it, already in place,
 // so nothing pops in and a board finished before doesn't celebrate again. It is saved under its
-// hidden ID.
+// hidden ID. Undo's history is this visit's alone, held here and nowhere else.
 function showBoard(id, board, play) {
+  var history = newMinesHistory();
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The first frame opens the board; every one after refits it.
@@ -109,32 +110,59 @@ function showBoard(id, board, play) {
   wireZoom();
   wireSize();
   wireMinesProgress(id, board, function () { return play; }, joinSaved);
+  minesEl('check').addEventListener('click', onCheck);
+  minesEl('undo').addEventListener('click', onUndo);
   render();
 
-  // Every tap that changes the marks is saved, signed in.
+  // Every tap that changes the marks is saved, signed in, and kept for Undo; any tap clears Check's
+  // rings.
   function onTap(cell) {
     var next = tapMines(play, cell, board);
     saveTap(id, board, play, next);
+    history = tappedHistory(history, play, next);
     play = next;
     render();
     play.events.forEach(function (e) { MINES_EVENTS[e](); });
   }
 
+  // The last tap taken back, and saved as a tap is, so the saved marks follow it.
+  function onUndo() {
+    var undone = undoneMines(history, play);
+    saveTap(id, board, play, undone.play);
+    history = undone.history;
+    play = undone.play;
+    render();
+  }
+
+  // Each mark the answer disagrees with ringed in red, and the line under the board says how many.
+  function onCheck() {
+    var mistakes = minesMistakes(play, board);
+    render();
+    mistakes.forEach(function (k) { squares.get(k).dataset.checked = 'wrong'; });
+    minesEl('check-line').textContent = checkLine(mistakes);
+    minesEl('check-line').hidden = false;
+  }
+
   // Signed in mid-board: the board saved elsewhere joins the one on screen.
   function joinSaved(saved) {
+    history = joinedHistory(play, history);
     play = joinedMines(play, saved);
     render();
   }
 
-  // Each square as the marks have it, the Mines card's count, and the finish's line.
+  // Each square as the marks have it, with no Check rings, the Mines card's count, Undo, and the
+  // finish's line.
   function render() {
     squareMarks(play, board).forEach(function (m) {
       var square = squares.get(m.key);
       square.dataset.mark = m.mark;
       square.dataset.state = m.state;
+      square.dataset.checked = '';
       square.setAttribute('aria-label', m.label);
     });
     minesEl('count').textContent = minesCount(play, board);
+    minesEl('check-line').hidden = true;
+    minesEl('undo').disabled = !canUndo(history, play, board);
     minesEl('complete').hidden = !minesFinished(play, board);
   }
 
