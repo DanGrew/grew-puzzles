@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   minesUrl, minesFile, minesBoard, newMinesPlay, tapMines, minesFinished, minesSquares, numberState, squareMarks,
   minesCount, answerSquares, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind,
-  minesPrints, printedRule
+  minesPrints, printedRule, minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo
 } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/play-core.js, against MINE-0001 — a real 10×10 Easy board of 15 mines made by
@@ -168,6 +168,92 @@ describe('solving the board', () => {
     const play = { marks: Object.fromEntries(BOARD.mines.map(k => [k, 'mine'])), events: [] };
     expect(minesFinished(play, BOARD)).toBe(true);
     expect(minesCount(play, BOARD)).toBe('15/15');
+  });
+});
+
+describe('Check', () => {
+  it('points at a mine marked where there is none, and a dot where there is one', () => {
+    expect(minesMistakes({ marks: { '1,1': 'mine' } }, SMALL)).toEqual(['1,1']);
+    expect(minesMistakes({ marks: { '0,1': 'dot' } }, SMALL)).toEqual(['0,1']);
+    expect(minesMistakes({ marks: { '0,1': 'dot', '1,1': 'mine', '0,2': 'dot', '1,0': 'mine' } }, SMALL)).toEqual(['0,1', '1,1']);
+  });
+
+  it('a mark the answer agrees with is never pointed at, nor a blank square', () => {
+    expect(minesMistakes({ marks: { '0,1': 'mine', '1,1': 'dot' } }, SMALL)).toEqual([]);
+    expect(minesMistakes(newMinesPlay(), SMALL)).toEqual([]);
+    expect(minesMistakes({ marks: Object.fromEntries(BOARD.mines.map(k => [k, 'mine'])) }, BOARD)).toEqual([]);
+  });
+
+  it('says how many, or that there are none', () => {
+    expect(checkLine([])).toBe('No mistakes so far');
+    expect(checkLine(['1,1'])).toBe('1 mistake');
+    expect(checkLine(['0,1', '1,1'])).toBe('2 mistakes');
+    expect(checkLine(Array(12).fill('0,0'))).toBe('12 mistakes');
+  });
+});
+
+describe('Undo', () => {
+  // Each tap played through, the history kept as the page keeps it.
+  function played(cells, board) {
+    return cells.reduce((at, cell) => {
+      const next = tapMines(at.play, cell, board);
+      return { play: next, history: tappedHistory(at.history, at.play, next) };
+    }, { play: newMinesPlay(), history: newMinesHistory() });
+  }
+
+  it('a visit starts with nothing to take back', () => {
+    expect(newMinesHistory()).toEqual([]);
+    expect(canUndo(newMinesHistory(), newMinesPlay(), SMALL)).toBe(false);
+  });
+
+  it('takes back the last tap, the square as it was before it', () => {
+    const at = played([[1, 1], [1, 1]], SMALL);
+    expect(at.play.marks).toEqual({ '1,1': 'mine' });
+    expect(canUndo(at.history, at.play, SMALL)).toBe(true);
+    const back = undoneMines(at.history, at.play);
+    expect(back.play).toEqual({ marks: { '1,1': 'dot' }, events: [] });
+    expect(back.history).toHaveLength(1);
+  });
+
+  it('takes back a number\'s fill as one tap, every square it filled at once', () => {
+    const at = played([[0, 1], [0, 1], [1, 2]], SMALL);
+    expect(at.play.marks).toEqual({ '0,1': 'mine', '0,2': 'dot', '1,1': 'dot' });
+    expect(at.history).toHaveLength(3);
+    expect(undoneMines(at.history, at.play).play.marks).toEqual({ '0,1': 'mine' });
+  });
+
+  it('a tap that changed nothing isn\'t kept, so Undo never takes back nothing', () => {
+    // The 1 with one blank square dotted can't settle the other two, so its tap does nothing.
+    const at = played([[1, 1], [1, 2]], SMALL);
+    expect(at.history).toHaveLength(1);
+    expect(tappedHistory([], newMinesPlay(), { marks: {}, events: [] })).toEqual([]);
+    expect(tappedHistory([], { marks: { '1,1': 'dot' } }, { marks: { '1,1': 'mine' } })).toEqual([{ marks: { '1,1': 'dot' }, events: [] }]);
+    expect(tappedHistory([], { marks: { '1,1': 'dot' } }, { marks: {} })).toHaveLength(1);
+    expect(tappedHistory([], { marks: {} }, { marks: { '1,1': 'dot' } })).toHaveLength(1);
+  });
+
+  it('pressed again and again, each earlier tap goes in turn, until nothing is left', () => {
+    let at = played([[1, 1], [0, 2], [0, 2]], SMALL);
+    const seen = [];
+    while (canUndo(at.history, at.play, SMALL)) {
+      at = undoneMines(at.history, at.play);
+      seen.push(at.play.marks);
+    }
+    expect(seen).toEqual([{ '1,1': 'dot', '0,2': 'dot' }, { '1,1': 'dot' }, {}]);
+    expect(at.history).toEqual([]);
+  });
+
+  it('with nothing kept, leaves the play as it is', () => {
+    const play = { marks: { '1,1': 'dot' }, events: [] };
+    expect(undoneMines([], play)).toEqual({ play, history: [] });
+  });
+
+  it('a solved board takes nothing back, and an undone play sets nothing off', () => {
+    const at = played([[0, 1], [0, 1], [1, 0], [1, 0]], SMALL);
+    expect(at.play.events).toEqual(['complete']);
+    expect(canUndo(at.history, at.play, SMALL)).toBe(false);
+    const before = played([[0, 1], [0, 1], [1, 0]], SMALL);
+    expect(undoneMines(before.history, before.play).play.events).toEqual([]);
   });
 });
 

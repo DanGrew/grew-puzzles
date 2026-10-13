@@ -200,6 +200,29 @@ test('opening the board on another device, my mines and dots are back where I le
   await phone.close();
 });
 
+test('signed in, an Undo is saved as a tap is: another device opens the marks as they stood after it — and its Undo has nothing to take back', async ({ browser }) => {
+  const db = minesTable();
+  const laptop = await browser.newContext();
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await playing(laptop, { db });
+  await playing(phone, { db });
+  const there = await open(laptop);
+  await tapAll(there, [[0, 3], [0, 3], [5, 0]]);
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([[0, 3]], [[5, 0]])]);
+  await there.click('#undo');
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([[0, 3]], [])]);
+  await there.click('#undo');
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([], [[0, 3]])]);
+
+  const here = await open(phone);
+  await expect(count(here)).toHaveText('0/15');
+  expect([await markOf(here, 0, 3), await markOf(here, 5, 0)]).toEqual(['dot', 'blank']);
+  await expect(here.locator('#undo')).toBeDisabled();
+  expect(await here.evaluate(() => Object.keys(localStorage).filter(k => k !== 'grew-puzzles.look' && !k.startsWith('sb-')))).toEqual([]);
+  await laptop.close();
+  await phone.close();
+});
+
 test('the board waits for what was saved, and first shows with it already in place', async ({ context }) => {
   await playing(context, { db: minesTable({ boards: [marks([[0, 3], [1, 4]], [[0, 0]])] }) });
   await context.addInitScript(() => {

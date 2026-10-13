@@ -112,12 +112,14 @@ test.describe('a minesweeper board', () => {
     await expect(square(page, 0, 1)).toHaveAttribute('data-mark', 'blank');
   });
 
-  test('a mine in the wrong place is never pointed out, and the board isn\'t solved', async ({ page }) => {
+  test('a mine in the wrong place is never pointed out until Check is pressed, and the board isn\'t solved', async ({ page }) => {
     await tapAll(page, mines.slice(1).flatMap(m => [m, m]));
     await tapAll(page, [[0, 0], [0, 0]]);
     await expect(page.locator('#count')).toHaveText('15/15');
     await expect(page.locator('#complete')).toBeHidden();
     await expect(square(page, 0, 0)).toHaveAttribute('data-mark', 'mine');
+    await expect(page.locator('#grid [data-checked="wrong"]')).toHaveCount(0);
+    await expect(page.locator('#check-line')).toBeHidden();
   });
 
   test('the corner button flips to the answer with every mine shown, and back with the marks intact', async ({ page }) => {
@@ -141,6 +143,132 @@ test.describe('a minesweeper board', () => {
     await expect(page.locator('#play')).toHaveAttribute('data-zoomable', 'false');
     await expect(page.locator('#zoom-in')).toBeHidden();
     await expect(page.locator('#zoom-out')).toBeHidden();
+  });
+});
+
+// Check and Undo, under the board. On MINE-0001, (0,3) is a mine and (0,0) isn't; the 0 at (0,8)
+// fills (0,9), (1,7), (1,8) and (1,9).
+test.describe('Check and Undo', () => {
+  test.beforeEach(async ({ page }) => { await open(page); });
+
+  const ringed = page => page.locator('#grid [data-checked="wrong"]');
+  const line = page => page.locator('#check-line');
+
+  test('a mine marked where there is none is ringed in red, and the line under the board says 1 mistake', async ({ page }) => {
+    await tapAll(page, [[0, 0], [0, 0], [5, 0]]);
+    await page.click('#check');
+    await expect(ringed(page)).toHaveCount(1);
+    await expect(square(page, 0, 0)).toHaveAttribute('data-checked', 'wrong');
+    await expect.poll(() => square(page, 0, 0).evaluate(el => getComputedStyle(el).outlineColor)).toBe('rgb(224, 71, 59)');
+    await expect(line(page)).toBeVisible();
+    await expect(line(page)).toHaveText('1 mistake');
+    const board = await page.locator('#stage').boundingBox();
+    const said = await line(page).boundingBox();
+    expect(said.y).toBeGreaterThan(board.y + board.height);
+  });
+
+  test('a dot on a square that is really a mine is ringed too', async ({ page }) => {
+    await tapAll(page, [[0, 3]]);
+    await page.click('#check');
+    await expect(square(page, 0, 3)).toHaveAttribute('data-checked', 'wrong');
+    await expect(line(page)).toHaveText('1 mistake');
+  });
+
+  test('every mark right rings nothing and says No mistakes so far — and a blank square is never ringed', async ({ page }) => {
+    await tapAll(page, [[0, 0], [0, 3], [0, 3]]);
+    await page.click('#check');
+    await expect(line(page)).toHaveText('No mistakes so far');
+    await expect(ringed(page)).toHaveCount(0);
+    await page.click('#check');
+    await expect(ringed(page)).toHaveCount(0);
+  });
+
+  test('several mistakes are each ringed and counted', async ({ page }) => {
+    // (0,0) and (0,1) marked mines, neither one; a dot on (0,3), a mine; a right dot on (5,0).
+    await tapAll(page, [[0, 0], [0, 0], [0, 1], [0, 1], [0, 3], [5, 0]]);
+    await page.click('#check');
+    await expect(ringed(page)).toHaveCount(3);
+    await expect(line(page)).toHaveText('3 mistakes');
+    for (const [r, c] of [[0, 0], [0, 1], [0, 3]]) await expect(square(page, r, c)).toHaveAttribute('data-checked', 'wrong');
+    await expect(square(page, 5, 0)).toHaveAttribute('data-checked', '');
+  });
+
+  test('a tap on any square after a Check takes the rings and the line away', async ({ page }) => {
+    await tapAll(page, [[0, 0], [0, 0]]);
+    await page.click('#check');
+    await expect(ringed(page)).toHaveCount(1);
+    await square(page, 9, 9).click();
+    await expect(ringed(page)).toHaveCount(0);
+    await expect(line(page)).toBeHidden();
+  });
+
+  test('Undo is grey until a tap, and takes a square back to how it was', async ({ page }) => {
+    await expect(page.locator('#undo')).toBeDisabled();
+    await tapAll(page, [[0, 0]]);
+    await expect(page.locator('#undo')).toBeEnabled();
+    await page.click('#undo');
+    await expect(square(page, 0, 0)).toHaveAttribute('data-mark', 'blank');
+    await expect(page.locator('#undo')).toBeDisabled();
+  });
+
+  test('Undo takes back a number\'s fill all at once', async ({ page }) => {
+    await tapAll(page, [[0, 8]]);
+    const filled = [[0, 9], [1, 7], [1, 8], [1, 9]];
+    for (const [r, c] of filled) await expect(square(page, r, c)).toHaveAttribute('data-mark', 'dot');
+    await page.click('#undo');
+    for (const [r, c] of filled) await expect(square(page, r, c)).toHaveAttribute('data-mark', 'blank');
+    await expect(page.locator('#undo')).toBeDisabled();
+  });
+
+  test('pressed again and again, Undo takes back each earlier tap in turn, the count with it, then greys out', async ({ page }) => {
+    await tapAll(page, [[0, 0], [0, 3], [0, 3]]);
+    await expect(page.locator('#count')).toHaveText('1/15');
+    await page.click('#undo');
+    await expect(square(page, 0, 3)).toHaveAttribute('data-mark', 'dot');
+    await expect(page.locator('#count')).toHaveText('0/15');
+    await page.click('#undo');
+    await expect(square(page, 0, 3)).toHaveAttribute('data-mark', 'blank');
+    await expect(square(page, 0, 0)).toHaveAttribute('data-mark', 'dot');
+    await page.click('#undo');
+    await expect(square(page, 0, 0)).toHaveAttribute('data-mark', 'blank');
+    await expect(page.locator('#undo')).toBeDisabled();
+  });
+
+  test('Undo takes the Check rings away too', async ({ page }) => {
+    await tapAll(page, [[0, 0], [0, 0], [5, 0]]);
+    await page.click('#check');
+    await page.click('#undo');
+    await expect(ringed(page)).toHaveCount(0);
+    await expect(line(page)).toBeHidden();
+  });
+
+  test('a solved board can\'t be undone, and Check finds nothing', async ({ page }) => {
+    await tapAll(page, mines.flatMap(m => [m, m]));
+    await expect(page.locator('#complete')).toBeVisible();
+    await expect(page.locator('#undo')).toBeDisabled();
+    await page.click('#check');
+    await expect(line(page)).toHaveText('No mistakes so far');
+  });
+
+  test('Undo is gone on reload', async ({ page }) => {
+    await tapAll(page, [[0, 0]]);
+    await page.reload();
+    await expect(page.locator('#play')).toBeVisible();
+    await expect(page.locator('#undo')).toBeDisabled();
+  });
+});
+
+test.describe('Check and Undo, Themed', () => {
+  test('a ringed mine wears its character and its own ring inside Check\'s', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('grew-puzzles.look', 'themed'));
+    await open(page);
+    await tapAll(page, [[0, 0], [0, 0]]);
+    await page.click('#check');
+    const s = square(page, 0, 0);
+    await expect(s).toHaveAttribute('data-checked', 'wrong');
+    const look = await s.evaluate(el => ({ outline: getComputedStyle(el).outlineColor, shadow: getComputedStyle(el).boxShadow }));
+    expect(look.outline).toBe('rgb(224, 71, 59)');
+    expect(look.shadow).toContain('rgb(201, 96, 90)');
   });
 });
 

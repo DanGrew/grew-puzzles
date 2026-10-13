@@ -67,3 +67,9 @@ export function syncRows(puzzle, play, board) {
 export function joinedMines(play, saved) {
   return { true: { marks: play.marks, events: [] }, false: saved }[marked(play)];
 }
+
+// Undo's history once the saved board is joined: kept with the marks on screen; gone once the
+// saved board replaces them, as its taps were made elsewhere.
+export function joinedHistory(play, history) {
+  return { true: history, false: [] }[marked(play)];
+}

@@ -72,6 +72,13 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
         </button>
       </div>
+      <!-- Under the board: Check rings any mark the answer disagrees with, and the line says how
+           many; Undo takes back the last tap this visit. -->
+      <div class="mines-tools">
+        <button class="tool" id="check" type="button">Check</button>
+        <button class="tool" id="undo" type="button" disabled>Undo</button>
+      </div>
+      <p class="check-line" id="check-line" role="status" hidden></p>
       <div class="complete" id="complete" hidden>Solved — every mine found</div>
     </div>
 

@@ -1,6 +1,7 @@
 // The minesweeper play page's rules: which board a play URL names, what its board holds, what a
 // tap does to the player's marks, how each number reads against them, when the board is solved,
-// how the board sits in its frame, and whether it prints. Pure — the DOM work is ui/minesweeper/play-ui.js. The board
+// which marks Check rings and what Undo takes back, how the board sits in its frame, and whether it
+// prints. Pure — the DOM work is ui/minesweeper/play-ui.js. The board
 // file is grew-puzzles-tooling's docs/PUZZLE-FORMAT.md: the site only reads its numbers and its
 // mines, and never works a board out. A number fades or turns red, and a tap on it fills its
 // squares, from the player's own marks counted against it, never from the answer.
@@ -118,6 +119,52 @@ export function tapMines(play, cell, board) {
   var tap = { true: numberFill, false: function () { return marked(play, [cell], nextMark(markOf(play, cell))); } };
   var marks = tap[keyOf(cell) in board.numbers](play, cell, board);
   return { marks: marks, events: minesFinished({ marks: marks }, board) ? ['complete'] : [] };
+}
+
+// ---- Check and Undo ----
+// Two plain buttons, no settings (the product's TASK-160 spec): Check points at the player's marks
+// that disagree with the answer — the file's mines, the ones the flip shows — and never scores,
+// penalises or blocks the finish; Undo takes back the taps of this visit, newest first, and has no
+// Redo. The history is the plays before each tap that changed the marks, oldest first — held in
+// the open page only, so a reload or another device starts it empty.
+
+// The marked squares the answer disagrees with: a mine where there is none, a dot where there is
+// one. A blank square is never checked.
+export function minesMistakes(play, board) {
+  return Object.keys(play.marks).filter(function (k) { return (play.marks[k] === 'mine') !== board.mines.includes(k); });
+}
+
+// The line under the board once Check is pressed.
+export function checkLine(mistakes) {
+  var n = mistakes.length;
+  return { 0: 'No mistakes so far', 1: '1 mistake' }[n] || n + ' mistakes';
+}
+
+export function newMinesHistory() {
+  return [];
+}
+
+function sameMarks(a, b) {
+  var keys = Object.keys(a);
+  return keys.length === Object.keys(b).length && keys.every(function (k) { return a[k] === b[k]; });
+}
+
+// A tap from before to after joins the history if it changed the marks — a number's fill is one
+// tap; a tap that changed nothing has nothing to take back.
+export function tappedHistory(history, before, after) {
+  return history.concat([{ marks: before.marks, events: [] }].filter(function () { return !sameMarks(before.marks, after.marks); }));
+}
+
+// Undo: the play before the last tap kept, and the history without it — with nothing kept, the
+// play as it is. Nothing is set off.
+export function undoneMines(history, play) {
+  return { play: history.slice(-1).concat([play])[0], history: history.slice(0, -1) };
+}
+
+// Undo greys out once there's nothing left to take back, and on a solved board, which takes no more
+// taps.
+export function canUndo(history, play, board) {
+  return history.length > 0 && !minesFinished(play, board);
 }
 
 // ---- What the board shows ----
