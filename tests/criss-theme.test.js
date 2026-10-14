@@ -120,7 +120,11 @@ test('a wide shape\'s card leaves no room on its right for the character, whose 
   expect(seen.size).toBeGreaterThan(1);
 });
 
-test('its character stands as big against the grid card as the printout\'s against the printed shape', async ({ page }) => {
+// The puzzle size kept on the device: Small is the criss-cross page as it was before the size choice.
+const keepSize = (page, size) => page.addInitScript(s => localStorage.setItem('grew-puzzles.text-size', s), size);
+
+test('at Small, its character stands as big against the grid card as the printout\'s against the printed shape', async ({ page }) => {
+  await keepSize(page, 'small');
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page, 'CRSS-0002', SHAPE);
   const stage = await page.locator('.stage').boundingBox();
@@ -129,6 +133,20 @@ test('its character stands as big against the grid card as the printout\'s again
   // The owner's spots: 293 px tall at the sides, 213 over a top corner, on the 17×15's printed card —
   // its 15 rows sharing 4.4 in.
   expect(height).toBeCloseTo({ right: 293, left: 293, topRight: 213, topLeft: 213 }[spot] * stage.width / (17 * 4.4 * IN / 15 + 34), 0);
+});
+
+// TASK-188: a bigger size grows the shape, never its character.
+test('at every size a criss-cross\'s character stands as big as at Small, behind the card it grew', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  const heights = [];
+  for (const size of ['small', 'normal', 'huge']) {
+    await keepSize(page, size);
+    await open(page, 'CRSS-0002', SHAPE);
+    const height = parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height));
+    heights.push(height / { right: 293, left: 293, topRight: 213, topLeft: 213 }[await spotOf(page)]);
+    expect(overlaps(await inkOf(page), await page.locator('.stage').boundingBox())).toBe(true);
+  }
+  heights.forEach(h => expect(h).toBeCloseTo(heights[0], 2));
 });
 
 test('on a phone the character peers over a top corner of the grid card, behind it, with no label', async ({ page }) => {

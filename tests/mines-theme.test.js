@@ -89,14 +89,33 @@ test('the character peers from behind the grid card, clear of the Mines card, an
   }
 });
 
-test('its character stands as big against the grid card as the printout\'s against the printed board', async ({ page }) => {
+// The puzzle size kept on the device: Small is the board as it was before the size choice.
+const keepSize = (page, size) => page.addInitScript(s => localStorage.setItem('grew-puzzles.text-size', s), size);
+
+test('at Small, its character stands as big against the grid card as the printout\'s against the printed board', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  await keepSize(page, 'small');
   await open(page, 'MINE-0002');
   const stage = await page.locator('.stage').boundingBox();
   const height = parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height));
   const spot = await spotOf(page);
   // The owner's spots: 293 px tall at the sides, 213 over a top corner, on the 696 px printed board.
   expect(height).toBeCloseTo({ right: 293, left: 293, topRight: 213, topLeft: 213 }[spot] * stage.width / (7.2 * IN + 5), 0);
+});
+
+// TASK-187: a bigger size grows the board, never its character.
+test('at every size a board\'s character stands as big as at Small, beside the card it grew', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const heights = [];
+  for (const size of ['tiny', 'small', 'normal', 'large']) {
+    await keepSize(page, size);
+    await open(page, 'MINE-0001');
+    await expect.poll(() => spotOf(page)).toBe('left');
+    heights.push(parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height)));
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.x + figure.width / 2).toBeLessThan(stage.x);
+  }
+  heights.forEach(h => expect(h).toBeCloseTo(heights[0], 0));
 });
 
 test('on a phone the character peers over a top corner of the grid card, behind it, with no label', async ({ page }) => {

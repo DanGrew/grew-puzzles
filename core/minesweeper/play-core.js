@@ -253,11 +253,14 @@ export function printedRule(board) {
 // never zooms; any other opens zoomed in, and zooms from the whole board to 48px squares.
 
 // The squares are never bigger than the mockup's 44px, and a whole pixel while the board can be
-// tapped whole. m: the screen's viewHeight, the room the card's band and edges take above and round
-// the board (chromeHeight, chromeWidth), the page's width, and the board's rows and cols.
+// tapped whole. The player's size (size-core's sizeScale: 1 at Small, the board as it was)
+// multiplies both the screen's height the board fits and that 44px — never the page's width, so a
+// phone's board stops at the screen's. m: the screen's viewHeight, the room the card's band and
+// edges take above and round the board (chromeHeight, chromeWidth), the page's width, the size's
+// scale, and the board's rows and cols.
 export function minesFrame(m) {
-  var room = Math.min((m.viewHeight - m.chromeHeight) / m.rows, (m.width - m.chromeWidth) / m.cols);
-  var fit = Math.min(44, Math.max(Math.floor(room), Math.min(room, 10)));
+  var room = Math.min((m.viewHeight - m.chromeHeight) * m.scale / m.rows, (m.width - m.chromeWidth) / m.cols);
+  var fit = Math.min(Math.round(44 * m.scale), Math.max(Math.floor(room), Math.min(room, 10)));
   return { fit: fit, width: m.cols * fit, height: m.rows * fit };
 }
 
