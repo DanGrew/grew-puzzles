@@ -237,8 +237,9 @@ export function dirLabel(state) {
   return labels[state.sort][state.dir];
 }
 
-// The small lines beneath a tile's title: its type as written, then — a maze or minesweeper board
-// whose index entry has it — its size, width by height, a line each; a criss-cross's entry carries
+// The small lines beneath a tile's title: its type as written, then — a wordsearch, maze or
+// minesweeper board whose index entry has it — its size, width by height, a line each (a
+// wordsearch's its one grid's, however many it has: tooling's TASK-189); a criss-cross's entry carries
 // its word count, which it reads instead of its size, since the count is what a player weighs (the
 // owner's call, 2026-10-11). No date: the Date sort reads it, no tile shows it.
 export function tileDetail(puzzle) {

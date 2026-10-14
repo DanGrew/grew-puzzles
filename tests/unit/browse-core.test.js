@@ -420,6 +420,14 @@ describe('browse-core.js', () => {
     expect(tileDetail({ ...maze, height: 60 })).toEqual(['Vanilla']);
   });
 
+  test('a wordsearch tile reads its grid\'s size under its type, one grid\'s for a puzzle of several (TASK-190)', () => {
+    const vanilla = { hiddenId: 'WSCH-0001', type: 'Vanilla', created: '2026-10-03', title: 'Farm Animals', width: 15, height: 15 };
+    const saga = { hiddenId: 'WSCH-0035', type: 'Saga', created: '2026-10-03', title: 'Fish', width: 15, height: 25 };
+    expect(tileDetail(vanilla)).toEqual(['Vanilla', '15×15']);
+    expect(tileDetail(saga)).toEqual(['Saga', '15×25']);
+    expect(browseItems([vanilla], [])[0]).toMatchObject({ href: 'play.html?id=WSCH-0001', lines: ['Vanilla', '15×15'] });
+  });
+
   test('a tile links to the play page by hidden ID', () => {
     expect(playHref('WSCH-0007')).toBe('play.html?id=WSCH-0007');
     expect(playHref('a b&c')).toBe('play.html?id=a%20b%26c');
