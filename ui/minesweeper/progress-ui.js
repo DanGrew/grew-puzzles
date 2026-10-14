@@ -1,5 +1,6 @@
-// Saved progress on the minesweeper page: a signed-in player's marks are saved on every tap that
-// changes them, and read back before the board draws; signing in mid-board syncs the board on
+// Saved progress on the minesweeper page: a signed-in player's marks — on a Reveal board, its opened
+// squares and mine marks — are saved on every tap that changes them, and read back before the board
+// draws; signing in mid-board syncs the board on
 // screen. Signed out, nothing is saved or read — not in this browser either — and the line under the
 // Mines card invites them to sign in. Only the newest marks are sent, one save at a time, and a save
 // that fails is tried again until it lands; once a retry has failed too the line says so. Every rule
@@ -10,9 +11,15 @@ import { client, openSignIn } from '../sign-in-ui.js';
 import { accountView } from '../../core/auth-core.js';
 import { savedRows, savedAnswer, becameSignedIn, saveLine } from '../../core/wordsearch/progress-core.js';
 import { newPlace, placeMoved, placeDue, placeSending, placeSettled, keptPlace } from '../../core/maze/progress-core.js';
-import { tapRows, syncRows, restoredMines } from '../../core/minesweeper/progress-core.js';
+import { tapRows, syncRows, restoredMines, revealTapRows, revealSyncRows, restoredReveal } from '../../core/minesweeper/progress-core.js';
 
 var MINES_PROGRESS_RETRY_MS = 2000;
+// A board's row by its rule, into the same table: a Vanilla board's marks, a Reveal board's opened
+// squares and mine marks.
+var MINES_ROWS = {
+  vanilla: { tap: tapRows, sync: syncRows, restored: restoredMines },
+  reveal: { tap: revealTapRows, sync: revealSyncRows, restored: restoredReveal }
+};
 // Marks saved while newer ones waited send those at once; a failed save tries again later.
 var MINES_WAITS = { true: 0, false: MINES_PROGRESS_RETRY_MS };
 var MINES_READS = { true: readBoard, false: newBoard };
@@ -37,11 +44,11 @@ export function withSavedMines(puzzle, board, then) {
 function readBoard(puzzle, board, then) {
   client.from('mines_marks').select('mines, no_mines').eq('puzzle', puzzle)
     .then(savedRows, function () { return []; })
-    .then(function (rows) { then(restoredMines(board, rows)); });
+    .then(function (rows) { then(MINES_ROWS[board.rule].restored(board, rows)); });
 }
 
 function newBoard(puzzle, board, then) {
-  then(restoredMines(board, []));
+  then(MINES_ROWS[board.rule].restored(board, []));
 }
 
 // From here on, every change of who is signed in — the first look too — decides whether taps save
@@ -61,13 +68,13 @@ export function wireMinesProgress(puzzle, board, current, onSaved) {
 }
 
 function sync(puzzle, board, play, onSaved) {
-  saveRows(syncRows(puzzle, play, board));
+  saveRows(MINES_ROWS[board.rule].sync(puzzle, play, board));
   readBoard(puzzle, board, onSaved);
 }
 
 // What a tap from before to after saves — signed in.
 export function saveTap(puzzle, board, before, after) {
-  MINES_SAVES[signedIn](tapRows(puzzle, before, after, board));
+  MINES_SAVES[signedIn](MINES_ROWS[board.rule].tap(puzzle, before, after, board));
 }
 
 function saveRows(rows) {

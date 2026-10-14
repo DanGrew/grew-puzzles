@@ -55,7 +55,7 @@ test('Mazes, Collections and Wordsearches in the side bar each redraw the page w
   const scene = await landing(page);
   await side(page).locator('.kind', { hasText: 'Mazes' }).click();
   await expect(page.locator('#browse-title')).toHaveText('Mazes');
-  await expect(names(page)).toHaveText(['Locked Out', 'Plain Path']);
+  await expect(names(page)).toHaveText(['Plain Path', 'Locked Out']);
   await page.locator('#filter-button').click();
   await expect(page.locator('#filters .chip')).toHaveText(['Hard', 'Vanilla', 'Keys']);
   await page.keyboard.press('Escape');

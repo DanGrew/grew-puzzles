@@ -232,6 +232,12 @@ export function minesPrints(cols, rows) {
   return Math.max(cols, rows) <= 30;
 }
 
+// Whether a board has a Print menu and a sheet: a Vanilla board up to 30 squares a side. A Reveal
+// board never prints, whatever its size, as paper can't cover a square (the product's TASK-174).
+export function boardPrints(board) {
+  return board.rule === 'vanilla' && minesPrints(board.cols, board.rows);
+}
+
 // The sheet's one-line rule, under the title, with the board's own mine count. Paper is shaded
 // with a pencil, so it says shade where the screen says find.
 export function printedRule(board) {

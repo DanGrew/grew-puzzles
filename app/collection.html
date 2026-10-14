@@ -71,7 +71,7 @@ function tile(spec) {
   const figure = part('theme-figure', '');
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, characterAt(characters, Number(spec.number)));
-  a.append(figure, part('number', spec.number), kindPicture(spec.place), part('name', spec.title), detail);
+  a.append(figure, part('number', spec.number), kindPicture(spec.place, spec.type), part('name', spec.title), detail);
   ticks.push(() => paintDone(a, spec, done));
   paintDone(a, spec, done);
   const li = document.createElement('li');

@@ -146,10 +146,10 @@ test('picking Hard shows every Hard maze, whatever its type; Hard and Vanilla on
   expect(fileRequests).toEqual([]);
 });
 
-test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes', async ({ page }) => {
+test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes, leading them as Vanilla leads the Type filter', async ({ page }) => {
   await serve(page);
   await page.goto('/app/?kind=maze');
-  await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Key Keeper', 'Locked Out', 'Plain Path', 'Grand Finale']);
+  await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Plain Path', 'Key Keeper', 'Locked Out', 'Grand Finale']);
 });
 
 test('every maze tile reads its size under its type, and no date; one saved before the size has none', async ({ page }) => {
@@ -167,7 +167,7 @@ test('an address naming a difficulty, a type or both opens on exactly that', asy
   const page = await (await browser.newContext()).newPage();
   await serve(page);
   await page.goto('/app/?kind=maze&difficulty=Hard');
-  await expect(names(page)).toHaveText(['Key Keeper', 'Locked Out', 'Plain Path']);
+  await expect(names(page)).toHaveText(['Plain Path', 'Key Keeper', 'Locked Out']);
   await expect(page.locator('#filter-button')).toHaveText('Filters · 1');
   await page.goto('/app/?kind=maze&type=Vanilla&difficulty=Hard');
   await expect(names(page)).toHaveText(['Plain Path']);
@@ -242,6 +242,37 @@ test('Minesweeper shows only boards, easiest first, and Filters picks their diff
   await expect(page).toHaveURL(/\?kind=minesweeper&type=Vanilla$/);
   await expect(names(page)).toHaveText(['Garden Patch', 'Big Field']);
   await expect(current(page)).toHaveText(['Minesweeper2', 'Vanilla']);
+  expect(fileRequests).toEqual([]);
+});
+
+// A Reveal board (TASK-174) is its own type under Minesweeper: the index says so, and the page reads
+// nothing else.
+const REVEAL = { ...puzzle('MINE', 3, 'Reveal', 'Reveal 001'), ...saved('Medium', 16, 12) };
+
+test('Minesweeper\'s filters offer Vanilla then Reveal; a Reveal tile wears the board picture with a corner covered, its type and size, and opens the minesweeper page', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [...BOARDS, REVEAL] } }));
+  await page.goto('/app/?kind=minesweeper');
+  await expect(names(page)).toHaveText(['Garden Patch', 'Reveal 001', 'Big Field']);
+  await page.locator('#filter-button').click();
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Vanilla', 'Reveal']]]);
+  await page.locator('#filters').getByRole('button', { name: 'Reveal', exact: true }).click();
+  await expect(names(page)).toHaveText(['Reveal 001']);
+  await expect(page).toHaveURL(/\?kind=minesweeper&type=Reveal$/);
+  const tile = page.locator('#tiles .tile', { hasText: 'Reveal 001' });
+  await expect(tile.locator('.detail .line')).toHaveText(['Reveal', '16×12']);
+  await expect(tile).toHaveAttribute('href', 'minesweeper.html?id=MINE-0003');
+  await expect(tile).toHaveAttribute('data-tone', 'Medium');
+  const pictures = await page.locator('#tiles .tile .pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
+  await page.goto('/app/?kind=minesweeper&type=Vanilla');
+  await expect(names(page)).toHaveCount(2);
+  const vanilla = await page.locator('#tiles .tile .pic svg').first().evaluate(s => s.outerHTML);
+  expect(pictures[0]).not.toBe(vanilla);
+  // Covered squares are shaded, and of the board's two mines only the marked one shows.
+  await page.goto('/app/?kind=minesweeper&type=Reveal');
+  await expect(page.locator('#tiles .tile .pic svg path[opacity=".22"]')).toHaveCount(1);
+  await expect(page.locator('#tiles .tile .pic svg circle')).toHaveCount(1);
+  await expect(side(page).locator('.types').nth(2).locator('.type')).toHaveText(['Vanilla', 'Reveal']);
   expect(fileRequests).toEqual([]);
 });
 

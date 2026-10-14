@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { minesBoard, newMinesPlay, tapMines } from '../../../core/minesweeper/play-core.js';
-import { marksRow, tapRows, restoredMines, syncRows, joinedMines, joinedHistory } from '../../../core/minesweeper/progress-core.js';
+import {
+  marksRow, tapRows, restoredMines, syncRows, joinedMines, joinedHistory,
+  revealRow, revealTapRows, restoredReveal, revealSyncRows, joinedReveal, joinedRevealHistory
+} from '../../../core/minesweeper/progress-core.js';
+import { newRevealPlay, tapReveal, revealFinished } from '../../../core/minesweeper/reveal-core.js';
 // core/minesweeper/progress-core.js, against a small board, two rows of three:
 //   2 . .      the 2 touches (0,1), (1,0) and (1,1); the 1 touches (0,1), (0,2) and (1,1)
 //   . . 1      its mines are (0,1) and (1,0)
@@ -114,5 +118,127 @@ describe('signing in mid-board', () => {
     const history = [{ marks: {}, events: [] }];
     expect(joinedHistory(taps([[0, 2]]), history)).toBe(history);
     expect(joinedHistory(newMinesPlay(), history)).toEqual([]);
+  });
+});
+
+// A Reveal board: tooling's own valid one, 6×6, six mines, starting on the 0 at row 2, col 2 (as
+// reveal-core.test.js's):
+//   0 1 * 1 0 0
+//   1 2 1 2 1 1
+//   * 1 0 1 * 1
+//   2 3 1 2 1 1
+//   * 3 * 1 0 0
+//   2 * 2 1 0 0
+let REVEAL;
+beforeEach(() => {
+  REVEAL = minesBoard({
+    hiddenId: 'MINE-0901', type: 'Reveal', created: '2026-10-14', title: 'Reveal 001', difficulty: 'Medium', width: 6, height: 6,
+    numbersPerStep: 3, numbers: ['01.100', '121211', '.101.1', '231211', '.3.100', '2.2100'],
+    mines: [{ row: 0, col: 2 }, { row: 2, col: 0 }, { row: 2, col: 4 }, { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 5, col: 1 }],
+    start: { row: 2, col: 2 }
+  });
+});
+
+const START_CELLS = [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]];
+const SAFE_KEYS = ['0,0', '0,1', '0,3', '0,4', '0,5', '1,0', '1,1', '1,2', '1,3', '1,4', '1,5', '2,1', '2,2', '2,3', '2,5',
+  '3,0', '3,1', '3,2', '3,3', '3,4', '3,5', '4,1', '4,3', '4,4', '4,5', '5,0', '5,2', '5,3', '5,4', '5,5'];
+const revealTaps = (steps, play) => steps.reduce((p, [cell, tool]) => tapReveal(p, cell, REVEAL, tool), play || newRevealPlay(REVEAL));
+const revealed = (mines, noMines, finished = false) => ({ puzzle: 'MINE-0901', mines, no_mines: noMines, finished });
+const openAll = () => SAFE_KEYS.reduce((p, key) => (p.open[key] ? p : tapReveal(p, key.split(',').map(Number), REVEAL, 'open')), newRevealPlay(REVEAL));
+
+describe('a Reveal board\'s row', () => {
+  it('its opened squares are its no_mines and its mine marks its mines, each row by row', () => {
+    const play = revealTaps([[[0, 3], 'open'], [[0, 2], 'mark']]);
+    expect(revealRow('MINE-0901', play, REVEAL)).toEqual(revealed([[0, 2]], [[0, 3], ...START_CELLS]));
+  });
+
+  it('says finished once every safe square is open', () => {
+    const row = revealRow('MINE-0901', openAll(), REVEAL);
+    expect(row.finished).toBe(true);
+    expect(row.no_mines).toHaveLength(30);
+    expect(row.mines).toEqual([[0, 2], [2, 0], [2, 4], [4, 0], [4, 2], [5, 1]]);
+  });
+
+  it('is empty once a mine has gone off, so the board comes back at its start', () => {
+    const play = revealTaps([[[0, 3], 'open'], [[0, 4], 'mark'], [[0, 2], 'open']]);
+    expect(play.boom).toBe('0,2');
+    expect(revealRow('MINE-0901', play, REVEAL)).toEqual(revealed([], []));
+  });
+});
+
+describe('what a Reveal tap saves', () => {
+  it('an opening, a mark and a mark taken off each save the whole board', () => {
+    const opened = revealTaps([[[0, 3], 'open']]);
+    expect(revealTapRows('MINE-0901', newRevealPlay(REVEAL), opened, REVEAL)).toEqual([revealed([], [[0, 3], ...START_CELLS])]);
+    const marked = revealTaps([[[0, 2], 'mark']], opened);
+    expect(revealTapRows('MINE-0901', opened, marked, REVEAL)).toEqual([revealed([[0, 2]], [[0, 3], ...START_CELLS])]);
+    expect(revealTapRows('MINE-0901', marked, opened, REVEAL)).toEqual([revealed([], [[0, 3], ...START_CELLS])]);
+  });
+
+  it('the kaboom saves the board cleared', () => {
+    const before = revealTaps([[[0, 3], 'open']]);
+    expect(revealTapRows('MINE-0901', before, revealTaps([[[0, 2], 'open']], before), REVEAL)).toEqual([revealed([], [])]);
+  });
+
+  it('a tap that changes nothing saves nothing', () => {
+    const play = newRevealPlay(REVEAL);
+    expect(revealTapRows('MINE-0901', play, revealTaps([[[1, 2], 'open']], play), REVEAL)).toEqual([]);
+  });
+});
+
+describe('a saved Reveal board coming back', () => {
+  it('no row, or an empty one, and it is at its start', () => {
+    expect(restoredReveal(REVEAL, [])).toEqual(newRevealPlay(REVEAL));
+    expect(restoredReveal(REVEAL, [revealed([], [])])).toEqual(newRevealPlay(REVEAL));
+  });
+
+  it('its opened squares and mine marks back where they were, and nothing set off', () => {
+    const play = restoredReveal(REVEAL, [revealed([[0, 2]], [[0, 3], ...START_CELLS])]);
+    expect(play).toEqual(revealTaps([[[0, 3], 'open'], [[0, 2], 'mark']]));
+    expect(play.events).toEqual([]);
+  });
+
+  it('a saved open mine, or a square off the board, opens nothing; a mark on an open square, or off the board, marks nothing', () => {
+    const play = restoredReveal(REVEAL, [revealed([[1, 1], [6, 0], [0, 6], [0, 4]], [[0, 2], [6, 0], [0, 6]])]);
+    expect(play.open).toEqual(newRevealPlay(REVEAL).open);
+    expect(play.marks).toEqual({ '0,4': 'mine' });
+  });
+
+  it('a finished board comes back finished, every mine marked, and nothing set off', () => {
+    const play = restoredReveal(REVEAL, [revealRow('MINE-0901', openAll(), REVEAL)]);
+    expect(revealFinished(play, REVEAL)).toBe(true);
+    expect(play.marks).toEqual(openAll().marks);
+    expect(play).toMatchObject({ boom: '', events: [] });
+  });
+
+  it('only the first row counts — there is only ever one', () => {
+    expect(restoredReveal(REVEAL, [revealed([], []), revealed([[0, 2]], [])]).marks).toEqual({});
+  });
+});
+
+describe('signing in mid-way through a Reveal board', () => {
+  it('a player who has opened or marked anything saves the board on screen', () => {
+    const opened = revealTaps([[[0, 3], 'open']]);
+    expect(revealSyncRows('MINE-0901', opened, REVEAL)).toEqual([revealRow('MINE-0901', opened, REVEAL)]);
+    const marked = revealTaps([[[0, 2], 'mark']]);
+    expect(revealSyncRows('MINE-0901', marked, REVEAL)).toEqual([revealRow('MINE-0901', marked, REVEAL)]);
+  });
+
+  it('a player at the start, or just blown up, saves nothing', () => {
+    expect(revealSyncRows('MINE-0901', newRevealPlay(REVEAL), REVEAL)).toEqual([]);
+    expect(revealSyncRows('MINE-0901', revealTaps([[[0, 3], 'open'], [[0, 2], 'open']]), REVEAL)).toEqual([]);
+  });
+
+  it('the board on screen is kept over the saved one once played, and nothing is set off', () => {
+    const play = revealTaps([[[0, 3], 'open']]);
+    const saved = restoredReveal(REVEAL, [revealed([[0, 2]], START_CELLS)]);
+    expect(joinedReveal(play, saved, REVEAL)).toEqual({ open: play.open, marks: {}, boom: '', events: [] });
+    expect(joinedRevealHistory(play, ['0,4'], REVEAL)).toEqual(['0,4']);
+  });
+
+  it('at the start, the saved board comes back, and Undo starts over', () => {
+    const saved = restoredReveal(REVEAL, [revealed([[0, 2]], START_CELLS)]);
+    expect(joinedReveal(newRevealPlay(REVEAL), saved, REVEAL)).toBe(saved);
+    expect(joinedRevealHistory(newRevealPlay(REVEAL), ['0,4'], REVEAL)).toEqual([]);
   });
 });

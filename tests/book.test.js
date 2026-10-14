@@ -260,6 +260,27 @@ test('a board takes its page in its collection\'s book in number order with the 
   await expect(page.locator('#sheets')).not.toContainText('too big');
 });
 
+// A Reveal board (TASK-174) never prints, small as it is: the 10×10 Reveal fixture, served as
+// MINE-0901, beside the 10×10 Vanilla board and the too-big 40×40.
+const REVEAL_10 = require('./fixtures/MINE-0901.json');
+const revealBook = {
+  slug: 'reveal', name: 'Reveal', description: 'A Reveal board beside two Vanilla ones.', created: '2026-10-14',
+  puzzles: [{ id: 'MINE-0001', number: 1 }, { id: 'MINE-0901', number: 2 }, { id: 'MINE-0002', number: 3 }],
+};
+
+test('a Reveal board is left out of its collection\'s book, and the book\'s page names it as playing on screen only', async ({ page }) => {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [revealBook] } }));
+  await page.route(/\/content\/puzzles\/minesweeper\/MINE-\d+\.json$/, r => r.fulfill({ json: { ...MINES, 'MINE-0901': REVEAL_10 }[r.request().url().match(/(MINE-\d+)\.json$/)[1]] }));
+  await catchPrint(page);
+  await page.goto('/app/book.html?slug=reveal&print=plain');
+  await expect(page.locator('#ready')).toBeVisible();
+  await expect(page.locator('#left-out')).toHaveText('Puzzle 3 is too big to print, so it plays on the site only. Puzzle 2 plays on screen only, so it isn\'t in the book.');
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1']);
+  await expect(page.locator('#sheets')).not.toContainText('Reveal 001');
+});
+
 test('a book that leaves no board out has no note', async ({ page }) => {
   await openMixed(page);
   await expect(page.locator('#left-out')).toBeHidden();

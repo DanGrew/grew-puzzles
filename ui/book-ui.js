@@ -86,7 +86,7 @@ function showMissing() {
 // or Black and white, each puzzle wears its character in number order, round again after the last,
 // as on the collection page, each wordsearch page at a spot of its own picked again every time the
 // book prints, and every character's images are in before the dialog opens. A board too big to
-// print is left out once its file is in, and named on the book's page.
+// print, or a Reveal board, is left out once its file is in, and named on the book's page.
 function printBook(book, templates, scene) {
   var fetched = book.pages.map(function (page) { return BOOK_KINDS[page.kind]; });
   Promise.all([
@@ -103,7 +103,7 @@ function printBook(book, templates, scene) {
       var printout = function () {
         sheets.forEach(function (sheet, i) { kinds[i].dress(sheet, boards[i], wearers[i]); });
       };
-      bookEl('left-out').textContent = leftOutNote(printed.left);
+      bookEl('left-out').textContent = leftOutNote(printed.left, printed.screen);
       bookEl('sheets').replaceChildren.apply(bookEl('sheets'), sheets);
       printout();
       window.addEventListener('beforeprint', printout);

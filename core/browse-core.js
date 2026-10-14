@@ -167,9 +167,10 @@ export function inPlace(href, here, press) {
 // picked holds back nothing — so Hard and Vanilla is the Hard Vanilla tiles. A Finished choice
 // narrows whatever the types show to the tiles wearing a ✓ — or not — for the puzzles done so far:
 // it's a question about the player, not the puzzle. Ties fall back to newest first, whichever way
-// the sort runs.
+// the sort runs. Types run in the Type filter's order (typesOf).
 export function browseList(items, state, done) {
-  const [first, ...within] = sortOrder(state.sort);
+  const types = typesOf(state.kind, items.filter(p => p.kind === 'puzzle'));
+  const [first, ...within] = sortOrder(state.sort, types);
   const sign = state.dir === 'asc' ? 1 : -1;
   const finished = { '': () => true, yes: p => tileDone(p, done), no: p => !tileDone(p, done) }[state.finished];
   return items
@@ -185,18 +186,20 @@ function inPicks(p, state) {
     (state.types.length === 0 || state.types.includes(p.type));
 }
 
-// A sort's order: its first key runs the way the direction does, and any after it hold A to Z
-// either way. Difficulty runs Easy to Extreme, then Kids, then collections — tones() — as the
+// A sort's order: its first key runs the way the direction does, and any after it hold their own
+// way either way. Difficulty runs Easy to Extreme, then Kids, then collections — tones() — as the
 // default direction, desc, so the plain landing page is easiest first; within a difficulty, type
-// then title.
-function sortOrder(sort) {
+// then title. Type runs as the Type filter lists them — types, the place's typesOf: easiest
+// first, Vanilla leading its difficulty, then A to Z (the owner's call, 2026-10-14) — easiest
+// first as the default direction too.
+function sortOrder(sort, types) {
   const byTitle = (a, b) => a.title.localeCompare(b.title);
-  const byType = (a, b) => a.type.localeCompare(b.type);
+  const byType = (a, b) => types.indexOf(a.type) - types.indexOf(b.type);
   const orders = {
     difficulty: [(a, b) => tones().indexOf(b.tone) - tones().indexOf(a.tone), byType, byTitle],
     date: [(a, b) => a.created.localeCompare(b.created)],
     title: [byTitle],
-    type: [byType],
+    type: [(a, b) => byType(b, a)],
   };
   return orders[sort];
 }
@@ -232,7 +235,7 @@ export function dirLabel(state) {
     difficulty: { desc: 'Easiest first', asc: 'Hardest first' },
     date: { desc: 'Newest first', asc: 'Oldest first' },
     title: { asc: 'A to Z', desc: 'Z to A' },
-    type: { asc: 'A to Z', desc: 'Z to A' },
+    type: { desc: 'Easiest first', asc: 'Hardest first' },
   };
   return labels[state.sort][state.dir];
 }

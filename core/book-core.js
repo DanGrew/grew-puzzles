@@ -55,29 +55,51 @@ function printsIn(mazes) {
   return id => Object.hasOwn(PRINTS, kindOf(id)) && PRINTS[kindOf(id)](id);
 }
 
+// Why a minesweeper board takes no page: a Reveal board never prints, as paper can't cover a square
+// (the product's TASK-174); a Vanilla board only while its numbers stay readable on one sheet
+// (play-core's minesPrints). '' when it prints.
+function minesLeftOut(board) {
+  if (board.rule === 'reveal') return 'screen';
+  return minesPrints(board.cols, board.rows) ? '' : 'big';
+}
+
 // Which of the book's puzzles take a page, once each one's board is in (its kind's own, as
-// pageNumbers takes): a minesweeper board only while its numbers stay readable on one sheet
-// (play-core's minesPrints) — told by its own file, as its index entry carries its size only with a
-// difficulty — and a criss-cross only while its squares and its list fit one (play-core's
-// crissPrints). A puzzle too big is left out, its number skipped, and named in the note on the
-// book's page (leftOutNote).
+// pageNumbers takes): a minesweeper board as minesLeftOut says — told by its own file, as its index
+// entry carries its size only with a difficulty — and a criss-cross only while its squares and its
+// list fit one (play-core's crissPrints). A puzzle left out has its number skipped, and is named in
+// the note on the book's page (leftOutNote): left those too big, screen the Reveal boards.
 export function printedPages(pages, boards) {
-  const PRINTS = { minesweeper: board => minesPrints(board.cols, board.rows), crisscross: crissPrints };
-  const prints = pages.map((page, i) => !Object.hasOwn(PRINTS, page.kind) || PRINTS[page.kind](boards[i]));
+  const LEFT_OUT = { minesweeper: minesLeftOut, crisscross: board => (crissPrints(board) ? '' : 'big') };
+  const why = pages.map((page, i) => (Object.hasOwn(LEFT_OUT, page.kind) ? LEFT_OUT[page.kind](boards[i]) : ''));
+  const numbers = reason => pages.filter((_, i) => why[i] === reason).map(page => page.number);
   return {
-    pages: pages.filter((_, i) => prints[i]),
-    boards: boards.filter((_, i) => prints[i]),
-    left: pages.filter((_, i) => !prints[i]).map(page => page.number),
+    pages: pages.filter((_, i) => why[i] === ''),
+    boards: boards.filter((_, i) => why[i] === ''),
+    left: numbers('big'),
+    screen: numbers('screen'),
   };
 }
 
-// The note on the book's page, on screen, naming each puzzle left out as too big to print — none,
-// no note.
-export function leftOutNote(numbers) {
-  const list = new Intl.ListFormat('en-GB').format(numbers.map(String));
+// The note on the book's page, on screen, naming each puzzle left out as too big to print, then each
+// that plays on screen only — none, no note.
+export function leftOutNote(numbers, screen) {
+  return [bigNote(numbers), screenNote(screen)].filter(Boolean).join(' ');
+}
+
+function listOf(numbers) {
+  return new Intl.ListFormat('en-GB').format(numbers.map(String));
+}
+
+function bigNote(numbers) {
   if (numbers.length === 0) return '';
-  if (numbers.length === 1) return `Puzzle ${list} is too big to print, so it plays on the site only.`;
-  return `Puzzles ${list} are too big to print, so they play on the site only.`;
+  if (numbers.length === 1) return `Puzzle ${listOf(numbers)} is too big to print, so it plays on the site only.`;
+  return `Puzzles ${listOf(numbers)} are too big to print, so they play on the site only.`;
+}
+
+function screenNote(numbers) {
+  if (numbers.length === 0) return '';
+  if (numbers.length === 1) return `Puzzle ${listOf(numbers)} plays on screen only, so it isn't in the book.`;
+  return `Puzzles ${listOf(numbers)} play on screen only, so they aren't in the book.`;
 }
 
 function book(collection, mazes) {

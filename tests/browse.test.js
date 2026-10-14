@@ -335,15 +335,15 @@ test('the rows end with Type, with no Collections row; Clear filters sits at the
   await expect(page.locator('#total')).toHaveText('6 puzzles');
 });
 
-test('a difficulty no puzzle has is not offered, and a type with no difficulty is Easy', async ({ page }) => {
+test('a difficulty no puzzle has is not offered, and a type with no difficulty is Easy — after Vanilla, which leads Easy', async ({ page }) => {
   const served = index(3);
   ['Vanilla', 'Brand New', 'Mirra?e'].forEach((type, i) => { served.puzzles[i].type = type; });
   await serve(page, served);
   await page.goto('/app/');
   await openFilters(page);
-  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Brand New', 'Vanilla', 'Mirra?e']]]);
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Vanilla', 'Brand New', 'Mirra?e']]]);
   await level(page, 'Easy').click();
-  await expect(tileTypes(page)).toHaveText(['Brand New', 'Vanilla']);
+  await expect(tileTypes(page)).toHaveText(['Vanilla', 'Brand New']);
 });
 
 test('on a phone the popup fits the screen, its columns side by side, each name level with its first pick', async ({ page }) => {
@@ -440,7 +440,10 @@ test('sorting by type groups the types, ties newest first', async ({ page }) => 
   await page.goto('/app/');
   await drawn(page);
   await page.locator('#sort').selectOption('type');
+  await expect(page.locator('#dir')).toHaveText('Easiest first');
+  await expect(tileTypes(page)).toHaveText(['Vanilla', 'Vanilla', 'Missing', 'Missing', 'Mirra?e', 'Mirra?e']);
   await page.locator('#dir').click();
+  await expect(page.locator('#dir')).toHaveText('Hardest first');
   await expect(tileTypes(page)).toHaveText(['Mirra?e', 'Mirra?e', 'Missing', 'Missing', 'Vanilla', 'Vanilla']);
   await expect(tileNames(page)).toHaveText(['Puzzle 6', 'Puzzle 3', 'Puzzle 5', 'Puzzle 2', 'Puzzle 4', 'Puzzle 1']);
 });
@@ -673,8 +676,8 @@ test('a tile\'s strip is coloured by its type\'s difficulty, a collection\'s blu
   await page.goto('/app/');
   await expect(page.locator('.tiles .tile')).toHaveCount(7);
   expect(await strips(page)).toEqual([
-    { title: 'Puzzle 1', type: 'Brand New', strip: STRIP.green },
     { title: 'Puzzle 7', type: 'Vanilla', strip: STRIP.green },
+    { title: 'Puzzle 1', type: 'Brand New', strip: STRIP.green },
     { title: 'Puzzle 5', type: 'Saga', strip: STRIP.yellow },
     { title: 'Puzzle 6', type: 'Wildcards', strip: STRIP.yellow },
     { title: 'Puzzle 4', type: 'Missing', strip: STRIP.orange },

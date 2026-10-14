@@ -560,3 +560,127 @@ test('signed out, no board wears a ✓, there\'s no rail, and nothing is read', 
   expect(db.reads).toEqual([]);
   expect(opened).toEqual([]);
 });
+
+// ---- A Reveal board (TASK-174) ----
+// The same table and the same one row: its opened squares in no_mines, its mine marks in mines. The
+// board is the 10×10 Reveal fixture, served as MINE-0901 — its start square's area the six squares
+// of rows 8 and 9, cols 6 to 8; (7,7) a 1, (7,6) a mine.
+const REVEAL = require('./fixtures/MINE-0901.json');
+const REVEAL_START = [[8, 6], [8, 7], [8, 8], [9, 6], [9, 7], [9, 8]];
+const REVEAL_MINES = REVEAL.mines.map(m => [m.row, m.col]);
+const REVEAL_SAFE = Array.from({ length: 100 }, (_, i) => [Math.floor(i / 10), i % 10])
+  .filter(([r, c]) => !REVEAL_MINES.some(([mr, mc]) => mr === r && mc === c));
+const byCell = (a, b) => a[0] - b[0] || a[1] - b[1];
+const revealSaved = (mines, noMines, finished = false) => saved(mines, [...noMines].sort(byCell), finished, 'MINE-0901');
+
+async function playingReveal(context, options) {
+  const db = await playing(context, options);
+  await context.route('**/content/puzzles/minesweeper/MINE-0901.json', route => route.fulfill({ json: REVEAL }));
+  return db;
+}
+
+const coverOf = (page, r, c) => square(page, r, c).getAttribute('data-cover');
+
+test('a Reveal board: signed in, every opening and mine mark saves the whole board, and it opens the same on another device', async ({ browser }) => {
+  const db = minesTable();
+  const laptop = await browser.newContext();
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await playingReveal(laptop, { db });
+  await playingReveal(phone, { db });
+  const there = await open(laptop, 'MINE-0901');
+  await square(there, 7, 7).click();
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([], [...REVEAL_START, [7, 7]])]);
+  await square(there, 7, 6).click({ button: 'right' });
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([[7, 6]], [...REVEAL_START, [7, 7]])]);
+  await there.click('#undo');
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([], [...REVEAL_START, [7, 7]])]);
+  await square(there, 7, 6).click({ button: 'right' });
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([[7, 6]], [...REVEAL_START, [7, 7]])]);
+
+  const here = await open(phone, 'MINE-0901');
+  await expect(count(here)).toHaveText('1/15');
+  expect([await coverOf(here, 7, 7), await markOf(here, 7, 6), await coverOf(here, 7, 6), await coverOf(here, 6, 6)]).toEqual(['open', 'mine', 'covered', 'covered']);
+  await expect(here.locator('#grid [data-cover="covered"]')).toHaveCount(93);
+  await expect(saveLine(here)).toBeHidden();
+  await laptop.close();
+  await phone.close();
+});
+
+test('a Reveal board: hitting a mine clears what was saved, so it comes back at its start', async ({ context }) => {
+  const db = await playingReveal(context);
+  const page = await open(context, 'MINE-0901');
+  await square(page, 7, 7).click();
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([], [...REVEAL_START, [7, 7]])]);
+  await square(page, 7, 6).click();
+  await expect(page.locator('#kaboom')).toBeVisible();
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([], [])]);
+
+  await page.reload();
+  await expect(page.locator('#play')).toBeVisible();
+  await expect(page.locator('#kaboom')).toBeHidden();
+  await expect(page.locator('#grid [data-cover="covered"]')).toHaveCount(94);
+  await expect(count(page)).toHaveText('0/15');
+});
+
+test('a Reveal board: finishing it saves it finished; it reopens finished, takes no taps and doesn\'t celebrate again', async ({ context }) => {
+  const db = await playingReveal(context);
+  const page = await open(context, 'MINE-0901');
+  for (const [r, c] of REVEAL_SAFE) {
+    if ((await coverOf(page, r, c)) === 'covered') await square(page, r, c).click();
+  }
+  await expect(page.locator('#complete')).toHaveText('Solved — every safe square open');
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([...REVEAL_MINES].sort(byCell), REVEAL_SAFE, true)]);
+
+  await page.reload();
+  await expect(page.locator('#play')).toBeVisible();
+  await expect(count(page)).toHaveText('15/15');
+  await expect(page.locator('#complete')).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(page.locator('#board .spark')).toHaveCount(0);
+  const before = db.saves.length;
+  await square(page, 0, 0).click({ button: 'right' });
+  await page.waitForTimeout(300);
+  expect(db.saves.length).toBe(before);
+});
+
+test('a Reveal board: signing in mid-board having opened squares keeps them, and saves them over the board from elsewhere', async ({ context }) => {
+  const db = minesTable({ boards: [marks([[0, 0]], REVEAL_START, { puzzle: 'MINE-0901' })] });
+  await playingReveal(context, { signedIn: false, db });
+  const page = await open(context, 'MINE-0901');
+  await square(page, 7, 7).click();
+  await signIn(page);
+  await expect.poll(() => boardsSaved(db)).toEqual([revealSaved([], [...REVEAL_START, [7, 7]])]);
+  await expect(count(page)).toHaveText('0/15');
+  expect(await coverOf(page, 7, 7)).toBe('open');
+});
+
+test('a Reveal board: signing in at its start picks the board up where I left it', async ({ context }) => {
+  const db = minesTable({ boards: [marks([[7, 6]], [...REVEAL_START, [7, 7]], { puzzle: 'MINE-0901' })] });
+  await playingReveal(context, { signedIn: false, db });
+  const page = await open(context, 'MINE-0901');
+  await signIn(page);
+  await expect(count(page)).toHaveText('1/15');
+  await expect.poll(() => coverOf(page, 7, 7)).toBe('open');
+  await page.waitForTimeout(300);
+  expect(db.saves).toEqual([]);
+});
+
+test('a finished Reveal board wears its ✓, a started one sits in Continue playing, and Finished filters it — no board\'s file opened', async ({ context }) => {
+  const db = minesTable({ boards: [
+    marks(REVEAL_MINES, REVEAL_SAFE, { puzzle: 'MINE-0901', finished: true }),
+    marks([], [...REVEAL_START, [7, 7]], { puzzle: 'MINE-0902' }),
+  ] });
+  const opened = await site(context, { db });
+  await context.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [
+    ...BOARDS.puzzles,
+    { hiddenId: 'MINE-0901', type: 'Reveal', created: '2026-10-14', title: 'Reveal 001', difficulty: 'Easy', width: 10, height: 10 },
+    { hiddenId: 'MINE-0902', type: 'Reveal', created: '2026-10-14', title: 'Reveal 002', difficulty: 'Hard', width: 40, height: 40 },
+  ] } }));
+  const page = await landing(context, '/app/?kind=minesweeper');
+  await expect(tile(page, 'Reveal 001')).toHaveAttribute('data-done', 'true');
+  expect(await tickedTitles(page)).toEqual(['Reveal 001']);
+  await expect.poll(() => railTitles(page)).toEqual(['Reveal 002']);
+  const finished = await landing(context, '/app/?kind=minesweeper&finished=yes');
+  await expect.poll(() => tileTitles(finished)).toEqual(['Reveal 001']);
+  expect(opened).toEqual([]);
+});
