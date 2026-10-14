@@ -39,7 +39,7 @@ async function pick(page, tool) {
   await page.click('#tool-' + tool);
 }
 
-// A right-click: marks whichever is picked.
+// A right-click: the tool that isn't picked, so with Open picked, as each page opens, it marks.
 async function mark(page, r, c) {
   await square(page, r, c).click({ button: 'right' });
 }
@@ -121,13 +121,51 @@ test.describe('a Reveal board', () => {
     await expect(s).toHaveAttribute('data-mark', 'mine');
   });
 
-  test('a right-click marks a square whichever is picked', async ({ page }) => {
+  // The product's TASK-197: a right-click is the tool that isn't picked.
+  test('with Open picked, a right-click marks a covered square and again clears it, and the switch stays on Open', async ({ page }) => {
     await mark(page, 7, 6);
     await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'mine');
     await expect(square(page, 7, 6)).toHaveAttribute('data-cover', 'covered');
-    await pick(page, 'mark');
     await mark(page, 7, 6);
     await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'blank');
+    await expect(page.locator('#tool-open')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('with Mark mine picked, a right-click opens a covered square, never a marked one, and the switch stays on Mark mine', async ({ page }) => {
+    await pick(page, 'mark');
+    await mark(page, 7, 7);
+    await expect(square(page, 7, 7)).toHaveAttribute('data-cover', 'open');
+    await expect(square(page, 7, 7)).toHaveText('1');
+    await square(page, 7, 8).click();
+    await mark(page, 7, 8);
+    await expect(square(page, 7, 8)).toHaveAttribute('data-cover', 'covered');
+    await expect(square(page, 7, 8)).toHaveAttribute('data-mark', 'mine');
+    await expect(page.locator('#tool-mark')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('with Mark mine picked, a right-click on a mine is Kaboom!', async ({ page }) => {
+    await pick(page, 'mark');
+    await mark(page, 7, 6);
+    await expect(page.locator('#kaboom')).toBeVisible();
+    await expect(square(page, 7, 6)).toHaveAttribute('data-state', 'boom');
+  });
+
+  test('a right-click on an opened number whose mines are all marked opens the rest round it, whichever is picked', async ({ page }) => {
+    await mark(page, 7, 6);
+    await mark(page, 8, 7);
+    await expect(square(page, 7, 7)).toHaveAttribute('data-cover', 'open');
+    await expect(square(page, 7, 8)).toHaveAttribute('data-cover', 'open');
+    await open(page);
+    await pick(page, 'mark');
+    await square(page, 7, 6).click();
+    await mark(page, 8, 7);
+    await expect(square(page, 7, 7)).toHaveAttribute('data-cover', 'open');
+  });
+
+  test('a right-click opens no browser menu', async ({ page }) => {
+    await page.evaluate(() => document.addEventListener('contextmenu', e => { window.menuPrevented = e.defaultPrevented; }));
+    await mark(page, 7, 6);
+    expect(await page.evaluate(() => window.menuPrevented)).toBe(true);
   });
 
   test('a key opens a square as a tap does', async ({ page }) => {
@@ -373,6 +411,21 @@ test.describe('a Reveal board on a phone', () => {
     await expect(s).toHaveAttribute('data-cover', 'covered');
     await s.tap();
     await expect(s).toHaveAttribute('data-mark', 'mine');
+  });
+
+  test('with Mark mine picked, a press held still on a square opens it instead', async ({ page }) => {
+    await open(page);
+    await page.locator('#tool-mark').tap();
+    const s = square(page, 7, 7);
+    const box = await s.boundingBox();
+    const at = { clientX: box.x + box.width / 2, clientY: box.y + box.height / 2, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true };
+    await s.dispatchEvent('pointerdown', at);
+    await page.waitForTimeout(600);
+    await s.dispatchEvent('pointerup', at);
+    await s.dispatchEvent('click', { detail: 1 });
+    await expect(s).toHaveAttribute('data-cover', 'open');
+    await expect(s).toHaveAttribute('data-mark', 'number');
+    await expect(page.locator('#tool-mark')).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('a press that moves, or lifts quickly, marks nothing', async ({ page }) => {

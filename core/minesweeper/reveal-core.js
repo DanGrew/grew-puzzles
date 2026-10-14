@@ -96,12 +96,10 @@ export function tapReveal(play, cell, board, tool) {
   return opening(play, [key], board);
 }
 
-// A right-click on a computer, or a long press on a phone, marks a covered square whichever is
-// picked; on an opened square it does nothing.
-export function markReveal(play, cell, board) {
-  var key = keyOf(cell);
-  if (revealOver(play, board) || play.open[key]) return still(play);
-  return toggled(play, key);
+// A right-click on a computer, or a long press on a phone, taps with the tool that isn't picked: it
+// marks with Open picked and opens with Mark mine picked (the product's TASK-197).
+export function otherTool(tool) {
+  return { open: 'mark', mark: 'open' }[tool];
 }
 
 // ---- Undo ----

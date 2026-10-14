@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import { minesBoard, minesMistakes, minesCount } from '../../../core/minesweeper/play-core.js';
 import {
-  newRevealPlay, revealFinished, tapReveal, markReveal, revealTapped, undoneReveal, canUndoReveal, revealSquares
+  newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares
 } from '../../../core/minesweeper/reveal-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/reveal-core.js, against tooling's own valid Reveal board (its
@@ -96,13 +96,36 @@ describe('marking a mine', () => {
     expect(taps([['0,2', 'mark'], ['0,2', 'mark']]).marks).toEqual({});
   });
 
-  it('a right-click or a long press marks a covered square whichever is picked, and leaves an opened one alone', () => {
-    const play = markReveal(newRevealPlay(BOARD), [0, 2], BOARD);
-    expect(play).toMatchObject({ marks: { '0,2': 'mine' }, events: [] });
-    expect(markReveal(play, [0, 2], BOARD).marks).toEqual({});
-    expect(markReveal(play, [1, 1], BOARD).marks).toEqual({ '0,2': 'mine' });
+});
+
+// A right-click or a long press taps with the tool that isn't picked (the product's TASK-197).
+describe('a right-click or a long press', () => {
+  it('is the other tool: Mark mine with Open picked, Open with Mark mine picked', () => {
+    expect(otherTool('open')).toBe('mark');
+    expect(otherTool('mark')).toBe('open');
   });
 
+  it('with Open picked, marks a covered square, and again clears it', () => {
+    const play = taps([['0,2', otherTool('open')]]);
+    expect(play).toMatchObject({ marks: { '0,2': 'mine' }, boom: '', events: [] });
+    expect(taps([['0,2', otherTool('open')]], play).marks).toEqual({});
+  });
+
+  it('with Mark mine picked, opens a covered square — a mine goes off — and leaves a marked one shut', () => {
+    expect(opened(taps([['0,3', otherTool('mark')]]))).toEqual([...START, '0,3'].sort());
+    expect(taps([['0,2', otherTool('mark')]])).toMatchObject({ boom: '0,2', events: ['kaboom'] });
+    expect(taps([['0,3', 'mark'], ['0,3', otherTool('mark')]])).toMatchObject({ marks: { '0,3': 'mine' }, boom: '' });
+    expect(opened(taps([['0,3', 'mark'], ['0,3', otherTool('mark')]]))).toEqual(START);
+  });
+
+  it('on an opened number whose mines are all marked, opens the rest round it, whichever is picked', () => {
+    expect(opened(taps([['0,2', 'mark'], ['1,2', otherTool('open')]]))).toEqual([...START, '0,1', '0,3'].sort());
+    expect(opened(taps([['0,2', 'mark'], ['1,2', otherTool('mark')]]))).toEqual([...START, '0,1', '0,3'].sort());
+  });
+
+});
+
+describe('the Mines card', () => {
   it('counts on the Mines card, and Check finds a mark where there is no mine', () => {
     const play = taps([['0,2', 'mark'], ['0,3', 'mark']]);
     expect(minesCount(play, BOARD)).toBe('2/6');
@@ -138,7 +161,6 @@ describe('opening a mine', () => {
     const play = taps([['0,3', 'mark'], ['0,2', 'open']]);
     expect(tapReveal(play, [0, 0], BOARD, 'open')).toEqual({ open: play.open, marks: play.marks, boom: '0,2', events: [] });
     expect(tapReveal(play, [0, 4], BOARD, 'mark').marks).toEqual({ '0,3': 'mine' });
-    expect(markReveal(play, [0, 4], BOARD).marks).toEqual({ '0,3': 'mine' });
   });
 
   it('starting again puts the board back to its start', () => {
@@ -165,7 +187,7 @@ describe('the finish', () => {
   it('a finished board takes no taps', () => {
     const last = openAll();
     expect(tapReveal(last, [0, 2], BOARD, 'open')).toMatchObject({ boom: '', events: [] });
-    expect(markReveal(last, [0, 2], BOARD).marks).toEqual(last.marks);
+    expect(tapReveal(last, [0, 2], BOARD, 'mark').marks).toEqual(last.marks);
   });
 });
 
