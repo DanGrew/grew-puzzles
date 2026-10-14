@@ -71,7 +71,7 @@ export function scoreGroups(items, by, done, signedIn, open) {
   return groupings(items)[by]()
     .filter(g => g.items.length > 0)
     .map(g => {
-      const lines = g.items.slice().sort(order).map(i => ({
+      const lines = g.items.sort(order).map(i => ({
         title: i.title, href: i.href, code: i.code, pill: g.pill(i), done: String(signedIn && tileDone(i, done)),
       }));
       const finished = lines.filter(l => l.done === 'true').length;
