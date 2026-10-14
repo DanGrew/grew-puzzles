@@ -164,8 +164,21 @@ describe('browse-core.js', () => {
     expect(by('date', 'desc')).toEqual([id(3), id(1), id(2)]);
     expect(by('title', 'asc')).toEqual([id(2), id(1), id(3)]);
     expect(by('title', 'desc')).toEqual([id(3), id(1), id(2)]);
-    expect(by('type', 'asc')).toEqual([id(3), id(1), id(2)]);
+    // Type runs as the Type filter lists them: Vanilla (Easy), Missing (Hard), Mirra?e (Extreme).
     expect(by('type', 'desc')).toEqual([id(2), id(1), id(3)]);
+    expect(by('type', 'asc')).toEqual([id(3), id(1), id(2)]);
+  });
+
+  test('by type, Vanilla leads its difficulty before a type A to Z puts ahead of it, as the Type filter does', () => {
+    const mine = n => `MINE-${String(n).padStart(4, '0')}`;
+    const index = [
+      { hiddenId: mine(1), type: 'Reveal', created: '2026-10-02', title: 'Apples' },
+      { hiddenId: mine(2), type: 'Vanilla', created: '2026-10-01', title: 'Birds' },
+    ];
+    const by = dir => browseList(browseItems(index, []), { kind: 'minesweeper', levels: [], finished: '', types: [], sort: 'type', dir }, [])
+      .map(p => p.hiddenId);
+    expect(by('desc')).toEqual([mine(2), mine(1)]);
+    expect(by('asc')).toEqual([mine(1), mine(2)]);
   });
 
   test('ties fall back to newest first, whichever way the sort runs', () => {
@@ -180,7 +193,7 @@ describe('browse-core.js', () => {
     expect(by('date', 'asc')).toEqual([id(1), id(3), id(2)]);
   });
 
-  test('by difficulty, Easy to Extreme, each difficulty by type then title A to Z', () => {
+  test('by difficulty, Easy to Extreme, each difficulty by type — Vanilla first — then title A to Z', () => {
     const index = [
       { hiddenId: id(1), type: 'Mirra?e', created: '2026-10-01', title: 'Apples' },
       { hiddenId: id(2), type: 'Wildcards', created: '2026-10-02', title: 'Apples' },
@@ -192,9 +205,9 @@ describe('browse-core.js', () => {
       { hiddenId: id(8), type: 'Repeats', created: '2026-10-08', title: 'Ants' },
     ];
     const by = dir => shown(index, { levels: [], finished: '', types: [], sort: 'difficulty', dir });
-    expect(by('desc')).toEqual([id(7), id(4), id(5), id(3), id(2), id(6), id(8), id(1)]);
+    expect(by('desc')).toEqual([id(4), id(7), id(5), id(3), id(2), id(6), id(8), id(1)]);
     // Flipped, the difficulties run the other way; the types and titles inside them don't.
-    expect(by('asc')).toEqual([id(1), id(6), id(8), id(5), id(3), id(2), id(7), id(4)]);
+    expect(by('asc')).toEqual([id(1), id(6), id(8), id(5), id(3), id(2), id(4), id(7)]);
   });
 
   test('by difficulty, filtered to Medium, every Saga A to Z then every Wildcards A to Z', () => {
@@ -389,8 +402,8 @@ describe('browse-core.js', () => {
     expect(dirLabel({ sort: 'date', dir: 'asc' })).toBe('Oldest first');
     expect(dirLabel({ sort: 'title', dir: 'asc' })).toBe('A to Z');
     expect(dirLabel({ sort: 'title', dir: 'desc' })).toBe('Z to A');
-    expect(dirLabel({ sort: 'type', dir: 'asc' })).toBe('A to Z');
-    expect(dirLabel({ sort: 'type', dir: 'desc' })).toBe('Z to A');
+    expect(dirLabel({ sort: 'type', dir: 'desc' })).toBe('Easiest first');
+    expect(dirLabel({ sort: 'type', dir: 'asc' })).toBe('Hardest first');
   });
 
   test('page count rounds up, and an empty index still has one page', () => {
@@ -608,7 +621,7 @@ describe('browse-core.js', () => {
     expect(filterRows(filterOptions(index).wordsearch)[0].picks.map(p => p.tone)).toEqual(['Easy', 'Extreme', 'Kids']);
   });
 
-  test('sorted by difficulty, a maze saved as Hard sits among the Hard puzzles', () => {
+  test('sorted by difficulty, a maze saved as Hard sits among the Hard puzzles, Vanilla leading them as the Type filter does', () => {
     const index = [
       { hiddenId: 'MAZE-0001', type: 'Vanilla', created: '2026-10-01', title: 'a', difficulty: 'Hard' },
       { hiddenId: 'MAZE-0002', type: 'Keylecticodes', created: '2026-10-02', title: 'b' },
@@ -616,7 +629,7 @@ describe('browse-core.js', () => {
       { hiddenId: 'MAZE-0004', type: 'Collectibles', created: '2026-10-04', title: 'd' },
     ];
     expect(shown(index, { kind: 'maze', finished: '', types: [], sort: 'difficulty', dir: 'desc' }))
-      .toEqual(['MAZE-0004', 'MAZE-0003', 'MAZE-0001', 'MAZE-0002']);
+      .toEqual(['MAZE-0004', 'MAZE-0001', 'MAZE-0003', 'MAZE-0002']);
   });
 
   test('an address names a difficulty, a type or both, and round-trips; one the place lacks is dropped', () => {

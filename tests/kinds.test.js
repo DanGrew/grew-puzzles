@@ -146,10 +146,10 @@ test('picking Hard shows every Hard maze, whatever its type; Hard and Vanilla on
   expect(fileRequests).toEqual([]);
 });
 
-test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes', async ({ page }) => {
+test('sorted by difficulty, the Hard Vanilla maze sits among the Hard mazes, leading them as Vanilla leads the Type filter', async ({ page }) => {
   await serve(page);
   await page.goto('/app/?kind=maze');
-  await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Key Keeper', 'Locked Out', 'Plain Path', 'Grand Finale']);
+  await expect(names(page)).toHaveText(['Secret Code', 'Gold Rush', 'Plain Path', 'Key Keeper', 'Locked Out', 'Grand Finale']);
 });
 
 test('every maze tile reads its size under its type, and no date; one saved before the size has none', async ({ page }) => {
@@ -167,7 +167,7 @@ test('an address naming a difficulty, a type or both opens on exactly that', asy
   const page = await (await browser.newContext()).newPage();
   await serve(page);
   await page.goto('/app/?kind=maze&difficulty=Hard');
-  await expect(names(page)).toHaveText(['Key Keeper', 'Locked Out', 'Plain Path']);
+  await expect(names(page)).toHaveText(['Plain Path', 'Key Keeper', 'Locked Out']);
   await expect(page.locator('#filter-button')).toHaveText('Filters · 1');
   await page.goto('/app/?kind=maze&type=Vanilla&difficulty=Hard');
   await expect(names(page)).toHaveText(['Plain Path']);
