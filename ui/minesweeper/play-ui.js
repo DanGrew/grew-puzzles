@@ -10,7 +10,7 @@ import {
   minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, boardPrints
 } from '../../core/minesweeper/play-core.js';
 import {
-  newRevealPlay, tapReveal, markReveal, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
+  newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
@@ -322,7 +322,7 @@ function vanillaGame(id, board, play, squares) {
 
 // A Reveal board's game, after the product's docs/MOCKUP-MINES-REVEAL.html: covered but for its
 // start square's area; a tap opens a square or marks it, as Open | Mark mine under the board picks
-// — Open each time the page opens — and a right-click, or a press held still, always marks. Opening
+// — Open each time the page opens — and a right-click, or a press held still, taps with the other. Opening
 // a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
 // back mine marks only, this visit's alone. play is the board as the player left it, already in
 // place; signed in, every tap and Undo that changes it is saved under its hidden ID, and a kaboom
@@ -331,12 +331,12 @@ function revealGame(id, board, play, squares, cells) {
   var history = [], tool = 'open';
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
   var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate };
-  // A finger or a pen held still marks; the mouse marks by its right button.
+  // A finger or a pen held still taps with the other tool; the mouse does by its right button.
   var HOLDS = { true: noop, false: startHold };
   var HOLD_MOVES = { true: endHold, false: noop };
-  var CONTEXT_MARKS = { true: markTarget, false: noop };
+  var CONTEXT_TAPS = { true: otherTarget, false: noop };
   var HELD_CLICKS = { true: swallowClick, false: noop };
-  var TARGET_MARKS = { true: markKey, false: noop };
+  var TARGET_TAPS = { true: otherKey, false: noop };
   minesEl('complete').textContent = REVEAL_COMPLETE;
   ['open', 'mark'].forEach(function (t) {
     minesEl('tool-' + t).addEventListener('click', function () { pickTool(t); });
@@ -405,7 +405,7 @@ function revealGame(id, board, play, squares, cells) {
     minesEl('again').focus({ preventScroll: true });
   }
 
-  // ---- Marking by a held press or a right-click ----
+  // ---- The other tool, by a held press or a right-click ----
 
   function wireHold() {
     var view = minesEl('view');
@@ -418,9 +418,9 @@ function revealGame(id, board, play, squares, cells) {
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (type) { view.addEventListener(type, endHold); });
     view.addEventListener('contextmenu', function (e) {
       e.preventDefault();
-      CONTEXT_MARKS[hold.mouse](e.target);
+      CONTEXT_TAPS[hold.mouse](e.target);
     });
-    // The press that marked lifts without tapping.
+    // The held press lifts without tapping again.
     view.addEventListener('click', function (e) {
       HELD_CLICKS[hold.held](e);
       hold.held = false;
@@ -430,7 +430,7 @@ function revealGame(id, board, play, squares, cells) {
   function startHold(target) {
     hold.timer = setTimeout(function () {
       hold.held = true;
-      markTarget(target);
+      otherTarget(target);
     }, REVEAL_HOLD_MS);
   }
 
@@ -443,13 +443,13 @@ function revealGame(id, board, play, squares, cells) {
     e.preventDefault();
   }
 
-  // Only a square marks: a press on the frame round the board does nothing.
-  function markTarget(target) {
-    TARGET_MARKS[cells.has(target.dataset.key)](target.dataset.key);
+  // Only a square takes it: a press on the frame round the board does nothing.
+  function otherTarget(target) {
+    TARGET_TAPS[cells.has(target.dataset.key)](target.dataset.key);
   }
 
-  function markKey(key) {
-    step(cells.get(key), markReveal(play, cells.get(key), board));
+  function otherKey(key) {
+    step(cells.get(key), tapReveal(play, cells.get(key), board, otherTool(tool)));
   }
 
   // Each square as the play has it, with no Check rings beyond those a kaboom proves; the Mines
