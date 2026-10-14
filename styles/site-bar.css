@@ -28,8 +28,10 @@
 .side .page[aria-current="page"] { font-weight: 700; }
 .side [hidden] { display: none; }
 /* The look: Look, then the one on in a pill that opens the rest — one row however many looks
-   there are. Its chevron is drawn in the pill's own ink, so every look colours it. */
-.side .look { position: relative; display: flex; align-items: center; gap: 8px; padding: 10px 18px 4px; font-size: 14px; cursor: pointer; }
+   there are. Its chevron is drawn in the pill's own ink, so every look colours it. A side bar taller
+   than the window scrolls inside itself, Look held at its foot so it's always in reach. */
+.side .look { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; gap: 8px; padding: 10px 18px 4px; font-size: 14px;
+  cursor: pointer; background: var(--surface); }
 .look-name { margin-right: auto; }
 .look select { appearance: none; height: 30px; padding: 0 30px 0 12px; font: 600 13px var(--font-display); color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: 999px; cursor: pointer; }
