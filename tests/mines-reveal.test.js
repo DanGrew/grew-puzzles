@@ -140,18 +140,35 @@ test.describe('a Reveal board', () => {
     await square(page, 8, 7).click();
     await expect(covered(page)).toHaveCount(94);
     await mark(page, 7, 6);
-    await expect(square(page, 8, 7)).toHaveAttribute('data-state', 'met');
+    await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'mine');
     await square(page, 8, 7).click();
     await expect(square(page, 7, 7)).toHaveAttribute('data-cover', 'open');
     await expect(square(page, 7, 8)).toHaveAttribute('data-cover', 'open');
     await expect(square(page, 7, 6)).toHaveAttribute('data-cover', 'covered');
   });
 
-  test('a number with too many marked round it turns red', async ({ page }) => {
+  // Spotting a met number is the player's, and Check finds the mistakes (the product's TASK-193).
+  test('an opened number looks the same met as before, and with a mine too many: no fade, no red', async ({ page }) => {
+    await expect(page.locator('#mines-card')).not.toContainText('fade');
+    const one = square(page, 8, 7);
+    const look = () => one.evaluate(el => { const s = getComputedStyle(el); return [s.color, s.opacity, s.backgroundColor].join(' '); });
+    await page.waitForFunction(() => document.querySelector('#board').getAnimations({ subtree: true }).length === 0);
+    const before = await look();
     await mark(page, 7, 6);
+    await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'mine');
+    expect(await look()).toBe(before);
     await mark(page, 7, 7);
-    await expect(square(page, 8, 7)).toHaveAttribute('data-state', 'over');
-    await expect.poll(() => square(page, 8, 7).evaluate(el => getComputedStyle(el).color)).toBe('rgb(224, 71, 59)');
+    await expect(square(page, 7, 7)).toHaveAttribute('data-mark', 'mine');
+    expect(await look()).toBe(before);
+  });
+
+  test('an opened number tapped with its mines not all marked changes nothing and nothing flashes', async ({ page }) => {
+    // The start square's area has finished opening first.
+    await page.waitForFunction(() => document.querySelector('#board').getAnimations({ subtree: true }).length === 0);
+    await square(page, 8, 7).click();
+    await expect(covered(page)).toHaveCount(94);
+    await expect(page.locator('#grid [data-mark="mine"]')).toHaveCount(0);
+    expect(await page.locator('#board').evaluate(el => el.getAnimations({ subtree: true }).length)).toBe(0);
   });
 
   test('opening a mine bursts it red with Kaboom!, shows every mine and the wrong marks, and the board takes no taps', async ({ page }) => {

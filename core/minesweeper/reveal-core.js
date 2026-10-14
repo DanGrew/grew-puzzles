@@ -6,11 +6,11 @@
 // 9), so a square opens to the number the file gives it, and the page never works out a move.
 // Board reading, Check's mistakes and line, the Mines card's count and the frame are
 // core/minesweeper/play-core.js's, shared with a Vanilla board.
-import { keyOf, around, numberState } from './play-core.js';
+import { keyOf, around } from './play-core.js';
 
 // A play is { open, marks, boom, events }: open each opened square's key, true; marks each marked
 // square's 'mine' by its key, as a Vanilla board's marks are, so the count, Check and a number's
-// fade read them alike; boom the mine opened, '' until one is; events what this tap set off.
+// fill read them alike; boom the mine opened, '' until one is; events what this tap set off.
 
 function cellOf(key) {
   return key.split(',').map(Number);
@@ -142,23 +142,17 @@ function squareIs(play, key, board) {
   return 'covered';
 }
 
-// How an opened number reads against the marks, as a Vanilla number does — a 0 shows nothing, so
-// never fades.
-function openState(play, key, board) {
-  return board.numbers[key] === 0 ? '' : numberState(play, cellOf(key), board);
-}
-
 // Every square, row by row: covered or open; its mark — 'blank' covered, 'mine', or 'number' once
-// opened; the number it shows ('' covered, or for a 0); its state — a number's 'met' or 'over', the
-// kaboom's 'boom', a mine the kaboom shows 'shown'; 'wrong' on a mine mark the kaboom proves wrong;
-// and what a screen reader hears of it.
+// opened; the number it shows ('' covered, or for a 0), the same however many mines are marked round
+// it, as a Vanilla number; its state — the kaboom's 'boom', a mine the kaboom shows 'shown', else '';
+// 'wrong' on a mine mark the kaboom proves wrong; and what a screen reader hears of it.
 export function revealSquares(play, board) {
   var looks = {
     covered: function () { return { cover: 'covered', mark: 'blank', number: '', state: '', said: 'covered' }; },
     marked: function () { return { cover: 'covered', mark: 'mine', number: '', state: '', said: 'marked mine' }; },
     open: function (key) {
       var n = String(board.numbers[key]);
-      return { cover: 'open', mark: 'number', number: n === '0' ? '' : n, state: openState(play, key, board), said: n };
+      return { cover: 'open', mark: 'number', number: n === '0' ? '' : n, state: '', said: n };
     },
     boom: function () { return { cover: 'open', mark: 'mine', number: '', state: 'boom', said: 'mine, opened' }; },
     shown: function () { return { cover: 'open', mark: 'mine', number: '', state: 'shown', said: 'mine' }; }

@@ -87,16 +87,26 @@ test.describe('a minesweeper board', () => {
     await expect(page.locator('#count')).toHaveText('1/15');
   });
 
-  test('a number fades once its mines are marked, and turns red with too many', async ({ page }) => {
+  // Spotting a met number is the player's, and Check finds the mistakes (the product's TASK-193).
+  test('a number looks the same met as before, and with a mine too many: no fade, no red', async ({ page }) => {
+    await expect(page.locator('#mines-card')).not.toContainText('fade');
     const one = square(page, 9, 8);
-    await expect(one).toHaveAttribute('data-state', '');
-    const ink = await one.evaluate(el => getComputedStyle(el).color);
+    const look = () => one.evaluate(el => { const s = getComputedStyle(el); return [s.color, s.opacity, s.backgroundColor].join(' '); });
+    await page.waitForFunction(() => document.querySelector('#board').getAnimations({ subtree: true }).length === 0);
+    const before = await look();
     await tapAll(page, [[9, 7], [9, 7]]);
-    await expect(one).toHaveAttribute('data-state', 'met');
-    await expect.poll(() => one.evaluate(el => getComputedStyle(el).color)).not.toBe(ink);
+    await expect(square(page, 9, 7)).toHaveAttribute('data-mark', 'mine');
+    expect(await look()).toBe(before);
     await tapAll(page, [[8, 8], [8, 8]]);
-    await expect(one).toHaveAttribute('data-state', 'over');
-    await expect.poll(() => one.evaluate(el => getComputedStyle(el).color)).toBe('rgb(224, 71, 59)');
+    await expect(square(page, 8, 8)).toHaveAttribute('data-mark', 'mine');
+    expect(await look()).toBe(before);
+  });
+
+  test('a number tapped with its mines not marked, nor settled, changes nothing and nothing flashes', async ({ page }) => {
+    await page.waitForFunction(() => document.querySelector('#board').getAnimations({ subtree: true }).length === 0);
+    await square(page, 9, 8).click();
+    await expect(page.locator('#grid [data-mark="dot"], #grid [data-mark="mine"]')).toHaveCount(0);
+    expect(await page.locator('#board').evaluate(el => el.getAnimations({ subtree: true }).length)).toBe(0);
   });
 
   test('marking exactly the board\'s mines pops and sparkles it, and says so — dots don\'t matter', async ({ page }) => {

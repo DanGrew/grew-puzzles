@@ -310,7 +310,6 @@ function vanillaGame(id, board, play, squares) {
     squareMarks(play, board).forEach(function (m) {
       var square = squares.get(m.key);
       square.dataset.mark = m.mark;
-      square.dataset.state = m.state;
       square.dataset.checked = '';
       square.setAttribute('aria-label', m.label);
     });
