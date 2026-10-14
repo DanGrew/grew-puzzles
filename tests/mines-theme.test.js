@@ -135,7 +135,7 @@ test('a mine marked wrong wears the character all the same: the board never poin
 
 test('the Mines card\'s mine, Themed, is the character too', async ({ page }) => {
   await open(page);
-  const legend = page.locator('.mines-legend [data-mark="mine"]');
+  const legend = page.locator('.mines-how[data-rule="vanilla"] [data-mark="mine"]');
   expect(await css(legend, 'background-image', '::after')).toBe(url(CHARACTERS[0].figure));
   await expect(legend).toHaveCSS('background-color', PASTEL);
 });

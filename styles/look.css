@@ -73,6 +73,8 @@
     box-shadow: inset 0 0 0 max(2px, calc(var(--cell) * .07)) #c9605a; }
   :root[data-look="themed"] .mines .mines-square[data-mark="mine"]::after { width: 92%; height: 92%; border-radius: 0; box-shadow: none;
     background: var(--figure, none) center / contain no-repeat; }
+  /* A Reveal board's mine that went off wears it on the kaboom's red (the product's TASK-173 spec). */
+  :root[data-look="themed"] .mines .mines-square[data-mark="mine"][data-state="boom"] { background: var(--wrong); }
 
   /* A text page: the words on a card at a reading width, mid-page, and the character peering from
      behind the card at the printout's spot, placed by ui/theme-ui.js. */

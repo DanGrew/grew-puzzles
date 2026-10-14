@@ -37,6 +37,53 @@ button.mines-square:focus-visible { outline: 2px solid var(--select); outline-of
    fill, so a red number, and Themed's ringed mine (styles/look.css), still read inside it. */
 .mines-square[data-checked="wrong"] { --ring: max(3px, calc(var(--cell) * .11)); outline: var(--ring) solid var(--wrong); outline-offset: calc(-1 * var(--ring)); }
 
+/* ---- A Reveal board ----
+   After the product's docs/MOCKUP-MINES-REVEAL.html: a covered square raised a little, lit as it
+   opens; the mine that went off bursting red, every other mine the kaboom shows on a pale red; the
+   Open | Mark mine switch right under the board; and the kaboom's card over it. Only a Reveal board
+   (#play's data-rule) shows its switch, and each rule its own words in the Mines card. */
+:root { --cover: #cfdcd5; --cover-hi: #e3ece7; --wrong-bg: #fde3df; --opened: #fff2c2; }
+.mines-square[data-cover="covered"] { background: linear-gradient(145deg, var(--cover-hi), var(--cover));
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .7), inset -1px -1px 0 rgba(15, 42, 36, .12); }
+button.mines-square[data-cover="covered"]:hover { background: var(--cover-hi); }
+.mines-square[data-cover="open"][data-mark="number"] { animation: mines-open .22s ease-out; }
+@keyframes mines-open { from { background: var(--opened); } }
+.mines-square[data-state="boom"] { background: var(--wrong); animation: mines-boom .5s ease-out; z-index: 1; }
+.mines-square[data-state="boom"]::after { background: #fff; box-shadow: 0 0 0 calc(var(--cell) * .07) var(--wrong), 0 0 0 calc(var(--cell) * .1) #fff; }
+.mines-square[data-state="shown"] { background: var(--wrong-bg); }
+.mines-square[data-state="shown"]::after { background: var(--wrong); box-shadow: 0 0 0 calc(var(--cell) * .07) var(--wrong-bg), 0 0 0 calc(var(--cell) * .1) var(--wrong); }
+@keyframes mines-boom { 30% { transform: scale(1.35); } }
+.play.mines[data-rule="reveal"] .mines-square { -webkit-touch-callout: none; }
+
+.play.mines:not([data-rule="reveal"]) .mines-switch,
+.play.mines:not([data-rule="vanilla"]) .mines-how[data-rule="vanilla"],
+.play.mines:not([data-rule="reveal"]) .mines-how[data-rule="reveal"] { display: none; }
+.mines-switch { display: flex; justify-content: center; padding-top: 14px; }
+.mines-tool-pick { display: inline-flex; overflow: hidden; background: var(--surface); border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); }
+.mines-tool-pick button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 9px 18px; font: 600 14px var(--font-display);
+  color: var(--fg); background: transparent; border: 0; cursor: pointer; }
+.mines-tool-pick button + button { border-left: var(--ow) solid var(--line); }
+.mines-tool-pick button[aria-pressed="true"] { color: #fff; background: var(--band); }
+.mines-tool-pick button:focus-visible { outline: 2px solid var(--select); outline-offset: -4px; }
+.tool-icon { width: 14px; height: 14px; border-radius: 3px; background: var(--cover); box-shadow: inset 0 0 0 1.5px currentColor; }
+.tool-icon.mine { border-radius: 50%; background: currentColor; box-shadow: none; }
+
+.board.shake { animation: mines-shake .45s; }
+@keyframes mines-shake { 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+.kaboom { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; pointer-events: none; }
+.kaboom[hidden] { display: none; }
+.kaboom-card { display: grid; gap: 10px; padding: 16px 22px; text-align: center; pointer-events: auto; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); animation: kaboom-drop .35s cubic-bezier(.2, 1.5, .4, 1) .35s both; }
+.kaboom-word { font: 700 30px var(--font-display); letter-spacing: -.01em; color: var(--wrong); }
+.kaboom-card p { margin: 0; font-size: 13px; color: var(--muted); }
+.kaboom .tool.go { justify-self: center; height: 38px; padding: 0 18px; font: 600 14px var(--font-display); color: #fff; background: var(--band);
+  border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; }
+@keyframes kaboom-drop { from { opacity: 0; transform: translateY(-14px) scale(.9); } }
+.reveal-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+@media (prefers-reduced-motion: reduce) {
+  .mines-square[data-cover="open"][data-mark="number"], .mines-square[data-state="boom"], .board.shake, .kaboom-card { animation: none; }
+}
+
 /* Check and Undo under the board, and the line Check leaves under them. */
 .mines-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
 .mines-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);

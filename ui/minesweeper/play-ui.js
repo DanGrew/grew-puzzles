@@ -1,12 +1,17 @@
 // The minesweeper play page's DOM: loads the board a play URL names, draws it and its answer from
 // play-core's board, and wires the taps, Check and Undo, the zoom and moving round a big board, the flip and the
-// completion pop, and the print menu, and dresses it Themed in its character. Every rule lives in
-// core/minesweeper/play-core.js and core/theme-core.js; nothing here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
+// completion pop, and the print menu, and dresses it Themed in its character. A board plays by its
+// rule: a Vanilla board by marking, a Reveal board by opening squares (vanillaGame, revealGame).
+// Every rule lives in core/minesweeper/play-core.js, core/minesweeper/reveal-core.js and
+// core/theme-core.js; nothing here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
 // sheet is ui/minesweeper/sheet-ui.js.
 import {
   minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
   minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, minesPrints
 } from '../../core/minesweeper/play-core.js';
+import {
+  newRevealPlay, tapReveal, markReveal, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
+} from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { characterFor, idNumber, isPhone, boxFrom, siteDress, minesPrintFrame } from '../../core/theme-core.js';
@@ -29,6 +34,14 @@ var minesFigure = { board: undefined, number: 1, character: undefined };
 // What printing the sheet in a style needs loaded first: nothing, until its character is known
 // (dressMines).
 var minesPrintLoad = function () { return Promise.resolve(); };
+// How a board opens, by its rule: a Vanilla board waits for what a signed-in player saved; a Reveal
+// board starts from its start square every time — saving it is the product's TASK-174.
+var MINES_OPENS = { vanilla: openVanilla, reveal: openReveal };
+// A press held this long on a Reveal board, without moving, marks the square under it, as a
+// right-click does on a computer.
+var REVEAL_HOLD_MS = 420;
+// What a finished Reveal board says.
+var REVEAL_COMPLETE = 'Solved — every safe square open';
 
 function minesEl(id) {
   return document.getElementById(id);
@@ -49,8 +62,18 @@ export function openMinesPage(search) {
     .then(function (puzzle) {
       var board = minesBoard(puzzle);
       dressMines(id, board);
-      withSavedMines(id, board, function (play) { showBoard(id, board, play); });
+      MINES_OPENS[board.rule](id, board);
     }, showMissing);
+}
+
+function openVanilla(id, board) {
+  withSavedMines(id, board, function (play) {
+    showBoard(id, board, function (squares) { return vanillaGame(id, board, play, squares); });
+  });
+}
+
+function openReveal(id, board) {
+  showBoard(id, board, function (squares, cells) { return revealGame(board, squares, cells); });
 }
 
 // The printout: always the blank board, whatever the player has marked on screen.
@@ -67,22 +90,19 @@ function showMissing() {
 }
 
 // The board on its own play page: the board in the grid card, its answer on the card's back, and
-// the Mines card beside it — under it on a phone — play, as the player left it, already in place,
-// so nothing pops in and a board finished before doesn't celebrate again. It is saved under its
-// hidden ID. Undo's history is this visit's alone, held here and nowhere else.
-function showBoard(id, board, play) {
-  var history = newMinesHistory();
+// the Mines card beside it — under it on a phone — played by its rule's game, made by makeGame from
+// the squares by key, and their cells by key.
+function showBoard(id, board, makeGame) {
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The first frame opens the board; every one after refits it.
   var fitView = function (v, before, next) { return minesOpenView(next, board); };
-  var squares = new Map();
+  var squares = new Map(), cells = new Map(), game;
   // The fingers or the mouse down on the board, and whether this press has moved it — a press
   // that has taps nothing when it lifts.
   var touches = new Map();
   var press = { from: { x: 0, y: 0 }, last: { x: 0, y: 0 }, moved: false };
   var pinch = { from: [], view: view };
-  var MINES_EVENTS = { complete: celebrate };
   var PRESS_MOVES = { true: pressMove, false: noop };
   var PRESS_STEPS = { drag: dragTo, pinch: pinchTo };
   var DRAGS = { true: drag, false: noop };
@@ -96,75 +116,25 @@ function showBoard(id, board, play) {
   minesEl('solution-label').textContent = board.solutionLabel;
   minesEl('play').style.setProperty('--cols', board.cols);
   minesEl('play').style.setProperty('--rows', board.rows);
+  minesEl('play').dataset.rule = board.rule;
   minesSquares(board).forEach(function (s) {
     var button = squareButton(s);
-    button.addEventListener('click', function () { onTap(s.cell); });
+    button.addEventListener('click', function () { game.tap(s.cell); });
     squares.set(s.key, button);
+    cells.set(s.key, s.cell);
     minesEl('grid').appendChild(button);
   });
   answerSquares(board).forEach(function (s) { minesEl('solution-grid').appendChild(answerSquare(s)); });
   MINES_SHEETS[minesPrints(board.cols, board.rows)](board);
   minesEl('play').hidden = false;
+  game = makeGame(squares, cells);
   wireFlip(noop);
   wirePress();
   wireZoom();
   wireSize();
-  wireMinesProgress(id, board, function () { return play; }, joinSaved);
-  minesEl('check').addEventListener('click', onCheck);
-  minesEl('undo').addEventListener('click', onUndo);
-  render();
-
-  // Every tap that changes the marks is saved, signed in, and kept for Undo; any tap clears Check's
-  // rings.
-  function onTap(cell) {
-    var next = tapMines(play, cell, board);
-    saveTap(id, board, play, next);
-    history = tappedHistory(history, play, next);
-    play = next;
-    render();
-    play.events.forEach(function (e) { MINES_EVENTS[e](); });
-  }
-
-  // The last tap taken back, and saved as a tap is, so the saved marks follow it.
-  function onUndo() {
-    var undone = undoneMines(history, play);
-    saveTap(id, board, play, undone.play);
-    history = undone.history;
-    play = undone.play;
-    render();
-  }
-
-  // Each mark the answer disagrees with ringed in red, and the line under the board says how many.
-  function onCheck() {
-    var mistakes = minesMistakes(play, board);
-    render();
-    mistakes.forEach(function (k) { squares.get(k).dataset.checked = 'wrong'; });
-    minesEl('check-line').textContent = checkLine(mistakes);
-    minesEl('check-line').hidden = false;
-  }
-
-  // Signed in mid-board: the board saved elsewhere joins the one on screen.
-  function joinSaved(saved) {
-    history = joinedHistory(play, history);
-    play = joinedMines(play, saved);
-    render();
-  }
-
-  // Each square as the marks have it, with no Check rings, the Mines card's count, Undo, and the
-  // finish's line.
-  function render() {
-    squareMarks(play, board).forEach(function (m) {
-      var square = squares.get(m.key);
-      square.dataset.mark = m.mark;
-      square.dataset.state = m.state;
-      square.dataset.checked = '';
-      square.setAttribute('aria-label', m.label);
-    });
-    minesEl('count').textContent = minesCount(play, board);
-    minesEl('check-line').hidden = true;
-    minesEl('undo').disabled = !canUndo(history, play, board);
-    minesEl('complete').hidden = !minesFinished(play, board);
-  }
+  minesEl('check').addEventListener('click', function () { game.check(); });
+  minesEl('undo').addEventListener('click', function () { game.undo(); });
+  game.render();
 
   // ---- The view ----
 
@@ -251,13 +221,14 @@ function showBoard(id, board, play) {
   }
 
   // The card's edges round the frame are its borders and its padding, either side; beside it, wider
-  // than a phone, the Mines card.
+  // than a phone, the Mines card. A Reveal board's Open | Mark mine switch fits the window's height
+  // with it, so it's in reach without scrolling off the board.
   function sizeBoard() {
     var playEl = minesEl('play'), face = minesEl('front'), frameEl = minesEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
     var next = minesFrame({
       viewHeight: window.innerHeight,
-      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MINES_WINDOW_MARGIN,
+      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MINES_WINDOW_MARGIN + minesEl('mines-switch').offsetHeight,
       width: playEl.clientWidth,
       chromeWidth: face.offsetWidth - face.clientWidth + 2 * minesEl('board').offsetLeft + MINES_SIDE_ROOM[phone],
       rows: board.rows, cols: board.cols
@@ -270,6 +241,211 @@ function showBoard(id, board, play) {
     showView(fitted);
     placeMinesFigure();
   }
+}
+
+// A Vanilla board's game: play, as the player left it, already in place, so nothing pops in and a
+// board finished before doesn't celebrate again. It is saved under its hidden ID. Undo's history
+// is this visit's alone, held here and nowhere else.
+function vanillaGame(id, board, play, squares) {
+  var history = newMinesHistory();
+  var MINES_EVENTS = { complete: celebrate };
+  wireMinesProgress(id, board, function () { return play; }, joinSaved);
+  return { tap: onTap, check: onCheck, undo: onUndo, render: render };
+
+  // Every tap that changes the marks is saved, signed in, and kept for Undo; any tap clears Check's
+  // rings.
+  function onTap(cell) {
+    var next = tapMines(play, cell, board);
+    saveTap(id, board, play, next);
+    history = tappedHistory(history, play, next);
+    play = next;
+    render();
+    play.events.forEach(function (e) { MINES_EVENTS[e](); });
+  }
+
+  // The last tap taken back, and saved as a tap is, so the saved marks follow it.
+  function onUndo() {
+    var undone = undoneMines(history, play);
+    saveTap(id, board, play, undone.play);
+    history = undone.history;
+    play = undone.play;
+    render();
+  }
+
+  // Each mark the answer disagrees with ringed in red, and the line under the board says how many.
+  function onCheck() {
+    var mistakes = minesMistakes(play, board);
+    render();
+    showMistakes(squares, mistakes);
+  }
+
+  // Signed in mid-board: the board saved elsewhere joins the one on screen.
+  function joinSaved(saved) {
+    history = joinedHistory(play, history);
+    play = joinedMines(play, saved);
+    render();
+  }
+
+  // Each square as the marks have it, with no Check rings, the Mines card's count, Undo, and the
+  // finish's line.
+  function render() {
+    squareMarks(play, board).forEach(function (m) {
+      var square = squares.get(m.key);
+      square.dataset.mark = m.mark;
+      square.dataset.state = m.state;
+      square.dataset.checked = '';
+      square.setAttribute('aria-label', m.label);
+    });
+    minesEl('count').textContent = minesCount(play, board);
+    minesEl('check-line').hidden = true;
+    minesEl('undo').disabled = !canUndo(history, play, board);
+    minesEl('complete').hidden = !minesFinished(play, board);
+  }
+}
+
+// A Reveal board's game, after the product's docs/MOCKUP-MINES-REVEAL.html: covered but for its
+// start square's area; a tap opens a square or marks it, as Open | Mark mine under the board picks
+// — Open each time the page opens — and a right-click, or a press held still, always marks. Opening
+// a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
+// back mine marks only, this visit's alone. Nothing is saved.
+function revealGame(board, squares, cells) {
+  var play = newRevealPlay(board), history = [], tool = 'open';
+  var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
+  var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate };
+  // A finger or a pen held still marks; the mouse marks by its right button.
+  var HOLDS = { true: noop, false: startHold };
+  var HOLD_MOVES = { true: endHold, false: noop };
+  var CONTEXT_MARKS = { true: markTarget, false: noop };
+  var HELD_CLICKS = { true: swallowClick, false: noop };
+  var TARGET_MARKS = { true: markKey, false: noop };
+  minesEl('complete').textContent = REVEAL_COMPLETE;
+  ['open', 'mark'].forEach(function (t) {
+    minesEl('tool-' + t).addEventListener('click', function () { pickTool(t); });
+  });
+  minesEl('again').addEventListener('click', tryAgain);
+  wireHold();
+  return { tap: onTap, check: onCheck, undo: onUndo, render: render };
+
+  function onTap(cell) {
+    step(cell, tapReveal(play, cell, board, tool));
+  }
+
+  // Every tap that changes a mark is kept for Undo; any tap clears Check's rings.
+  function step(cell, next) {
+    history = revealTapped(history, play, next, cell);
+    play = next;
+    render();
+    play.events.forEach(function (e) { REVEAL_EVENTS[e](); });
+  }
+
+  function onUndo() {
+    var undone = undoneReveal(history, play);
+    history = undone.history;
+    play = undone.play;
+    render();
+  }
+
+  function onCheck() {
+    var mistakes = minesMistakes(play, board);
+    render();
+    showMistakes(squares, mistakes);
+  }
+
+  // The same board over from its start square, with nothing carried over.
+  function tryAgain() {
+    play = newRevealPlay(board);
+    history = [];
+    render();
+  }
+
+  function pickTool(t) {
+    tool = t;
+    minesEl('tool-open').setAttribute('aria-pressed', String(t === 'open'));
+    minesEl('tool-mark').setAttribute('aria-pressed', String(t === 'mark'));
+  }
+
+  // The board shakes once as the mine goes off, and the kaboom's card drops over it.
+  function kaboom() {
+    var boardEl = minesEl('board');
+    boardEl.classList.remove('shake');
+    void boardEl.offsetWidth;
+    boardEl.classList.add('shake');
+    minesEl('again').focus({ preventScroll: true });
+  }
+
+  // ---- Marking by a held press or a right-click ----
+
+  function wireHold() {
+    var view = minesEl('view');
+    view.addEventListener('pointerdown', function (e) {
+      clearTimeout(hold.timer);
+      hold = { timer: 0, held: false, from: { x: e.clientX, y: e.clientY }, mouse: e.pointerType === 'mouse' };
+      HOLDS[hold.mouse](e.target);
+    });
+    view.addEventListener('pointermove', function (e) { HOLD_MOVES[movedFar(hold.from, { x: e.clientX, y: e.clientY })](); });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (type) { view.addEventListener(type, endHold); });
+    view.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+      CONTEXT_MARKS[hold.mouse](e.target);
+    });
+    // The press that marked lifts without tapping.
+    view.addEventListener('click', function (e) {
+      HELD_CLICKS[hold.held](e);
+      hold.held = false;
+    }, true);
+  }
+
+  function startHold(target) {
+    hold.timer = setTimeout(function () {
+      hold.held = true;
+      markTarget(target);
+    }, REVEAL_HOLD_MS);
+  }
+
+  function endHold() {
+    clearTimeout(hold.timer);
+  }
+
+  function swallowClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  // Only a square marks: a press on the frame round the board does nothing.
+  function markTarget(target) {
+    TARGET_MARKS[cells.has(target.dataset.key)](target.dataset.key);
+  }
+
+  function markKey(key) {
+    step(cells.get(key), markReveal(play, cells.get(key), board));
+  }
+
+  // Each square as the play has it, with no Check rings beyond those a kaboom proves; the Mines
+  // card's count, Undo, the finish's line and the kaboom's card.
+  function render() {
+    revealSquares(play, board).forEach(function (s) {
+      var square = squares.get(s.key);
+      square.dataset.cover = s.cover;
+      square.dataset.mark = s.mark;
+      square.dataset.state = s.state;
+      square.dataset.checked = s.checked;
+      square.textContent = s.number;
+      square.setAttribute('aria-label', s.label);
+    });
+    minesEl('count').textContent = minesCount(play, board);
+    minesEl('check-line').hidden = true;
+    minesEl('undo').disabled = !canUndoReveal(history, play, board);
+    minesEl('complete').hidden = !revealFinished(play, board);
+    minesEl('kaboom').hidden = !play.boom;
+  }
+}
+
+// Check's rings on each mark the answer disagrees with, and the line under the board saying how
+// many.
+function showMistakes(squares, mistakes) {
+  mistakes.forEach(function (k) { squares.get(k).dataset.checked = 'wrong'; });
+  minesEl('check-line').textContent = checkLine(mistakes);
+  minesEl('check-line').hidden = false;
 }
 
 // Themed, the board is dressed as a wordsearch is: its own character, its background behind the
@@ -322,6 +498,7 @@ function squareButton(s) {
   var button = document.createElement('button');
   button.type = 'button';
   button.className = 'mines-square';
+  button.dataset.key = s.key;
   button.textContent = s.number;
   button.style.gridArea = (s.cell[0] + 1) + ' / ' + (s.cell[1] + 1);
   return button;
