@@ -49,6 +49,14 @@
                   <div class="mines-grid" id="grid"></div>
                 </div>
               </div>
+              <!-- A Reveal board's mine gone off: the card over the board, and Try again. -->
+              <div class="kaboom" id="kaboom" hidden>
+                <div class="kaboom-card" role="alert">
+                  <div class="kaboom-word">Kaboom!</div>
+                  <p>That square was a mine.</p>
+                  <button class="tool go" id="again" type="button">Try again</button>
+                </div>
+              </div>
             </div>
           </div>
           <div class="face back-face" id="back" aria-hidden="true" inert>
@@ -72,8 +80,15 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
         </button>
       </div>
+      <!-- A Reveal board's switch, right under it: what a tap does. -->
+      <div class="mines-switch" id="mines-switch">
+        <div class="mines-tool-pick" role="group" aria-label="What a tap does">
+          <button type="button" id="tool-open" aria-pressed="true"><span class="tool-icon" aria-hidden="true"></span>Open</button>
+          <button type="button" id="tool-mark" aria-pressed="false"><span class="tool-icon mine" aria-hidden="true"></span>Mark mine</button>
+        </div>
+      </div>
       <!-- Under the board: Check rings any mark the answer disagrees with, and the line says how
-           many; Undo takes back the last tap this visit. -->
+           many; Undo takes back the last tap this visit — on a Reveal board, the last mine mark. -->
       <div class="mines-tools">
         <button class="tool" id="check" type="button">Check</button>
         <button class="tool" id="undo" type="button" disabled>Undo</button>
@@ -89,13 +104,24 @@
           <h2>Mines</h2>
           <span class="count" id="count"></span>
         </div>
-        <p class="mines-rule">Find every mine. Each number counts the mines in the eight squares around it. A numbered square is never a mine.</p>
-        <div class="mines-legend">
-          <span class="mines-square" data-mark="dot"></span><span>Tap once: no mine</span>
-          <span class="mines-square" data-mark="mine"></span><span>Tap again: mine</span>
-          <span class="mines-square" data-mark="blank"></span><span>Tap again: clear</span>
-          <span class="mines-square" data-mark="number" data-state="met">2</span><span>A number fades once you've marked that many mines around it</span>
-          <span class="mines-square" data-mark="number">3</span><span>Tap a number to fill in the squares around it once its count settles them</span>
+        <!-- The rule and what a tap does, a Vanilla board's or a Reveal board's (styles/minesweeper.css). -->
+        <div class="mines-how" data-rule="vanilla">
+          <p class="mines-rule">Find every mine. Each number counts the mines in the eight squares around it. A numbered square is never a mine.</p>
+          <div class="mines-legend">
+            <span class="mines-square" data-mark="dot"></span><span>Tap once: no mine</span>
+            <span class="mines-square" data-mark="mine"></span><span>Tap again: mine</span>
+            <span class="mines-square" data-mark="blank"></span><span>Tap again: clear</span>
+            <span class="mines-square" data-mark="number" data-state="met">2</span><span>A number fades once you've marked that many mines around it</span>
+            <span class="mines-square" data-mark="number">3</span><span>Tap a number to fill in the squares around it once its count settles them</span>
+          </div>
+        </div>
+        <div class="mines-how" data-rule="reveal">
+          <p class="reveal-rule">Open every square that isn't a mine. Each number counts the mines in the eight squares around it. You never need to guess. Open a mine and it's game over.</p>
+          <div class="mines-legend">
+            <span class="mines-square" data-cover="covered" data-mark="blank"></span><span>Covered. Tap it with Open picked to see its number.</span>
+            <span class="mines-square" data-cover="covered" data-mark="mine"></span><span>Marked as a mine. Tap with Mark mine picked, right-click, or press and hold.</span>
+            <span class="mines-square" data-mark="number" data-state="met">2</span><span>A number fades once you've marked that many mines around it. Tap it then to open the rest of its squares.</span>
+          </div>
         </div>
       </div>
 

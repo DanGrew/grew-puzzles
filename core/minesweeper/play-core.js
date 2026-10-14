@@ -25,22 +25,34 @@ export function minesFile(hiddenId) {
 // ---- The board ----
 
 // A square is [row, col], from 0 at the top left; its key is 'row,col'.
-function keyOf(cell) {
+export function keyOf(cell) {
   return cell[0] + ',' + cell[1];
 }
 
 // The squares round a number, edges and corners alike, on the board: the three rows and three
 // columns about it. Its own square comes along, and never counts — a number is never marked, and
 // never blank.
-function around(cell, board) {
+export function around(cell, board) {
   var rows = [cell[0] - 1, cell[0], cell[0] + 1], cols = [cell[1] - 1, cell[1], cell[1] + 1];
   return rows.flatMap(function (r) { return cols.map(function (c) { return [r, c]; }); }).filter(function (c) {
     return c[0] >= 0 && c[0] < board.rows && c[1] >= 0 && c[1] < board.cols;
   });
 }
 
+// A board that names a start square plays by the Reveal rule (core/minesweeper/reveal-core.js) —
+// tooling's mines 8 holds a board to Reveal's rule exactly when it names one — and any other by
+// marking. The page follows the file, never its type's name.
+function ruleOf(puzzle) {
+  return { true: 'reveal', false: 'vanilla' }['start' in puzzle];
+}
+
+function startOf(puzzle) {
+  return [puzzle.start].filter(Boolean).map(function (s) { return keyOf([s.row, s.col]); }).concat([''])[0];
+}
+
 // What the page needs of a board file: its title, difficulty and code, its type's band, its size,
-// its numbers by square and its mines — the answer, shown only on the card's back.
+// its numbers by square and its mines — the answer, shown only on the card's back — and how it
+// plays: its rule, and a Reveal board's start square by its key, '' on any other.
 export function minesBoard(puzzle) {
   var numbers = {};
   puzzle.numbers.forEach(function (row, r) {
@@ -57,7 +69,9 @@ export function minesBoard(puzzle) {
     cols: puzzle.width,
     rows: puzzle.height,
     numbers: numbers,
-    mines: puzzle.mines.map(function (m) { return m.row + ',' + m.col; })
+    mines: puzzle.mines.map(function (m) { return m.row + ',' + m.col; }),
+    rule: ruleOf(puzzle),
+    start: startOf(puzzle)
   };
 }
 
@@ -258,11 +272,18 @@ function middleOf(view, frame) {
   return [view.y + frame.height / view.cell / 2 - 0.5, view.x + frame.width / view.cell / 2 - 0.5];
 }
 
-// A board opens whole, unless that leaves its squares too small to tap: then zoomed in on its
-// middle, squares 36px across.
+// Where a board opens zoomed in: a Reveal board on its start square, where its opened squares are,
+// any other on its middle.
+function openingCentre(board) {
+  return [board.start].filter(Boolean).map(function (k) { return k.split(',').map(Number); })
+    .concat([[(board.rows - 1) / 2, (board.cols - 1) / 2]])[0];
+}
+
+// A board opens whole, unless that leaves its squares too small to tap: then zoomed in, squares
+// 36px across.
 export function minesOpenView(frame, board) {
   var cell = tappable(frame) ? frame.fit : 36;
-  return centreOn({ cell: cell, x: 0, y: 0 }, [(board.rows - 1) / 2, (board.cols - 1) / 2], frame, board);
+  return centreOn({ cell: cell, x: 0, y: 0 }, openingCentre(board), frame, board);
 }
 
 // The screen resized, from the frame before to this one: a player looking at the whole board still
