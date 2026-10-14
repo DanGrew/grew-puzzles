@@ -71,6 +71,186 @@
       "difficulty": "Hard",
       "width": 30,
       "height": 30
+    },
+    {
+      "hiddenId": "MINE-0009",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 001",
+      "difficulty": "Medium",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0010",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 002",
+      "difficulty": "Hard",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0011",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 003",
+      "difficulty": "Medium",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0012",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 004",
+      "difficulty": "Easy",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0013",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 005",
+      "difficulty": "Easy",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0014",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 006",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0015",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 007",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0016",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 008",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0017",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 009",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0018",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 010",
+      "difficulty": "Easy",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MINE-0019",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 011",
+      "difficulty": "Medium",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MINE-0020",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 012",
+      "difficulty": "Medium",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "hiddenId": "MINE-0021",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 013",
+      "difficulty": "Extreme",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "hiddenId": "MINE-0022",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 014",
+      "difficulty": "Hard",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "hiddenId": "MINE-0023",
+      "type": "Reveal",
+      "created": "2026-10-14",
+      "title": "Reveal 015",
+      "difficulty": "Extreme",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "hiddenId": "MINE-0024",
+      "type": "Vanilla",
+      "created": "2026-10-14",
+      "title": "Vanilla 009",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0025",
+      "type": "Vanilla",
+      "created": "2026-10-14",
+      "title": "Vanilla 010",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0026",
+      "type": "Vanilla",
+      "created": "2026-10-14",
+      "title": "Vanilla 011",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0027",
+      "type": "Vanilla",
+      "created": "2026-10-14",
+      "title": "Vanilla 012",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0028",
+      "type": "Vanilla",
+      "created": "2026-10-14",
+      "title": "Vanilla 013",
+      "difficulty": "Easy",
+      "width": 30,
+      "height": 30
     }
   ]
 }
