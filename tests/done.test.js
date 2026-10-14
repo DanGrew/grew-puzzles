@@ -227,7 +227,7 @@ test('switching to Plain on a themed collection page keeps every ✓ on top of i
   await expect(tile(page, 'Puzzle 3')).toHaveAttribute('data-done', 'true');
   const onTop = () => Promise.all(['Puzzle 1', 'Puzzle 2', 'Puzzle 3'].map(t => tickOnTop(tile(page, t))));
   expect(await onTop()).toEqual([true, false, true]);
-  await page.getByRole('button', { name: 'Plain' }).click();
+  await page.getByLabel('Look').selectOption('plain');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
   expect(await tickedTitles(page)).toEqual(['Puzzle 1', 'Puzzle 3']);
   expect(await onTop()).toEqual([true, false, true]);
