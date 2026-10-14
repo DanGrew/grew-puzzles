@@ -64,16 +64,37 @@ const TEXT_PAGES = ['how-to-play', 'saving', 'about', 'feedback', 'privacy'];
 test('the side bar\'s Look offers Themed, Plain and Blueprint; picking Blueprint redresses the page at once and the next visit opens in it', async ({ page }) => {
   await page.goto('/app/privacy.html');
   const look = page.locator('#site-side .look');
-  await expect(look.locator('button')).toHaveText(['Themed', 'Plain', 'Blueprint']);
-  await look.locator('button[data-look="blueprint"]').click();
+  await expect(look.locator('option')).toHaveText(['Themed', 'Plain', 'Blueprint']);
+  await look.locator('select').selectOption('blueprint');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'blueprint');
-  await expect(look.locator('button[data-look="blueprint"]')).toHaveAttribute('aria-pressed', 'true');
-  await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'false');
   expect(await css(page.locator('body'), 'background-color')).toBe(NAVY);
   await page.goto('/app/index.html');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'blueprint');
+  await expect(look.locator('select')).toHaveValue('blueprint');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-look', 'blueprint');
+});
+
+async function lookRow(page) {
+  const side = await page.locator('#site-side').boundingBox();
+  const name = await page.locator('#site-side .look-name').boundingBox(), pick = await page.locator('#site-side .look select').boundingBox();
+  expect(Math.abs((name.y + name.height / 2) - (pick.y + pick.height / 2))).toBeLessThan(2);
+  expect(pick.x + pick.width).toBeLessThanOrEqual(side.x + side.width);
+  return { side, pick };
+}
+
+test('on a 1440×900 window, Look is one row — its name and the look on — at the foot of the side bar, never past its end', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/app/play.html?id=WSCH-0001');
+  const { side, pick } = await lookRow(page);
+  expect(pick.y + pick.height).toBeLessThanOrEqual(side.y + side.height);
+});
+
+test('on a phone, Look is one row inside the drawer', async ({ page }) => {
+  await page.setViewportSize(PHONE);
+  await page.goto('/app/play.html?id=WSCH-0001');
+  await page.locator('.burger').click();
+  await lookRow(page);
 });
 
 test('a first visit still opens Themed', async ({ page }) => {
@@ -232,11 +253,7 @@ test('Blueprint on a phone, the drawer side bar is paper and the page never scro
   const side = page.locator('#site-side');
   await expect(side).toBeVisible();
   expect(await css(side, 'background-color')).toBe(PAPER);
-  await expect(side.locator('.look button')).toHaveText(['Themed', 'Plain', 'Blueprint']);
-  for (const b of await side.locator('.look button').all()) {
-    const box = await b.boundingBox(), drawer = await side.boundingBox();
-    expect(box.x + box.width).toBeLessThanOrEqual(drawer.x + drawer.width + 1);
-  }
+  await expect(side.locator('.look select')).toHaveValue('blueprint');
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(PHONE.width);
 });
 

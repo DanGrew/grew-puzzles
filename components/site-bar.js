@@ -44,12 +44,14 @@
     '<a class="page" data-mark="about" href="about.html">About us</a>' +
     '<a class="page" data-mark="feedback" href="feedback.html">Feedback</a>' +
     '<a class="page" data-mark="privacy" href="privacy.html">Privacy</a>' +
-    '<div class="look" role="group" aria-label="Look">' +
+    '<label class="look">' +
       '<span class="look-name">Look</span>' +
-      '<button type="button" data-look="themed">Themed</button>' +
-      '<button type="button" data-look="plain">Plain</button>' +
-      '<button type="button" data-look="blueprint">Blueprint</button>' +
-    '</div>' +
+      '<select>' +
+        '<option value="themed">Themed</option>' +
+        '<option value="plain">Plain</option>' +
+        '<option value="blueprint">Blueprint</option>' +
+      '</select>' +
+    '</label>' +
     '<div class="side-own"></div>';
   var ownSlot = side.querySelector('.side-own');
   var look = side.querySelector('.look');
@@ -73,19 +75,15 @@
   body.append(side, scrim, main);
   bar.after(body);
 
-  // The look stays as picked, so the player sees the page change beside it.
-  function showLook() {
-    look.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.look === root.dataset.look)); });
-  }
-  look.querySelectorAll('button').forEach(function (b) {
-    b.addEventListener('click', function () {
-      root.dataset.look = b.dataset.look;
-      try { localStorage.setItem(LOOK_KEY, b.dataset.look); } catch (e) { /* kept until the page closes */ }
-      showLook();
-      document.dispatchEvent(new Event('grew-look'));
-    });
+  // The look stays as picked, one row whatever the number of looks, so the player sees the page
+  // change beside it.
+  var lookPick = look.querySelector('select');
+  lookPick.value = root.dataset.look;
+  lookPick.addEventListener('change', function () {
+    root.dataset.look = lookPick.value;
+    try { localStorage.setItem(LOOK_KEY, lookPick.value); } catch (e) { /* kept until the page closes */ }
+    document.dispatchEvent(new Event('grew-look'));
   });
-  showLook();
 
   bar.querySelectorAll('.brand').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });
   side.querySelectorAll('[data-query]').forEach(function (a) { a.setAttribute('href', home + a.dataset.query); });

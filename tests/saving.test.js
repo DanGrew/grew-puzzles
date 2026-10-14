@@ -62,7 +62,7 @@ for (const [device, width, height] of [['a phone', 375, 700], ['a desktop', 1280
 
 test('Plain, the Saving your progress page shows no character', async ({ page }) => {
   await page.goto('/app/saving.html');
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main p')).toHaveCount(WORDS.length);

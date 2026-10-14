@@ -47,7 +47,7 @@ test('the About us page wears the site bar, and its words sit on the card with a
 
 test('Plain, the About us page shows no character', async ({ page }) => {
   await page.goto('/app/about.html');
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main p')).toHaveCount(WORDS.length);
