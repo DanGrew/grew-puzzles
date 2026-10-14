@@ -501,13 +501,15 @@ export function windowDetours(board, win) {
 // zoom is only ever the player's: + and −, or a pinch. Every move keeps the player in the centre,
 // and nothing else zooms.
 
-// The frame fits the screen's height, and the page's width, with the whole maze in it. A cell is
-// a whole pixel while the whole maze can be tapped — 10px, the least a cell can be tapped at, or
+// The frame fits the screen's height times the player's size (size-core's sizeScale: 1 at Tiny,
+// so a maze never shows smaller than that), and the page's width, with the whole maze in it — so
+// from Small up the page scrolls, and a phone's maze stops at the screen's width. A cell is a
+// whole pixel while the whole maze can be tapped — 10px, the least a cell can be tapped at, or
 // more; under that every bit of room counts, and the player zooms in to tap. m: the screen's
 // viewHeight, the room the card's band and edges take above and round the maze (chromeHeight,
-// chromeWidth), the page's width, and the maze's rows and cols.
+// chromeWidth), the page's width, the size's scale, and the maze's rows and cols.
 export function mazeFrame(m) {
-  var room = Math.min((m.viewHeight - m.chromeHeight) / m.rows, (m.width - m.chromeWidth) / m.cols);
+  var room = Math.min((m.viewHeight - m.chromeHeight) * m.scale / m.rows, (m.width - m.chromeWidth) / m.cols);
   var fit = Math.max(Math.floor(room), Math.min(room, 10));
   return { fit: fit, width: m.cols * fit, height: m.rows * fit };
 }

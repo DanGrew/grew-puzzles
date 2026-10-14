@@ -11,12 +11,14 @@ import {
   collectedSteps, collectedDash, windowSteps, minimapCollected, mazePrints
 } from '../../core/maze/play-core.js';
 import { joinedMaze } from '../../core/maze/progress-core.js';
-import { playJson } from '../../core/wordsearch/play-core.js';
+import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
 import { withSavedMaze, wireMazeProgress, saveMove } from './progress-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './sheet-ui.js';
 import { characterFor, idNumber, isPhone, mazeScale, boxFrom, siteDress } from '../../core/theme-core.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
+import { sizeScale, sizeSwatch } from '../../core/size-core.js';
+import { wireSizeMenu } from '../size-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
 // Beside the grid card, the controls' column and the gap before it; on a phone they sit underneath.
@@ -35,9 +37,9 @@ var MAZE_MINIMAP_EDGES = 10;
 // Each kind's colour on the little map: a property of styles/maze.css's.
 var MAZE_MINIMAP_INKS = { collectible: '--maze-collectible', key: '--maze-key', letter: '--maze-letter', exit: '--fg', end: '--fg' };
 var MAZE_MINIMAP_FADE = { true: 0.3, false: 1 };
-// What the character on screen stands by: the maze's number, and its character once known
-// (dressMaze).
-var mazeFigure = { number: 1, character: undefined };
+// What the character on screen stands by: the maze's number, its character once known
+// (dressMaze), and how much the size picked has grown the card past its fit to the window, px.
+var mazeFigure = { number: 1, character: undefined, grown: { width: 0, height: 0 } };
 // What printing the maze's sheet in a style needs loaded first: nothing, until its character is
 // known (dressMaze).
 var mazePrintLoad = function () { return Promise.resolve(); };
@@ -89,6 +91,8 @@ function showMaze(id, board, play) {
   var fitView = function (v, before, next, b, here) { return openView(next, board, here); };
   // The little map: Small until the player picks another size, fitted to its room on every resize.
   var mapSize = 'small';
+  // The puzzle's size, kept on the device for every kind (ui/size-ui.js): read before the first frame.
+  var puzzleSize = 'normal';
   var minimap = { scale: 1, width: 0, height: 0 };
   var mapWalls = document.createElement('canvas');
   var minimapMove = noop;
@@ -120,6 +124,7 @@ function showMaze(id, board, play) {
   wirePad();
   wireZoom();
   wireMinimap();
+  wireSizeMenu(mazeEl('puzzle-size'), mazeEl('puzzle-size-menu'), sizeSquare, function (size) { puzzleSize = size; }, sizeMaze);
   wireSize();
   wireMazeProgress(id, board, function () { return play; }, joinSaved);
   render(trailDraw(play, play));
@@ -388,8 +393,8 @@ function showMaze(id, board, play) {
 
   // ---- The frame ----
 
-  // The frame fits the window's height, as big as it can be: measured once drawn, and again on
-  // every resize.
+  // The frame fits the window's height times the size picked, as big as it can be: measured once
+  // drawn, and again on every resize and every size picked.
   function wireSize() {
     window.addEventListener('resize', sizeMaze);
     document.fonts.ready.then(sizeMaze);
@@ -399,29 +404,50 @@ function showMaze(id, board, play) {
   // The checklist band above the card stays on screen with it, or on a phone the pad and the map
   // under it — measured with the map Large, so no size the player picks moves the maze. Nothing
   // here depends on the maze's own size, so the frame is worked out once and settles. The card's
-  // edges round the frame are its borders and its padding, either side.
+  // edges round the frame are its borders and its padding, either side. The maze may reach past
+  // the page's column to the window's 24px edges, never over the side bar (play-core's playReach),
+  // and does only as far as it needs (playMargins), so a maze that fits sits centred in the column;
+  // the band keeps to the column, so its height never follows the maze.
   function sizeMaze() {
     var playEl = mazeEl('play'), face = mazeEl('front'), frameEl = mazeEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
-    var next, fitted, above;
+    var column = playEl.parentElement.getBoundingClientRect();
+    var reach = playReach(document.documentElement.clientWidth, column, mazeEl('site-side').getBoundingClientRect().width);
+    var chromeWidth = face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CONTROLS_ROOM[phone];
+    var next, fitted, above, margins, room, still;
     sizeMinimap(phone, 'large');
     above = { true: mazeEl('controls'), false: mazeEl('checklist-card') }[phone].offsetHeight;
     sizeMinimap(phone, mapSize);
-    next = mazeFrame({
+    room = {
       viewHeight: window.innerHeight,
       chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + MAZE_GAP + above,
-      width: playEl.clientWidth,
-      chromeWidth: face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CONTROLS_ROOM[phone],
-      rows: board.rows, cols: board.cols
-    });
+      width: column.width - reach.left - reach.right,
+      chromeWidth: chromeWidth,
+      scale: sizeScale('maze', puzzleSize), rows: board.rows, cols: board.cols
+    };
+    next = mazeFrame(room);
+    // The character stands against the card as it fits the window, at Tiny: no size grows it.
+    still = mazeFrame(Object.assign({}, room, { scale: 1 }));
+    mazeFigure.grown = { width: next.width - still.width, height: next.height - still.height };
     fitted = fitView(view, frame, next, board, trailEnd(play));
     frame = next;
     fitView = refitView;
+    margins = playMargins(reach, column.width, frame.width + chromeWidth);
+    playEl.style.setProperty('--reach-left', margins.left + 'px');
+    playEl.style.setProperty('--reach-right', margins.right + 'px');
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted, false);
     placeMazeFigure();
   }
+}
+
+// A size in the menu: a square at its size, since it's the grid that grows (size-core's sizeSwatch).
+function sizeSquare(size) {
+  var square = document.createElement('span');
+  square.className = 'square';
+  square.style.setProperty('--swatch', sizeSwatch(size) + 'px');
+  return square;
 }
 
 // The printout: always the blank maze, whatever the player has done on screen.
@@ -567,7 +593,7 @@ function placeMazeFigure() {
   var cards = [boxFrom(mazeEl('checklist-card').getBoundingClientRect(), page), boxFrom(mazeEl('controls').getBoundingClientRect(), page)];
   placeFigure(mazeEl('theme-figure'), mazeEl('name-tag'), siteDress({
     card: boxFrom(card, page),
-    scale: mazeScale(card.width, card.height),
+    scale: mazeScale(card.width - mazeFigure.grown.width, card.height - mazeFigure.grown.height),
     screen: screenEdges(page.left),
     covers: cards, never: cards,
     title: boxFrom(title, page),

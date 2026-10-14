@@ -15,8 +15,10 @@ const NO_LETTERS = { ...MAZE, type: 'Collectibles', letters: [], exits: [] };
 // player every way.
 const MIDDLE = { ...HUNDRED, start: { row: 50, col: 50 } };
 
-async function open(page, { maze, look, id } = {}) {
+// size: the puzzle size already kept on the device, as a player who picked one did; none, a first visit.
+async function open(page, { maze, look, id, size } = {}) {
   await page.addInitScript(l => localStorage.setItem('grew-puzzles.look', l), look || 'plain');
+  await page.addInitScript(s => s && localStorage.setItem('grew-puzzles.text-size', s), size || '');
   await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: maze || MAZE }));
   await page.route('**/content/puzzles/maze/MAZE-0002.json', route => route.fulfill({ json: BIG }));
   await page.route('**/content/puzzles/maze/MAZE-0003.json', route => route.fulfill({ json: maze || HUNDRED }));
@@ -376,10 +378,10 @@ test('Themed: collectibles and blocks show the puzzle\'s theme character', async
   await expect(stop(page, 'key-1')).toHaveCSS('background-image', 'none');
 });
 
-test('a real-size maze\'s grid card and the checklist above it fit the window\'s height together, the card taking the rest', async ({ page }) => {
+test('at Tiny, a real-size maze\'s grid card and the checklist above it fit the window\'s height together, the card taking the rest', async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 1280, height: 800 }]) {
     await page.setViewportSize(viewport);
-    await open(page, { id: 'MAZE-0002' });
+    await open(page, { id: 'MAZE-0002', size: 'tiny' });
     await expect(page.locator('#grid .maze-cell')).toHaveCount(32 * 40);
     const card = await page.locator('#front').boundingBox(), list = await page.locator('#checklist-card').boundingBox();
     expect(list.y + list.height).toBeLessThan(card.y);
@@ -701,11 +703,11 @@ test('on desktop the checklist is a short band across the width, above both the 
   await page.setViewportSize({ width: 1440, height: 800 });
   await open(page, { id: 'MAZE-0003', maze: MIDDLE });
   const list = await page.locator('#checklist-card').boundingBox(), card = await page.locator('#stage').boundingBox();
-  const controls = await page.locator('#controls').boundingBox(), play = await page.locator('#play').boundingBox();
+  const controls = await page.locator('#controls').boundingBox(), column = await page.locator('.site-main').boundingBox();
   expect(list.y + list.height).toBeLessThan(card.y);
   expect(list.y + list.height).toBeLessThan(controls.y);
-  expect(Math.abs(list.x - play.x)).toBeLessThan(2);
-  expect(Math.abs(list.width - play.width)).toBeLessThan(2);
+  expect(Math.abs(list.x - column.x)).toBeLessThan(2);
+  expect(Math.abs(list.width - column.width)).toBeLessThan(2);
   expect(list.height).toBeLessThan(200);
   expect(controls.x).toBeGreaterThan(card.x + card.width);
   expect(controls.y).toBeGreaterThanOrEqual(card.y - 1);
@@ -891,4 +893,177 @@ test('on a phone, a 100×100 maze plays with the pad on screen under it, drawing
   });
   expect(ms).toBeLessThan(500);
   expect(await page.locator('#grid .maze-cell').count()).toBeLessThan(1500);
+});
+
+// ---- The puzzle size (TASK-186) ----
+
+const SIZE_LABELS = ['Tiny', 'Small', 'Normal', 'Large', 'Huge'];
+const sizeButton = page => page.locator('#puzzle-size');
+const sizeMenu = page => page.locator('#puzzle-size-menu');
+const sizeChoices = page => sizeMenu(page).getByRole('menuitemradio');
+const ticked = page => sizeChoices(page).evaluateAll(cs => cs.map(c => c.getAttribute('aria-checked')));
+const frameHeight = page => page.locator('#play').evaluate(p => parseFloat(p.style.getPropertyValue('--frame-h')));
+
+async function pickSize(page, label) {
+  await sizeButton(page).click();
+  await sizeChoices(page).filter({ hasText: label }).click();
+  await expect(sizeMenu(page)).toBeHidden();
+}
+
+test('a size button sits on the grid card\'s top edge after − and +, opening Tiny to Huge, each beside a square drawn at its size, Normal ticked', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const card = await page.locator('#front').boundingBox(), plus = await page.locator('#zoom-in').boundingBox();
+  const size = await sizeButton(page).boundingBox(), flip = await page.locator('#flip').boundingBox();
+  expect(size.y).toBeLessThan(card.y);
+  expect(Math.abs(size.y - plus.y)).toBeLessThan(1);
+  expect(size.x - (plus.x + plus.width)).toBeCloseTo(12, 0);
+  expect(size.x + size.width).toBeLessThan(flip.x);
+  await expect(sizeButton(page)).toHaveAttribute('aria-label', 'Puzzle size');
+  await expect(sizeMenu(page)).toBeHidden();
+
+  await sizeButton(page).click();
+  await expect(sizeMenu(page)).toBeVisible();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'true');
+  await expect(sizeChoices(page).locator('span:last-child')).toHaveText(SIZE_LABELS);
+  await expect(sizeChoices(page).locator('.aa')).toHaveCount(0);
+  const squares = await sizeChoices(page).locator('.square').evaluateAll(ss => ss.map(s => parseFloat(getComputedStyle(s, '::before').width)));
+  expect(squares).toEqual([15, 19, 24, 28, 31]);
+  expect(await ticked(page)).toEqual(['false', 'false', 'true', 'false', 'false']);
+  expect((await sizeMenu(page).boundingBox()).y).toBeGreaterThanOrEqual(size.y + size.height);
+
+  await page.mouse.click(5, 880);
+  await expect(sizeMenu(page)).toBeHidden();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('a maze with no zoom has no − or +, so the size button takes the first corner', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('#zoom-in')).toBeHidden();
+  const card = await page.locator('#front').boundingBox(), size = await sizeButton(page).boundingBox();
+  expect(size.x).toBeLessThan(card.x);
+  expect(size.y).toBeLessThan(card.y);
+});
+
+// A window short enough for its width: the window's width never stops a real-size maze growing,
+// up to Huge.
+const WIDE = { width: 1440, height: 800 };
+
+test('Tiny is the maze as it was; each size up is bigger, Normal about 32/22 of Tiny, and back at Tiny it is Tiny again', async ({ page }) => {
+  await page.setViewportSize(WIDE);
+  await open(page, { id: 'MAZE-0002', size: 'tiny' });
+  const heights = [];
+  for (const label of SIZE_LABELS) {
+    await pickSize(page, label);
+    heights.push(await frameHeight(page));
+  }
+  heights.slice(1).forEach((h, i) => expect(h).toBeGreaterThan(heights[i]));
+  const tinyCell = heights[0] / 40, normalCell = heights[2] / 40;
+  expect(normalCell).toBeGreaterThanOrEqual(Math.floor(tinyCell * 32 / 22));
+  expect(normalCell).toBeLessThanOrEqual((tinyCell + 1) * 32 / 22);
+  await pickSize(page, 'Tiny');
+  expect(await frameHeight(page)).toBe(heights[0]);
+});
+
+test('a first visit opens a maze at Normal, already bigger than Tiny', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, { id: 'MAZE-0002', size: 'tiny' });
+  const tiny = await frameHeight(page);
+  const fresh = await context.browser().newPage({ viewport: { width: 1440, height: 900 } });
+  await open(fresh, { id: 'MAZE-0002' });
+  await sizeButton(fresh).click();
+  expect(await ticked(fresh)).toEqual(['false', 'false', 'true', 'false', 'false']);
+  expect(await frameHeight(fresh)).toBeGreaterThan(tiny);
+  await fresh.close();
+});
+
+test('from Small up the grid card and the checklist above it run past the window\'s height, more at each size, and the page scrolls to the rest', async ({ page }) => {
+  await page.setViewportSize(WIDE);
+  await open(page, { id: 'MAZE-0002', size: 'tiny' });
+  const span = async () => {
+    const card = await page.locator('#front').boundingBox(), list = await page.locator('#checklist-card').boundingBox();
+    return card.y + card.height - list.y;
+  };
+  let last = await span();
+  expect(last).toBeLessThanOrEqual(WIDE.height);
+  for (const label of ['Small', 'Normal', 'Large', 'Huge']) {
+    await pickSize(page, label);
+    const now = await span();
+    expect(now).toBeGreaterThan(WIDE.height);
+    expect(now).toBeGreaterThan(last);
+    last = now;
+  }
+  await page.mouse.move(700, 400);
+  await page.mouse.wheel(0, 3000);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const scrolled = await page.locator('#front').boundingBox();
+  expect(scrolled.y + scrolled.height).toBeLessThanOrEqual(WIDE.height);
+});
+
+test('a maze too big for the page\'s column reaches past it toward the window\'s edge, never over the side bar; one that fits stays centred in it, and the band keeps to the column', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await open(page, { id: 'MAZE-0002', size: 'tiny' });
+  const column = await page.locator('.site-main').boundingBox(), side = await page.locator('#site-side').boundingBox();
+  const fits = await page.locator('#play').boundingBox();
+  expect(Math.abs(fits.x - column.x)).toBeLessThan(1);
+  expect(Math.abs(fits.width - column.width)).toBeLessThan(1);
+  await pickSize(page, 'Huge');
+  const play = await page.locator('#play').boundingBox(), controls = await page.locator('#controls').boundingBox();
+  const list = await page.locator('#checklist-card').boundingBox();
+  expect(play.x + play.width).toBeGreaterThan(column.x + column.width);
+  expect(controls.x + controls.width).toBeLessThanOrEqual(1920 - 24 + 1);
+  expect(play.x).toBeGreaterThanOrEqual(side.x + side.width);
+  expect(Math.abs(list.x - column.x)).toBeLessThan(1);
+  expect(Math.abs(list.width - column.width)).toBeLessThan(1);
+  expect(await frameHeight(page)).toBeGreaterThan(24 * 40);
+});
+
+test('a size picked on a maze is the size the next wordsearch opens at, and one picked on a wordsearch the next maze\'s', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await pickSize(page, 'Large');
+  await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: WORDSEARCH }));
+  await page.goto('/app/play.html?id=WSCH-0007');
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'large');
+  await page.locator('#text-size').click();
+  await page.locator('#text-size-menu').getByRole('menuitemradio', { name: 'Small' }).click();
+  await page.goto('/app/maze.html?id=MAZE-0001');
+  await sizeButton(page).click();
+  expect(await ticked(page)).toEqual(['false', 'true', 'false', 'false', 'false']);
+});
+
+test('a size a player picked on a wordsearch before the maze had one is the size their mazes open at', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, { id: 'MAZE-0002', size: 'large' });
+  const large = await frameHeight(page);
+  await sizeButton(page).click();
+  expect(await ticked(page)).toEqual(['false', 'false', 'false', 'true', 'false']);
+  await page.keyboard.press('Escape');
+  await pickSize(page, 'Normal');
+  expect(await frameHeight(page)).toBeLessThan(large);
+});
+
+test('on a phone the maze takes the screen\'s width at every size, and − and + still zoom past it', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE, size: 'tiny' });
+  const width = await frameWidth(page);
+  for (const label of SIZE_LABELS) {
+    await pickSize(page, label);
+    expect(await frameWidth(page)).toBe(width);
+    const card = await page.locator('#front').boundingBox();
+    expect(card.x + card.width).toBeLessThanOrEqual(390);
+  }
+  const before = await cellSize(page);
+  await page.locator('#zoom-in').click();
+  await expect.poll(() => cellSize(page)).not.toBe(before);
+});
+
+test('picking a size mid-maze keeps the trail and keeps me in the centre of the view', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  await pad(page, 'E').click();
+  const before = await trail(page);
+  await pickSize(page, 'Huge');
+  expect(await trail(page)).toEqual(before);
+  await expect.poll(async () => Math.max(...(await offCentre(page)).map(Math.abs))).toBeLessThan(2);
 });

@@ -3,6 +3,7 @@
 // puzzle file and the play URL are grew-puzzles-tooling's docs/PUZZLE-FORMAT.md. An ES module:
 // the page imports it through ui/, and the unit tests import it directly.
 import { puzzleDifficulty } from '../kind-core.js';
+import { sizeScale } from '../size-core.js';
 
 var PLAY_RING_KINDS = { 1: 'select', 2: 'wrong' };
 
@@ -369,48 +370,15 @@ function storeChoice(write, choice) {
 }
 
 // ---- How big the grid and its words are ----
-// Five sizes, named by the grid's letters at their widest: Normal is the page as it has always
-// been. The words scale with the letters, by the same ratio — one setting, so the word list
-// keeps taking its size from the grid card. Kept per device, as where the words sit is.
-
-function textSizeLetters() {
-  return { tiny: 10, small: 15, normal: 22, large: 27, huge: 32 };
-}
-
-// The size's ratio to Normal: styles/play.css scales the grid's letters and the words by it.
-export function textScale(size) {
-  return textSizeLetters()[size] / textSizeLetters().normal;
-}
+// The size every kind shares (core/size-core.js), named by the grid's letters at their widest:
+// Normal is the page as it has always been. The words scale with the letters, by the same ratio —
+// one setting, so the word list keeps taking its size from the grid card.
 
 // A puzzle's letters at a size: the size's ratio, times how big the puzzle's own letters are
-// (playBoard's letters) — a Kids puzzle's Normal is 1.5× a Vanilla's.
+// (playBoard's letters) — a Kids puzzle's Normal is 1.5× a Vanilla's. styles/play.css scales the
+// grid's letters and the words by it.
 export function boardScale(size, letters) {
-  return textScale(size) * letters;
-}
-
-// The text-size menu, smallest first: each size, its name and whether it's the one picked.
-export function textSizeMenu(picked) {
-  var labels = { tiny: 'Tiny', small: 'Small', normal: 'Normal', large: 'Large', huge: 'Huge' };
-  return Object.keys(textSizeLetters()).map(function (size) {
-    return { size: size, label: labels[size], picked: size === picked };
-  });
-}
-
-// read() returns the stored size; a page that can't read it, or reads anything else, gets Normal.
-export function savedTextSize(read) {
-  try {
-    return knownTextSize(read());
-  } catch (e) {
-    return 'normal';
-  }
-}
-
-function knownTextSize(saved) {
-  return Object.keys(textSizeLetters()).includes(saved) ? saved : 'normal';
-}
-
-export function saveTextSize(write, size) {
-  return storeChoice(write, size);
+  return sizeScale('wordsearch', size) * letters;
 }
 
 // How far the play area reaches past the page's column on each side, as the margins that take it
@@ -520,7 +488,7 @@ function besideWidth(w, card) {
 // a pixel at a time, down to 13px — the printout's — so the grid keeps its letters; else smaller
 // letters with those words, a pixel at a time, down to 26px, the smallest the page draws at
 // Normal (play.css's --cell). At another text size both floors scale with it — m.scale, the
-// size's textScale — never below 11px words and 20px letters, the smallest a player can read and
+// size's boardScale — never below 11px words and 20px letters, the smallest a player can read and
 // tap, and never above the page's own words. The first that leaves the words room; only when
 // none does, under.
 function besideFit(m) {

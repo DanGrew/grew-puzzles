@@ -24,6 +24,13 @@
 .play.maze > .controls { grid-area: controls; }
 .play.maze > #checklist-card { grid-area: list; width: auto; max-width: none; }
 .play.maze > .save-line { grid-area: slip; margin-top: -8px; }
+/* A maze too big for the column reaches past it, as far as it needs, toward the window's edges
+   (ui/maze/play-ui.js, --reach-left and --reach-right); the band gives that back, keeping to the
+   column. */
+@media screen {
+  .play.maze { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
+  .play.maze > #checklist-card { margin-left: calc(0px - var(--reach-left, 0px)); margin-right: calc(0px - var(--reach-right, 0px)); }
+}
 @media (max-width: 760px) {
   .play.maze { gap: 28px; grid-template-columns: 100%; grid-template-rows: none; grid-template-areas: "card" "controls" "list" "slip"; }
 }
@@ -145,9 +152,13 @@ ul.checklist-lines li[data-mark="✗"] .mark { color: var(--maze-exit); }
    that zooms. */
 button.zoom-out { left: 0; transform: translate(-35%, -35%); }
 button.zoom-in { left: 37px; transform: translateY(-35%); }
-button.zoom-out svg, button.zoom-in svg { display: block; }
+button.zoom-out svg, button.zoom-in svg, button.puzzle-size svg { display: block; }
 .play.maze button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
 .play.maze:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+/* The size, in the slot after +, 12px apart, as the wordsearch's follows show/hide words — or first,
+   where − and + don't show. */
+button.puzzle-size { left: 87px; transform: translateY(-35%); }
+.play.maze:not([data-zoomable="true"]) button.puzzle-size { left: 0; transform: translate(-35%, -35%); }
 
 /* The little map and the control pad, never over the maze: the map above the pad in one column;
    on a phone, under the grid card, the map on the left half of the row and the pad on the right. */

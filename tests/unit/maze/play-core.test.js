@@ -713,7 +713,7 @@ describe('the control pad', () => {
 });
 
 describe('the frame', () => {
-  const room = { viewHeight: 900, chromeHeight: 100, width: 1000, chromeWidth: 40, rows: 40, cols: 32 };
+  const room = { viewHeight: 900, chromeHeight: 100, width: 1000, chromeWidth: 40, scale: 1, rows: 40, cols: 32 };
 
   it('fits the window\'s height when that is the tighter, the frame the whole maze at that cell', () => {
     expect(mazeFrame(room)).toEqual({ fit: 20, width: 640, height: 800 });
@@ -730,8 +730,18 @@ describe('the frame', () => {
     expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 10.5 }).fit).toBe(10);
     expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 10 }).fit).toBe(10);
     expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 9.5 })).toEqual({ fit: 9.5, width: 32 * 9.5, height: 40 * 9.5 });
-    const hundred = { viewHeight: 950, chromeHeight: 100, width: 1000, chromeWidth: 40, rows: 100, cols: 100 };
+    const hundred = { viewHeight: 950, chromeHeight: 100, width: 1000, chromeWidth: 40, scale: 1, rows: 100, cols: 100 };
     expect(mazeFrame(hundred)).toEqual({ fit: 8.5, width: 850, height: 850 });
+  });
+
+  // TASK-186: the size picked multiplies the height the maze fits — never the card's band and edges.
+  it('fits the window\'s height times the size, so the maze runs past the window', () => {
+    expect(mazeFrame({ ...room, scale: 32 / 22 })).toEqual({ fit: 29, width: 928, height: 1160 });
+    expect(mazeFrame({ ...room, viewHeight: 100 + 40 * 11, scale: 2 }).fit).toBe(22);
+  });
+
+  it('stops at the page\'s width whatever the size, as a phone\'s maze does', () => {
+    expect(mazeFrame({ ...room, width: 40 + 32 * 12, scale: 42 / 22 }).fit).toBe(12);
   });
 });
 

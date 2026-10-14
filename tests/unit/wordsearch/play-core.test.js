@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, printedSpread, countLabel, sparkles,
-  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, textScale, boardScale, textSizeMenu, savedTextSize, saveTextSize,
+  nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale,
   playReach, playMargins
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
@@ -697,45 +697,9 @@ describe('where the words sit', () => {
 });
 
 describe('how big the grid and its words are', () => {
-  it('scales each size by its letters against Normal\'s 22px', () => {
-    expect(textScale('tiny')).toBe(10 / 22);
-    expect(textScale('small')).toBe(15 / 22);
-    expect(textScale('normal')).toBe(1);
-    expect(textScale('large')).toBe(27 / 22);
-    expect(textScale('huge')).toBe(32 / 22);
-  });
-
-  it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
-    expect(textSizeMenu('large')).toEqual([
-      { size: 'tiny', label: 'Tiny', picked: false },
-      { size: 'small', label: 'Small', picked: false },
-      { size: 'normal', label: 'Normal', picked: false },
-      { size: 'large', label: 'Large', picked: true },
-      { size: 'huge', label: 'Huge', picked: false }
-    ]);
-  });
-
-  it('uses the size last stored on this device', () => {
-    ['tiny', 'small', 'normal', 'large', 'huge'].forEach(size => {
-      expect(savedTextSize(() => size)).toBe(size);
-    });
-  });
-
-  it('starts at Normal on a first visit, or when the stored size is unknown', () => {
-    [null, '', 'medium', 'Tiny', 'toString'].forEach(saved => {
-      expect(savedTextSize(() => saved)).toBe('normal');
-    });
-  });
-
-  it('falls back to Normal when the page cannot read the stored size', () => {
-    expect(savedTextSize(() => { throw new Error('blocked'); })).toBe('normal');
-  });
-
-  it('stores the size, and carries on when the page cannot', () => {
-    const stored = [];
-    expect(saveTextSize(size => stored.push(size), 'huge')).toBe(true);
-    expect(stored).toEqual(['huge']);
-    expect(saveTextSize(() => { throw new Error('blocked'); }, 'huge')).toBe(false);
+  it('scales the letters by each size against Normal\'s 22px', () => {
+    expect(boardScale('tiny', 1)).toBe(10 / 22);
+    expect(boardScale('small', 1)).toBe(15 / 22);
   });
 
   // TASK-114: a Kids puzzle's Normal is 1.5× a Vanilla's, and every size scales from there.

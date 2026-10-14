@@ -444,12 +444,16 @@ test('where no spot shows, a maze\'s character still never stands behind the con
   expect(overlaps(figure, await page.locator('#controls').boundingBox())).toBe(false);
 });
 
-test('a maze\'s character stands as big against its card as the printout\'s against its own, and shrinks with the card on a shorter window', async ({ page }) => {
+// The puzzle size kept on the device: Tiny is the maze page as it was before the size choice.
+const keepSize = (page, size) => page.addInitScript(s => localStorage.setItem('grew-puzzles.text-size', s), size);
+
+test('at Tiny, a maze\'s character stands as big against its card as the printout\'s against its own, and shrinks with the card on a shorter window', async ({ page }) => {
   const measure = async () => {
     const stage = await page.locator('.stage').boundingBox();
     const height = parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height));
     return { stage, height };
   };
+  await keepSize(page, 'tiny');
   await page.setViewportSize({ width: 1440, height: 900 });
   await openMaze(page, 'MAZE-0002');
   await expect.poll(() => spotOf(page)).toBe('left');
@@ -460,6 +464,21 @@ test('a maze\'s character stands as big against its card as the printout\'s agai
   const short = await measure();
   expect(short.stage.height).toBeLessThan(tall.stage.height);
   expect(short.height).toBeCloseTo(293 * Math.min(short.stage.width / 429, short.stage.height / 472), 0);
+});
+
+// TASK-186: a bigger size grows the maze, never its character.
+test('at every size a maze\'s character stands as big as at Tiny, beside the card it grew', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  const heights = [];
+  for (const size of ['tiny', 'normal', 'huge']) {
+    await keepSize(page, size);
+    await openMaze(page, 'MAZE-0002');
+    await expect.poll(() => spotOf(page)).toBe('left');
+    heights.push(parseFloat(await page.locator('#theme-figure').evaluate(el => el.style.height)));
+    const stage = await page.locator('.stage').boundingBox(), figure = await page.locator('#theme-figure').boundingBox();
+    expect(figure.x + figure.width / 2).toBeLessThan(stage.x);
+  }
+  heights.forEach(h => expect(h).toBeCloseTo(heights[0], 0));
 });
 
 test('on a phone a maze\'s character peers over a top corner of its card, behind it, with no label', async ({ page }) => {
@@ -478,6 +497,7 @@ test('on a phone a maze\'s character peers over a top corner of its card, behind
 test('Plain, a maze shows no character, name or background, and never asks for a character image; switching to Themed dresses it', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await lookAs(page, 'plain');
+  await keepSize(page, 'tiny');
   const asked = imageRequests(page);
   await openMaze(page, 'MAZE-0010');
   await expect(page.locator('#theme-figure')).toBeHidden();
