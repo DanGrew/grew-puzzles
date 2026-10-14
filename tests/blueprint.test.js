@@ -169,6 +169,16 @@ for (const kind of Object.keys(KINDS)) {
     expect(await css(stage, 'color', '::after')).toBe(INK);
   });
 
+  test(`Blueprint, the ${kind} grid card's rows line is one line with a tick across each end, never two lines down its sides`, async ({ page }) => {
+    await lookAs(page, 'blueprint');
+    await openKind(page, kind);
+    const stage = page.locator('#stage');
+    expect(await css(stage, 'border-top-width', '::before')).toBe('1px');
+    expect(await css(stage, 'border-bottom-width', '::before')).toBe('1px');
+    expect(await css(stage, 'border-left-width', '::before')).toBe('0px');
+    expect(await css(stage, 'border-right-width', '::before')).toBe('0px');
+  });
+
   test(`Plain, the ${kind} grid card has no dimension lines and no title block`, async ({ page }) => {
     await lookAs(page, 'plain');
     await openKind(page, kind);
