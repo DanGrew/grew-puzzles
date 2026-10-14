@@ -419,6 +419,20 @@ export function checklist(play, board) {
   return group('guide', 'Guides', inOrder).concat(group('key', 'Keys', numbered), group('collectible', 'Collectibles', inOrder), each);
 }
 
+// The checklist's groups, each under its heading, in its lines' order: the boxed lines under
+// Collectibles, A, B and C under Letters, the six exits under Exits, three to a row — or End
+// under Exit — each only where the maze has a line for it. size: how many lines it holds.
+export function checklistGroups(board) {
+  var count = function (k) { return board.stops.filter(function (s) { return s.kind === k; }).length; };
+  var boxed = ['guide', 'key', 'collectible'].filter(function (k) { return count(k) > 0; }).length;
+  return [
+    { name: 'Collectibles', layout: 'boxed', size: boxed },
+    { name: 'Letters', layout: 'list', size: count('letter') },
+    { name: 'Exits', layout: 'trio', size: count('exit') },
+    { name: 'Exit', layout: 'list', size: count('end') }
+  ].filter(function (g) { return g.size > 0; });
+}
+
 // Finished is every line ticked.
 export function mazeFinished(play, board) {
   return checklist(play, board).every(function (line) { return line.done; });
