@@ -7,15 +7,6 @@ import { sizeMenu, savedSize, saveSize, sizeSwatch } from '../core/size-core.js'
 
 var SIZE_KEY = 'grew-puzzles.text-size';
 
-// A size in a grid kind's menu: a square at its size, since it's the grid that grows (size-core's
-// sizeSwatch).
-export function sizeSquare(size) {
-  var square = document.createElement('span');
-  square.className = 'square';
-  square.style.setProperty('--swatch', sizeSwatch(size) + 'px');
-  return square;
-}
-
 // button and menu: the page's corner button and its popover. swatch(size) makes what sits beside a
 // size's name; show(size) takes the size, once now with the size kept, then at every pick, and
 // picked() lays the page out again after a pick.
@@ -59,4 +50,13 @@ export function wireSizeMenu(button, menu, swatch, show, picked) {
     menu.style.top = at.bottom + 6 + 'px';
     menu.style.left = at.left + 'px';
   }
+}
+
+// A size in a grid kind's menu — a maze's, a board's or a criss-cross's: a square at its size, since it's the grid
+// that grows (size-core's sizeSwatch).
+export function sizeSquare(size) {
+  var square = document.createElement('span');
+  square.className = 'square';
+  square.style.setProperty('--swatch', sizeSwatch(size) + 'px');
+  return square;
 }

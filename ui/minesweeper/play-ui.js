@@ -13,13 +13,15 @@ import {
   newRevealPlay, tapReveal, markReveal, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
-import { playJson } from '../../core/wordsearch/play-core.js';
+import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
 import { characterFor, idNumber, isPhone, boxFrom, siteDress, minesPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
 import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
 import { drawMinesSheet, dressMinesSheet } from './sheet-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
+import { sizeScale } from '../../core/size-core.js';
+import { wireSizeMenu, sizeSquare } from '../size-ui.js';
 
 // Beside the grid card, the Mines card and the gap before it; on a phone it sits underneath.
 var MINES_SIDE_ROOM = { true: 0, false: 330 };
@@ -28,9 +30,9 @@ var MINES_WINDOW_MARGIN = 24;
 // Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; any other
 // has neither.
 var MINES_SHEETS = { true: showSheet, false: noop };
-// What the character on screen stands by: the board, its number and its character once known
-// (dressMines).
-var minesFigure = { board: undefined, number: 1, character: undefined };
+// What the character on screen stands by: the board, its number, its character once known
+// (dressMines), and how much wider the size picked has grown the card than at Small, px.
+var minesFigure = { board: undefined, number: 1, character: undefined, grown: 0 };
 // What printing the sheet in a style needs loaded first: nothing, until its character is known
 // (dressMines).
 var minesPrintLoad = function () { return Promise.resolve(); };
@@ -98,6 +100,8 @@ function showBoard(id, board, makeGame) {
   // The first frame opens the board; every one after refits it.
   var fitView = function (v, before, next) { return minesOpenView(next, board); };
   var squares = new Map(), cells = new Map(), game;
+  // The puzzle's size, kept on the device for every kind (ui/size-ui.js): read before the first frame.
+  var puzzleSize = 'normal';
   // The fingers or the mouse down on the board, and whether this press has moved it — a press
   // that has taps nothing when it lifts.
   var touches = new Map();
@@ -131,6 +135,7 @@ function showBoard(id, board, makeGame) {
   wireFlip(noop);
   wirePress();
   wireZoom();
+  wireSizeMenu(minesEl('puzzle-size'), minesEl('puzzle-size-menu'), sizeSquare, function (size) { puzzleSize = size; }, sizeBoard);
   wireSize();
   minesEl('check').addEventListener('click', function () { game.check(); });
   minesEl('undo').addEventListener('click', function () { game.undo(); });
@@ -212,8 +217,8 @@ function showBoard(id, board, makeGame) {
 
   // ---- The frame ----
 
-  // The frame fits the page's width and the window's height, as big as it can be: measured once
-  // drawn, and again on every resize.
+  // The frame fits the page's width and the window's height times the size picked, as big as it can
+  // be: measured once drawn, and again on every resize and every size picked.
   function wireSize() {
     window.addEventListener('resize', sizeBoard);
     document.fonts.ready.then(sizeBoard);
@@ -222,20 +227,32 @@ function showBoard(id, board, makeGame) {
 
   // The card's edges round the frame are its borders and its padding, either side; beside it, wider
   // than a phone, the Mines card. A Reveal board's Open | Mark mine switch fits the window's height
-  // with it, so it's in reach without scrolling off the board.
+  // with it, so it's in reach without scrolling off the board. The board may reach past the page's
+  // column to the window's 24px edges, never over the side bar (play-core's playReach), and does
+  // only as far as it needs (playMargins), so a board that fits sits where it always has.
   function sizeBoard() {
     var playEl = minesEl('play'), face = minesEl('front'), frameEl = minesEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
-    var next = minesFrame({
+    var column = playEl.parentElement.getBoundingClientRect();
+    var reach = playReach(document.documentElement.clientWidth, column, minesEl('site-side').getBoundingClientRect().width);
+    var chromeWidth = face.offsetWidth - face.clientWidth + 2 * minesEl('board').offsetLeft + MINES_SIDE_ROOM[phone];
+    var room = {
       viewHeight: window.innerHeight,
       chromeHeight: face.offsetHeight - frameEl.offsetHeight + MINES_WINDOW_MARGIN + minesEl('mines-switch').offsetHeight,
-      width: playEl.clientWidth,
-      chromeWidth: face.offsetWidth - face.clientWidth + 2 * minesEl('board').offsetLeft + MINES_SIDE_ROOM[phone],
-      rows: board.rows, cols: board.cols
-    });
+      width: column.width - reach.left - reach.right,
+      chromeWidth: chromeWidth,
+      scale: sizeScale('minesweeper', puzzleSize), rows: board.rows, cols: board.cols
+    };
+    var margins;
+    var next = minesFrame(room);
     var fitted = fitView(view, frame, next, board);
+    // The character stands against the card as it is at Small, the board as it was: no size grows it.
+    minesFigure.grown = next.width - minesFrame(Object.assign({}, room, { scale: 1 })).width;
     frame = next;
     fitView = minesRefit;
+    margins = playMargins(reach, column.width, frame.width + chromeWidth);
+    playEl.style.setProperty('--reach-left', margins.left + 'px');
+    playEl.style.setProperty('--reach-right', margins.right + 'px');
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted);
@@ -484,7 +501,7 @@ function placeMinesFigure() {
   var board = minesFigure.board, phone = isPhone(document.documentElement.clientWidth);
   placeFigure(minesEl('theme-figure'), minesEl('name-tag'), siteDress({
     card: boxFrom(card, page),
-    scale: card.width / minesPrintFrame(board.cols, board.rows, false).cardWidth,
+    scale: (card.width - minesFigure.grown) / minesPrintFrame(board.cols, board.rows, false).cardWidth,
     screen: screenEdges(page.left),
     covers: [boxFrom(minesEl('mines-card').getBoundingClientRect(), page)], never: [],
     title: boxFrom(title, page),
