@@ -129,7 +129,7 @@ test('the side bar on a collection page has Collections current, leading back to
   await serve(page);
   await page.goto('/app/collection.html?slug=issue-1');
   const kinds = page.locator('#site-side .kind');
-  await expect(kinds).toHaveText(['Wordsearches3', 'Mazes1', 'Minesweeper0', 'Criss-cross0', 'Collections2']);
+  await expect(kinds).toHaveText(['Wordsearches3', 'Mazes1', 'Minesweeper0', 'Criss-cross0', 'Collections2', 'Scorecard']);
   await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['Collections2']);
   await expect(kinds.nth(4)).toHaveAttribute('href', 'index.html?kind=collections');
 });

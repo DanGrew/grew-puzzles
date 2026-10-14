@@ -3,7 +3,8 @@
 // of the page beside it. data-home is the landing page's path from the page; data-current names
 // the side bar entry this page belongs to — a kind (wordsearch, maze, minesweeper, crisscross), collections, or a text
 // page. The kinds, each with its types, and Collections' count are filled from the indexes by
-// ui/side-bar-ui.js; Collections starts hidden until a collection is found. How to play, Saving
+// ui/side-bar-ui.js; Collections starts hidden until a collection is found. Scorecard, every puzzle
+// ticked off as it's finished, follows it, shown always and with no score. How to play, Saving
 // your progress, About us, Unofficial, Feedback and Privacy follow — every page sits in app/, beside them. After them,
 // the look: Themed, Plain or Blueprint, Themed until the player picks another, kept in this browser.
 // It sits on the page as <html data-look>, set here before any page script runs; picking one tells
@@ -38,6 +39,7 @@
   side.innerHTML =
     '<div class="side-kinds"></div>' +
     '<a class="kind side-collections" data-mark="collections" data-query="?kind=collections" hidden>Collections<small class="count"></small></a>' +
+    '<a class="kind side-scorecard" data-mark="scorecard" href="scorecard.html">Scorecard</a>' +
     '<hr>' +
     '<a class="page" data-mark="how-to-play" href="how-to-play.html">How to play</a>' +
     '<a class="page" data-mark="saving" href="saving.html">Saving your progress</a>' +
