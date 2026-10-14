@@ -155,7 +155,7 @@ test('the How to play page wears the site bar, and its words sit on the card wit
 
 test('Plain, the How to play page shows no character', async ({ page }) => {
   await page.goto('/app/how-to-play.html');
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   await expect(page.locator('main section')).toHaveCount(TYPES.length);

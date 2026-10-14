@@ -190,10 +190,10 @@ test('switching Plain to Themed dresses the board where it is, and back again un
   await lookAs(page, 'plain');
   await open(page);
   await markMine(page, MINE);
-  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await page.locator('#site-side .look select').selectOption('themed');
   await expect(page.locator('#theme-figure')).toBeVisible();
   expect(await css(square(page, MINE), 'background-image', '::after')).toBe(url(CHARACTERS[0].figure));
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   expect(await css(square(page, MINE), 'background-image', '::after')).toBe('none');
 });

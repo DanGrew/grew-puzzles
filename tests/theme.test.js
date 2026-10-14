@@ -34,23 +34,22 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'feedback.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
-  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
+  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain / Blueprint, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
     const look = page.locator('#site-side .look');
-    await expect(look.locator('button')).toHaveText(['Themed', 'Plain']);
-    await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(look.locator('button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(look.locator('option')).toHaveText(['Themed', 'Plain', 'Blueprint']);
+    await expect(look.locator('select')).toHaveValue('themed');
     await expect(page.locator('#site-side > *').nth(-2)).toHaveClass(/\blook\b/);
   });
 }
 
 test('a pick is kept going to another page and coming back tomorrow, and the side bar stays on it', async ({ page }) => {
   await page.goto('/app/privacy.html');
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
   await expect(page.locator('#site-side')).toBeVisible();
-  await expect(page.locator('#site-side .look button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#site-side .look select')).toHaveValue('plain');
   await page.goto('/app/index.html');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
   await page.reload();
@@ -64,7 +63,7 @@ test('a page that cannot read or store the look opens Themed, and still switches
   });
   await page.goto('/app/privacy.html');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('html')).toHaveAttribute('data-look', 'plain');
 });
 
@@ -221,11 +220,11 @@ test('the words card keeps the grid card\'s width under the grid, Themed or Plai
   // Across, that is: Themed's white title tag sits everything a little lower.
   const across = async () => { const b = await page.locator('aside').boundingBox(); return [b.x, b.width, b.height]; };
   const themed = await across();
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
   expect(await across()).toEqual(themed);
-  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await page.locator('#site-side .look select').selectOption('themed');
   await expect(page.locator('#name-tag')).toBeVisible();
   expect(await across()).toEqual(themed);
 });
@@ -505,7 +504,7 @@ test('Plain, a maze shows no character, name or background, and never asks for a
   expect(await sceneOf(page)).toBe('none');
   await expect(page.locator('#grid .stop.collectible').first()).toHaveCSS('background-image', 'none');
   expect(asked).toEqual([]);
-  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await page.locator('#site-side .look select').selectOption('themed');
   await expect(page.locator('#theme-figure')).toBeVisible();
   await expect(page.locator('#name-tag')).toBeVisible();
   expect(await spotOf(page)).toBe('left');

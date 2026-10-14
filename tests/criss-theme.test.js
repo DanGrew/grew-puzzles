@@ -182,10 +182,10 @@ test('switching Plain to Themed dresses the shape where it is, and back again un
   await page.setViewportSize({ width: 1440, height: 900 });
   await lookAs(page, 'plain');
   await open(page);
-  await page.locator('#site-side .look button[data-look="themed"]').click();
+  await page.locator('#site-side .look select').selectOption('themed');
   await expect(page.locator('#theme-figure')).toBeVisible();
   expect(await sceneOf(page)).toBe(url(CHARACTERS[0].scene));
-  await page.locator('#site-side .look button[data-look="plain"]').click();
+  await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   expect(await sceneOf(page)).toBe('none');
 });
