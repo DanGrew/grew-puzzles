@@ -56,12 +56,21 @@ button.criss-square:focus-visible { outline: 2.5px solid var(--band); outline-of
 @keyframes drop { from { transform: translateY(-8px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
 
-/* Zoom out and in at the card's top-left, while the shape zooms. */
+/* Zoom out and in at the card's top-left, while the shape zooms, then the size. */
 button.zoom-out { left: 0; transform: translate(-35%, -35%); }
 button.zoom-in { left: 37px; transform: translateY(-35%); }
-button.zoom-out svg, button.zoom-in svg { display: block; }
+button.zoom-out svg, button.zoom-in svg, button.puzzle-size svg { display: block; }
 .play.criss button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
 .play.criss:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+/* The size, in the slot after +, as the maze's (styles/maze.css) — or first, where − and + don't
+   show. */
+button.puzzle-size { left: 87px; transform: translateY(-35%); }
+.play.criss:not([data-zoomable="true"]) button.puzzle-size { left: 0; transform: translate(-35%, -35%); }
+/* A shape too big for the column reaches past it, as far as it needs, toward the window's edges
+   (ui/crisscross/play-ui.js, --reach-left and --reach-right), the Words card going with it. */
+@media screen {
+  .play.criss { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
+}
 
 /* Under the shape once every slot is filled: solved, or — quietly — not yet. */
 .complete:empty { display: none; }

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   crissUrl, crissFile, wordLetters, crissBoard, newCrissPlay, crissFull, crissFinished, tapSquare, tapWord, crissSquares,
-  squareMarks, placedSquares, crissCount, wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares,
+  squareMarks, placedSquares, crissCount, wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, crissRefit, minimapSquares,
   crissPrints, CRISS_PRINTED_RULE
 } from '../../../core/crisscross/play-core.js';
 const require = createRequire(import.meta.url);
@@ -410,7 +410,7 @@ describe('paper', () => {
 });
 
 describe('the frame', () => {
-  const room = { viewHeight: 800, chromeHeight: 100, width: 1000, chromeWidth: 400 };
+  const room = { viewHeight: 800, chromeHeight: 100, width: 1000, chromeWidth: 400, scale: 1 };
 
   it('fits the shape to the room, a whole pixel a square, never over 36px', () => {
     expect(crissFrame({ ...room, rows: 15, cols: 17 })).toEqual({ fit: 35, width: 595, height: 525 });
@@ -427,6 +427,42 @@ describe('the frame', () => {
     expect(frame.fit).toBeCloseTo(16 / 3);
     expect(frame.width).toBeCloseTo(29 * 16 / 3);
     expect(frame.height).toBeCloseTo(160);
+  });
+
+  // TASK-188: the size picked multiplies the height the shape fits and its 36px limit — never the
+  // card's band and edges.
+  it('grows the 36px limit with the size, to the whole pixel: 25, 36, 44, 52 and 61px', () => {
+    const roomy = { ...room, viewHeight: 5000, width: 5000, rows: 5, cols: 5 };
+    expect([15, 22, 27, 32, 37].map(rung => crissFrame({ ...roomy, scale: rung / 22 }).fit)).toEqual([25, 36, 44, 52, 61]);
+  });
+
+  it('fits the window\'s height times the size, so a tall shape runs past the window', () => {
+    expect(crissFrame({ ...room, width: 5000, rows: 30, cols: 29, scale: 37 / 22 })).toEqual({ fit: 39, width: 29 * 39, height: 30 * 39 });
+    expect(crissFrame({ ...room, width: 5000, rows: 30, cols: 29, scale: 15 / 22 })).toEqual({ fit: 15, width: 29 * 15, height: 30 * 15 });
+  });
+
+  it('stops at the page\'s width whatever the size, as a phone\'s shape does', () => {
+    expect(crissFrame({ ...room, width: 400 + 17 * 30, rows: 15, cols: 17, scale: 37 / 22 }).fit).toBe(30);
+  });
+});
+
+describe('the frame sized again', () => {
+  const board = { rows: 30, cols: 30 };
+  const frameAt = fit => ({ fit, width: 30 * fit, height: 30 * fit });
+
+  // TASK-188: Huge showed the shape whole; Tiny leaves it too small to tap whole.
+  it('opens a shape shown whole, now too small to tap whole, zoomed in on its middle at 36px', () => {
+    const before = frameAt(30), after = frameAt(15);
+    expect(crissRefit({ cell: 30, x: 0, y: 0 }, before, after, board)).toEqual({ cell: 36, x: 8.75, y: 8.75 });
+  });
+
+  it('keeps a shape shown whole whole, at the new fit, while it can still be tapped whole', () => {
+    expect(crissRefit({ cell: 30, x: 0, y: 0 }, frameAt(30), frameAt(25), board)).toEqual({ cell: 25, x: 0, y: 0 });
+  });
+
+  it('keeps the player\'s own zoom on a shape that zoomed, zoomed out whole staying whole', () => {
+    expect(crissRefit({ cell: 15, x: 0, y: 0 }, frameAt(15), frameAt(12), board)).toEqual({ cell: 12, x: 0, y: 0 });
+    expect(crissRefit({ cell: 40, x: 10, y: 10 }, frameAt(15), frameAt(12), board).cell).toBe(40);
   });
 });
 

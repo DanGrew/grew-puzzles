@@ -6,11 +6,13 @@
 // ui/crisscross/sheet-ui.js.
 import {
   crissUrl, crissBoard, tapSquare, tapWord, crissSquares, squareMarks, placedSquares, crissCount,
-  wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, minimapSquares, crissPrints
+  wordGroups, pickingLine, crissStatus, answerSquares, crissFrame, crissRefit, minimapSquares, crissPrints
 } from '../../core/crisscross/play-core.js';
-import { minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind } from '../../core/minesweeper/play-core.js';
+import { minesOpenView, minesZoom, minesZoomState, minesDrag, movedFar, pressKind } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform, minimapFit, minimapPens, minimapBox, dragView } from '../../core/maze/play-core.js';
-import { playJson } from '../../core/wordsearch/play-core.js';
+import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
+import { sizeScale } from '../../core/size-core.js';
+import { wireSizeMenu, sizeSquare } from '../size-ui.js';
 import { characterFor, idNumber, isPhone, boxFrom, siteDress, crissPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { joinedCriss } from '../../core/crisscross/progress-core.js';
@@ -37,9 +39,9 @@ var CRISS_CLASH_MS = 700;
 // Only a shape whose squares and list fit one sheet prints: its sheet is drawn and Print page
 // shows; any other has neither.
 var CRISS_SHEETS = { true: showSheet, false: noop };
-// What the character on screen stands by: the shape, its number and its character once known
-// (dressCriss).
-var crissFigure = { board: undefined, number: 1, character: undefined };
+// What the character on screen stands by: the shape, its number, its character once known
+// (dressCriss), and how much the size picked has grown the card past its fit at Small, px.
+var crissFigure = { board: undefined, number: 1, character: undefined, grown: 0 };
 // What printing the sheet in a style needs loaded first: nothing, until its character is known
 // (dressCriss).
 var crissPrintLoad = function () { return Promise.resolve(); };
@@ -94,15 +96,16 @@ function dressCriss(hiddenId, board) {
 // The character at the printout's spot the shape's number picks among those that show, measured
 // from the grid card as it now stands on the page, the printout's picture at the card's size against
 // the shape's printed card (core/theme-core.js crissPrintFrame, siteDress) — a spot the Words card or
-// the little map over it would cover, or the window's edge cut, skipped. Placed again whenever the
-// card is sized, and when the look changes.
+// the little map over it would cover, or the window's edge cut, skipped. It stands as big as at
+// Small whatever the size picked, as the maze's does. Placed again whenever the card is sized, and
+// when the look changes.
 function placeCrissFigure() {
   var page = crissEl('play').getBoundingClientRect(), card = crissEl('stage').getBoundingClientRect();
   var title = document.querySelector('.play-head').getBoundingClientRect();
   var board = crissFigure.board, phone = isPhone(document.documentElement.clientWidth);
   placeFigure(crissEl('theme-figure'), crissEl('name-tag'), siteDress({
     card: boxFrom(card, page),
-    scale: card.width / crissPrintFrame(board.cols, board.rows, false).cardWidth,
+    scale: (card.width - crissFigure.grown) / crissPrintFrame(board.cols, board.rows, false).cardWidth,
     screen: screenEdges(page.left),
     covers: ['words-card', 'map-box'].map(function (id) { return boxFrom(crissEl(id).getBoundingClientRect(), page); }), never: [],
     title: boxFrom(title, page),
@@ -136,6 +139,8 @@ function showShape(id, board, play) {
   // Each word's chip in the Words card, and its twin under the shape.
   var chips = new Map(), strips = new Map();
   var mapSize = 'small';
+  // The puzzle's size, kept on the device for every kind (ui/size-ui.js): read before the first frame.
+  var puzzleSize = 'normal';
   var minimap = { scale: 1, width: 0, height: 0 };
   var minimapMove = noop;
   // The fingers or the mouse down on the shape, and whether this press has moved it — a press that
@@ -183,6 +188,7 @@ function showShape(id, board, play) {
   wirePress();
   wireZoom();
   wireMinimap();
+  wireSizeMenu(crissEl('puzzle-size'), crissEl('puzzle-size-menu'), sizeSquare, function (size) { puzzleSize = size; }, sizeShape);
   wireSize();
   wireCrissProgress(id, board, function () { return play; }, joinSaved);
   render();
@@ -390,25 +396,37 @@ function showShape(id, board, play) {
     sizeShape();
   }
 
-  // The frame fits the page's width and the window's height, as big as it can be: measured once
-  // drawn, and again on every resize. The card's edges round the frame are its borders and its
-  // padding, either side; beside it, wider than a phone, the Words card; under it, on a phone, the
-  // little map and the words of the slot picked.
+  // The frame fits the page's width and the window's height times the size picked, as big as it can
+  // be: measured once drawn, and again on every resize and every size picked. The card's edges round
+  // the frame are its borders and its padding, either side; beside it, wider than a phone, the Words
+  // card; under it, on a phone, the little map and the words of the slot picked. The shape and the
+  // Words card may reach past the page's column to the window's 24px edges, never over the side bar
+  // (play-core's playReach), and do only as far as they need (playMargins), so a shape that fits
+  // sits centred in the column.
   function sizeShape() {
     var playEl = crissEl('play'), face = crissEl('front'), frameEl = crissEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
-    var next, fitted;
+    var column = playEl.parentElement.getBoundingClientRect();
+    var reach = playReach(document.documentElement.clientWidth, column, crissEl('site-side').getBoundingClientRect().width);
+    var chromeWidth = face.offsetWidth - face.clientWidth + 2 * crissEl('board').offsetLeft + CRISS_SIDE_ROOM[phone];
+    var room, next, fitted, margins;
     sizeMinimap(phone);
-    next = crissFrame({
+    room = {
       viewHeight: window.innerHeight,
       chromeHeight: face.offsetHeight - frameEl.offsetHeight + CRISS_WINDOW_MARGIN + { true: CRISS_GAP + crissEl('dock').offsetHeight, false: 0 }[phone],
-      width: playEl.clientWidth,
-      chromeWidth: face.offsetWidth - face.clientWidth + 2 * crissEl('board').offsetLeft + CRISS_SIDE_ROOM[phone],
-      rows: board.rows, cols: board.cols
-    });
+      width: column.width - reach.left - reach.right,
+      chromeWidth: chromeWidth,
+      scale: sizeScale('crisscross', puzzleSize), rows: board.rows, cols: board.cols
+    };
+    next = crissFrame(room);
+    // The character stands against the card as it fits the window at Small: no size grows it.
+    crissFigure.grown = next.width - crissFrame(Object.assign({}, room, { scale: 1 })).width;
     fitted = fitView(view, frame, next, board);
     frame = next;
-    fitView = minesRefit;
+    fitView = crissRefit;
+    margins = playMargins(reach, column.width, frame.width + chromeWidth);
+    playEl.style.setProperty('--reach-left', margins.left + 'px');
+    playEl.style.setProperty('--reach-right', margins.right + 'px');
     playEl.style.setProperty('--frame-w', frame.width + 'px');
     playEl.style.setProperty('--frame-h', frame.height + 'px');
     showView(fitted);

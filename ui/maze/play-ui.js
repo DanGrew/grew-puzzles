@@ -17,8 +17,8 @@ import { drawMazeSheet, dressMazeSheet } from './sheet-ui.js';
 import { characterFor, idNumber, isPhone, mazeScale, boxFrom, siteDress } from '../../core/theme-core.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
-import { sizeScale, sizeSwatch } from '../../core/size-core.js';
-import { wireSizeMenu } from '../size-ui.js';
+import { sizeScale } from '../../core/size-core.js';
+import { wireSizeMenu, sizeSquare } from '../size-ui.js';
 
 var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
 // Beside the grid card, the controls' column and the gap before it; on a phone they sit underneath.
@@ -440,14 +440,6 @@ function showMaze(id, board, play) {
     showView(fitted, false);
     placeMazeFigure();
   }
-}
-
-// A size in the menu: a square at its size, since it's the grid that grows (size-core's sizeSwatch).
-function sizeSquare(size) {
-  var square = document.createElement('span');
-  square.className = 'square';
-  square.style.setProperty('--swatch', sizeSwatch(size) + 'px');
-  return square;
 }
 
 // The printout: always the blank maze, whatever the player has done on screen.
