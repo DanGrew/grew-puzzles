@@ -62,8 +62,9 @@ describe('book-core.js', () => {
       pages: [page(1, 'minesweeper'), page(2, 'wordsearch'), page(4, 'maze'), page(6, 'minesweeper')],
       boards: [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 32, rows: 40 }, { cols: 10, rows: 10 }],
       left: [3, 5],
+      screen: [],
     });
-    expect(printedPages([], [])).toEqual({ pages: [], boards: [], left: [] });
+    expect(printedPages([], [])).toEqual({ pages: [], boards: [], left: [], screen: [] });
   });
 
   test('a criss-cross takes its place in number order, its file opened whatever its size', () => {
@@ -86,14 +87,33 @@ describe('book-core.js', () => {
       pages: [page(1, 'crisscross'), page(2, 'wordsearch'), page(5, 'minesweeper')],
       boards: [shape(17, 15, 20), { sheets: [] }, { cols: 10, rows: 10 }],
       left: [3, 4],
+      screen: [],
+    });
+  });
+
+  test('a Reveal board never takes a page, whatever its size, and is named apart from those too big', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const pages = [page(1, 'minesweeper'), page(2, 'minesweeper'), page(3, 'minesweeper'), page(4, 'minesweeper')];
+    const boards = [{ rule: 'reveal', cols: 10, rows: 10 }, { rule: 'vanilla', cols: 10, rows: 10 }, { rule: 'reveal', cols: 40, rows: 40 }, { rule: 'vanilla', cols: 40, rows: 40 }];
+    expect(printedPages(pages, boards)).toEqual({
+      pages: [page(2, 'minesweeper')],
+      boards: [{ rule: 'vanilla', cols: 10, rows: 10 }],
+      left: [4],
+      screen: [1, 3],
     });
   });
 
   test('the book\'s page names each board left out as too big to print; none left out, no note', () => {
-    expect(leftOutNote([])).toBe('');
-    expect(leftOutNote([7])).toBe('Puzzle 7 is too big to print, so it plays on the site only.');
-    expect(leftOutNote([4, 7])).toBe('Puzzles 4 and 7 are too big to print, so they play on the site only.');
-    expect(leftOutNote([2, 4, 7])).toBe('Puzzles 2, 4 and 7 are too big to print, so they play on the site only.');
+    expect(leftOutNote([], [])).toBe('');
+    expect(leftOutNote([7], [])).toBe('Puzzle 7 is too big to print, so it plays on the site only.');
+    expect(leftOutNote([4, 7], [])).toBe('Puzzles 4 and 7 are too big to print, so they play on the site only.');
+    expect(leftOutNote([2, 4, 7], [])).toBe('Puzzles 2, 4 and 7 are too big to print, so they play on the site only.');
+  });
+
+  test('the book\'s page names each Reveal board as playing on screen only, after any too big', () => {
+    expect(leftOutNote([], [3])).toBe('Puzzle 3 plays on screen only, so it isn\'t in the book.');
+    expect(leftOutNote([], [3, 5])).toBe('Puzzles 3 and 5 play on screen only, so they aren\'t in the book.');
+    expect(leftOutNote([7], [3])).toBe('Puzzle 7 is too big to print, so it plays on the site only. Puzzle 3 plays on screen only, so it isn\'t in the book.');
   });
 
   test('nothing the book adds names a hidden ID', () => {

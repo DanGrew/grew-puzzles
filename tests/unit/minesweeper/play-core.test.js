@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   minesUrl, minesFile, minesBoard, newMinesPlay, tapMines, minesFinished, minesSquares, numberState, squareMarks,
   minesCount, answerSquares, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind,
-  minesPrints, printedRule, minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo
+  minesPrints, boardPrints, printedRule, minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo
 } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/play-core.js, against MINE-0001 — a real 10×10 Easy board of 15 mines made by
@@ -309,6 +309,12 @@ describe('paper', () => {
     expect(minesPrints(31, 10)).toBe(false);
     expect(minesPrints(10, 31)).toBe(false);
     expect(minesPrints(40, 40)).toBe(false);
+  });
+
+  it('a Vanilla board prints by its size; a Reveal board never does, whatever its size', () => {
+    expect(boardPrints({ rule: 'vanilla', cols: 30, rows: 10 })).toBe(true);
+    expect(boardPrints({ rule: 'vanilla', cols: 31, rows: 10 })).toBe(false);
+    expect(boardPrints({ rule: 'reveal', cols: 10, rows: 10 })).toBe(false);
   });
 
   it('the sheet\'s rule says to shade the board\'s own mines', () => {

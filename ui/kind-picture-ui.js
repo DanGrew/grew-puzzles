@@ -1,7 +1,7 @@
 // A tile's picture: its kind's illustration, the same on every tile of that kind — a maze for a
 // maze, a letter grid with a word ringed for a wordsearch, a small board of numbers round two mines
-// for a minesweeper board, a few empty words crossing, drawn as the maze is, for a criss-cross —
-// between the tile's strip and its title.
+// for a minesweeper board — a Reveal board's with a corner still covered — a few empty words
+// crossing, drawn as the maze is, for a criss-cross — between the tile's strip and its title.
 // Drawn here, never read from a puzzle file, so a page of tiles loads nothing more. A collection's
 // tile has none (styles/browse.css hides an empty one).
 var PICTURES = {
@@ -9,13 +9,16 @@ var PICTURES = {
   wordsearch: '<svg viewBox="-3 -3 90 66"><rect x="-1.5" y="-1.5" width="87" height="63" rx="4" fill="none" stroke="currentColor" stroke-width="2.4"/><rect x="12.5" y="13" width="47" height="11" rx="5.5" fill="none" stroke="var(--accent)" stroke-width="2"/><g font-family="Sora, sans-serif" font-size="9" font-weight="600" text-anchor="middle" fill="currentColor"><text x="6" y="10">K</text><text x="18" y="10">T</text><text x="30" y="10">O</text><text x="42" y="10">P</text><text x="54" y="10">A</text><text x="66" y="10">W</text><text x="78" y="10">D</text><text x="6" y="22">S</text><text x="18" y="22">G</text><text x="30" y="22">R</text><text x="42" y="22">E</text><text x="54" y="22">W</text><text x="66" y="22">L</text><text x="78" y="22">M</text><text x="6" y="34">B</text><text x="18" y="34">N</text><text x="30" y="34">Q</text><text x="42" y="34">U</text><text x="54" y="34">Z</text><text x="66" y="34">I</text><text x="78" y="34">C</text><text x="6" y="46">F</text><text x="18" y="46">H</text><text x="30" y="46">A</text><text x="42" y="46">Y</text><text x="54" y="46">E</text><text x="66" y="46">X</text><text x="78" y="46">R</text><text x="6" y="58">M</text><text x="18" y="58">D</text><text x="30" y="58">V</text><text x="42" y="58">O</text><text x="54" y="58">J</text><text x="66" y="58">N</text><text x="78" y="58">P</text></g></svg>',
   minesweeper: '<svg viewBox="-3 -3 96 78"><rect x="0" y="0" width="90" height="72" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M18 0v72M36 0v72M54 0v72M72 0v72M0 18h90M0 36h90M0 54h90" fill="none" stroke="currentColor" stroke-width="1" opacity=".45"/><circle cx="27" cy="27" r="4.6" fill="var(--accent)"/><circle cx="63" cy="45" r="4.6" fill="var(--accent)"/><g font-family="Sora, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="currentColor"><text x="9" y="12.5">1</text><text x="27" y="12.5">1</text><text x="45" y="12.5">1</text><text x="9" y="30.5">1</text><text x="45" y="30.5">2</text><text x="63" y="30.5">1</text><text x="81" y="30.5">1</text><text x="9" y="48.5">1</text><text x="27" y="48.5">1</text><text x="45" y="48.5">2</text><text x="81" y="48.5">1</text><text x="45" y="66.5">1</text><text x="63" y="66.5">1</text><text x="81" y="66.5">1</text></g></svg>',
   crisscross: '<svg viewBox="-3 -3 86 76"><path d="M10 0h10v10h-10zM0 10h10v10h-10zM10 10h10v10h-10zM20 10h10v10h-10zM30 10h10v10h-10zM40 10h10v10h-10zM50 10h10v10h-10zM10 20h10v10h-10zM40 20h10v10h-10zM70 20h10v10h-10zM10 30h10v10h-10zM40 30h10v10h-10zM70 30h10v10h-10zM10 40h10v10h-10zM20 40h10v10h-10zM30 40h10v10h-10zM40 40h10v10h-10zM50 40h10v10h-10zM60 40h10v10h-10zM70 40h10v10h-10zM40 50h10v10h-10zM70 50h10v10h-10zM40 60h10v10h-10zM70 60h10v10h-10z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="5" cy="15" r="2.6" fill="var(--accent)"/></svg>',
+  // A Reveal board's: the same board, a corner of it still covered and a covered mine marked.
+  'minesweeper:Reveal': '<svg viewBox="-3 -3 96 78"><path d="M18 18h18v18h-18zM72 18h18v18h-18zM54 36h36v36h-36z" fill="currentColor" opacity=".22"/><rect x="0" y="0" width="90" height="72" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M18 0v72M36 0v72M54 0v72M72 0v72M0 18h90M0 36h90M0 54h90" fill="none" stroke="currentColor" stroke-width="1" opacity=".45"/><circle cx="27" cy="27" r="4.6" fill="var(--accent)"/><g font-family="Sora, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="currentColor"><text x="9" y="12.5">1</text><text x="27" y="12.5">1</text><text x="45" y="12.5">1</text><text x="9" y="30.5">1</text><text x="45" y="30.5">2</text><text x="63" y="30.5">1</text><text x="9" y="48.5">1</text><text x="27" y="48.5">1</text><text x="45" y="48.5">2</text><text x="45" y="66.5">1</text></g></svg>',
   collections: '',
 };
 
-export function kindPicture(place) {
+// A tile's picture: its type's own, where it has one, else its kind's.
+export function kindPicture(place, type) {
   var pic = document.createElement('span');
   pic.className = 'pic';
   pic.setAttribute('aria-hidden', 'true');
-  pic.innerHTML = PICTURES[place];
+  pic.innerHTML = [PICTURES[place + ':' + type]].filter(Boolean).concat([PICTURES[place]])[0];
   return pic;
 }

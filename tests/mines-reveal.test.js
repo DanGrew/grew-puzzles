@@ -276,14 +276,22 @@ test.describe('Check and Undo on a Reveal board', () => {
     await expect(page.locator('#undo')).toBeDisabled();
   });
 
-  test('Undo is gone on reload, and so is the board\'s play — nothing saves yet', async ({ page }) => {
+  test('signed out, Undo is gone on reload, and so is the board\'s play — the line under the Mines card invites me to sign in', async ({ page }) => {
     await mark(page, 7, 6);
     await square(page, 7, 7).click();
     await page.reload();
     await expect(page.locator('#play')).toBeVisible();
     await expect(page.locator('#undo')).toBeDisabled();
     await expect(covered(page)).toHaveCount(94);
-    await expect(page.locator('#save-line')).toBeHidden();
+    await expect(page.locator('#save-hint')).toHaveText('Sign in to save your progress — or just play.');
+    await expect(page.locator('#save-hint')).toBeVisible();
+  });
+
+  test('has no Print in the site menu, and draws no sheet; a Vanilla board of the same size does', async ({ page }) => {
+    await expect(page.locator('#print')).toBeHidden();
+    await expect(page.locator('#mines-sheet [data-part="grid"] *')).toHaveCount(0);
+    await open(page, 'MINE-0001');
+    await expect(page.locator('#print')).toBeVisible();
   });
 });
 

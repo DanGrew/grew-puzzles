@@ -3,11 +3,11 @@
 // completion pop, and the print menu, and dresses it Themed in its character. A board plays by its
 // rule: a Vanilla board by marking, a Reveal board by opening squares (vanillaGame, revealGame).
 // Every rule lives in core/minesweeper/play-core.js, core/minesweeper/reveal-core.js and
-// core/theme-core.js; nothing here decides anything. Saving the player's marks is ui/minesweeper/progress-ui.js; the printed
+// core/theme-core.js; nothing here decides anything. Saving the player's board is ui/minesweeper/progress-ui.js; the printed
 // sheet is ui/minesweeper/sheet-ui.js.
 import {
   minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
-  minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, minesPrints
+  minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, boardPrints
 } from '../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, tapReveal, markReveal, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
@@ -16,7 +16,7 @@ import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core
 import { playJson } from '../../core/wordsearch/play-core.js';
 import { characterFor, idNumber, isPhone, boxFrom, siteDress, minesPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
-import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
+import { joinedMines, joinedHistory, joinedReveal, joinedRevealHistory } from '../../core/minesweeper/progress-core.js';
 import { withSavedMines, wireMinesProgress, saveTap } from './progress-ui.js';
 import { drawMinesSheet, dressMinesSheet } from './sheet-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
@@ -25,8 +25,8 @@ import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screen
 var MINES_SIDE_ROOM = { true: 0, false: 330 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MINES_WINDOW_MARGIN = 24;
-// Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; any other
-// has neither.
+// Only a Vanilla board up to 30 squares a side prints: its sheet is drawn and Print page shows; any
+// other — a Reveal board too — has neither.
 var MINES_SHEETS = { true: showSheet, false: noop };
 // What the character on screen stands by: the board, its number and its character once known
 // (dressMines).
@@ -34,8 +34,7 @@ var minesFigure = { board: undefined, number: 1, character: undefined };
 // What printing the sheet in a style needs loaded first: nothing, until its character is known
 // (dressMines).
 var minesPrintLoad = function () { return Promise.resolve(); };
-// How a board opens, by its rule: a Vanilla board waits for what a signed-in player saved; a Reveal
-// board starts from its start square every time — saving it is the product's TASK-174.
+// How a board opens, by its rule: either waits for what a signed-in player saved, then plays by it.
 var MINES_OPENS = { vanilla: openVanilla, reveal: openReveal };
 // A press held this long on a Reveal board, without moving, marks the square under it, as a
 // right-click does on a computer.
@@ -73,7 +72,9 @@ function openVanilla(id, board) {
 }
 
 function openReveal(id, board) {
-  showBoard(id, board, function (squares, cells) { return revealGame(board, squares, cells); });
+  withSavedMines(id, board, function (play) {
+    showBoard(id, board, function (squares, cells) { return revealGame(id, board, play, squares, cells); });
+  });
 }
 
 // The printout: always the blank board, whatever the player has marked on screen.
@@ -125,7 +126,7 @@ function showBoard(id, board, makeGame) {
     minesEl('grid').appendChild(button);
   });
   answerSquares(board).forEach(function (s) { minesEl('solution-grid').appendChild(answerSquare(s)); });
-  MINES_SHEETS[minesPrints(board.cols, board.rows)](board);
+  MINES_SHEETS[boardPrints(board)](board);
   minesEl('play').hidden = false;
   game = makeGame(squares, cells);
   wireFlip(noop);
@@ -307,9 +308,11 @@ function vanillaGame(id, board, play, squares) {
 // start square's area; a tap opens a square or marks it, as Open | Mark mine under the board picks
 // — Open each time the page opens — and a right-click, or a press held still, always marks. Opening
 // a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
-// back mine marks only, this visit's alone. Nothing is saved.
-function revealGame(board, squares, cells) {
-  var play = newRevealPlay(board), history = [], tool = 'open';
+// back mine marks only, this visit's alone. play is the board as the player left it, already in
+// place; signed in, every tap and Undo that changes it is saved under its hidden ID, and a kaboom
+// saves it cleared, so it comes back at its start.
+function revealGame(id, board, play, squares, cells) {
+  var history = [], tool = 'open';
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
   var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate };
   // A finger or a pen held still marks; the mouse marks by its right button.
@@ -324,22 +327,27 @@ function revealGame(board, squares, cells) {
   });
   minesEl('again').addEventListener('click', tryAgain);
   wireHold();
+  wireMinesProgress(id, board, function () { return play; }, joinSaved);
   return { tap: onTap, check: onCheck, undo: onUndo, render: render };
 
   function onTap(cell) {
     step(cell, tapReveal(play, cell, board, tool));
   }
 
-  // Every tap that changes a mark is kept for Undo; any tap clears Check's rings.
+  // Every tap that changes the board is saved, signed in; one that changes a mark is kept for Undo;
+  // any tap clears Check's rings.
   function step(cell, next) {
+    saveTap(id, board, play, next);
     history = revealTapped(history, play, next, cell);
     play = next;
     render();
     play.events.forEach(function (e) { REVEAL_EVENTS[e](); });
   }
 
+  // The last mark taken back, and saved as a tap is.
   function onUndo() {
     var undone = undoneReveal(history, play);
+    saveTap(id, board, play, undone.play);
     history = undone.history;
     play = undone.play;
     render();
@@ -351,10 +359,18 @@ function revealGame(board, squares, cells) {
     showMistakes(squares, mistakes);
   }
 
-  // The same board over from its start square, with nothing carried over.
+  // The same board over from its start square, with nothing carried over — its save already cleared
+  // by the kaboom.
   function tryAgain() {
     play = newRevealPlay(board);
     history = [];
+    render();
+  }
+
+  // Signed in mid-board: the board saved elsewhere joins the one on screen.
+  function joinSaved(saved) {
+    history = joinedRevealHistory(play, history, board);
+    play = joinedReveal(play, saved, board);
     render();
   }
 

@@ -128,7 +128,7 @@ function card(item) {
   const figure = part('theme-figure', '');
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, tileCharacter(characters, item));
-  a.append(figure, kindPicture(item.place), part('name', item.title), detail);
+  a.append(figure, kindPicture(item.place, item.type), part('name', item.title), detail);
   return a;
 }
 

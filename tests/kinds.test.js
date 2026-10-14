@@ -245,6 +245,37 @@ test('Minesweeper shows only boards, easiest first, and Filters picks their diff
   expect(fileRequests).toEqual([]);
 });
 
+// A Reveal board (TASK-174) is its own type under Minesweeper: the index says so, and the page reads
+// nothing else.
+const REVEAL = { ...puzzle('MINE', 3, 'Reveal', 'Reveal 001'), ...saved('Medium', 16, 12) };
+
+test('Minesweeper\'s filters offer Reveal and Vanilla, A to Z as types of one difficulty are; a Reveal tile wears the board picture with a corner covered, its type and size, and opens the minesweeper page', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [...BOARDS, REVEAL] } }));
+  await page.goto('/app/?kind=minesweeper');
+  await expect(names(page)).toHaveText(['Garden Patch', 'Reveal 001', 'Big Field']);
+  await page.locator('#filter-button').click();
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Reveal', 'Vanilla']]]);
+  await page.locator('#filters').getByRole('button', { name: 'Reveal', exact: true }).click();
+  await expect(names(page)).toHaveText(['Reveal 001']);
+  await expect(page).toHaveURL(/\?kind=minesweeper&type=Reveal$/);
+  const tile = page.locator('#tiles .tile', { hasText: 'Reveal 001' });
+  await expect(tile.locator('.detail .line')).toHaveText(['Reveal', '16×12']);
+  await expect(tile).toHaveAttribute('href', 'minesweeper.html?id=MINE-0003');
+  await expect(tile).toHaveAttribute('data-tone', 'Medium');
+  const pictures = await page.locator('#tiles .tile .pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
+  await page.goto('/app/?kind=minesweeper&type=Vanilla');
+  await expect(names(page)).toHaveCount(2);
+  const vanilla = await page.locator('#tiles .tile .pic svg').first().evaluate(s => s.outerHTML);
+  expect(pictures[0]).not.toBe(vanilla);
+  // Covered squares are shaded, and of the board's two mines only the marked one shows.
+  await page.goto('/app/?kind=minesweeper&type=Reveal');
+  await expect(page.locator('#tiles .tile .pic svg path[opacity=".22"]')).toHaveCount(1);
+  await expect(page.locator('#tiles .tile .pic svg circle')).toHaveCount(1);
+  await expect(side(page).locator('.types').nth(2).locator('.type')).toHaveText(['Reveal', 'Vanilla']);
+  expect(fileRequests).toEqual([]);
+});
+
 test('a board\'s tile wears the minesweeper picture, reads its size as a maze tile does, and opens the minesweeper page', async ({ page }) => {
   const fileRequests = await serve(page);
   await page.goto('/app/?kind=maze');
