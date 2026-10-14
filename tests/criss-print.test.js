@@ -166,6 +166,8 @@ test('the lines survive cheap printing, and the starting word\'s letters print a
 
 test('nothing I placed prints, and there\'s no answer: the sheet is the empty shape, whatever I did', async ({ page }) => {
   await open(page);
+  // The sheet as it stands once its character is on it, so its arrival never reads as a change.
+  await expect(sheet(page).locator('.print-figure[data-spot]')).toBeAttached();
   const before = await sheet(page).innerHTML();
   // Hat goes down from row 0, column 16; then the answer is flipped up.
   await page.locator('#grid .criss-square[data-key="0,16"]').click();
