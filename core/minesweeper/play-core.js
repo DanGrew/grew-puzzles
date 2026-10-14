@@ -1,10 +1,11 @@
 // The minesweeper play page's rules: which board a play URL names, what its board holds, what a
-// tap does to the player's marks, how each number reads against them, when the board is solved,
+// tap does to the player's marks, what each square shows, when the board is solved,
 // which marks Check rings and what Undo takes back, how the board sits in its frame, and whether it
 // prints. Pure — the DOM work is ui/minesweeper/play-ui.js. The board
 // file is grew-puzzles-tooling's docs/PUZZLE-FORMAT.md: the site only reads its numbers and its
-// mines, and never works a board out. A number fades or turns red, and a tap on it fills its
-// squares, from the player's own marks counted against it, never from the answer.
+// mines, and never works a board out. A tap on a number fills its squares from the player's own
+// marks counted against it, never from the answer; a number never changes how it looks, as
+// spotting one that's met is the player's, and finding a mistake is Check's (the product's TASK-193).
 import { puzzleDifficulty } from '../kind-core.js';
 import { centreOn } from '../maze/play-core.js';
 
@@ -116,8 +117,8 @@ function marked(play, cells, mark) {
 
 // A tap on a number fills its blank squares once its count settles them: every mine marked round
 // it, and they're dots; just as many mines missing as blank squares, and they're mines. Otherwise,
-// and on a number already red, it does nothing. Only the number and the player's own marks count,
-// so a wrong mark already there carries into the fill.
+// and on a number with more mines marked round it than it says, it does nothing. Only the number
+// and the player's own marks count, so a wrong mark already there carries into the fill.
 function numberFill(play, cell, board) {
   var missing = board.numbers[keyOf(cell)] - minesAround(play, cell, board);
   var blanks = blanksAround(play, cell, board);
@@ -192,21 +193,14 @@ export function minesSquares(board) {
   });
 }
 
-// How a number reads against the player's marks: 'met' — faded — once as many mines are marked
-// round it as it says, 'over' — red — once more are, else ''.
-export function numberState(play, cell, board) {
-  var n = board.numbers[keyOf(cell)], m = minesAround(play, cell, board);
-  return m > n ? 'over' : m === n ? 'met' : '';
-}
-
-// What each square shows on the front: a number its state, a blank square its mark — and what a
-// screen reader hears of it.
+// What each square shows on the front: a number itself, however many mines are marked round it, a
+// blank square its mark — and what a screen reader hears of it.
 export function squareMarks(play, board) {
   var said = { blank: 'blank', dot: 'no mine', mine: 'mine' };
   return minesSquares(board).map(function (s) {
     var where = 'Row ' + (s.cell[0] + 1) + ', column ' + (s.cell[1] + 1) + ', ';
-    if (s.number) return { key: s.key, mark: 'number', state: numberState(play, s.cell, board), label: where + s.number };
-    return { key: s.key, mark: markOf(play, s.cell), state: '', label: where + said[markOf(play, s.cell)] };
+    if (s.number) return { key: s.key, mark: 'number', label: where + s.number };
+    return { key: s.key, mark: markOf(play, s.cell), label: where + said[markOf(play, s.cell)] };
   });
 }
 

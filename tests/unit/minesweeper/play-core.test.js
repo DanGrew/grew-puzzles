@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
-  minesUrl, minesFile, minesBoard, newMinesPlay, tapMines, minesFinished, minesSquares, numberState, squareMarks,
+  minesUrl, minesFile, minesBoard, newMinesPlay, tapMines, minesFinished, minesSquares, squareMarks,
   minesCount, answerSquares, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind,
   minesPrints, boardPrints, printedRule, minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo
 } from '../../../core/minesweeper/play-core.js';
@@ -134,7 +134,8 @@ describe('tapping a number', () => {
     expect(taps([[1, 1]], middle).marks).toEqual({
       '0,0': 'dot', '0,1': 'dot', '0,2': 'dot', '1,0': 'dot', '1,2': 'dot', '2,0': 'dot', '2,1': 'dot', '2,2': 'dot'
     });
-    expect(numberState({ marks: { '2,0': 'mine' } }, [1, 1], middle)).toBe('over');
+    // A mine marked on its corner counts against it, so the 0 fills nothing.
+    expect(taps([[1, 1]], middle, { marks: { '2,0': 'mine' }, events: [] }).marks).toEqual({ '2,0': 'mine' });
   });
 });
 
@@ -267,24 +268,33 @@ describe('what the board shows', () => {
     expect(minesSquares(BOARD)).toHaveLength(100);
   });
 
-  it('a number fades once as many mines are marked round it as it says, and turns red past it', () => {
-    expect(numberState(newMinesPlay(), [0, 0], SMALL)).toBe('');
-    expect(numberState({ marks: { '0,1': 'mine' } }, [0, 0], SMALL)).toBe('');
-    expect(numberState({ marks: { '0,1': 'mine', '1,1': 'mine' } }, [0, 0], SMALL)).toBe('met');
-    expect(numberState({ marks: { '0,1': 'mine', '1,0': 'mine', '1,1': 'mine' } }, [0, 0], SMALL)).toBe('over');
-    expect(numberState({ marks: { '0,1': 'dot', '1,0': 'dot', '1,1': 'dot' } }, [0, 0], SMALL)).toBe('');
-    expect(numberState(newMinesPlay(), [0, 8], BOARD)).toBe('met');
+  it('each square\'s mark and what a screen reader hears', () => {
+    expect(squareMarks(taps([[0, 1], [1, 0], [1, 0], [1, 1], [1, 1]], SMALL), SMALL)).toEqual([
+      { key: '0,0', mark: 'number', label: 'Row 1, column 1, 2' },
+      { key: '0,1', mark: 'dot', label: 'Row 1, column 2, no mine' },
+      { key: '0,2', mark: 'blank', label: 'Row 1, column 3, blank' },
+      { key: '1,0', mark: 'mine', label: 'Row 2, column 1, mine' },
+      { key: '1,1', mark: 'mine', label: 'Row 2, column 2, mine' },
+      { key: '1,2', mark: 'number', label: 'Row 2, column 3, 1' }
+    ]);
   });
 
-  it('each square\'s mark, state and what a screen reader hears', () => {
-    expect(squareMarks(taps([[0, 1], [1, 0], [1, 0], [1, 1], [1, 1]], SMALL), SMALL)).toEqual([
-      { key: '0,0', mark: 'number', state: 'met', label: 'Row 1, column 1, 2' },
-      { key: '0,1', mark: 'dot', state: '', label: 'Row 1, column 2, no mine' },
-      { key: '0,2', mark: 'blank', state: '', label: 'Row 1, column 3, blank' },
-      { key: '1,0', mark: 'mine', state: '', label: 'Row 2, column 1, mine' },
-      { key: '1,1', mark: 'mine', state: '', label: 'Row 2, column 2, mine' },
-      { key: '1,2', mark: 'number', state: 'met', label: 'Row 2, column 3, 1' }
-    ]);
+  // Spotting a met number is the player's, and Check finds the mistakes (the product's TASK-193).
+  it('a number shows the same however many mines are marked round it — none, too few, as many, too many', () => {
+    const number = play => squareMarks(play, SMALL)[0];
+    const looks = [
+      newMinesPlay(),
+      { marks: { '0,1': 'mine' } },
+      { marks: { '0,1': 'mine', '1,1': 'mine' } },
+      { marks: { '0,1': 'mine', '1,0': 'mine', '1,1': 'mine' } }
+    ].map(number);
+    looks.forEach(look => expect(look).toEqual({ key: '0,0', mark: 'number', label: 'Row 1, column 1, 2' }));
+  });
+
+  it('a tap on a number that isn\'t met, and whose blank squares aren\'t its missing mines, changes nothing', () => {
+    // The 2 with one mine marked and two blank squares left: neither met nor settled.
+    const before = { marks: { '0,1': 'mine' }, events: [] };
+    expect(tapMines(before, [0, 0], SMALL)).toEqual({ marks: { '0,1': 'mine' }, events: [] });
   });
 
   it('counts the mines marked, never the dots, of the board\'s mines', () => {

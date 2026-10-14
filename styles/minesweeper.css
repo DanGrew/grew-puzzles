@@ -31,8 +31,6 @@ button.mines-square { cursor: pointer; }
 button.mines-square:hover { background: #f4f8f6; }
 button.mines-square:focus-visible { outline: 2px solid var(--select); outline-offset: -3px; }
 .mines-square[data-mark="number"], button.mines-square[data-mark="number"]:hover { background: var(--clue-bg); }
-.mines-square[data-state="met"] { color: color-mix(in srgb, var(--fg) 28%, transparent); }
-.mines-square[data-state="over"] { color: var(--wrong); }
 .mines-square[data-mark="mine"]::after { content: ""; width: 56%; height: 56%; border-radius: 50%; background: var(--fg);
   box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--fg); }
 .mines-square[data-mark="dot"]::after { content: ""; width: 16%; height: 16%; border-radius: 50%; background: var(--muted); }

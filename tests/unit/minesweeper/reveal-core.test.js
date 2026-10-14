@@ -223,11 +223,15 @@ describe('what each square shows', () => {
     expect(at(squares, '2,2')).toEqual({ key: '2,2', cover: 'open', mark: 'number', number: '', state: '', checked: '', label: 'Row 3, column 3, 0' });
   });
 
-  it('a marked square shows its mark, and a number fades once its mines are marked and turns red past it', () => {
+  it('a marked square shows its mark', () => {
     const one = revealSquares(taps([['0,2', 'mark']]), BOARD);
-    expect(at(one, '0,2')).toMatchObject({ cover: 'covered', mark: 'mine', number: '', state: '', label: 'Row 1, column 3, marked mine' });
-    expect(at(one, '1,2').state).toBe('met');
-    expect(at(revealSquares(taps([['0,2', 'mark'], ['0,1', 'mark']]), BOARD), '1,2').state).toBe('over');
+    expect(at(one, '0,2')).toEqual({ key: '0,2', cover: 'covered', mark: 'mine', number: '', state: '', checked: '', label: 'Row 1, column 3, marked mine' });
+  });
+
+  // Spotting a met number is the player's, and Check finds the mistakes (the product's TASK-193).
+  it('an opened number shows the same however many mines are marked round it — none, as many, too many', () => {
+    const looks = [[], [['0,2', 'mark']], [['0,2', 'mark'], ['0,1', 'mark']]].map(steps => at(revealSquares(taps(steps), BOARD), '1,2'));
+    looks.forEach(look => expect(look).toEqual({ key: '1,2', cover: 'open', mark: 'number', number: '1', state: '', checked: '', label: 'Row 2, column 3, 1' }));
   });
 
   it('after a kaboom: the mine that went off, every other mine shown, a right mark kept, and a wrong mark proved wrong', () => {
