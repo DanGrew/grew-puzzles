@@ -4,301 +4,401 @@
       "hiddenId": "WSCH-0001",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Farm Animals"
+      "title": "Farm Animals",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0002",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Flowers"
+      "title": "Flowers",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0003",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Cars"
+      "title": "Cars",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0004",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Beach Games"
+      "title": "Beach Games",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0005",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Football"
+      "title": "Football",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0006",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Tabletop Games"
+      "title": "Tabletop Games",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0007",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Birthdays"
+      "title": "Birthdays",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0008",
       "type": "Vanilla",
       "created": "2026-10-03",
-      "title": "Mobile Phones"
+      "title": "Mobile Phones",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0009",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Safari Animals"
+      "title": "Safari Animals",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0010",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Trees"
+      "title": "Trees",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0011",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Trains"
+      "title": "Trains",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0012",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Ice Cream Flavours"
+      "title": "Ice Cream Flavours",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0013",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Basketball"
+      "title": "Basketball",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0014",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Card Games"
+      "title": "Card Games",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0015",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Anniversaries"
+      "title": "Anniversaries",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0016",
       "type": "Missing",
       "created": "2026-10-03",
-      "title": "Laptops"
+      "title": "Laptops",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0017",
       "type": "Mirra?e",
       "created": "2026-10-03",
-      "title": "Home"
+      "title": "Home",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0018",
       "type": "Mirra?e",
       "created": "2026-10-03",
-      "title": "Camping"
+      "title": "Camping",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0019",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Sheep, Sheep, Sheep"
+      "title": "Sheep, Sheep, Sheep",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0020",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Daisies"
+      "title": "Daisies",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0021",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Tickets"
+      "title": "Tickets",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0022",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Surfing the Waves"
+      "title": "Surfing the Waves",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0023",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Dribble Practice"
+      "title": "Dribble Practice",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0024",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "My Turn, Your Turn"
+      "title": "My Turn, Your Turn",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0025",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Presents"
+      "title": "Presents",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0026",
       "type": "Repeats",
       "created": "2026-10-03",
-      "title": "Restarts"
+      "title": "Restarts",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0027",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Wildlife Animals"
+      "title": "Wildlife Animals",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0028",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Bushes"
+      "title": "Bushes",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0029",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Planes"
+      "title": "Planes",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0030",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Beach Equipment"
+      "title": "Beach Equipment",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0031",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Rugby"
+      "title": "Rugby",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0032",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Hands Free Games"
+      "title": "Hands Free Games",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0033",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Easter"
+      "title": "Easter",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0034",
       "type": "Wildcards",
       "created": "2026-10-03",
-      "title": "Digital"
+      "title": "Digital",
+      "width": 15,
+      "height": 15
     },
     {
       "hiddenId": "WSCH-0035",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Fish"
+      "title": "Fish",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0036",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Gardening"
+      "title": "Gardening",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0037",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Transport"
+      "title": "Transport",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0038",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Holidays"
+      "title": "Holidays",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0039",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Athletics"
+      "title": "Athletics",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0040",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Video Games"
+      "title": "Video Games",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0041",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Christmas"
+      "title": "Christmas",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0042",
       "type": "Saga",
       "created": "2026-10-03",
-      "title": "Technology"
+      "title": "Technology",
+      "width": 15,
+      "height": 25
     },
     {
       "hiddenId": "WSCH-0043",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Occupations"
+      "title": "Occupations",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0044",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Clothes"
+      "title": "Clothes",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0045",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Fruit & Veg"
+      "title": "Fruit & Veg",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0046",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Countries"
+      "title": "Countries",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0047",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Colours"
+      "title": "Colours",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0048",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Dinosaurs"
+      "title": "Dinosaurs",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0049",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Mythical Creatures"
+      "title": "Mythical Creatures",
+      "width": 25,
+      "height": 35
     },
     {
       "hiddenId": "WSCH-0050",
       "type": "Mirra?e",
       "created": "2026-10-04",
-      "title": "Astronomy"
+      "title": "Astronomy",
+      "width": 25,
+      "height": 35
     }
   ]
 }
