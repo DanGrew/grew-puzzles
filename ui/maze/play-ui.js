@@ -4,7 +4,7 @@
 // nothing here decides anything. Only the cells in a window round the view are ever drawn, so a
 // maze of any size plays. Saving the player's place and finds is ui/maze/progress-ui.js.
 import {
-  mazeUrl, mazeBoard, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist,
+  mazeUrl, mazeBoard, tapMaze, padMaze, padState, padKey, trailEnd, trailDraw, keyCall, checklist, checklistGroups,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, wallPath, mazeFrame,
   openView, refitView, centreOn, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow,
   windowHolds, windowCells, windowMarks, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
@@ -23,7 +23,7 @@ var MAZE_SVG_NS = 'http://www.w3.org/2000/svg';
 var MAZE_CONTROLS_ROOM = { true: 0, false: 268 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MAZE_WINDOW_MARGIN = 24;
-// The page's gap between the grid card and the checklist above it, or on a phone the controls
+// The page's gap between the grid card and the checklist band above it, or on a phone the controls
 // under it — each stays on screen with the card.
 var MAZE_GAP = 28;
 // The little map's longer side at each size, px.
@@ -74,7 +74,7 @@ function showMissing() {
 }
 
 // The maze on its own play page: the maze in the grid card, its solution on the card's back, the
-// control pad and the checklist where a wordsearch's words would be — play, as the player left it,
+// control pad and the checklist band above them — play, as the player left it,
 // already in place, so nothing pops in and a maze finished before doesn't celebrate again. Its
 // hidden ID picks its character, and is what it's saved under.
 function showMaze(id, board, play) {
@@ -112,7 +112,7 @@ function showMaze(id, board, play) {
   mazeEl('collected').setAttribute('stroke-dasharray', dash.array.join(' '));
   mazeEl('collected').setAttribute('stroke-dashoffset', dash.offset);
   drawSolution(mazeEl('solution-lines'), solutionMarks(board));
-  checklist(play, board).forEach(function (line) { mazeEl('checklist').appendChild(checklistLine(line)); });
+  drawChecklist(checklist(play, board), checklistGroups(board));
   MAZE_SHEETS[mazePrints(board.cols, board.rows)](board);
   mazeEl('play').hidden = false;
   dressMaze(id);
@@ -168,8 +168,9 @@ function showMaze(id, board, play) {
     restart(trail, 'drawing');
     restart(mazeEl('here'), 'drawing');
     markStops();
+    var lines = mazeEl('checklist').querySelectorAll('li');
     checklist(play, board).forEach(function (line, i) {
-      var li = mazeEl('checklist').children[i];
+      var li = lines[i];
       li.classList.toggle('done', line.done);
       li.dataset.mark = line.mark;
       li.querySelector('.line-text').textContent = line.text;
@@ -310,15 +311,16 @@ function showMaze(id, board, play) {
 
   // ---- The little map ----
 
-  // Its box dragged, and its sizes picked: a new size fits the maze to the window again, since on
-  // a phone the map's row stays on screen with the card.
+  // Its box dragged, and its sizes picked: a new size redraws the map alone — the maze already left
+  // room for the largest (sizeMaze), so it never changes size.
   function wireMinimap() {
     var canvas = mazeEl('minimap');
     document.querySelectorAll('[data-map-size]').forEach(function (button) {
       button.addEventListener('click', function () {
         mapSize = button.dataset.mapSize;
         document.querySelectorAll('[data-map-size]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === button)); });
-        sizeMaze();
+        sizeMinimap(isPhone(document.documentElement.clientWidth), mapSize);
+        drawMinimap();
       });
     });
     canvas.addEventListener('pointerdown', function (e) {
@@ -334,13 +336,13 @@ function showMaze(id, board, play) {
     ['pointerup', 'pointercancel'].forEach(function (type) { canvas.addEventListener(type, function () { minimapMove = noop; }); });
   }
 
-  // The map at the size picked, within its room; its walls drawn once at that size, and every
-  // redraw copies them.
-  function sizeMinimap(phone) {
+  // The map at a size, within its room; its walls drawn once at that size, and every redraw copies
+  // them.
+  function sizeMinimap(phone, size) {
     var canvas = mazeEl('minimap'), ratio = window.devicePixelRatio, walls = mapWalls.getContext('2d');
     var room = mazeEl('controls').clientWidth * MAZE_MINIMAP_ROOM[phone] - MAZE_MINIMAP_EDGES;
     var pixels;
-    minimap = minimapFit(board, MAZE_MINIMAP_SIZES[mapSize], room);
+    minimap = minimapFit(board, MAZE_MINIMAP_SIZES[size], room);
     pixels = [Math.round(minimap.width * ratio), Math.round(minimap.height * ratio)];
     canvas.style.width = minimap.width + 'px';
     canvas.style.height = minimap.height + 'px';
@@ -394,16 +396,20 @@ function showMaze(id, board, play) {
     sizeMaze();
   }
 
-  // The checklist above the card stays on screen with it, or on a phone the pad and the map under
-  // it. The card's edges round the frame are its borders and its padding, either side.
+  // The checklist band above the card stays on screen with it, or on a phone the pad and the map
+  // under it — measured with the map Large, so no size the player picks moves the maze. Nothing
+  // here depends on the maze's own size, so the frame is worked out once and settles. The card's
+  // edges round the frame are its borders and its padding, either side.
   function sizeMaze() {
     var playEl = mazeEl('play'), face = mazeEl('front'), frameEl = mazeEl('view');
     var phone = isPhone(document.documentElement.clientWidth);
-    var next, fitted;
-    sizeMinimap(phone);
+    var next, fitted, above;
+    sizeMinimap(phone, 'large');
+    above = { true: mazeEl('controls'), false: mazeEl('checklist-card') }[phone].offsetHeight;
+    sizeMinimap(phone, mapSize);
     next = mazeFrame({
       viewHeight: window.innerHeight,
-      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + MAZE_GAP + { true: mazeEl('controls'), false: mazeEl('checklist-card') }[phone].offsetHeight,
+      chromeHeight: face.offsetHeight - frameEl.offsetHeight + MAZE_WINDOW_MARGIN + MAZE_GAP + above,
       width: playEl.clientWidth,
       chromeWidth: face.offsetWidth - face.clientWidth + 2 * mazeEl('board').offsetLeft + MAZE_CONTROLS_ROOM[phone],
       rows: board.rows, cols: board.cols
@@ -433,6 +439,20 @@ function restart(el, name) {
 
 function mazeInk(property) {
   return window.getComputedStyle(mazeEl('play')).getPropertyValue(property).trim();
+}
+
+// The checklist's groups, each its heading over its own lines, taken from the checklist's in order.
+function drawChecklist(lines, groups) {
+  var rest = lines.slice();
+  groups.forEach(function (g) {
+    var group = document.createElement('div'), head = document.createElement('h3'), list = document.createElement('ul');
+    group.className = 'checklist-group';
+    head.textContent = g.name;
+    list.className = 'checklist-lines ' + g.layout;
+    rest.splice(0, g.size).forEach(function (line) { list.appendChild(checklistLine(line)); });
+    group.append(head, list);
+    mazeEl('checklist').appendChild(group);
+  });
 }
 
 // One line of the checklist: its name, a box per thing to find — a key's numbered — and its mark.

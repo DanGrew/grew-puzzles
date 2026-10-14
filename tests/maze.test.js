@@ -692,21 +692,97 @@ for (const [where, size] of [['on desktop', { width: 1280, height: 720 }], ['on 
   });
 }
 
-test('on desktop the checklist sits above the maze, and the controls beside it', async ({ page }) => {
+// ---- The checklist band (BUG-182) ----
+
+const frameWidth = page => page.locator('#play').evaluate(p => p.style.getPropertyValue('--frame-w'));
+const headings = page => page.locator('#checklist .checklist-group h3');
+
+test('on desktop the checklist is a short band across the width, above both the maze and the controls beside it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
   await open(page, { id: 'MAZE-0003', maze: MIDDLE });
   const list = await page.locator('#checklist-card').boundingBox(), card = await page.locator('#stage').boundingBox();
-  const controls = await page.locator('#controls').boundingBox();
+  const controls = await page.locator('#controls').boundingBox(), play = await page.locator('#play').boundingBox();
   expect(list.y + list.height).toBeLessThan(card.y);
-  expect(Math.abs(list.x - card.x)).toBeLessThan(2);
+  expect(list.y + list.height).toBeLessThan(controls.y);
+  expect(Math.abs(list.x - play.x)).toBeLessThan(2);
+  expect(Math.abs(list.width - play.width)).toBeLessThan(2);
+  expect(list.height).toBeLessThan(200);
   expect(controls.x).toBeGreaterThan(card.x + card.width);
   expect(controls.y).toBeGreaterThanOrEqual(card.y - 1);
 });
 
-test('on a phone the checklist sits under the controls', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test('on a 1440-wide window, the band\'s groups sit side by side, each under its heading — boxes on one edge, the exits three to a row', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await open(page);
+  await expect(headings(page)).toHaveText(['Collectibles', 'Letters', 'Exits']);
+  const groups = await page.locator('#checklist .checklist-group').evaluateAll(gs => gs.map(g => g.getBoundingClientRect().toJSON()));
+  expect(new Set(groups.map(g => Math.round(g.top))).size).toBe(1);
+  groups.slice(1).forEach((g, i) => expect(g.left).toBeGreaterThanOrEqual(groups[i].right));
+  const collectibles = page.locator('#checklist .checklist-group').first();
+  await expect(collectibles.locator('.line-text')).toHaveText(['Guides', 'Keys', 'Collectibles']);
+  const lefts = await collectibles.locator('.boxes').evaluateAll(bs => bs.map(b => Math.round(b.getBoundingClientRect().left)));
+  expect(new Set(lefts).size).toBe(1);
+  const labels = await collectibles.locator('.line-text').evaluateAll(ls => ls.map(l => l.getBoundingClientRect().right));
+  labels.forEach(right => expect(lefts[0]).toBeGreaterThan(right));
+  const exits = await page.locator('#checklist .checklist-group').last().locator('li').evaluateAll(ls => ls.map(l => Math.round(l.getBoundingClientRect().top)));
+  expect(exits).toHaveLength(6);
+  expect([...new Set(exits)]).toHaveLength(2);
+  expect(exits.filter(top => top === exits[0])).toHaveLength(3);
+});
+
+test('a maze without letters heads its End with Exit, beside its Collectibles; a maze with nothing to collect has the Exit alone', async ({ page }) => {
+  await open(page, { maze: NO_LETTERS });
+  await expect(headings(page)).toHaveText(['Collectibles', 'Exit']);
+  await expect(page.locator('#checklist .checklist-group').last().locator('.line-text')).toHaveText(['End']);
+  await open(page, { maze: { ...NO_LETTERS, type: 'Vanilla', guides: [], collectibles: [], keys: [], zones: [] } });
+  await expect(headings(page)).toHaveText(['Exit']);
+});
+
+test('on a 1440-wide window, a 100×100 maze is far bigger than the old 113px, and S, M and L under the little map never change its size', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
   await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const before = await frameWidth(page);
+  expect(parseFloat(before)).toBeGreaterThan(300);
+  for (const size of ['medium', 'large', 'small', 'large', 'small']) {
+    await mapSize(page, size).click();
+    await expect(mapSize(page, size)).toHaveAttribute('aria-pressed', 'true');
+    expect(await frameWidth(page)).toBe(before);
+  }
+});
+
+test('resizing the window, the maze fits once and settles — never creeping smaller', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const first = await frameWidth(page);
+  await page.setViewportSize({ width: 1200, height: 700 });
+  await expect.poll(() => frameWidth(page)).not.toBe(first);
+  const smaller = await frameWidth(page);
+  for (let i = 0; i < 4; i++) await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+  expect(await frameWidth(page)).toBe(smaller);
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await expect.poll(() => frameWidth(page)).toBe(first);
+});
+
+test('on a phone the checklist sits under the controls, its headed groups one under the next', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page);
   const list = await page.locator('#checklist-card').boundingBox(), controls = await page.locator('#controls').boundingBox();
   expect(list.y).toBeGreaterThanOrEqual(controls.y + controls.height);
+  await expect(headings(page)).toHaveText(['Collectibles', 'Letters', 'Exits']);
+  const groups = await page.locator('#checklist .checklist-group').evaluateAll(gs => gs.map(g => g.getBoundingClientRect().toJSON()));
+  groups.slice(1).forEach((g, i) => expect(g.top).toBeGreaterThanOrEqual(groups[i].bottom));
+  const exits = await page.locator('#checklist .checklist-group').last().locator('li').evaluateAll(ls => ls.map(l => Math.round(l.getBoundingClientRect().top)));
+  expect([...new Set(exits)]).toHaveLength(2);
+});
+
+test('on a phone, S, M and L under the little map never change the maze\'s size either', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await open(page, { id: 'MAZE-0003', maze: MIDDLE });
+  const before = await frameWidth(page);
+  for (const size of ['medium', 'large', 'small']) {
+    await mapSize(page, size).click();
+    expect(await frameWidth(page)).toBe(before);
+  }
 });
 
 const mapSize = (page, size) => page.locator(`[data-map-size="${size}"]`);

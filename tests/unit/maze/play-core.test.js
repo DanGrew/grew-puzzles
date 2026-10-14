@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   mazeUrl, mazeFile, resumedMaze, foundCells,
-  wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist,
+  wallPath, mazeBoard, newMazePlay, trailEnd, tapMaze, padMaze, padState, padKey, trailDraw, keyCall, checklist, checklistGroups,
   mazeFinished, checklistCount, trailPoints, stopMarks, zoneMarks, solutionMarks, windowDetours, mazeFrame, centreOn,
   openView, refitView, zoomView, zoomFactor, pinchFactor, wheelFactor, zoomState, worldTransform, viewWindow, windowHolds,
   windowCells, windowMarks, minimapSize, minimapFit, minimapPens, minimapBox, minimapStops, minimapTrail, dragView,
@@ -422,6 +422,32 @@ describe('the checklist', () => {
     const ended = { trail: [[5, 5]], got: ['collectible-0', 'collectible-1', 'end'], events: [], locked: [] };
     expect(checklist(ended, board)[1]).toEqual({ text: 'End', boxes: [], said: '', mark: '✓', done: true });
     expect(mazeFinished(ended, board)).toBe(true);
+  });
+
+  it('groups its lines under headings: the boxed lines under Collectibles, the letters under Letters, the exits three to a row under Exits', () => {
+    expect(checklistGroups(BOARD)).toEqual([
+      { name: 'Collectibles', layout: 'boxed', size: 3 },
+      { name: 'Letters', layout: 'list', size: 3 },
+      { name: 'Exits', layout: 'trio', size: 6 },
+    ]);
+  });
+
+  it('heads a maze\'s End with Exit, and counts only the boxed lines it has', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), guides: [], zones: [], keys: [], letters: [], exits: [] });
+    expect(checklistGroups(board)).toEqual([
+      { name: 'Collectibles', layout: 'boxed', size: 1 },
+      { name: 'Exit', layout: 'list', size: 1 },
+    ]);
+  });
+
+  it('a maze with nothing to collect has the Exit alone', () => {
+    const board = mazeBoard({ ...structuredClone(MAZE), guides: [], collectibles: [], keys: [], zones: [], letters: [], exits: [] });
+    expect(checklistGroups(board)).toEqual([{ name: 'Exit', layout: 'list', size: 1 }]);
+  });
+
+  it('every group\'s size adds up to the checklist\'s lines', () => {
+    const total = checklistGroups(BOARD).reduce((sum, g) => sum + g.size, 0);
+    expect(total).toBe(checklist(newMazePlay(BOARD), BOARD).length);
   });
 });
 
