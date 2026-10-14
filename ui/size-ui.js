@@ -3,7 +3,7 @@
 // on this device — under the name the wordsearch always kept it by, so a pick made before carries
 // over — and is the size every kind's next page opens at. Pressing outside closes it unchanged.
 // The rules are core/size-core.js.
-import { sizeMenu, savedSize, saveSize } from '../core/size-core.js';
+import { sizeMenu, savedSize, saveSize, sizeSwatch } from '../core/size-core.js';
 
 var SIZE_KEY = 'grew-puzzles.text-size';
 
@@ -50,4 +50,13 @@ export function wireSizeMenu(button, menu, swatch, show, picked) {
     menu.style.top = at.bottom + 6 + 'px';
     menu.style.left = at.left + 'px';
   }
+}
+
+// A size in a grid kind's menu — a maze's or a board's: a square at its size, since it's the grid
+// that grows (size-core's sizeSwatch).
+export function sizeSquare(size) {
+  var square = document.createElement('span');
+  square.className = 'square';
+  square.style.setProperty('--swatch', sizeSwatch(size) + 'px');
+  return square;
 }

@@ -319,7 +319,7 @@ describe('paper', () => {
 });
 
 describe('the frame', () => {
-  const room = (width, height, rows, cols) => ({ viewHeight: height + 100, chromeHeight: 100, width: width + 40, chromeWidth: 40, rows, cols });
+  const room = (width, height, rows, cols, scale = 1) => ({ viewHeight: height + 100, chromeHeight: 100, width: width + 40, chromeWidth: 40, scale, rows, cols });
 
   it('fits the board to the narrower of the page\'s width and the window\'s height, in whole pixels', () => {
     expect(minesFrame(room(297, 900, 10, 10))).toEqual({ fit: 29, width: 290, height: 290 });
@@ -334,6 +334,23 @@ describe('the frame', () => {
 
   it('under 10px a square, every bit of room counts', () => {
     expect(minesFrame(room(300, 900, 40, 40))).toEqual({ fit: 7.5, width: 300, height: 300 });
+  });
+
+  // TASK-187: the size picked multiplies the height the board fits and the 44px — never the card's
+  // band and edges, nor the page's width.
+  it('fits the window\'s height times the size, so a big board runs past the window', () => {
+    expect(minesFrame(room(2000, 900, 40, 40, 37 / 22))).toEqual({ fit: 37, width: 1480, height: 1480 });
+    expect(minesFrame(room(2000, 400, 10, 10, 15 / 22))).toEqual({ fit: 27, width: 270, height: 270 });
+  });
+
+  it('grows the 44px with the size, to 74px at Huge and 30px at Tiny', () => {
+    expect(minesFrame(room(2000, 2000, 10, 10, 37 / 22))).toEqual({ fit: 74, width: 740, height: 740 });
+    expect(minesFrame(room(2000, 2000, 10, 10, 27 / 22)).fit).toBe(54);
+    expect(minesFrame(room(2000, 2000, 10, 10, 15 / 22)).fit).toBe(30);
+  });
+
+  it('stops at the page\'s width whatever the size, as a phone\'s board does', () => {
+    expect(minesFrame(room(350, 2000, 10, 10, 37 / 22))).toEqual({ fit: 35, width: 350, height: 350 });
   });
 });
 

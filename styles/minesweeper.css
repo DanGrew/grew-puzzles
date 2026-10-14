@@ -6,6 +6,11 @@
 .play.mines { display: grid; grid-template-columns: auto minmax(220px, 290px); gap: 40px; align-items: start; justify-content: center; }
 .play.mines[hidden] { display: none; }
 .play.mines aside { max-width: none; }
+/* A board too big for the column reaches past it, as far as it needs, toward the window's edges
+   (ui/minesweeper/play-ui.js, --reach-left and --reach-right), as a maze does. */
+@media screen {
+  .play.mines { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
+}
 @media (max-width: 760px) {
   .play.mines { grid-template-columns: 100%; justify-items: center; gap: 28px; }
   .play.mines aside { max-width: 460px; }
@@ -97,9 +102,12 @@ button.mines-square[data-cover="covered"]:hover { background: var(--cover-hi); }
 /* Zoom out and in at the card's top-left, while the board zooms. */
 button.zoom-out { left: 0; transform: translate(-35%, -35%); }
 button.zoom-in { left: 37px; transform: translateY(-35%); }
-button.zoom-out svg, button.zoom-in svg { display: block; }
+button.zoom-out svg, button.zoom-in svg, button.puzzle-size svg { display: block; }
 .play.mines button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
 .play.mines:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+/* The size, in the slot after +, as the maze's is — or first, where − and + don't show. */
+button.puzzle-size { left: 87px; transform: translateY(-35%); }
+.play.mines:not([data-zoomable="true"]) button.puzzle-size { left: 0; transform: translate(-35%, -35%); }
 
 /* The Mines card: the rule, then what a tap does. */
 .mines-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
