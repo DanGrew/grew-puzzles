@@ -57,7 +57,7 @@ async function tapAll(page, cells) {
   for (const [r, c] of cells) await cell(page, r, c).click();
 }
 
-const TEXT_PAGES = ['how-to-play', 'saving', 'about', 'feedback', 'privacy'];
+const TEXT_PAGES = ['how-to-play', 'saving', 'about', 'unofficial', 'feedback', 'privacy'];
 
 // ---- The switch ----
 

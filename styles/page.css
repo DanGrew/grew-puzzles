@@ -6,6 +6,8 @@
 .page a { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
 /* Saving your progress: one short paragraph a point, each led in bold, with no headings between. */
 .saving p + p { margin-top: 12px; }
+/* Unofficial: the owner's words, then the fan subjects, a line each. */
+.page .fan-subjects { margin: 12px 0 0; padding-left: 24px; font-size: 16px; line-height: 1.6; }
 
 /* How to play: the types listed at the top, a group a kind, each type a link to its section; then
    a section a type, its picture beside its words, the sides alternating down the page as in the

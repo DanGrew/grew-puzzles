@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unofficial · Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/page.css">
+<link rel="stylesheet" href="../styles/look.css">
+<link rel="stylesheet" href="../styles/blueprint.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="unofficial"></header>
+  <main class="page" aria-labelledby="page-title">
+    <h1 id="page-title">Unofficial</h1>
+    <!-- Themed, the words sit on a card with a character peering from behind it (ui/theme-ui.js). -->
+    <div class="page-card">
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
+    <p>Everything on the website is made by us and is not official. This includes, but is not exhaustive:</p>
+
+    <!-- The kinds of fan subject, each with a few examples — never every subject, so nothing here
+         needs adding as puzzles are published (the product's docs/RIGHTS.md). A to Z, each once. -->
+    <ul class="fan-subjects">
+      <li>Artists, their songs and albums, such as Queens of the Stone Age and Queen</li>
+      <li>TV programmes, their episodes and characters, such as Doctor Who and Game of Thrones</li>
+    </ul>
+    </div>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
+<script type="module">
+import { dressTextPage } from '../ui/theme-ui.js';
+dressTextPage(Math.random);
+</script>
+</body>
+</html>

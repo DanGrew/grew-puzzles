@@ -20,11 +20,11 @@
 .side .kind[aria-current="page"] { background: var(--band); color: var(--band-fg); }
 .side .kind[aria-current="page"] .count { color: var(--band-fg); opacity: .85; }
 .side .types { list-style: none; margin: 2px 0 8px; padding: 0; }
-.side .type { padding: 6px 18px 6px 32px; font-size: 14px; }
+.side .type { padding: 5px 18px 5px 32px; font-size: 14px; }
 .side .type[aria-current="page"] { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .side .dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: var(--tone); border: 1.5px solid var(--line); }
 .side hr { border: 0; border-top: 1px solid var(--rule); margin: 8px 0; }
-.side .page { padding: 8px 18px; font-size: 14px; }
+.side .page { padding: 7px 18px; font-size: 14px; }
 .side .page[aria-current="page"] { font-weight: 700; }
 .side [hidden] { display: none; }
 /* The look: Look, then the one on in a pill that opens the rest — one row however many looks

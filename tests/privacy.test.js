@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // side bar on every page. The puzzles' own email stands in for *[puzzles email]*, the site's one
 // contact address, as the Feedback page's.
 const EMAIL = 'grew.puzzles@gmail.com';
-const PAGES = ['index.html', 'play.html', 'maze.html', 'collection.html', 'book.html', 'how-to-play.html', 'saving.html', 'about.html', 'feedback.html', 'privacy.html'];
+const PAGES = ['index.html', 'play.html', 'maze.html', 'collection.html', 'book.html', 'how-to-play.html', 'saving.html', 'about.html', 'unofficial.html', 'feedback.html', 'privacy.html'];
 const WORDS = [
   ['Your privacy', 'You don\'t need an account to play — every puzzle is free and open to everyone. If you\'d like your progress saved, you can sign in with Google.'],
   ['No tricks', `There are no tricks and no money-making here. We literally just use your email to save your progress, with Supabase, the service we use for our database. If you have any questions or concerns, please reach out at ${EMAIL}.`],
@@ -18,7 +18,7 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html', '/app/unofficial.html']) {
   test(`on ${address}, Privacy is the side bar's last page, which opens the Privacy page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const last = page.locator('#site-side .page').last();
