@@ -399,6 +399,30 @@
       "title": "Astronomy",
       "width": 25,
       "height": 35
+    },
+    {
+      "hiddenId": "WSCH-0051",
+      "type": "Kids",
+      "created": "2026-10-14",
+      "title": "Colours - Right to Left",
+      "width": 5,
+      "height": 5
+    },
+    {
+      "hiddenId": "WSCH-0052",
+      "type": "Kids",
+      "created": "2026-10-14",
+      "title": "Colours - Top to Bottom",
+      "width": 5,
+      "height": 5
+    },
+    {
+      "hiddenId": "WSCH-0053",
+      "type": "Kids",
+      "created": "2026-10-14",
+      "title": "Colours - Diagonal",
+      "width": 5,
+      "height": 5
     }
   ]
 }

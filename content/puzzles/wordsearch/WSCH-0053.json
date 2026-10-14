@@ -1,0 +1,64 @@
+{
+  "hiddenId": "WSCH-0053",
+  "type": "Kids",
+  "created": "2026-10-14",
+  "title": "Colours - Diagonal",
+  "wordGroups": [
+    "kids-colours"
+  ],
+  "words": [
+    {
+      "word": "Grey",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Lime",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Navy",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Red",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 3
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "LLRIL",
+        "GNIEG",
+        "YRAMD",
+        "REEVE",
+        "RNVYY"
+      ]
+    }
+  ],
+  "capitals": true,
+  "bigLetters": true
+}
