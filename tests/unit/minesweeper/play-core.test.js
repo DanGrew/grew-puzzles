@@ -354,6 +354,15 @@ describe('the view', () => {
     expect(minesOpenView({ fit: 23, width: 920, height: 920 }, BIG).cell).toBe(36);
   });
 
+  it('a Reveal board opens zoomed in on its start square instead, where its opened squares are', () => {
+    const view = minesOpenView(SMALL_FRAME, { rows: 40, cols: 40, start: '10,30' });
+    expect(view.cell).toBe(36);
+    expect(view.x).toBeCloseTo(30.5 - 400 / 36 / 2);
+    expect(view.y).toBeCloseTo(10.5 - 400 / 36 / 2);
+    // A Vanilla board's start is '': its middle, as ever.
+    expect(minesOpenView(SMALL_FRAME, { rows: 40, cols: 40, start: '' })).toEqual(minesOpenView(SMALL_FRAME, BIG));
+  });
+
   it('only a board too small to tap whole zooms, from the whole to 48px', () => {
     expect(minesZoomState({ cell: 10 }, SMALL_FRAME)).toEqual({ zoomIn: true, zoomOut: false, zoomable: true });
     expect(minesZoomState({ cell: 30 }, SMALL_FRAME)).toEqual({ zoomIn: true, zoomOut: true, zoomable: true });
