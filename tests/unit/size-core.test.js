@@ -27,6 +27,15 @@ describe('the size every kind shares', () => {
     expect(sizeScale('minesweeper', 'huge')).toBe(37 / 22);
   });
 
+  // TASK-188: the criss-cross starts one rung up, so its Small is the criss-cross page as it was.
+  it('scales the criss-cross one rung up the ladder, its Small today\'s page and Huge 37 over 22', () => {
+    expect(sizeScale('crisscross', 'tiny')).toBe(15 / 22);
+    expect(sizeScale('crisscross', 'small')).toBe(1);
+    expect(sizeScale('crisscross', 'normal')).toBe(27 / 22);
+    expect(sizeScale('crisscross', 'large')).toBe(32 / 22);
+    expect(sizeScale('crisscross', 'huge')).toBe(37 / 22);
+  });
+
   it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
     expect(sizeMenu('large')).toEqual([
       { size: 'tiny', label: 'Tiny', picked: false },

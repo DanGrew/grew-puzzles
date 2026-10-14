@@ -19,7 +19,9 @@ const TWO = {
   ]
 };
 
-async function open(page, id) {
+// size: the puzzle size already kept on the device, as a player who picked one did; none, a first visit.
+async function open(page, id, size) {
+  await page.addInitScript(s => s && localStorage.setItem('grew-puzzles.text-size', s), size || '');
   await page.route('**/content/puzzles/crisscross/CRSS-0001.json', route => route.fulfill({ json: SHAPE }));
   await page.route('**/content/puzzles/crisscross/CRSS-0002.json', route => route.fulfill({ json: BIG }));
   await page.route('**/content/puzzles/crisscross/CRSS-0099.json', route => route.fulfill({ json: TWO }));
@@ -353,5 +355,157 @@ test.describe('on a phone', () => {
     const card = await page.locator('#stage').boundingBox();
     expect(map.y).toBeGreaterThan(card.y + card.height);
     expect(map.y + map.height - card.y).toBeLessThanOrEqual(667);
+  });
+});
+
+// ---- The puzzle size (TASK-188) ----
+
+const MAZE = require('./fixtures/MAZE-0001.json');
+const SIZE_LABELS = ['Tiny', 'Small', 'Normal', 'Large', 'Huge'];
+const sizeButton = page => page.locator('#puzzle-size');
+const sizeMenu = page => page.locator('#puzzle-size-menu');
+const sizeChoices = page => sizeMenu(page).getByRole('menuitemradio');
+const ticked = page => sizeChoices(page).evaluateAll(cs => cs.map(c => c.getAttribute('aria-checked')));
+const frameHeight = page => page.locator('#play').evaluate(p => parseFloat(p.style.getPropertyValue('--frame-h')));
+const fit = async (page, rows) => (await frameHeight(page)) / rows;
+
+async function pickSize(page, label) {
+  await sizeButton(page).click();
+  await sizeChoices(page).filter({ hasText: label }).click();
+  await expect(sizeMenu(page)).toBeHidden();
+}
+
+test('a size button sits on the grid card\'s top edge after − and +, opening the maze\'s Tiny to Huge, the size last picked ticked', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await open(page, 'CRSS-0002', 'large');
+  const card = await page.locator('#front').boundingBox(), plus = await page.locator('#zoom-in').boundingBox();
+  const size = await sizeButton(page).boundingBox(), flip = await page.locator('#flip').boundingBox();
+  expect(size.y).toBeLessThan(card.y);
+  expect(Math.abs(size.y - plus.y)).toBeLessThan(1);
+  expect(size.x - (plus.x + plus.width)).toBeCloseTo(12, 0);
+  expect(size.x + size.width).toBeLessThan(flip.x);
+  await expect(sizeButton(page)).toHaveAttribute('aria-label', 'Puzzle size');
+
+  await sizeButton(page).click();
+  await expect(sizeMenu(page)).toBeVisible();
+  await expect(sizeChoices(page).locator('span:last-child')).toHaveText(SIZE_LABELS);
+  const squares = await sizeChoices(page).locator('.square').evaluateAll(ss => ss.map(s => parseFloat(getComputedStyle(s, '::before').width)));
+  expect(squares).toEqual([15, 19, 24, 28, 31]);
+  expect(await ticked(page)).toEqual(['false', 'false', 'false', 'true', 'false']);
+  expect((await sizeMenu(page).boundingBox()).y).toBeGreaterThanOrEqual(size.y + size.height);
+  await page.keyboard.press('Escape');
+  await expect(sizeMenu(page)).toBeHidden();
+});
+
+test('a shape with no zoom has no − or +, so the size button takes the first corner', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await expect(page.locator('#zoom-in')).toBeHidden();
+  const card = await page.locator('#front').boundingBox(), size = await sizeButton(page).boundingBox();
+  expect(size.x).toBeLessThan(card.x);
+  expect(size.y).toBeLessThan(card.y);
+});
+
+test('Small is the shape as it was, at today\'s 36px squares; a first visit opens at Normal, a step bigger', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, 'CRSS-0001', 'small');
+  expect(await fit(page, 15)).toBe(36);
+  const fresh = await context.browser().newPage({ viewport: { width: 1440, height: 900 } });
+  await open(fresh);
+  await sizeButton(fresh).click();
+  expect(await ticked(fresh)).toEqual(['false', 'false', 'true', 'false', 'false']);
+  expect(await fit(fresh, 15)).toBeGreaterThan(36);
+  await fresh.close();
+});
+
+// A window wide enough that the page's width never stops the 17×15 growing, up to Huge.
+test('each size up is bigger than the last, Tiny smaller than today\'s shape and its card shorter', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await open(page, 'CRSS-0001', 'small');
+  const small = await page.locator('#stage').boundingBox();
+  const fits = [];
+  for (const label of SIZE_LABELS) {
+    await pickSize(page, label);
+    fits.push(await fit(page, 15));
+  }
+  fits.slice(1).forEach((f, i) => expect(f).toBeGreaterThan(fits[i]));
+  await pickSize(page, 'Tiny');
+  expect(await fit(page, 15)).toBeLessThan(36);
+  const tiny = await page.locator('#stage').boundingBox();
+  expect(tiny.width).toBeLessThan(small.width);
+  expect(tiny.height).toBeLessThan(small.height);
+});
+
+test('at Huge on a desktop the 17×15\'s squares grow well past 36px, reaching past the column, never over the side bar, and the Words card grows no taller than the grid card', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await open(page, 'CRSS-0001', 'huge');
+  expect(await fit(page, 15)).toBeGreaterThanOrEqual(48);
+  const card = await page.locator('#stage').boundingBox(), words = await page.locator('#words-card').boundingBox();
+  const side = await page.locator('#site-side').boundingBox();
+  expect(words.x).toBeGreaterThan(card.x + card.width);
+  expect(Math.round(words.y + words.height)).toBeLessThanOrEqual(Math.round(card.y + card.height));
+  expect(card.x).toBeGreaterThanOrEqual(side.x + side.width);
+  expect(words.x + words.width).toBeLessThanOrEqual(1920 - 24 + 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1920);
+});
+
+test('a shape that fits its column stays centred in it', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await open(page, 'CRSS-0001', 'small');
+  const column = await page.locator('.site-main').boundingBox(), play = await page.locator('#play').boundingBox();
+  expect(Math.abs(play.x - column.x)).toBeLessThan(1);
+  expect(Math.abs(play.width - column.width)).toBeLessThan(1);
+});
+
+test('at Huge the 29×30\'s grid card runs past the window\'s height, and the page scrolls to the rest', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, 'CRSS-0002', 'huge');
+  const card = await page.locator('#stage').boundingBox();
+  expect(card.y + card.height).toBeGreaterThan(900);
+  await page.mouse.move(card.x + card.width / 2, 450);
+  await page.mouse.wheel(0, 3000);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const scrolled = await page.locator('#stage').boundingBox();
+  expect(scrolled.y + scrolled.height).toBeLessThanOrEqual(900);
+});
+
+test('a size picked on a criss-cross is the size the next maze, board or wordsearch opens at', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await pickSize(page, 'Large');
+  await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: MAZE }));
+  await page.goto('/app/maze.html?id=MAZE-0001');
+  await sizeButton(page).click();
+  expect(await ticked(page)).toEqual(['false', 'false', 'false', 'true', 'false']);
+});
+
+// A wide window short enough that the 29×30 opens zoomed in at Normal and Tiny, yet shows whole at Huge.
+test('a shape shown whole at Huge that is too small to tap whole at Tiny opens zoomed in again, its little map back', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 610 });
+  await open(page, 'CRSS-0002');
+  await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'true');
+  await expect(page.locator('#minimap')).toBeVisible();
+  await pickSize(page, 'Huge');
+  await expect(page.locator('#play')).toHaveAttribute('data-zoomable', 'false');
+  await expect(page.locator('#minimap')).toBeHidden();
+  await pickSize(page, 'Tiny');
+  await expect(page.locator('#play')).toHaveAttribute('data-zoomed', 'true');
+  await expect.poll(() => cellSize(page)).toBe('36px');
+  await expect(page.locator('#minimap')).toBeVisible();
+});
+
+test.describe('the size on a phone', () => {
+  test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true });
+
+  test('no size above Small makes the shape wider than the screen, and the slot\'s words still sit just under it', async ({ page }) => {
+    await open(page, 'CRSS-0001', 'small');
+    for (const label of ['Small', 'Normal', 'Large', 'Huge']) {
+      await pickSize(page, label);
+      const card = await page.locator('#stage').boundingBox(), strip = await page.locator('#strip').boundingBox();
+      expect(card.x + card.width, label).toBeLessThanOrEqual(375);
+      expect(await page.evaluate(() => document.scrollingElement.scrollWidth), label).toBeLessThanOrEqual(375);
+      expect(strip.y, label).toBeGreaterThan(card.y + card.height);
+      expect(strip.y - (card.y + card.height), label).toBeLessThan(40);
+    }
   });
 });

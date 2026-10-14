@@ -52,7 +52,7 @@ export function wireSizeMenu(button, menu, swatch, show, picked) {
   }
 }
 
-// A size in a grid kind's menu — a maze's or a board's: a square at its size, since it's the grid
+// A size in a grid kind's menu — a maze's, a board's or a criss-cross's: a square at its size, since it's the grid
 // that grows (size-core's sizeSwatch).
 export function sizeSquare(size) {
   var square = document.createElement('span');
