@@ -269,7 +269,7 @@ export function crissPrints(board) {
 
 // The shape fits the screen's height times the player's size (size-core's sizeScale: 1 at Small,
 // the page as it was before the choice came to it), so from Normal up a tall shape runs past the
-// window and the page scrolls; and the page's width, whatever the size, so a phone's shape stops at
+// screen and the page scrolls; and the page's width, whatever the size, so a phone's shape stops at
 // the screen's width. Its squares are never bigger than the mockup's 36px times the size, to the
 // whole pixel — 61px at Huge — and a whole pixel while the shape can be tapped whole. m: the
 // screen's viewHeight, the room the card's band and edges take above and round the shape
@@ -280,7 +280,7 @@ export function crissFrame(m) {
   return { fit: fit, width: m.cols * fit, height: m.rows * fit };
 }
 
-// The frame sized again — the window resized, or a size picked — from the frame before to this one.
+// The frame sized again — the screen resized, or a size picked — from the frame before to this one.
 // A shape that zoomed keeps the player's zoom, as the minesweeper page's does; one that showed whole
 // only because it could be tapped whole opens as a first visit at this size would, zoomed in on its
 // middle once it no longer can.
