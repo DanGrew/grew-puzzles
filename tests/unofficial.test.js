@@ -29,9 +29,10 @@ test('the Unofficial page opens with the owner\'s words, exactly, and the list o
   await expect(page.locator('main ul')).toHaveCount(1);
 });
 
-test('the fan subjects are names alone, A to Z, each once — none yet is an empty list', async ({ page }) => {
+test('the fan subjects are plain lines, A to Z, each once', async ({ page }) => {
   await page.goto('/app/unofficial.html');
   const names = await page.locator('.fan-subjects li').allTextContents();
+  expect(names.length).toBeGreaterThan(0);
   const trimmed = names.map(name => name.trim());
   expect(trimmed.every(name => name.length > 0)).toBe(true);
   expect(trimmed).toEqual([...new Set(trimmed)].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })));
