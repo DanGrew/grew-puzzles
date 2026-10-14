@@ -61,11 +61,14 @@ export function printIn(style, load) {
 }
 
 // Printed Colour or Black and white, a sheet's character and its background are loaded ahead, so
-// the print dialog has them when it draws the paper; Plain loads neither.
+// the print dialog has them when it draws the paper; Plain loads neither, and nor does Blueprint,
+// whose paper wears the drawing in their place (styles/blueprint.css).
 export function printImages(character) {
+  var root = document.documentElement.dataset;
   var both = function () { return Promise.all([sceneFile(character), figureFile(character)].map(loadImage)); };
   var loads = { plain: function () { return Promise.resolve(); }, colour: both, mono: both };
-  return loads[document.documentElement.dataset.print]();
+  var worn = { themed: root.print, plain: root.print, blueprint: 'plain' };
+  return loads[worn[root.look]]();
 }
 
 // One printed sheet's character, behind the card it peers from, on the spot printDress picked

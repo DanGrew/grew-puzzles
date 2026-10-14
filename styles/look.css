@@ -95,7 +95,8 @@
    wears its own puzzle's, from the paper's corner, the book's 8.625 × 11.25 in with its bleed
    (styles/book.css). ui/wordsearch/play-ui.js
    picks each sheet's spot and sets --paper-scene. Black and white is Colour in greys. The page with
-   no margin is styles/play.css's `themed`. */
+   no margin is styles/play.css's `themed`. With the look on Blueprint, styles/blueprint.css dresses
+   this same sheet as the drawing instead — no character (TASK-184). */
 @media print {
   :root:is([data-print="colour"], [data-print="mono"]) body { page: themed; }
   :root:is([data-print="colour"], [data-print="mono"]) .wrap { overflow-x: clip; }
