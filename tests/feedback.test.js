@@ -15,11 +15,11 @@ test.beforeEach(async ({ context }) => {
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html']) {
+for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html', '/app/unofficial.html']) {
   test(`on ${address}, the side bar holds Feedback after About us, which opens the Feedback page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const pages = page.locator('#site-side .page');
-    await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Feedback', 'Privacy']);
+    await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
     await pages.filter({ hasText: 'Feedback' }).click();
     await expect(page).toHaveURL(`${baseURL}/app/feedback.html`);
     await expect(page.locator('h1')).toHaveText('We\'d love to hear from you');

@@ -33,7 +33,7 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 // A card not on screen — the words over the grid, closed — has no box, and nothing covers it.
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
-for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'feedback.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
+for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'unofficial.html', 'feedback.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
   test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain / Blueprint, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
@@ -343,7 +343,7 @@ test('a text page picks its character and its background each at random, on thei
 // Each text page's place in the side bar picks its spot, round the four, the same every visit. The
 // character, picked at random, held to one whose ink and name label every spot holds — another's may
 // not fit a spot, which is then rightly skipped.
-for (const [path, spot] of [['how-to-play', 'right'], ['saving', 'left'], ['about', 'topRight'], ['feedback', 'topLeft'], ['privacy', 'right']]) {
+for (const [path, spot] of [['how-to-play', 'right'], ['saving', 'left'], ['about', 'topRight'], ['unofficial', 'topLeft'], ['feedback', 'right'], ['privacy', 'left']]) {
   test(`${path} wears its character peering from behind the text card at its own spot, ${spot}, at the printout's size`, async ({ page }) => {
     await page.addInitScript(() => { Math.random = () => 0.5; });
     await page.setViewportSize({ width: 1440, height: 1000 });
