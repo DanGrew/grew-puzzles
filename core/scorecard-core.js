@@ -24,12 +24,17 @@ export function scoreItems(puzzles) {
   }));
 }
 
-// Newest first, as browse is: by created date, then the later hidden ID, then the side bar's kind
-// order — puzzles of several kinds share a difficulty's group.
-function newer(a, b) {
+// A group's lines run as browse's default sort (core/browse-core.js browseList): difficulty, Easy to
+// Extreme then Kids, then type in the Filters' order, then title A to Z, the newest first on a tie —
+// a difficulty's group, holding several kinds, takes them in the side bar's order before type (the
+// owner's call, 2026-10-14).
+function browseOrder(items) {
   const order = kinds().map(k => k.kind);
-  return b.created.localeCompare(a.created) || Number(b.hiddenId.split('-')[1]) - Number(a.hiddenId.split('-')[1]) ||
-    order.indexOf(a.kind) - order.indexOf(b.kind);
+  const types = new Map(order.map(kind => [kind, typesOf(kind, items)]));
+  const typeRank = i => types.get(i.kind).indexOf(i.type);
+  return (a, b) => difficulties().indexOf(a.tone) - difficulties().indexOf(b.tone) ||
+    order.indexOf(a.kind) - order.indexOf(b.kind) || typeRank(a) - typeRank(b) || a.title.localeCompare(b.title) ||
+    b.created.localeCompare(a.created) || Number(b.hiddenId.split('-')[1]) - Number(a.hiddenId.split('-')[1]);
 }
 
 function kindName(kind, field) {
@@ -58,14 +63,15 @@ function groupings(items) {
   };
 }
 
-// The groups a tab shows, none empty, each newest first: its heading, its count — finished of total
-// signed in, every one finished a ✓; signed out, just how many — and its lines, each ticked or not
-// for the puzzles finished so far. open holds the groups whose Show all is pressed.
+// The groups a tab shows, none empty, each in browse's order: its heading, its count — finished of
+// total signed in, every one finished a ✓; signed out, just how many — and its lines, each ticked or
+// not for the puzzles finished so far. open holds the groups whose Show all is pressed.
 export function scoreGroups(items, by, done, signedIn, open) {
+  const order = browseOrder(items);
   return groupings(items)[by]()
     .filter(g => g.items.length > 0)
     .map(g => {
-      const lines = g.items.slice().sort(newer).map(i => ({
+      const lines = g.items.slice().sort(order).map(i => ({
         title: i.title, href: i.href, code: i.code, pill: g.pill(i), done: String(signedIn && tileDone(i, done)),
       }));
       const finished = lines.filter(l => l.done === 'true').length;

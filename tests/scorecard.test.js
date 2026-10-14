@@ -107,7 +107,7 @@ test('signed in, every finished puzzle is ticked, its title greyed, and the tota
   const { db } = await site(context, { rows: FINISHED() });
   const page = await scorecard(context);
   await expect(page.locator('#total')).toHaveText('3 of 16 finished');
-  await expect.poll(() => tickedTitles(page)).toEqual(['WSCH 9', 'WSCH 5', 'MINE 1']);
+  await expect.poll(() => tickedTitles(page)).toEqual(['WSCH 5', 'WSCH 9', 'MINE 1']);
   await expect(line(page, 'WSCH 4')).toHaveAttribute('data-done', 'false');
   await expect(line(page, 'WSCH 4').locator('.box')).toHaveAttribute('aria-label', 'Not finished');
   await expect(line(page, 'WSCH 9').locator('.box')).toHaveAttribute('aria-label', 'Finished');
@@ -125,8 +125,8 @@ test('By kind opens picked: a group a kind in the side bar\'s order, counting fi
   await expect(page.locator('#tabs [aria-selected="true"]')).toHaveText('By kind');
   await expect(heads(page)).toHaveText(['Wordsearches', 'Mazes', 'Minesweeper', 'Criss-cross']);
   await expect(counts(page)).toHaveText(['2 / 10', '0 / 3', '1 / 2', '0 / 1']);
-  // Newest first, eight shown.
-  await expect(groups(page).first().locator('.title')).toHaveText(['WSCH 10', 'WSCH 9', 'WSCH 8', 'WSCH 7', 'WSCH 6', 'WSCH 5', 'WSCH 4', 'WSCH 3']);
+  // Browse's order, eight shown: Easy Vanilla, then Hard Missing, each by title.
+  await expect(groups(page).first().locator('.title')).toHaveText(['WSCH 1', 'WSCH 3', 'WSCH 5', 'WSCH 7', 'WSCH 9', 'WSCH 10', 'WSCH 2', 'WSCH 4']);
   await expect(line(page, 'MAZE 3').locator('.pill')).toHaveText('Vanilla');
   await expect(line(page, 'MAZE 3').locator('.pill')).toHaveAttribute('data-tone', 'Hard');
   await expect(line(page, 'MAZE 3').locator('.code')).toHaveText('MAZE-0003');

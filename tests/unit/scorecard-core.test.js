@@ -36,17 +36,17 @@ describe('scorecard-core.js', () => {
     ]);
   });
 
-  test('By kind: a group a kind, in the side bar\'s order, newest first, each line\'s pill its type in its difficulty', () => {
+  test('By kind: a group a kind, in the side bar\'s order, in browse\'s order, each line\'s pill its type in its difficulty', () => {
     const groups = scoreGroups(scoreItems(index()), 'kind', [], true, []);
     expect(groups.map(g => [g.key, g.kindName, g.name, g.tone])).toEqual([
       ['wordsearch', '', 'Wordsearches', ''], ['maze', '', 'Mazes', ''],
       ['minesweeper', '', 'Minesweeper', ''], ['crisscross', '', 'Criss-cross', ''],
     ]);
-    expect(titles(groups[0])).toEqual(['Pets', 'Flowers', 'Farm']);
+    expect(titles(groups[0])).toEqual(['Farm', 'Flowers', 'Pets']);
     expect(groups[0].lines.map(l => l.pill)).toEqual([
-      { label: 'Kids', tone: 'Kids' }, { label: 'Missing', tone: 'Hard' }, { label: 'Vanilla', tone: 'Easy' },
+      { label: 'Vanilla', tone: 'Easy' }, { label: 'Missing', tone: 'Hard' }, { label: 'Kids', tone: 'Kids' },
     ]);
-    expect(groups[0].lines[0]).toEqual({
+    expect(groups[0].lines[2]).toEqual({
       title: 'Pets', href: 'play.html?id=WSCH-0003', code: 'WSCH-0003', pill: { label: 'Kids', tone: 'Kids' }, done: 'false',
     });
   });
@@ -76,27 +76,41 @@ describe('scorecard-core.js', () => {
       ['Easy', '', 'Easy', 'Easy'], ['Medium', '', 'Medium', 'Medium'], ['Hard', '', 'Hard', 'Hard'], ['Kids', '', 'Kids', 'Kids'],
     ]);
     expect(groups[2].lines.map(l => [l.title, l.pill])).toEqual([
-      ['Bee Line', { label: 'Maze · Vanilla', tone: 'Hard' }],
       ['Flowers', { label: 'Wordsearch · Missing', tone: 'Hard' }],
+      ['Bee Line', { label: 'Maze · Vanilla', tone: 'Hard' }],
       ['Locked Out', { label: 'Maze · Keys', tone: 'Hard' }],
     ]);
     expect(groups[0].lines.map(l => l.pill.label)).toEqual(['Wordsearch · Vanilla', 'Criss-cross · Vanilla']);
   });
 
-  test('newest first: by created date, then the later code, then the side bar\'s kind order', () => {
+  test('a group runs as browse sorts: difficulty with Kids last, then kind, type in the Filters\' order, title A to Z, newest on a tie', () => {
     const items = scoreItems([
-      puzzle('WSCH-0002', 'Vanilla', '2026-10-01', 'Older two'),
-      puzzle('CRSS-0009', 'Vanilla', '2026-10-01', 'Criss nine'),
-      puzzle('WSCH-0010', 'Vanilla', '2026-10-01', 'Older ten'),
-      puzzle('MAZE-0010', 'Vanilla', '2026-10-01', 'Maze ten'),
-      puzzle('WSCH-0001', 'Vanilla', '2026-10-05', 'Newest'),
+      puzzle('WSCH-0001', 'Kids', '2026-10-01', 'A kids one'),
+      puzzle('WSCH-0002', 'Missing', '2026-10-01', 'A hard one'),
+      puzzle('CRSS-0001', 'Vanilla', '2026-10-01', 'A criss-cross'),
+      puzzle('MAZE-0001', 'Vanilla', '2026-10-01', 'A maze'),
+      puzzle('WSCH-0003', 'Wildcards', '2026-10-01', 'A medium one'),
+      puzzle('WSCH-0004', 'Saga', '2026-10-01', 'Z medium one'),
+      puzzle('WSCH-0005', 'Vanilla', '2026-10-01', 'Twin'),
+      puzzle('WSCH-0006', 'Vanilla', '2026-10-03', 'Twin'),
+      puzzle('WSCH-0007', 'Vanilla', '2026-10-03', 'Twin'),
+      puzzle('WSCH-0008', 'Vanilla', '2026-10-01', 'Beta'),
     ]);
-    expect(titles(scoreGroups(items, 'difficulty', [], true, [])[0])).toEqual(['Newest', 'Older ten', 'Maze ten', 'Criss nine', 'Older two']);
+    const [all] = scoreGroups(items, 'kind', [], true, ['wordsearch']);
+    // Easy Vanilla by title, the newest Twin first; then Medium — Saga before Wildcards, the
+    // Filters' order, whatever their titles — then Hard, then Kids last.
+    expect(all.lines.map(l => l.code)).toEqual([
+      'WSCH-0008', 'WSCH-0007', 'WSCH-0006', 'WSCH-0005', 'WSCH-0004', 'WSCH-0003', 'WSCH-0002', 'WSCH-0001',
+    ]);
+    // A difficulty's group holds several kinds, in the side bar's order before type or title.
+    expect(scoreGroups(items, 'difficulty', [], true, [])[0].lines.map(l => l.code)).toEqual([
+      'WSCH-0008', 'WSCH-0007', 'WSCH-0006', 'WSCH-0005', 'MAZE-0001', 'CRSS-0001',
+    ]);
   });
 
   test('signed in, a finished puzzle\'s line is ticked and each group counts finished of total', () => {
     const groups = scoreGroups(scoreItems(index()), 'kind', ['WSCH-0001', 'MAZE-0001', 'MAZE-0002'], true, []);
-    expect(groups[0].lines.map(l => [l.title, l.done])).toEqual([['Pets', 'false'], ['Flowers', 'false'], ['Farm', 'true']]);
+    expect(groups[0].lines.map(l => [l.title, l.done])).toEqual([['Farm', 'true'], ['Flowers', 'false'], ['Pets', 'false']]);
     expect(groups.map(g => [g.count, g.all])).toEqual([['1 / 3', 'false'], ['2 / 2', 'true'], ['0 / 1', 'false'], ['0 / 1', 'false']]);
   });
 
@@ -111,7 +125,7 @@ describe('scorecard-core.js', () => {
     const many = n => Array.from({ length: n }, (_, i) => puzzle(`WSCH-${String(i + 1).padStart(4, '0')}`, 'Vanilla', '2026-10-01', `P${i + 1}`));
     const [closed] = scoreGroups(scoreItems(many(9)), 'kind', [], true, []);
     expect(closed.lines).toHaveLength(8);
-    expect(closed.lines[0].title).toBe('P9');
+    expect(closed.lines[0].title).toBe('P1');
     expect(closed.more).toBe('Show all 9');
     const [opened] = scoreGroups(scoreItems(many(9)), 'kind', [], true, ['wordsearch']);
     expect(opened.lines).toHaveLength(9);
