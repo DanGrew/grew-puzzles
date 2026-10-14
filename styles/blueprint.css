@@ -2,17 +2,19 @@
    TASK-183). Every rule waits on :root[data-look="blueprint"], so Themed and Plain are untouched,
    and none shows a character. The cards stay where Plain puts them and Sora stays the face; the
    look is dressing only — a drafting grid behind, the cards as drawing paper with a second ruled
-   frame, dimension lines on the grid card, and the title as a title block. On screen only: paper
-   prints as the print menu says. */
-:root[data-look="blueprint"] {
-  --bg: #123a5e; --surface: #f5f9fc; --fg: #123a5e; --muted: #4b6d8c; --rule: #bfd1e2;
-  --accent: #123a5e; --band: #123a5e; --band-fg: #e6f0f9; --line: #123a5e; --ow: 1px; --r: 0px; --shadow: none;
-  --select: #123a5e; --found: #2a6aa6; --wild: #2a6aa6; --spark: #e6f0f9;
-  --ink: #e6f0f9; --ink-soft: rgba(230, 240, 249, .7); --frame: rgba(230, 240, 249, .45);
-  --grid-major: rgba(230, 240, 249, .13); --grid-minor: rgba(230, 240, 249, .05);
-}
-
+   frame, dimension lines on the grid card, and the title as a title block. Paper prints as the
+   print menu says: Plain today's sheet, Colour and Black and white the drawing (the last block).
+   The screen's tokens stay on screen — on paper its navy page would print solid, under
+   play.css's forced colours (TASK-184). */
 @media screen {
+  :root[data-look="blueprint"] {
+    --bg: #123a5e; --surface: #f5f9fc; --fg: #123a5e; --muted: #4b6d8c; --rule: #bfd1e2;
+    --accent: #123a5e; --band: #123a5e; --band-fg: #e6f0f9; --line: #123a5e; --ow: 1px; --r: 0px; --shadow: none;
+    --select: #123a5e; --found: #2a6aa6; --wild: #2a6aa6; --spark: #e6f0f9;
+    --ink: #e6f0f9; --ink-soft: rgba(230, 240, 249, .7); --frame: rgba(230, 240, 249, .45);
+    --grid-major: rgba(230, 240, 249, .13); --grid-minor: rgba(230, 240, 249, .05);
+  }
+
   :root[data-look="blueprint"] body {
     background-image:
       linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
@@ -87,4 +89,79 @@
     font: 400 9px/11px var(--font-body); letter-spacing: .2em; text-transform: uppercase;
     background: linear-gradient(var(--ink), var(--ink)) center top / 1px calc(50% - 40px) no-repeat,
                 linear-gradient(var(--ink), var(--ink)) center bottom / 1px calc(50% - 40px) no-repeat; pointer-events: none; }
+}
+
+/* Paper — printed Colour or Black and white with Blueprint on (TASK-184): the drawing in place of a
+   character. The sheet is styles/look.css's — no margin, its own half inch inside, the book's bleed —
+   with a faint drafting grid to the paper's edge where the puzzle's background was, no character and
+   none of its images loaded (ui/theme-ui.js printImages), and navy ink: the cards' lines and bands,
+   each card's second ruled frame, the title as a title block, and a grid card's dimension lines.
+   Black and white is the same sheet in black and greys. With no character to make room for, a sheet
+   never starts lower. Plain prints today's sheet, whatever the look. */
+@media print {
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) {
+    --line: #123a5e; --band: #123a5e; --band-fg: #fff; --fg: #123a5e; --muted: #123a5e; --wild: #123a5e; --shadow: none; --r: 0px;
+    --frame: rgba(18, 58, 94, .45); --paper-grid: rgba(18, 58, 94, .18); --paper-grid-minor: rgba(18, 58, 94, .07); }
+  :root[data-look="blueprint"][data-print="mono"] {
+    --line: #000; --band: #000; --fg: #000; --muted: #000; --wild: #000;
+    --frame: rgba(0, 0, 0, .4); --paper-grid: rgba(0, 0, 0, .16); --paper-grid-minor: rgba(0, 0, 0, .06); }
+
+  /* The drafting grid, a line every tenth of an inch and a stronger one every half, where look.css
+     puts the background: fixed behind the printout's every sheet, from each book page's paper corner. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.play-page, .sheets .sheet, .sheets .grid-sheet)::before {
+    opacity: 1; filter: none;
+    background: linear-gradient(var(--paper-grid) 1px, transparent 1px) 0 0 / .5in .5in,
+                linear-gradient(90deg, var(--paper-grid) 1px, transparent 1px) 0 0 / .5in .5in,
+                linear-gradient(var(--paper-grid-minor) 1px, transparent 1px) 0 0 / .1in .1in,
+                linear-gradient(90deg, var(--paper-grid-minor) 1px, transparent 1px) 0 0 / .1in .1in; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .print-figure[data-spot] { display: none; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-page .wrap { padding-top: .5in; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.grid-sheet, .sheets .sheet) { padding-top: calc(.5in + var(--bleed, 0px)); }
+
+  /* The title block: Title over the name, and Grade · Drawing no. over the line under it, on white. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head { display: grid; grid-template-columns: minmax(0, auto) auto;
+    padding: 0; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 0; box-shadow: none; color: var(--line); }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head h1 { padding: 6px 16px 8px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head .ident:not([hidden]) { display: block; margin: 0; padding: 6px 16px 8px;
+    border-left: 1px solid var(--line); color: var(--line); }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.play-head h1, .play-head .ident)::before {
+    display: block; font: 400 7pt/1.4 var(--font-body); letter-spacing: .2em; text-transform: uppercase; opacity: .7; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head h1::before { content: 'Title'; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head .ident::before { content: 'Grade · Drawing no.'; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head .difficulty { border-radius: 0; }
+  /* A sheet of its own prints its own title block alone: the screen's stays hidden, as it is unruled. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-page, .mines-page, .criss-page) .site-main > :not(.maze-sheet, .mines-sheet, .criss-sheet) { display: none; }
+  /* A maze's block stacks, narrow enough to clear the note box at its right. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head { grid-template-columns: minmax(0, auto); max-width: 3.2in; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head h1 { overflow-wrap: anywhere; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head .ident:not([hidden]) { border-left: 0; border-top: 1px solid var(--line); }
+
+  /* The cards ruled in navy, each inside a second frame; their bands read as a drawing's labels. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.face, .words-box, .mines-paper) { outline: 1px solid var(--frame); outline-offset: 4px; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.band, .list-head h2) { font-weight: 400; letter-spacing: .2em; text-transform: uppercase; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-sheet, .mines-sheet, .criss-sheet, .maze-note) { color: var(--fg); }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.mines-paper, .mines-paper > span, .criss-paper > span, .maze-note, .note-box) { border-color: var(--line); }
+
+  /* A grid card's dimension lines, as on screen: its columns along its foot, its rows down its left,
+     in the ink, at 7 pt, KDP's floor. Drawn off the card, they never move the sheet. The rows' ticks
+     are its top and bottom, named so: its words run down it, which turns border-block sideways. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.card, .print-card)::after {
+    content: counter(cols) ' columns'; counter-reset: cols var(--cols); position: absolute; left: 0; right: 0; top: calc(100% + 10px); height: 11px;
+    border-inline: 1px solid var(--line); color: var(--line); text-align: center; font: 400 7pt/11px var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    background: linear-gradient(var(--line), var(--line)) left center / calc(50% - 52px) 1px no-repeat,
+                linear-gradient(var(--line), var(--line)) right center / calc(50% - 52px) 1px no-repeat; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.card, .print-card)::before {
+    content: counter(rows) ' rows'; counter-reset: rows var(--rows); position: absolute; top: 0; bottom: 0; right: calc(100% + 10px); width: 11px;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--line); writing-mode: vertical-rl; transform: rotate(180deg); text-align: center;
+    font: 400 7pt/11px var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    background: linear-gradient(var(--line), var(--line)) center top / 1px calc(50% - 40px) no-repeat,
+                linear-gradient(var(--line), var(--line)) center bottom / 1px calc(50% - 40px) no-repeat; }
+
+  /* A maze in the ink alone: no character on its collectibles or blocks, its dots and solid tiles
+     back, every marking navy — in greys, Black and white. */
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet { --ms-ink: var(--line); --ms-zone: var(--line); --ms-key: var(--line);
+    --ms-letter: var(--line); --ms-guide: var(--line); --ms-dot: var(--line); --ms-start: color-mix(in srgb, var(--line) 18%, #fff); --ms-zone-fill: .07; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .ms-figure { display: none; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .ms-dot { display: inline; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .ms-block { fill: var(--line); stroke: none; }
 }
