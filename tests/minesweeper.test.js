@@ -4,6 +4,8 @@ const { test, expect } = require('@playwright/test');
 // made by tooling's generator and pass its minesweeper checks.
 const BOARD = require('./fixtures/MINE-0001.json');
 const BIG = require('./fixtures/MINE-0002.json');
+const MAZE = require('./fixtures/MAZE-0001.json');
+const WORDSEARCH = require('./fixtures/WSCH-0007.json');
 
 async function open(page, id) {
   await page.route('**/content/puzzles/minesweeper/MINE-0001.json', route => route.fulfill({ json: BOARD }));
@@ -368,5 +370,185 @@ test.describe('a board too big for the screen', () => {
     await page.click('#zoom-in');
     const front = await page.locator('#world').evaluate(el => el.style.transform);
     await expect(page.locator('#solution-world')).toHaveAttribute('style', new RegExp(front.replace(/[()]/g, '\\$&')));
+  });
+});
+
+// ---- The puzzle size (TASK-187) ----
+// Minesweeper starts one rung up the shared ladder, so Small is the board as it was and Normal,
+// where a first visit starts, one step bigger: 15/22, 1, 27/22, 32/22 and 37/22 of the height it
+// fits and of its 44px square limit, Tiny to Huge.
+
+const SIZE_LABELS = ['Tiny', 'Small', 'Normal', 'Large', 'Huge'];
+const sizeButton = page => page.locator('#puzzle-size');
+const sizeMenu = page => page.locator('#puzzle-size-menu');
+const sizeChoices = page => sizeMenu(page).getByRole('menuitemradio');
+const ticked = page => sizeChoices(page).evaluateAll(cs => cs.map(c => c.getAttribute('aria-checked')));
+const frameWidth = page => page.locator('#play').evaluate(p => parseFloat(p.style.getPropertyValue('--frame-w')));
+// The puzzle size already kept on the device, as a player who picked one did.
+const keepSize = (page, size) => page.addInitScript(s => localStorage.setItem('grew-puzzles.text-size', s), size);
+
+async function pickSize(page, label) {
+  await sizeButton(page).click();
+  await sizeChoices(page).filter({ hasText: label }).click();
+  await expect(sizeMenu(page)).toBeHidden();
+}
+
+test('on a board that zooms, the size button sits on the grid card\'s top edge after − and +, opening Tiny to Huge, each beside a square drawn at its size', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await open(page, 'MINE-0002');
+  await expect(page.locator('#zoom-in')).toBeVisible();
+  const card = await page.locator('#front').boundingBox(), plus = await page.locator('#zoom-in').boundingBox();
+  const size = await sizeButton(page).boundingBox(), flip = await page.locator('#flip').boundingBox();
+  expect(size.y).toBeLessThan(card.y);
+  expect(Math.abs(size.y - plus.y)).toBeLessThan(1);
+  expect(size.x - (plus.x + plus.width)).toBeCloseTo(12, 0);
+  expect(size.x + size.width).toBeLessThan(flip.x);
+  await expect(sizeButton(page)).toHaveAttribute('aria-label', 'Puzzle size');
+  await expect(sizeMenu(page)).toBeHidden();
+
+  await sizeButton(page).click();
+  await expect(sizeMenu(page)).toBeVisible();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'true');
+  await expect(sizeChoices(page).locator('span:last-child')).toHaveText(SIZE_LABELS);
+  const squares = await sizeChoices(page).locator('.square').evaluateAll(ss => ss.map(s => parseFloat(getComputedStyle(s, '::before').width)));
+  expect(squares).toEqual([15, 19, 24, 28, 31]);
+  expect(await ticked(page)).toEqual(['false', 'false', 'true', 'false', 'false']);
+  expect((await sizeMenu(page).boundingBox()).y).toBeGreaterThanOrEqual(size.y + size.height);
+
+  await page.mouse.click(5, 780);
+  await expect(sizeMenu(page)).toBeHidden();
+  await expect(sizeButton(page)).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('a board with no zoom has no − or +, so the size button takes the first corner', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await expect(page.locator('#zoom-in')).toBeHidden();
+  const card = await page.locator('#front').boundingBox(), size = await sizeButton(page).boundingBox();
+  expect(size.x).toBeLessThan(card.x);
+  expect(size.y).toBeLessThan(card.y);
+});
+
+test('the size I last picked anywhere is ticked when I open a board', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await keepSize(page, 'large');
+  await open(page);
+  await sizeButton(page).click();
+  expect(await ticked(page)).toEqual(['false', 'false', 'false', 'true', 'false']);
+});
+
+test('at Small a 10×10 board is as it was, 44px squares; Normal, where a first visit starts, is one step bigger', async ({ page, context }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await keepSize(page, 'small');
+  await open(page);
+  await expect.poll(() => cellSize(page)).toBe('44px');
+  const small = await page.locator('#stage').boundingBox();
+  const fresh = await context.browser().newPage({ viewport: { width: 1440, height: 900 } });
+  await open(fresh);
+  await sizeButton(fresh).click();
+  expect(await ticked(fresh)).toEqual(['false', 'false', 'true', 'false', 'false']);
+  await expect.poll(() => cellSize(fresh)).toBe('54px');
+  expect((await fresh.locator('#stage').boundingBox()).width).toBeGreaterThan(small.width);
+  await fresh.close();
+});
+
+test('each size up grows a 10×10 board\'s squares and card, Huge well past 44px, and back at Small it is Small again', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await keepSize(page, 'tiny');
+  await open(page);
+  const cells = [], cards = [];
+  for (const label of SIZE_LABELS) {
+    await pickSize(page, label);
+    cells.push(parseFloat(await cellSize(page)));
+    cards.push((await page.locator('#stage').boundingBox()).width);
+  }
+  expect(cells).toEqual([30, 44, 54, 64, 74]);
+  cards.slice(1).forEach((w, i) => expect(w).toBeGreaterThan(cards[i]));
+  await pickSize(page, 'Small');
+  await expect.poll(() => cellSize(page)).toBe('44px');
+});
+
+test('at Tiny the board and its card shrink below Small\'s', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await keepSize(page, 'small');
+  await open(page);
+  const small = await page.locator('#stage').boundingBox();
+  await pickSize(page, 'Tiny');
+  await expect.poll(() => cellSize(page)).toBe('30px');
+  const tiny = await page.locator('#stage').boundingBox();
+  expect(tiny.width).toBeLessThan(small.width);
+  expect(tiny.height).toBeLessThan(small.height);
+});
+
+test('at Huge a 40×40 board\'s grid card runs past the window\'s height, and the page scrolls to the rest', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await keepSize(page, 'huge');
+  await open(page, 'MINE-0002');
+  const card = await page.locator('#front').boundingBox();
+  expect(card.y + card.height).toBeGreaterThan(1080);
+  await page.mouse.move(900, 500);
+  await page.mouse.wheel(0, 3000);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const scrolled = await page.locator('#front').boundingBox();
+  expect(scrolled.y + scrolled.height).toBeLessThanOrEqual(1080);
+});
+
+test('a board too big for the page\'s column reaches past it toward the window\'s edge, never over the side bar; one that fits stays in it', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await keepSize(page, 'small');
+  await open(page);
+  const column = await page.locator('.site-main').boundingBox(), side = await page.locator('#site-side').boundingBox();
+  const fits = await page.locator('#play').boundingBox();
+  expect(Math.abs(fits.x - column.x)).toBeLessThan(1);
+  expect(Math.abs(fits.width - column.width)).toBeLessThan(1);
+  await open(page, 'MINE-0002');
+  const play = await page.locator('#play').boundingBox(), mines = await page.locator('#mines-card').boundingBox();
+  expect(play.x + play.width).toBeGreaterThan(column.x + column.width);
+  expect(mines.x + mines.width).toBeLessThanOrEqual(1920 - 24 + 1);
+  expect(play.x).toBeGreaterThanOrEqual(side.x + side.width);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(1920);
+});
+
+test('a board too big to tap whole opens zoomed in at 36px whatever the size; the size changes only the card it\'s seen through', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const frames = [];
+  for (const size of ['tiny', 'small', 'huge']) {
+    await keepSize(page, size);
+    await open(page, 'MINE-0002');
+    await expect(page.locator('#play')).toHaveAttribute('data-zoomable', 'true');
+    await expect.poll(() => cellSize(page)).toBe('36px');
+    frames.push(await frameWidth(page));
+  }
+  expect(frames[2]).toBeGreaterThan(frames[0]);
+});
+
+test('a size picked on a board is the size the next maze and wordsearch open at', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  await pickSize(page, 'Huge');
+  await page.route('**/content/puzzles/maze/MAZE-0001.json', route => route.fulfill({ json: MAZE }));
+  await page.goto('/app/maze.html?id=MAZE-0001');
+  await sizeButton(page).click();
+  expect(await ticked(page)).toEqual(['false', 'false', 'false', 'false', 'true']);
+  await page.route('**/content/puzzles/wordsearch/WSCH-0007.json', route => route.fulfill({ json: WORDSEARCH }));
+  await page.goto('/app/play.html?id=WSCH-0007');
+  await expect(page.locator('#play')).toHaveAttribute('data-size', 'huge');
+});
+
+test.describe('the puzzle size on a phone', () => {
+  test.use({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true });
+
+  test('no size above Small makes a board wider than the screen', async ({ page }) => {
+    await keepSize(page, 'small');
+    for (const id of ['MINE-0001', 'MINE-0002']) {
+      await open(page, id);
+      for (const label of ['Normal', 'Large', 'Huge']) {
+        await pickSize(page, label);
+        const card = await page.locator('#front').boundingBox();
+        expect(card.x).toBeGreaterThanOrEqual(0);
+        expect(card.x + card.width).toBeLessThanOrEqual(375);
+        expect(await page.evaluate(() => document.scrollingElement.scrollWidth)).toBeLessThanOrEqual(375);
+      }
+    }
   });
 });

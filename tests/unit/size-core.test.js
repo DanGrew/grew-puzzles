@@ -18,6 +18,15 @@ describe('the size every kind shares', () => {
     expect(sizeScale('maze', 'huge')).toBe(42 / 22);
   });
 
+  // TASK-187: minesweeper starts one rung up, so its Small is the board as it was.
+  it('scales minesweeper one rung up the ladder, its Small today\'s board and Huge 37 over 22', () => {
+    expect(sizeScale('minesweeper', 'tiny')).toBe(15 / 22);
+    expect(sizeScale('minesweeper', 'small')).toBe(1);
+    expect(sizeScale('minesweeper', 'normal')).toBe(27 / 22);
+    expect(sizeScale('minesweeper', 'large')).toBe(32 / 22);
+    expect(sizeScale('minesweeper', 'huge')).toBe(37 / 22);
+  });
+
   it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
     expect(sizeMenu('large')).toEqual([
       { size: 'tiny', label: 'Tiny', picked: false },
