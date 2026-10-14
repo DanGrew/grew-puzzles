@@ -249,13 +249,13 @@ test('Minesweeper shows only boards, easiest first, and Filters picks their diff
 // nothing else.
 const REVEAL = { ...puzzle('MINE', 3, 'Reveal', 'Reveal 001'), ...saved('Medium', 16, 12) };
 
-test('Minesweeper\'s filters offer Reveal and Vanilla, A to Z as types of one difficulty are; a Reveal tile wears the board picture with a corner covered, its type and size, and opens the minesweeper page', async ({ page }) => {
+test('Minesweeper\'s filters offer Vanilla then Reveal; a Reveal tile wears the board picture with a corner covered, its type and size, and opens the minesweeper page', async ({ page }) => {
   const fileRequests = await serve(page);
   await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [...BOARDS, REVEAL] } }));
   await page.goto('/app/?kind=minesweeper');
   await expect(names(page)).toHaveText(['Garden Patch', 'Reveal 001', 'Big Field']);
   await page.locator('#filter-button').click();
-  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Reveal', 'Vanilla']]]);
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Vanilla', 'Reveal']]]);
   await page.locator('#filters').getByRole('button', { name: 'Reveal', exact: true }).click();
   await expect(names(page)).toHaveText(['Reveal 001']);
   await expect(page).toHaveURL(/\?kind=minesweeper&type=Reveal$/);
@@ -272,7 +272,7 @@ test('Minesweeper\'s filters offer Reveal and Vanilla, A to Z as types of one di
   await page.goto('/app/?kind=minesweeper&type=Reveal');
   await expect(page.locator('#tiles .tile .pic svg path[opacity=".22"]')).toHaveCount(1);
   await expect(page.locator('#tiles .tile .pic svg circle')).toHaveCount(1);
-  await expect(side(page).locator('.types').nth(2).locator('.type')).toHaveText(['Reveal', 'Vanilla']);
+  await expect(side(page).locator('.types').nth(2).locator('.type')).toHaveText(['Vanilla', 'Reveal']);
   expect(fileRequests).toEqual([]);
 });
 

@@ -335,13 +335,13 @@ test('the rows end with Type, with no Collections row; Clear filters sits at the
   await expect(page.locator('#total')).toHaveText('6 puzzles');
 });
 
-test('a difficulty no puzzle has is not offered, and a type with no difficulty is Easy', async ({ page }) => {
+test('a difficulty no puzzle has is not offered, and a type with no difficulty is Easy — after Vanilla, which leads Easy', async ({ page }) => {
   const served = index(3);
   ['Vanilla', 'Brand New', 'Mirra?e'].forEach((type, i) => { served.puzzles[i].type = type; });
   await serve(page, served);
   await page.goto('/app/');
   await openFilters(page);
-  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Brand New', 'Vanilla', 'Mirra?e']]]);
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Vanilla', 'Brand New', 'Mirra?e']]]);
   await level(page, 'Easy').click();
   await expect(tileTypes(page)).toHaveText(['Brand New', 'Vanilla']);
 });

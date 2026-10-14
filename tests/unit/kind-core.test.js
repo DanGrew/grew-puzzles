@@ -97,6 +97,12 @@ describe('kind-core.js', () => {
     expect(typesOf('maze', [])).toEqual([]);
   });
 
+  test('Vanilla leads its difficulty, whichever comes first, before a type A to Z puts ahead of it', () => {
+    expect(typesOf('minesweeper', [puzzle('MINE-0001', 'Reveal'), puzzle('MINE-0002', 'Vanilla')])).toEqual(['Vanilla', 'Reveal']);
+    expect(typesOf('minesweeper', [puzzle('MINE-0001', 'Vanilla'), puzzle('MINE-0002', 'Reveal')])).toEqual(['Vanilla', 'Reveal']);
+    expect(typesOf('minesweeper', [puzzle('MINE-0001', 'Zigzag'), puzzle('MINE-0002', 'Vanilla')])).toEqual(['Vanilla', 'Zigzag']);
+  });
+
   test('two types of one difficulty go A to Z, whichever comes first', () => {
     expect(typesOf('wordsearch', [puzzle('WSCH-0001', 'Repeats'), puzzle('WSCH-0002', 'Missing')])).toEqual(['Missing', 'Repeats']);
     expect(typesOf('wordsearch', [puzzle('WSCH-0001', 'Missing'), puzzle('WSCH-0002', 'Repeats')])).toEqual(['Missing', 'Repeats']);
