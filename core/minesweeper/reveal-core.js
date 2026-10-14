@@ -23,9 +23,10 @@ function aroundKeys(key, board) {
 }
 
 // Squares opening as classic minesweeper's do: each to its number, and a 0 opening all its
-// neighbours, and on. A marked square never opens, and stops the spread there.
+// neighbours, and on. A marked square never opens, and stops the spread there. keys is the
+// caller's own fresh list, worked through in place.
 function spread(open, keys, board, marks) {
-  var next = Object.assign({}, open), waiting = keys.slice();
+  var next = Object.assign({}, open), waiting = keys;
   while (waiting.length) {
     var key = waiting.pop();
     if (next[key] || marks[key]) continue;

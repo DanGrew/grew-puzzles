@@ -75,6 +75,8 @@ describe('opening a square', () => {
 
   it('a marked square never opens with Open, and never opens as a 0 spreads round it', () => {
     expect(opened(taps([['0,3', 'mark'], ['0,3', 'open']]))).toEqual(START);
+    // A marked mine tapped with Open never goes off.
+    expect(taps([['0,2', 'mark'], ['0,2', 'open']])).toEqual({ open: newRevealPlay(BOARD).open, marks: { '0,2': 'mine' }, boom: '', events: [] });
     const play = taps([['4,5', 'mark'], ['4,4', 'open']]);
     expect(play.open['4,5']).toBeUndefined();
     expect(play.open['5,5']).toBe(true);
@@ -230,8 +232,8 @@ describe('what each square shows', () => {
 
   it('after a kaboom: the mine that went off, every other mine shown, a right mark kept, and a wrong mark proved wrong', () => {
     const squares = revealSquares(taps([['2,0', 'mark'], ['0,3', 'mark'], ['0,2', 'open']]), BOARD);
-    expect(at(squares, '0,2')).toMatchObject({ cover: 'open', mark: 'mine', state: 'boom', checked: '', label: 'Row 1, column 3, mine, opened' });
-    expect(at(squares, '4,2')).toMatchObject({ cover: 'open', mark: 'mine', state: 'shown', checked: '', label: 'Row 5, column 3, mine' });
+    expect(at(squares, '0,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'boom', checked: '', label: 'Row 1, column 3, mine, opened' });
+    expect(at(squares, '4,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'shown', checked: '', label: 'Row 5, column 3, mine' });
     expect(at(squares, '2,0')).toMatchObject({ cover: 'covered', mark: 'mine', state: '', checked: '' });
     expect(at(squares, '0,3')).toMatchObject({ cover: 'covered', mark: 'mine', checked: 'wrong' });
     expect(at(squares, '0,0')).toMatchObject({ cover: 'covered', mark: 'blank', checked: '' });
