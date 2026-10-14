@@ -4,7 +4,7 @@
 // Saving the finds is ui/wordsearch/progress-ui.js.
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
-  printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale, textSizeMenu, savedTextSize, saveTextSize,
+  printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale,
   playReach, playMargins
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
@@ -15,6 +15,7 @@ import { withSavedFinds, wireProgress, saveFinds } from './progress-ui.js';
 import { wireEntries } from './entry-ui.js';
 import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages, dressPrintSheet } from '../theme-ui.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
+import { wireSizeMenu } from '../size-ui.js';
 
 var PLAY_SVG_NS = 'http://www.w3.org/2000/svg';
 var PLAY_LAYOUT_KEY = 'grew-puzzles.words-layout';
@@ -26,7 +27,6 @@ var PLAY_LAYOUT_HOMES = { bottom: 'words-home', right: 'words-home', overlay: 's
 // size; in Overlay, where the card lies over the grid, under the grid card.
 var PLAY_SAVE_LINE_HOMES = { bottom: 'words-list', right: 'words-list', overlay: 'words-home' };
 var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
-var PLAY_SIZE_KEY = 'grew-puzzles.text-size';
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
 // Each kind of line in the word list (play-core's wordLines): how it's drawn once, for the screen
@@ -385,61 +385,29 @@ function showList(open) {
   layoutWords();
 }
 
-// The corner button beside the words layout opens the text-size menu under it: a size picked
-// scales the grid's letters and the words' text (styles/play.css, --scale) from the puzzle's own
-// (play-core's boardScale), its "Aa" at the letters it gives, closes the menu and is kept on this
-// device. Pressing outside the menu closes it unchanged.
+// The corner button beside the words layout opens the size menu every kind shares (ui/size-ui.js):
+// a size scales the grid's letters and the words' text (styles/play.css, --scale) from the
+// puzzle's own (play-core's boardScale), each shown as "Aa" at the letters it gives.
 function wireTextSize() {
-  var menu = playEl('text-size-menu');
-  textSizeMenu('').forEach(function (item) {
-    var choice = document.createElement('button'), tick = document.createElement('span');
-    var aa = document.createElement('span'), name = document.createElement('span');
-    choice.type = 'button';
-    choice.setAttribute('role', 'menuitemradio');
-    choice.dataset.size = item.size;
-    choice.style.setProperty('--scale', boardScale(item.size, playLetters()));
-    tick.className = 'tick';
-    aa.className = 'aa';
-    aa.textContent = 'Aa';
-    name.textContent = item.label;
-    choice.append(tick, aa, name);
-    choice.addEventListener('click', function () { pickTextSize(item.size); });
-    menu.appendChild(choice);
-  });
-  menu.addEventListener('toggle', function (e) {
-    playEl('text-size').setAttribute('aria-expanded', String(e.newState === 'open'));
-    placeTextSizeMenu();
-  });
-  window.addEventListener('scroll', placeTextSizeMenu);
-  window.addEventListener('resize', placeTextSizeMenu);
-  showTextSize(savedTextSize(function () { return localStorage.getItem(PLAY_SIZE_KEY); }));
+  wireSizeMenu(playEl('text-size'), playEl('text-size-menu'), sizeAa, showTextSize, layoutWords);
 }
 
-function pickTextSize(size) {
-  showTextSize(size);
-  layoutWords();
-  saveTextSize(function (s) { localStorage.setItem(PLAY_SIZE_KEY, s); }, size);
-  playEl('text-size-menu').hidePopover();
+function sizeAa(size) {
+  var aa = document.createElement('span');
+  aa.className = 'aa';
+  aa.textContent = 'Aa';
+  aa.style.setProperty('--scale', boardScale(size, playLetters()));
+  return aa;
 }
 
 function showTextSize(size) {
   playEl('play').dataset.size = size;
   playEl('play').style.setProperty('--scale', boardScale(size, playLetters()));
-  textSizeMenu(size).forEach(function (item, i) {
-    playEl('text-size-menu').children[i].setAttribute('aria-checked', String(item.picked));
-  });
 }
 
 // How big the puzzle's letters are against a Vanilla's (play-core's playBoard), as drawSheet set it.
 function playLetters() {
   return Number(playEl('play').style.getPropertyValue('--letters'));
-}
-
-// The menu opens just under its button, its left edge lined up with the button's.
-function placeTextSizeMenu() {
-  var button = playEl('text-size').getBoundingClientRect(), menu = playEl('text-size-menu');
-  menu.style.top = button.bottom + 6 + 'px';
-  menu.style.left = button.left + 'px';
 }
 
 // The list is laid out again whenever the page or the grid card changes size, once the page's

@@ -192,20 +192,26 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
    boardScale), a Vanilla's Normal at 1, a Kids puzzle's at 1.5. On
    screen it scales the grid's letters and the words' text together, the letters never under
    20px a cell and the words never under 11px; the grid card, the words card and the found lines
-   all follow the letters. Paper ignores it. The menu, by its corner button, shows each size as
-   "Aa" at the letters it gives, the picked one ticked. */
+   all follow the letters. Paper ignores it. The size menu (ui/size-ui.js), by its corner button,
+   shows each size as "Aa" at the letters it gives, the picked one ticked. */
 @media screen {
-  .play, .text-size-menu button { --cell: max(20px, calc(clamp(26px, 5.4vw, 44px) * var(--scale, 1))); }
+  .play, .size-menu .aa { --cell: max(20px, calc(clamp(26px, 5.4vw, 44px) * var(--scale, 1))); }
   ul.words li { font-size: max(11px, calc(16px * var(--scale, 1))); }
 }
-.text-size-menu { inset: auto; margin: 0; padding: 6px; color: var(--fg); background: var(--surface);
+/* The size menu every kind shares: each size beside what it looks like — the wordsearch's "Aa", a
+   grid kind's square at its --swatch side — the one picked ticked. */
+.size-menu { inset: auto; margin: 0; padding: 6px; color: var(--fg); background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: calc(var(--r) * .66); box-shadow: var(--shadow); }
-.text-size-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 12px 6px 8px; color: var(--fg); background: none;
+.size-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 12px 6px 8px; color: var(--fg); background: none;
   border: 0; border-radius: 8px; font: 600 14px var(--font-display); text-align: left; cursor: pointer; }
-.text-size-menu button:hover { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
-.text-size-menu .tick { width: 14px; color: var(--band); }
-.text-size-menu [aria-checked="true"] .tick::before { content: "✓"; }
-.text-size-menu .aa { min-width: 48px; text-align: center; font: var(--gw) calc(var(--cell) * .5)/1 var(--font-body); }
+.size-menu button:hover { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
+.size-menu .tick { width: 14px; color: var(--band); }
+.size-menu [aria-checked="true"] .tick::before { content: "✓"; }
+.size-menu .aa { min-width: 48px; text-align: center; font: var(--gw) calc(var(--cell) * .5)/1 var(--font-body); }
+.size-menu .square { flex: none; display: grid; place-items: center; width: 48px; }
+.size-menu .square::before { content: ""; box-sizing: border-box; width: var(--swatch); height: var(--swatch);
+  border: 2px solid var(--line); border-radius: 3px;
+  background: linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat, linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
 
 /* Completion: a short pop and sparkle */
 .board.pop { animation: pop .6s cubic-bezier(.2,1.6,.4,1); }
@@ -273,7 +279,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .play { --print-cell: max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows))));
     --cell: min(calc(var(--print-cell) * var(--letters, 1)), max(var(--print-cell), calc(165mm / var(--cols))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .text-size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count,
+  .site, .size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count,
   .word-popup, .word-popup:popover-open { display: none; }
   ul.words li.has-entry { background: none; }
 
