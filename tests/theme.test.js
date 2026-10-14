@@ -34,11 +34,11 @@ const sceneOf = page => page.evaluate(() => getComputedStyle(document.body, '::b
 const overlaps = (a, b) => Boolean(b) && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
 for (const path of ['index.html', 'collection.html?slug=issue-1-remake', 'play.html?id=WSCH-0001', 'about.html', 'feedback.html', 'privacy.html', 'how-to-play.html', 'saving.html']) {
-  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
+  test(`the side bar on ${path.split(/[.?]/)[0]} carries Themed / Plain / Blueprint, Themed on at a first visit, just before the page's own print menu, if it has one`, async ({ page }) => {
     await page.goto('/app/' + path);
     await expect(page.locator('html')).toHaveAttribute('data-look', 'themed');
     const look = page.locator('#site-side .look');
-    await expect(look.locator('button')).toHaveText(['Themed', 'Plain']);
+    await expect(look.locator('button')).toHaveText(['Themed', 'Plain', 'Blueprint']);
     await expect(look.locator('button[data-look="themed"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(look.locator('button[data-look="plain"]')).toHaveAttribute('aria-pressed', 'false');
     await expect(page.locator('#site-side > *').nth(-2)).toHaveClass(/\blook\b/);

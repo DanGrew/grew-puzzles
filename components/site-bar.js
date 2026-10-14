@@ -5,9 +5,9 @@
 // page. The kinds, each with its types, and Collections' count are filled from the indexes by
 // ui/side-bar-ui.js; Collections starts hidden until a collection is found. How to play, Saving
 // your progress, About us, Feedback and Privacy follow — every page sits in app/, beside them. After them,
-// the look: Themed or Plain, Themed until the player picks Plain, kept in this browser. It sits on
-// the page as <html data-look>, set here before any page script runs; picking one tells the page
-// with a grew-look event (styles/look.css, ui/theme-ui.js). A page that puts its own
+// the look: Themed, Plain or Blueprint, Themed until the player picks another, kept in this browser.
+// It sits on the page as <html data-look>, set here before any page script runs; picking one tells
+// the page with a grew-look event (styles/look.css, styles/blueprint.css, ui/theme-ui.js). A page that puts its own
 // [data-menu-entry] elements inside the header gets those last, ending the side bar — a page that
 // prints, its print menu: the play page's Print page, the collection page's Print book. Every page
 // starts printing Plain (<html data-print>), until its print menu says otherwise. On a phone the
@@ -22,7 +22,7 @@
   function storedLook() {
     try { return localStorage.getItem(LOOK_KEY); } catch (e) { return null; }
   }
-  root.dataset.look = { plain: 'plain' }[storedLook()] || 'themed';
+  root.dataset.look = { plain: 'plain', blueprint: 'blueprint' }[storedLook()] || 'themed';
   root.dataset.print = 'plain';
 
   bar.innerHTML =
@@ -48,6 +48,7 @@
       '<span class="look-name">Look</span>' +
       '<button type="button" data-look="themed">Themed</button>' +
       '<button type="button" data-look="plain">Plain</button>' +
+      '<button type="button" data-look="blueprint">Blueprint</button>' +
     '</div>' +
     '<div class="side-own"></div>';
   var ownSlot = side.querySelector('.side-own');

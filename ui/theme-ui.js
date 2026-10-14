@@ -1,6 +1,6 @@
-// Themed or Plain on every page: reads the owner's characters and dresses the page's parts in one —
-// the page's background, a character's figure and its name label. Every part is dressed whichever
-// look is on: styles/look.css shows them only while Themed is, so Plain never loads an image and
+// Themed, Plain or Blueprint on every page: reads the owner's characters and dresses the page's parts
+// in one — the page's background, a character's figure and its name label. Every part is dressed whichever
+// look is on: styles/look.css shows them only while Themed is, so Plain and Blueprint never load an image and
 // the site bar's switch (components/site-bar.js) changes the look without redressing anything.
 // Every rule is core/theme-core.js's.
 import { charactersFile, charactersOf, dressOf, sceneFile, figureFile, randomCharacter, isPhone, siteDress } from '../core/theme-core.js';
@@ -19,8 +19,8 @@ export function dressScene(character) {
 }
 
 // The page's background in a character picked at random, settling once its image has arrived —
-// or after wait ms, whichever is first, so a page waiting on it never waits long. Plain, or no
-// characters, settles without loading an image.
+// or after wait ms, whichever is first, so a page waiting on it never waits long. Plain, Blueprint,
+// or no characters, settles without loading an image.
 export function dressRandomScene(random, wait) {
   return Promise.race([
     withCharacters(function (characters) { return sceneShown(randomCharacter(characters, random)); }),
@@ -29,7 +29,7 @@ export function dressRandomScene(random, wait) {
 }
 
 function sceneShown(character) {
-  var loads = { themed: loadImage, plain: function () {} };
+  var loads = { themed: loadImage, plain: function () {}, blueprint: function () {} };
   dressScene(character);
   return loads[document.documentElement.dataset.look](sceneFile(character));
 }

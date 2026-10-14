@@ -1,0 +1,90 @@
+/* Blueprint — the third look, for adults: the puzzle as a technical drawing (the product's
+   TASK-183). Every rule waits on :root[data-look="blueprint"], so Themed and Plain are untouched,
+   and none shows a character. The cards stay where Plain puts them and Sora stays the face; the
+   look is dressing only — a drafting grid behind, the cards as drawing paper with a second ruled
+   frame, dimension lines on the grid card, and the title as a title block. On screen only: paper
+   prints as the print menu says. */
+:root[data-look="blueprint"] {
+  --bg: #123a5e; --surface: #f5f9fc; --fg: #123a5e; --muted: #4b6d8c; --rule: #bfd1e2;
+  --accent: #123a5e; --band: #123a5e; --band-fg: #e6f0f9; --line: #123a5e; --ow: 1px; --r: 0px; --shadow: none;
+  --select: #123a5e; --found: #2a6aa6; --wild: #2a6aa6; --spark: #e6f0f9;
+  --ink: #e6f0f9; --ink-soft: rgba(230, 240, 249, .7); --frame: rgba(230, 240, 249, .45);
+  --grid-major: rgba(230, 240, 249, .13); --grid-minor: rgba(230, 240, 249, .05);
+}
+
+@media screen {
+  :root[data-look="blueprint"] body {
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+    background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; background-attachment: fixed; }
+  /* Each card a sheet of drawing paper inside a second ruled frame. */
+  :root[data-look="blueprint"] :is(.face, .words-box, .side, .tile, .page-card, .kind-switch, .filter-popup) {
+    outline: 1px solid var(--frame); outline-offset: 5px; }
+  :root[data-look="blueprint"] .side { margin: 6px; }
+  /* What sits straight on the drawing reads in the light ink. */
+  :root[data-look="blueprint"] :is(.brand, .sort, .rail-head h2, .collection-description, .collection-missing, .missing, .book-status) { color: var(--ink); }
+  :root[data-look="blueprint"] .collection-missing a, :root[data-look="blueprint"] .missing a { color: var(--ink); }
+  :root[data-look="blueprint"] :is(.book-status a, .book-hint, .criss .help) { color: var(--ink-soft); }
+  :root[data-look="blueprint"] .book-status button { border-color: var(--ink); border-radius: 0; }
+  :root[data-look="blueprint"] .brand { font-weight: 400; letter-spacing: .18em; text-transform: uppercase; font-size: 17px; }
+  :root[data-look="blueprint"] :is(.sign-in, .burger) { color: var(--ink); background: transparent; border-color: var(--ink); }
+  :root[data-look="blueprint"] .browse-head { outline: 1px solid var(--frame); outline-offset: 5px; }
+  :root[data-look="blueprint"] .browse-head h1 { font-weight: 400; letter-spacing: .16em; text-transform: uppercase; font-size: 19px; }
+  :root[data-look="blueprint"] .look button, :root[data-look="blueprint"] .controls :is(button, select), :root[data-look="blueprint"] .tab,
+  :root[data-look="blueprint"] .pager button { border-radius: 0; box-shadow: none; }
+
+  /* The title as a title block: TITLE over the name, and GRADE · DRAWING NO. over the line under it. */
+  :root[data-look="blueprint"] .play-head { width: fit-content; max-width: calc(100% - 24px); margin-inline: auto; display: grid;
+    grid-template-columns: minmax(0, auto) auto; border: 1px solid var(--ink); color: var(--ink); text-align: left; }
+  :root[data-look="blueprint"] .play-head h1 { padding: 8px 18px 10px; font-weight: 400; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; }
+  :root[data-look="blueprint"] .play-head .ident:not([hidden]) { margin: 0; padding: 8px 18px 10px; border-left: 1px solid var(--frame); color: var(--ink);
+    display: block; font-size: 14px; line-height: 1.6; }
+  :root[data-look="blueprint"] .play-head h1::before, :root[data-look="blueprint"] .play-head .ident::before {
+    display: block; font: 400 9px/1.4 var(--font-body); letter-spacing: .2em; color: var(--ink-soft); text-transform: uppercase; }
+  :root[data-look="blueprint"] .play-head h1::before { content: 'Title'; }
+  :root[data-look="blueprint"] .play-head .ident::before { content: 'Grade · Drawing no.'; }
+  :root[data-look="blueprint"] .play-head .difficulty { border-radius: 0; border: 1px solid var(--ink); color: #123a5e; }
+  /* On a phone the block stacks: a one-word title has no room to wrap beside its grade. */
+  @media (max-width: 760px) {
+    :root[data-look="blueprint"] .play-head { grid-template-columns: minmax(0, auto); }
+    :root[data-look="blueprint"] .play-head h1 { overflow-wrap: anywhere; }
+    :root[data-look="blueprint"] .play-head .ident:not([hidden]) { border-left: 0; border-top: 1px solid var(--frame); }
+  }
+
+  /* The cards' bands read as a drawing's labels. */
+  :root[data-look="blueprint"] :is(.band, .list-head h2) { font-weight: 400; letter-spacing: .2em; text-transform: uppercase; font-size: 13px; }
+  :root[data-look="blueprint"] ul.words li { text-transform: uppercase; letter-spacing: .05em; font-size: max(10px, calc(14px * var(--scale, 1))); }
+  :root[data-look="blueprint"] button.corner { border-radius: 0; box-shadow: none; border-color: var(--ink); }
+
+  /* Found words ruled through in a dashed line, as a draughtsman marks one off. */
+  :root[data-look="blueprint"] svg.overlay .mark-found { stroke-dasharray: .22 .1; stroke-linecap: butt; }
+
+  /* Finishing stamps the drawing. */
+  :root[data-look="blueprint"] .complete { width: fit-content; margin: 18px auto 0; padding: 6px 16px; color: #ff8a80; border: 3px double #ff8a80;
+    font-weight: 600; letter-spacing: .24em; text-transform: uppercase; transform: rotate(-4deg); }
+
+  /* A text page: the owner's words on a sheet of paper, the title in the light ink above it. */
+  :root[data-look="blueprint"] .page { max-width: 732px; margin-inline: auto; }
+  :root[data-look="blueprint"] .page h1 { color: var(--ink); font-weight: 400; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 28px; }
+  :root[data-look="blueprint"] .page-card { padding: 26px 28px; background: var(--surface); border: 1px solid var(--line); }
+  :root[data-look="blueprint"] .page-card h2 { font-weight: 600; letter-spacing: .16em; text-transform: uppercase; font-size: 14px; }
+
+  /* The grid card's dimension lines: its columns along its foot, its rows down its left, each a
+     ruled line with ticks at its ends and the count in its middle, in the light ink. */
+  :root[data-look="blueprint"] .play .stage::after {
+    content: counter(cols) ' columns'; counter-reset: cols var(--cols); position: absolute; left: 0; right: 0; top: calc(100% + 7px); height: 11px;
+    border-inline: 1px solid var(--ink); color: var(--ink); text-align: center; font: 400 9px/11px var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    background: linear-gradient(var(--ink), var(--ink)) left center / calc(50% - 52px) 1px no-repeat,
+                linear-gradient(var(--ink), var(--ink)) right center / calc(50% - 52px) 1px no-repeat; pointer-events: none; }
+  /* Room under a board for its columns' line: what sits right under it moves down past it. The
+     switch's room is padding, which the page counts when it fits a Reveal board to the window. */
+  :root[data-look="blueprint"] .mines-switch { padding-top: 28px; }
+  :root[data-look="blueprint"] .mines-tools { margin-top: 28px; }
+  :root[data-look="blueprint"] .play .stage::before {
+    content: counter(rows) ' rows'; counter-reset: rows var(--rows); position: absolute; top: 0; bottom: 0; right: calc(100% + 7px); width: 11px;
+    border-block: 1px solid var(--ink); color: var(--ink); writing-mode: vertical-rl; transform: rotate(180deg); text-align: center;
+    font: 400 9px/11px var(--font-body); letter-spacing: .2em; text-transform: uppercase;
+    background: linear-gradient(var(--ink), var(--ink)) center top / 1px calc(50% - 40px) no-repeat,
+                linear-gradient(var(--ink), var(--ink)) center bottom / 1px calc(50% - 40px) no-repeat; pointer-events: none; }
+}
