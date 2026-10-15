@@ -75,3 +75,11 @@ function puzzleDone(rows, hiddenId, puzzle) {
 export function tileDone(tile, done) {
   return tile.ids.length > 0 && tile.ids.every(function (id) { return done.includes(id); });
 }
+
+// What a tile reads: a finished mosaic's its picture's name, from names by hidden ID
+// (core/mosaic/done-core.js mosaicNames) — Barn Owl, not Mosaic 007 — and every other tile, a
+// collection's too, its title.
+export function tileName(tile, names) {
+  var named = tile.kind !== 'collection' && Object.hasOwn(names, tile.ids[0]);
+  return { true: names[tile.ids[0]], false: tile.title }[named];
+}

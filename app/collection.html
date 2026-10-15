@@ -44,9 +44,10 @@ import { dressScene, dressFigure } from '../ui/theme-ui.js';
 import { kindPicture } from '../ui/kind-picture-ui.js';
 import { readPuzzles } from '../ui/indexes-ui.js';
 
-// The puzzles the player has finished — none until they're looked up, and never signed out — and
-// each tile's ✓, repainted as they arrive.
+// The puzzles the player has finished — none until they're looked up, and never signed out — the
+// finished mosaics' names, and each tile's ✓ and name, repainted as they arrive.
 let done = [];
+let names = {};
 let ticks = [];
 let tiles = [];
 // The owner's characters, in order: puzzle 1 wears the first, round again after the last.
@@ -73,8 +74,8 @@ function tile(spec) {
   figure.setAttribute('aria-hidden', 'true');
   dressFigure(figure, characterAt(characters, Number(spec.number)));
   a.append(figure, part('number', spec.number), kindPicture(spec.place, spec.type), part('name', spec.title), detail);
-  ticks.push(() => paintDone(a, spec, done));
-  paintDone(a, spec, done);
+  ticks.push(() => paintDone(a, spec, done, names));
+  paintDone(a, spec, done, names);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -100,6 +101,7 @@ function show([puzzles, published, owned]) {
 // The collection page has no rail: only the finished puzzles are its.
 function tick(progress) {
   done = progress.done;
+  names = progress.names;
   ticks.forEach(paint => paint());
 }
 

@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { playBoard } from '../../../core/wordsearch/play-core.js';
 import { findRow } from '../../../core/wordsearch/progress-core.js';
 import {
-  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, lastPlayed, railOrder, tileDone
+  readRange, morePages, startedPuzzles, puzzleFile, donePuzzles, playingPuzzles, lastPlayed, railOrder, tileDone, tileName
 } from '../../../core/wordsearch/done-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -150,5 +150,27 @@ describe('which tiles are ticked', () => {
 
   it('a collection with no puzzles is never ticked', () => {
     expect(tileDone({ ids: [] }, ['WSCH-0001'])).toBe(false);
+  });
+});
+
+describe('what a tile reads', () => {
+  const names = { 'MOSA-0007': 'Barn Owl' };
+
+  it('a finished mosaic\'s tile, its picture\'s name', () => {
+    expect(tileName({ kind: 'puzzle', ids: ['MOSA-0007'], title: 'Mosaic 007' }, names)).toBe('Barn Owl');
+    expect(tileName({ ids: ['MOSA-0007'], title: 'Mosaic 007' }, names)).toBe('Barn Owl');
+  });
+
+  it('any other tile, its title', () => {
+    expect(tileName({ kind: 'puzzle', ids: ['MOSA-0008'], title: 'Mosaic 008' }, names)).toBe('Mosaic 008');
+    expect(tileName({ kind: 'puzzle', ids: ['MOSA-0007'], title: 'Mosaic 007' }, {})).toBe('Mosaic 007');
+  });
+
+  it('a collection\'s tile, its own name, even when its first puzzle is a finished mosaic', () => {
+    expect(tileName({ kind: 'collection', ids: ['MOSA-0007', 'WSCH-0001'], title: 'Pictures' }, names)).toBe('Pictures');
+  });
+
+  it('a name only by the hidden ID\'s own entry, never one inherited', () => {
+    expect(tileName({ kind: 'puzzle', ids: ['toString'], title: 'Odd' }, {})).toBe('Odd');
   });
 });
