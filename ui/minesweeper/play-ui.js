@@ -327,7 +327,7 @@ function vanillaGame(id, board, play, squares) {
 
 // A Reveal board's game, after the product's docs/MOCKUP-MINES-REVEAL.html: covered but for its
 // start square's area; a tap opens a square or marks it, as Open | Mark mine under the board picks
-// — Open each time the page opens — and a right-click, or a press held still, taps with the other. Opening
+// — Mark mine each time the page opens — and a right-click, or a press held still, taps with the other. Opening
 // a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
 // back mine marks only, this visit's alone. play is the board as the player left it, already in
 // place; signed in, every tap and Undo that changes it is saved under its hidden ID, and a kaboom
@@ -337,7 +337,7 @@ function vanillaGame(id, board, play, squares) {
 // Mines card counts the flags left and says its limit, a row of flags above the switch empties a box
 // for each mark, and a mark past it fades the oldest off its square (the product's TASK-179).
 function revealGame(id, board, play, squares, cells) {
-  var history = [], tool = 'open';
+  var history = [], tool = 'mark';
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
   var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate, locked: shakeLock, moved: fadeMoved };
   minesEl('play').dataset.limited = String(board.limited);

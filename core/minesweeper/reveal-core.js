@@ -172,7 +172,7 @@ export function otherTool(tool) {
 // comes back, and a step that would then change nothing is passed over.
 
 function inOrder(marks) {
-  return Object.keys(marks).join(' ');
+  return JSON.stringify(Object.keys(marks));
 }
 
 export function revealTapped(history, before, after) {

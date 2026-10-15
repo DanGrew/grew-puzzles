@@ -127,7 +127,14 @@ async function open(context, id = 'MINE-0001') {
   const page = await context.newPage();
   await page.goto('/app/minesweeper.html?id=' + id);
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
   return page;
+}
+
+// Mark mine is picked as each page opens; these tests play with Open picked, so a click opens and a
+// right-click marks. A Vanilla board has no switch, and the pick does nothing on it.
+async function pickOpen(page) {
+  await page.locator('#tool-open').evaluate(button => button.click());
 }
 
 const square = (page, r, c, cols = 10) => page.locator('#grid .mines-square').nth(r * cols + c);
@@ -710,6 +717,7 @@ test('a Keys board: signed in, coming back, the zones I unlocked are still unloc
   await expect.poll(() => boardsSaved(db).map(row => row.no_mines.some(([r, c]) => r === 0 && c === 5))).toEqual([true]);
   await page.reload();
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
   await expect(keysSquare(page, 0, 5)).toHaveAttribute('data-found', '2');
   await expect(keysSquare(page, 0, 5)).not.toHaveClass(/key-pop/);
   await expect(keysSquare(page, 5, 0)).toHaveAttribute('data-lock', '');
