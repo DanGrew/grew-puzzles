@@ -1,4 +1,4 @@
-// Done ticks on the landing and collection pages: signed in, every tile whose puzzles the player has
+// Done ticks on the landing and collection pages, and the Scorecard's boxes: signed in, every tile whose puzzles the player has
 // finished — wordsearches, mazes, minesweeper boards and criss-crosses alike — wears a ✓. The tiles
 // draw first and never wait — the ticks arrive once the player's saved lines, maze places, maze
 // finds, boards' marks and criss-crosses' words are read and the files of the wordsearches and mazes

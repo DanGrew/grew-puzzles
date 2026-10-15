@@ -1,0 +1,60 @@
+/* The Scorecard (docs/MOCKUP-COMPLETION-LIST.html in the product entry, Rows): the title and the
+   player's total on browse's band (styles/browse.css .browse-head), so it reads on any background,
+   the By kind · By type · By difficulty tabs, then one group under another, each a banded card of
+   lines — a box, the title, a pill and the code. Each difficulty's colour is styles/theme.css's. */
+.score-head { margin-bottom: 12px; }
+.score-head span { font-weight: 700; opacity: 1; }
+.score-sign-in { width: fit-content; margin: 0 auto; padding: 6px 14px; color: var(--muted); font-size: 14px; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; }
+.score-sign-in .sign-in-link { font: 600 14px var(--font-body); color: var(--accent); background: none; border: 0; padding: 0;
+  cursor: pointer; text-decoration: underline; }
+.score-sign-in .sign-in-link:hover { color: var(--fg); }
+main [hidden] { display: none; }
+
+.score-tabs { display: flex; width: fit-content; margin: 16px auto 22px; overflow: hidden; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+.score-tabs button { flex: 1; padding: 10px 20px; font: 700 15px var(--font-display); color: var(--fg); background: none; border: 0;
+  white-space: nowrap; cursor: pointer; }
+.score-tabs button + button { border-left: var(--ow) solid var(--line); }
+.score-tabs button[aria-selected="true"] { background: var(--band); color: var(--band-fg); }
+
+.score-groups { display: grid; gap: 22px; }
+.score-group { overflow: hidden; background: var(--surface); border: var(--ow) solid var(--line); border-radius: var(--r);
+  box-shadow: var(--shadow); }
+/* A kind's heading is the band's green; a type's or a difficulty's is its difficulty's colour, in ink. */
+.group-head { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--tone, var(--band)); color: var(--band-fg);
+  border-bottom: var(--ow) solid var(--line); }
+.score-group:not([data-tone=""]) .group-head { color: var(--fg); }
+.group-head h2 { font: 700 16px var(--font-display); margin: 0 auto 0 0; }
+.kind-tag { font-weight: 400; opacity: .85; }
+.group-head .count { padding: 2px 10px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--surface) 22%, transparent); border-radius: 999px; }
+/* Every puzzle in the group finished: the count turns white, with a ✓. */
+.group-head .count[data-all="true"] { background: var(--surface); color: var(--fg); }
+.group-head .count[data-all="true"]::before { content: '✓ '; }
+
+.lines { list-style: none; margin: 0; padding: 4px 0; }
+.lines li + li { border-top: 1px solid var(--rule); }
+.score-line { display: flex; align-items: center; gap: 12px; padding: 8px 16px; color: var(--fg); text-decoration: none; }
+.score-line:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+.score-line .box { width: 22px; height: 22px; flex: none; display: grid; place-items: center; box-sizing: border-box;
+  background: var(--surface); border: var(--ow) solid var(--line); border-radius: 6px; }
+.score-line[data-done="true"] .box { background: var(--accent); border-color: var(--accent); }
+.score-line[data-done="true"] .box::after { content: '✓'; color: var(--band-fg); font: 700 14px/1 var(--font-display); }
+.score-line .title { flex: 1; min-width: 0; font-weight: 600; text-decoration: underline; text-decoration-color: var(--rule);
+  text-underline-offset: 3px; }
+.score-line[data-done="true"] .title { color: var(--muted); }
+.score-line .meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.score-line .pill { padding: 1px 8px; font-weight: 600; color: var(--fg); background: var(--tone); border: 1.5px solid var(--line);
+  border-radius: 999px; }
+.score-line .code { font-variant-numeric: tabular-nums; }
+.score-group .more { display: block; width: 100%; padding: 9px 16px; font: 600 13px var(--font-body); color: var(--accent); text-align: left;
+  background: none; border: 0; border-top: 1px solid var(--rule); cursor: pointer; }
+.score-group .more[hidden] { display: none; }
+
+/* A phone: the tabs fill the width and the code is dropped. */
+@media (max-width: 759px) {
+  .score-tabs { width: 100%; }
+  .score-tabs button { padding: 10px 6px; font-size: 13px; }
+  .score-line .code { display: none; }
+}

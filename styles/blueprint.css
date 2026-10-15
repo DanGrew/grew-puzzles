@@ -21,7 +21,7 @@
       linear-gradient(var(--grid-minor) 1px, transparent 1px), linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
     background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; background-attachment: fixed; }
   /* Each card a sheet of drawing paper inside a second ruled frame. */
-  :root[data-look="blueprint"] :is(.face, .words-box, .side, .tile, .page-card, .kind-switch, .filter-popup) {
+  :root[data-look="blueprint"] :is(.face, .words-box, .side, .tile, .page-card, .kind-switch, .filter-popup, .score-tabs, .score-group, .score-sign-in) {
     outline: 1px solid var(--frame); outline-offset: 5px; }
   :root[data-look="blueprint"] .side { margin: 6px; }
   /* What sits straight on the drawing reads in the light ink. */
