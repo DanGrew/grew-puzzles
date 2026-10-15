@@ -76,6 +76,8 @@
     background: var(--figure, none) center / contain no-repeat; }
   /* A Reveal board's mine that went off wears it on the kaboom's red (the product's TASK-173 spec). */
   :root[data-look="themed"] .mines .mines-square[data-mark="mine"][data-state="boom"] { background: var(--wrong); }
+  /* A mine a canary found wears it as a marked mine does, on the canary's yellow (the product's TASK-203). */
+  :root[data-look="themed"] .mines .mines-square[data-mark="mine"][data-state="blown"] { background: #ffe680; }
 
   /* A text page: the words on a card at a reading width, mid-page, and the character peering from
      behind the card at the printout's spot, placed by ui/theme-ui.js. */

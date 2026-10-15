@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { minesBoard, minesMistakes, minesCount, answerSquares, keyHiddenAt } from '../../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, keysFound,
-  marksLifted, revealCount, flagSlots
+  marksLifted, revealCount, flagSlots, canariesLeft, canarySlots
 } from '../../../core/minesweeper/reveal-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/reveal-core.js, against tooling's own valid Reveal board (its
@@ -78,7 +78,7 @@ describe('opening a square', () => {
   it('a marked square never opens with Open, and never opens as a 0 spreads round it', () => {
     expect(opened(taps([['0,3', 'mark'], ['0,3', 'open']]))).toEqual(START);
     // A marked mine tapped with Open never goes off.
-    expect(taps([['0,2', 'mark'], ['0,2', 'open']])).toEqual({ open: newRevealPlay(BOARD).open, marks: { '0,2': 'mine' }, boom: '', events: [] });
+    expect(taps([['0,2', 'mark'], ['0,2', 'open']])).toEqual({ open: newRevealPlay(BOARD).open, marks: { '0,2': 'mine' }, blown: {}, boom: '', events: [] });
     const play = taps([['4,5', 'mark'], ['4,4', 'open']]);
     expect(play.open['4,5']).toBeUndefined();
     expect(play.open['5,5']).toBe(true);
@@ -161,12 +161,12 @@ describe('opening a mine', () => {
 
   it('the board then takes no taps, marks or openings', () => {
     const play = taps([['0,3', 'mark'], ['0,2', 'open']]);
-    expect(tapReveal(play, [0, 0], BOARD, 'open')).toEqual({ open: play.open, marks: play.marks, boom: '0,2', events: [] });
+    expect(tapReveal(play, [0, 0], BOARD, 'open')).toEqual({ open: play.open, marks: play.marks, blown: {}, boom: '0,2', events: [] });
     expect(tapReveal(play, [0, 4], BOARD, 'mark').marks).toEqual({ '0,3': 'mine' });
   });
 
   it('starting again puts the board back to its start', () => {
-    expect(newRevealPlay(BOARD)).toEqual({ open: newRevealPlay(BOARD).open, marks: {}, boom: '', events: [] });
+    expect(newRevealPlay(BOARD)).toEqual({ open: newRevealPlay(BOARD).open, marks: {}, blown: {}, boom: '', events: [] });
   });
 });
 
@@ -249,8 +249,8 @@ describe('Undo', () => {
 
   it('with nothing left to take back, the play is as it was', () => {
     const play = taps([['0,3', 'open']]);
-    expect(undoneReveal([{ '0,3': 'mine' }], play)).toEqual({ play: { open: play.open, marks: {}, boom: '', events: [] }, history: [] });
-    expect(undoneReveal([], play)).toEqual({ play: { open: play.open, marks: {}, boom: '', events: [] }, history: [] });
+    expect(undoneReveal([{ '0,3': 'mine' }], play)).toEqual({ play: { open: play.open, marks: {}, blown: {}, boom: '', events: [] }, history: [] });
+    expect(undoneReveal([], play)).toEqual({ play: { open: play.open, marks: {}, blown: {}, boom: '', events: [] }, history: [] });
     // Undo never takes back a kaboom.
     expect(undoneReveal([{}], taps([['0,3', 'mark'], ['0,2', 'open']])).play.boom).toBe('0,2');
   });
@@ -435,8 +435,8 @@ describe('a Keys board', () => {
     const board = keysBoard();
     const play = newRevealPlay(board);
     ['open', 'mark'].forEach(tool => {
-      expect(tapReveal(play, [5, 0], board, tool)).toEqual({ open: play.open, marks: {}, boom: '', events: ['locked'] });
-      expect(tapReveal(play, [4, 4], board, tool)).toEqual({ open: play.open, marks: {}, boom: '', events: ['locked'] });
+      expect(tapReveal(play, [5, 0], board, tool)).toEqual({ open: play.open, marks: {}, blown: {}, boom: '', events: ['locked'] });
+      expect(tapReveal(play, [4, 4], board, tool)).toEqual({ open: play.open, marks: {}, blown: {}, boom: '', events: ['locked'] });
     });
   });
 
@@ -565,5 +565,134 @@ describe('what a Keys board\'s squares show', () => {
     const keys = answerSquares(board).filter(s => s.found !== '').map(s => [s.key, s.found]);
     expect(keys).toEqual([['0,5', '2'], ['5,0', '1']]);
     expect(answerSquares(BOARD).filter(s => s.found !== '')).toEqual([]);
+  });
+});
+
+// ---- A Canaries board (the product's TASK-203) ----
+// Tooling's own valid Canaries board (its fixtures/minesweeper/canaries-valid.json), 6×6, seven
+// mines, two canaries, starting on the 0 at row 5, col 5:
+//   1 2 2 2 * 1
+//   1 * * 4 2 2
+//   1 3 * 3 * 1
+//   1 2 1 2 1 1
+//   * 2 1 0 0 0
+//   2 * 1 0 0 0
+const CANARIES_FILE = require('../../fixtures/MINE-0905.json');
+
+describe('a Canaries board', () => {
+  let CANARIES;
+  beforeEach(() => {
+    CANARIES = minesBoard(structuredClone(CANARIES_FILE));
+  });
+  const canaryTaps = (steps, play) => steps.reduce((p, [key, tool]) => tapReveal(p, cell(key), CANARIES, tool), play || newRevealPlay(CANARIES));
+  const MINES = ['0,4', '1,1', '1,2', '2,2', '2,4', '4,0', '5,1'];
+  const openEvery = play => Array.from({ length: 36 }, (_, i) => Math.floor(i / 6) + ',' + (i % 6))
+    .filter(key => !MINES.includes(key))
+    .reduce((p, key) => (p.open[key] ? p : tapReveal(p, cell(key), CANARIES, 'open')), play);
+
+  it('reads its canaries from its file; any other board has none', () => {
+    expect(CANARIES).toMatchObject({ rule: 'reveal', canaried: true, canaries: 2, limited: false });
+    expect(BOARD).toMatchObject({ canaried: false, canaries: 0 });
+  });
+
+  it('the Mines card reads the canaries left: the file\'s count to start', () => {
+    expect(revealCount(newRevealPlay(CANARIES), CANARIES)).toBe('Canaries 2');
+    expect(canariesLeft(newRevealPlay(CANARIES), CANARIES)).toBe(2);
+  });
+
+  it('the row of canaries has a box per canary, the canaries left full first, the lost ones empty', () => {
+    expect(canarySlots(newRevealPlay(CANARIES), CANARIES)).toEqual([true, true]);
+    expect(canarySlots(canaryTaps([['3,1', 'canary']]), CANARIES)).toEqual([true, true]);
+    expect(canarySlots(canaryTaps([['4,0', 'canary']]), CANARIES)).toEqual([true, false]);
+    expect(canarySlots(canaryTaps([['4,0', 'canary'], ['5,1', 'canary']]), CANARIES)).toEqual([false, false]);
+    // Any other board has none.
+    expect(canarySlots(newRevealPlay(BOARD), BOARD)).toEqual([]);
+  });
+
+  it('a canary on a safe square opens it as Open would, and survives', () => {
+    const play = canaryTaps([['3,1', 'canary']]);
+    expect(play.open['3,1']).toBe(true);
+    expect(play).toMatchObject({ blown: {}, boom: '', events: [] });
+    expect(revealCount(play, CANARIES)).toBe('Canaries 2');
+    expect(play).toEqual(canaryTaps([['3,1', 'open']]));
+  });
+
+  it('a canary on a mine is lost, not the game: the mine shows, nothing opens, and play goes on', () => {
+    const start = newRevealPlay(CANARIES);
+    const play = canaryTaps([['4,0', 'canary']]);
+    expect(play).toEqual({ open: start.open, marks: {}, blown: { '4,0': true }, boom: '', events: [] });
+    expect(revealCount(play, CANARIES)).toBe('Canaries 1');
+    expect(canaryTaps([['3,1', 'open']], play).open['3,1']).toBe(true);
+  });
+
+  it('with no canaries left, a canary tap does nothing', () => {
+    const none = canaryTaps([['4,0', 'canary'], ['5,1', 'canary']]);
+    expect(canariesLeft(none, CANARIES)).toBe(0);
+    expect(revealCount(none, CANARIES)).toBe('Canaries 0');
+    expect(canaryTaps([['2,2', 'canary']], none)).toEqual({ ...none, events: [] });
+    expect(canaryTaps([['3,1', 'canary']], none).open['3,1']).toBeUndefined();
+    // A board with no canaries never sends one.
+    expect(tapReveal(newRevealPlay(BOARD), [0, 2], BOARD, 'canary')).toMatchObject({ blown: {}, boom: '' });
+  });
+
+  it('a canary never opens a marked square, nor goes where one was lost', () => {
+    const marked = canaryTaps([['4,0', 'mark'], ['4,0', 'canary']]);
+    expect(marked).toMatchObject({ marks: { '4,0': 'mine' }, blown: {} });
+    const lost = canaryTaps([['4,0', 'canary'], ['4,0', 'canary']]);
+    expect(canariesLeft(lost, CANARIES)).toBe(1);
+  });
+
+  it('a canary\'s mine can\'t be marked, unmarked or opened', () => {
+    const lost = canaryTaps([['4,0', 'canary']]);
+    expect(canaryTaps([['4,0', 'mark']], lost)).toEqual({ ...lost, events: [] });
+    expect(canaryTaps([['4,0', 'open']], lost)).toEqual({ ...lost, events: [] });
+  });
+
+  it('Open on a mine is still Kaboom!, canaries left or not', () => {
+    expect(canaryTaps([['4,0', 'open']])).toMatchObject({ boom: '4,0', events: ['kaboom'] });
+    expect(canaryTaps([['4,0', 'canary'], ['5,1', 'open']])).toMatchObject({ boom: '5,1', blown: { '4,0': true }, events: ['kaboom'] });
+  });
+
+  it('a canary\'s mine counts toward a number\'s mines, and is never opened by it', () => {
+    // (5,2) is a 1, its one mine (5,1): met once a canary finds it, it opens (4,1).
+    expect(canaryTaps([['5,2', 'open']]).open['4,1']).toBeUndefined();
+    const play = canaryTaps([['5,1', 'canary'], ['5,2', 'open']]);
+    expect(play).toMatchObject({ boom: '', events: [] });
+    expect(play.open['4,1']).toBe(true);
+  });
+
+  it('a canary tapped on an opened number opens round it as either tool does, and is kept', () => {
+    const play = canaryTaps([['5,1', 'mark'], ['5,2', 'canary']]);
+    expect(play.open['4,1']).toBe(true);
+    expect(canariesLeft(play, CANARIES)).toBe(2);
+  });
+
+  it('Undo takes back marks only: a canary used stays used', () => {
+    const { play, history } = played([['3,1', 'mark'], ['4,0', 'canary']], CANARIES);
+    expect(history).toEqual([{}]);
+    const undone = undoneReveal(history, play);
+    expect(undone.play).toMatchObject({ marks: {}, blown: { '4,0': true } });
+    expect(revealCount(undone.play, CANARIES)).toBe('Canaries 1');
+  });
+
+  it('opening every safe square finishes it, however many canaries were lost', () => {
+    const last = openEvery(canaryTaps([['4,0', 'canary'], ['5,1', 'canary']]));
+    expect(revealFinished(last, CANARIES)).toBe(true);
+    expect(last.events).toEqual(['complete']);
+    expect(revealCount(last, CANARIES)).toBe('Canaries 0');
+  });
+
+  it('starting again gives every canary back', () => {
+    expect(revealCount(newRevealPlay(CANARIES), CANARIES)).toBe('Canaries 2');
+  });
+
+  it('a canary\'s mine shows as a mine on the board, for good, and says a canary found it', () => {
+    const at = (squares, key) => squares.find(s => s.key === key);
+    const lost = canaryTaps([['4,0', 'canary']]);
+    expect(at(revealSquares(lost, CANARIES), '4,0')).toEqual({
+      key: '4,0', cover: 'open', mark: 'mine', number: '', state: 'blown', zone: '', lock: '', found: '', checked: '', label: 'Row 5, column 1, mine, found by a canary'
+    });
+    expect(at(revealSquares(openEvery(lost), CANARIES), '4,0')).toMatchObject({ state: 'blown' });
+    expect(at(revealSquares(canaryTaps([['5,1', 'open']], lost), CANARIES), '4,0')).toMatchObject({ state: 'blown' });
   });
 });

@@ -7,13 +7,16 @@
 // Board reading, Check's mistakes and line, the Mines card's count and the frame are
 // core/minesweeper/play-core.js's, shared with a Vanilla board. A Keys board plays by this rule too,
 // its zones padlocked until their keys turn up (the product's TASK-177), and so does a Limited Flags
-// board, with no more than its flag limit of mine marks on it at once (the product's TASK-179).
+// board, with no more than its flag limit of mine marks on it at once (the product's TASK-179), and
+// a Canaries board, a canary opening a square where a mine costs the canary, not the game (the
+// product's TASK-203).
 import { keyOf, around, keyHiddenAt, minesCount } from './play-core.js';
 
-// A play is { open, marks, boom, events }: open each opened square's key, true; marks each marked
-// square's 'mine' by its key, as a Vanilla board's marks are, so the count, Check and a number's
-// fill read them alike — kept in the order they were placed, oldest first; boom the mine opened, ''
-// until one is; events what this tap set off.
+// A play is { open, marks, blown, boom, events }: open each opened square's key, true; marks each
+// marked square's 'mine' by its key, as a Vanilla board's marks are, so the count, Check and a
+// number's fill read them alike — kept in the order they were placed, oldest first; blown each mine
+// a canary found, true by its key; boom the mine opened, '' until one is; events what this tap set
+// off.
 
 function cellOf(key) {
   return key.split(',').map(Number);
@@ -50,7 +53,7 @@ function spread(open, keys, board, marks) {
 
 // A board opens with every square covered but its start square — a 0 — and all it opens.
 export function newRevealPlay(board) {
-  return { open: spread({}, [board.start], board, {}), marks: {}, boom: '', events: [] };
+  return { open: spread({}, [board.start], board, {}), marks: {}, blown: {}, boom: '', events: [] };
 }
 
 // The board is finished once every square that isn't a mine is open.
@@ -64,18 +67,44 @@ function revealOver(play, board) {
 }
 
 function still(play) {
-  return { open: play.open, marks: play.marks, boom: play.boom, events: [] };
+  return { open: play.open, marks: play.marks, blown: play.blown, boom: play.boom, events: [] };
 }
 
 // Squares opened: a mine among them ends the game on it, with every square as it was; otherwise
 // they open, and opening the last safe square marks every mine left unmarked and finishes it.
 function opening(play, keys, board) {
   var mine = keys.filter(function (k) { return board.mines.includes(k); })[0];
-  if (mine !== undefined) return { open: play.open, marks: play.marks, boom: mine, events: ['kaboom'] };
+  if (mine !== undefined) return { open: play.open, marks: play.marks, blown: play.blown, boom: mine, events: ['kaboom'] };
   var open = spread(play.open, keys, board, play.marks);
   var done = revealFinished({ open: open }, board);
   var marks = done ? Object.fromEntries(board.mines.map(function (k) { return [k, 'mine']; })) : play.marks;
-  return { open: open, marks: marks, boom: '', events: done ? ['complete'] : [] };
+  return { open: open, marks: marks, blown: play.blown, boom: '', events: done ? ['complete'] : [] };
+}
+
+// ---- Canaries ----
+// A Canaries board gives its file's count of canaries — the most guesses any path needs, as tooling
+// counts them, so the page never judges whether a square needed one. A canary tapped on a covered
+// square opens it as Open would and survives; on a mine it is lost, never the game: the mine shows,
+// for good, and play goes on (the owner, 2026-10-14). Any other board has none.
+
+export function canariesLeft(play, board) {
+  return board.canaries - Object.keys(play.blown).length;
+}
+
+// The row of canaries above the switch, one per canary the board gives, as the flags row is: true
+// while it's still to use, false once lost — the canaries left first. A board with none has none.
+export function canarySlots(play, board) {
+  return slots(canariesLeft(play, board), board.canaries);
+}
+
+// A canary sent to a covered square: a mine takes it, and shows; any other square opens. With none
+// left, nothing happens.
+function canaryOpens(play, key, board) {
+  if (canariesLeft(play, board) < 1) return still(play);
+  if (!board.mines.includes(key)) return opening(play, [key], board);
+  var blown = Object.assign({}, play.blown);
+  blown[key] = true;
+  return { open: play.open, marks: play.marks, blown: blown, boom: '', events: [] };
 }
 
 // ---- Limited Flags ----
@@ -95,7 +124,7 @@ function toggled(play, key, board) {
   if (play.marks[key]) delete marks[key];
   var moved = overLimit(marks, board);
   if (moved) delete marks[Object.keys(marks)[0]];
-  return { open: play.open, marks: marks, boom: '', events: { true: ['moved'], false: [] }[moved] };
+  return { open: play.open, marks: marks, blown: play.blown, boom: '', events: { true: ['moved'], false: [] }[moved] };
 }
 
 // The squares a tap took a mark off — on a 'moved' tap, the oldest mark's — for the page to fade.
@@ -103,49 +132,64 @@ export function marksLifted(before, after) {
   return Object.keys(before.marks).filter(function (k) { return !after.marks[k]; });
 }
 
-// The Mines card's count: a Limited Flags board's flags left — never under none, though the finish
-// marks every mine — any other's mines marked of its mines (play-core's minesCount).
+// The Mines card's count: a Canaries board's canaries left; a Limited Flags board's flags left —
+// never under none, though the finish marks every mine — any other's mines marked of its mines
+// (play-core's minesCount).
 export function revealCount(play, board) {
+  if (board.canaried) return 'Canaries ' + canariesLeft(play, board);
   return { true: 'Flags left ' + flagsLeft(play, board), false: minesCount(play, board) }[board.limited];
 }
 
 // The row of flags above the switch, one per flag of the limit: true while it's still to use, false
 // once a mark has taken it — the flags left first. A board with no limit has none.
 export function flagSlots(play, board) {
-  var left = flagsLeft(play, board);
-  return Array.from({ length: board.flagLimit }, function (_, i) { return i < left; });
+  return slots(flagsLeft(play, board), board.flagLimit);
+}
+
+// A row of boxes, one per thing a board gives: true while it's still to use, those first.
+function slots(left, total) {
+  return Array.from({ length: total }, function (_, i) { return i < left; });
 }
 
 function flagsLeft(play, board) {
   return Math.max(board.flagLimit - Object.keys(play.marks).length, 0);
 }
 
-// An opened number whose mines are all marked opens its other covered squares, as a Vanilla number
-// fills its squares; a wrong mark carries in, so a mine among them goes off. With fewer or more
-// marked, it does nothing. A padlocked square round it stays shut, and its mine never goes off.
+// A mine marked, or one a canary found: either counts toward a number's mines.
+function known(play, key) {
+  return Boolean(play.marks[key] || play.blown[key]);
+}
+
+// An opened number whose mines are all marked — a canary's mine counting as marked — opens its
+// other covered squares, as a Vanilla number fills its squares; a wrong mark carries in, so a mine
+// among them goes off. With fewer or more marked, it does nothing. A padlocked square round it stays
+// shut, and its mine never goes off.
 function numberOpens(play, key, board) {
   var near = aroundKeys(key, board);
-  var marked = near.filter(function (k) { return play.marks[k]; }).length;
+  var marked = near.filter(function (k) { return known(play, k); }).length;
   if (marked !== board.numbers[key]) return still(play);
-  return opening(play, near.filter(function (k) { return !play.open[k] && !play.marks[k] && !padlocked(play.open, k, board); }), board);
+  return opening(play, near.filter(function (k) { return !play.open[k] && !known(play, k) && !padlocked(play.open, k, board); }), board);
 }
 
 // A tap on a padlocked square changes nothing, and says so: the page shakes its padlock.
 function locked(play) {
-  return { open: play.open, marks: play.marks, boom: '', events: ['locked'] };
+  return { open: play.open, marks: play.marks, blown: play.blown, boom: '', events: ['locked'] };
 }
 
-// A tap, with Open or Mark mine picked under the board (tool 'open' or 'mark'): an opened number
-// opens round it whichever is picked; a covered square opens with Open — a marked one never — and
-// takes or loses its mark with Mark mine; a padlocked one does neither, whichever is picked. A
-// finished or exploded board takes no taps.
+// A tap, with Open or Mark mine picked under the board (tool 'open' or 'mark'), or on a Canaries
+// board Canary (tool 'canary'): an opened number opens round it whichever is picked; a covered
+// square opens with Open — a marked one never — takes or loses its mark with Mark mine, and takes a
+// canary with Canary; a padlocked one does none of them, whichever is picked, and a canary's mine
+// stays as it is. A finished or exploded board takes no taps.
 export function tapReveal(play, cell, board, tool) {
   var key = keyOf(cell);
   if (revealOver(play, board)) return still(play);
   if (padlocked(play.open, key, board)) return locked(play);
   if (play.open[key]) return numberOpens(play, key, board);
+  if (play.blown[key]) return still(play);
   if (tool === 'mark') return toggled(play, key, board);
   if (play.marks[key]) return still(play);
+  if (tool === 'canary') return canaryOpens(play, key, board);
   return opening(play, [key], board);
 }
 
@@ -194,7 +238,7 @@ function markable(history, play) {
 export function undoneReveal(history, play) {
   var left = markable(history, play);
   var marks = left.slice(-1).map(function (m) { return stillCovered(m, play); }).concat([play.marks])[0];
-  return { play: { open: play.open, marks: marks, boom: play.boom, events: [] }, history: left.slice(0, -1) };
+  return { play: { open: play.open, marks: marks, blown: play.blown, boom: play.boom, events: [] }, history: left.slice(0, -1) };
 }
 
 // Undo greys out once only openings are left, and once the game is over.
@@ -204,11 +248,12 @@ export function canUndoReveal(history, play, board) {
 
 // ---- What the board shows ----
 
-// What a square is now: the mine that went off, opened, a mine shown by the kaboom, marked, or
-// covered.
+// What a square is now: the mine that went off, opened, a mine a canary found, marked, a mine shown
+// by the kaboom, or covered.
 function squareIs(play, key, board) {
   if (key === play.boom) return 'boom';
   if (play.open[key]) return 'open';
+  if (play.blown[key]) return 'blown';
   if (play.marks[key]) return 'marked';
   if (play.boom !== '' && board.mines.includes(key)) return 'shown';
   return 'covered';
@@ -216,7 +261,8 @@ function squareIs(play, key, board) {
 
 // Every square, row by row: covered or open; its mark — 'blank' covered, 'mine', or 'number' once
 // opened; the number it shows ('' covered, or for a 0), the same however many mines are marked round
-// it, as a Vanilla number; its state — the kaboom's 'boom', a mine the kaboom shows 'shown', else '';
+// it, as a Vanilla number; its state — the kaboom's 'boom', a mine the kaboom shows 'shown', a mine a
+// canary found 'blown', else '';
 // 'wrong' on a mine mark the kaboom proves wrong; on a Keys board, its zone (zone), the zone
 // padlocking it (lock) and the zone of a key found on it (found), each '' where there's none — a key
 // never shows before its square opens; and what a screen reader hears of it.
@@ -234,6 +280,7 @@ export function revealSquares(play, board) {
       return { cover: 'open', mark: 'number', number: n === '0' ? '' : n, state: '', lock: '', found: found, said: said };
     },
     boom: function () { return { cover: 'open', mark: 'mine', number: '', state: 'boom', lock: '', found: '', said: 'mine, opened' }; },
+    blown: function () { return { cover: 'open', mark: 'mine', number: '', state: 'blown', lock: '', found: '', said: 'mine, found by a canary' }; },
     shown: function () { return { cover: 'open', mark: 'mine', number: '', state: 'shown', lock: '', found: '', said: 'mine' }; }
   };
   return Array.from({ length: board.rows * board.cols }, function (_, i) {

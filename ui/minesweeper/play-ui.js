@@ -11,7 +11,7 @@ import {
 } from '../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished, keysFound,
-  marksLifted, revealCount, flagSlots
+  marksLifted, revealCount, flagSlots, canariesLeft, canarySlots
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
@@ -335,12 +335,18 @@ function vanillaGame(id, board, play, squares) {
 // colours until their keys turn up: a tap on one shakes its padlock, and opening a key's square pops
 // the key up on it and drops its zone's padlocks (the product's TASK-177). A Limited Flags board's
 // Mines card counts the flags left and says its limit, a row of flags above the switch empties a box
-// for each mark, and a mark past it fades the oldest off its square (the product's TASK-179).
+// for each mark, and a mark past it fades the oldest off its square (the product's TASK-179). A
+// Canaries board's Canary, beside the switch and apart from it, is picked for one tap: on a mine
+// it's lost, the mine shown for good and the Mines card counting the canaries left, never the game;
+// a right-click or a held press still taps with the one of Open | Mark mine not picked, spending no
+// canary; a row of canaries above the switch empties a box for each one lost (the product's
+// TASK-203).
 function revealGame(id, board, play, squares, cells) {
-  var history = [], tool = 'mark';
+  var history = [], tool = 'mark', canary = false;
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
   var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate, locked: shakeLock, moved: fadeMoved };
   minesEl('play').dataset.limited = String(board.limited);
+  minesEl('play').dataset.canaries = String(board.canaried);
   minesEl('flag-limit').textContent = board.flagLimit;
   // A finger or a pen held still taps with the other tool; the mouse does by its right button.
   var HOLDS = { true: noop, false: startHold };
@@ -352,13 +358,22 @@ function revealGame(id, board, play, squares, cells) {
   ['open', 'mark'].forEach(function (t) {
     minesEl('tool-' + t).addEventListener('click', function () { pickTool(t); });
   });
+  minesEl('tool-canary').addEventListener('click', function () { pickCanary(!canary); });
   minesEl('again').addEventListener('click', tryAgain);
   wireHold();
   wireMinesProgress(id, board, function () { return play; }, joinSaved);
   return { tap: onTap, check: onCheck, undo: onUndo, render: render };
 
+  // A tap with Canary picked sends the canary, and Canary lets go, so each canary is sent on purpose.
   function onTap(cell) {
-    step(cell, tapReveal(play, cell, board, tool));
+    var used = { true: 'canary', false: tool }[canary];
+    pickCanary(false);
+    step(cell, tapReveal(play, cell, board, used));
+  }
+
+  function pickCanary(on) {
+    canary = on;
+    minesEl('tool-canary').setAttribute('aria-pressed', String(on));
   }
 
   // Every tap that changes the board is saved, signed in; one that changes a mark is kept for Undo;
@@ -410,6 +425,7 @@ function revealGame(id, board, play, squares, cells) {
   function tryAgain() {
     play = newRevealPlay(board);
     history = [];
+    pickCanary(false);
     render();
   }
 
@@ -498,24 +514,26 @@ function revealGame(id, board, play, squares, cells) {
       square.setAttribute('aria-label', s.label);
     });
     minesEl('count').textContent = revealCount(play, board);
-    renderFlags();
+    minesEl('tool-canary').disabled = canariesLeft(play, board) < 1;
+    renderSlots('flag-slots', 'flag-slot', 'Flags left', flagSlots(play, board));
+    renderSlots('canary-slots', 'canary-slot', 'Canaries left', canarySlots(play, board));
     minesEl('check-line').hidden = true;
     minesEl('undo').disabled = !canUndoReveal(history, play, board);
     minesEl('complete').hidden = !revealFinished(play, board);
     minesEl('kaboom').hidden = !play.boom;
   }
 
-  // One box per flag: a flag in it while it's still to use, empty once a mark has taken it.
-  function renderFlags() {
-    var slots = flagSlots(play, board);
-    var row = minesEl('flag-slots');
+  // One box per flag or canary: one in it while it's still to use, empty once a mark has taken it
+  // or the canary is lost.
+  function renderSlots(id, className, name, slots) {
+    var row = minesEl(id);
     row.replaceChildren.apply(row, slots.map(function (full) {
       var box = document.createElement('span');
-      box.className = 'flag-slot';
+      box.className = className;
       box.dataset.full = String(full);
       return box;
     }));
-    row.setAttribute('aria-label', 'Flags left ' + slots.filter(Boolean).length + ' of ' + slots.length);
+    row.setAttribute('aria-label', name + ' ' + slots.filter(Boolean).length + ' of ' + slots.length);
   }
 }
 
