@@ -54,16 +54,18 @@ describe('browse-core.js', () => {
       { hiddenId: 'MAZE-0001', type: 'Keys' }, { hiddenId: 'MAZE-0002', type: 'Vanilla', difficulty: 'Extreme' },
       { hiddenId: 'MINE-0001', type: 'Vanilla', difficulty: 'Hard' }, { hiddenId: 'MINE-0002', type: 'Vanilla', difficulty: 'Easy' },
       { hiddenId: 'CRSS-0001', type: 'Vanilla', difficulty: 'Medium' },
+      { hiddenId: 'MOSA-0001', type: 'Vanilla', difficulty: 'Extreme' }, { hiddenId: 'MOSA-0002', type: 'Vanilla', difficulty: 'Easy' },
     ];
     expect(filterOptions(index)).toEqual({
       wordsearch: { levels: ['Easy', 'Hard', 'Extreme'], types: ['Vanilla', 'Missing', 'Mirra?e'] },
       maze: { levels: ['Hard', 'Extreme'], types: ['Vanilla', 'Keys'] },
       minesweeper: { levels: ['Easy', 'Hard'], types: ['Vanilla'] },
       crisscross: { levels: ['Medium'], types: ['Vanilla'] },
+      mosaic: { levels: ['Easy', 'Extreme'], types: ['Vanilla'] },
       collections: { levels: [], types: [] },
     });
     const none = { levels: [], types: [] };
-    expect(filterOptions([])).toEqual({ wordsearch: none, maze: none, minesweeper: none, crisscross: none, collections: none });
+    expect(filterOptions([])).toEqual({ wordsearch: none, maze: none, minesweeper: none, crisscross: none, mosaic: none, collections: none });
   });
 
   test('a place has nothing to filter only with no types and nobody signed in', () => {
@@ -461,6 +463,14 @@ describe('browse-core.js', () => {
     expect(tileDetail(criss)).toEqual(['Vanilla', '17×15']);
   });
 
+  test('a mosaic\'s tile links to the mosaic page, and reads its size under its type — its picture\'s shape, so not always square', () => {
+    const mosaic = { hiddenId: 'MOSA-0001', type: 'Vanilla', created: '2026-10-15', title: 'Mosaic 001', difficulty: 'Easy', width: 50, height: 38 };
+    expect(playHref('MOSA-0001')).toBe('mosaic.html?id=MOSA-0001');
+    expect(tileDetail(mosaic)).toEqual(['Vanilla', '50×38']);
+    expect(tileDetail({ ...mosaic, height: 50 })).toEqual(['Vanilla', '50×50']);
+    expect(browseItems([mosaic], [])[0]).toMatchObject({ place: 'mosaic', tone: 'Easy', href: 'mosaic.html?id=MOSA-0001', lines: ['Vanilla', '50×38'] });
+  });
+
   test('a minesweeper board\'s tile links to the minesweeper page, and reads its size under its type as a maze\'s does', () => {
     const board = { hiddenId: 'MINE-0001', type: 'Vanilla', created: '2026-10-11', title: 'Garden Patch', difficulty: 'Easy', width: 10, height: 10 };
     expect(playHref('MINE-0001')).toBe('minesweeper.html?id=MINE-0001');
@@ -536,6 +546,14 @@ describe('browse-core.js', () => {
     expect(kindBreakdown(collection('A', '', [criss(1), id(1), board(1), criss(2)])))
       .toEqual(['1 Wordsearch', '1 Minesweeper', '2 Criss-crosses']);
     expect(kindBreakdown(collection('A', '', [criss(1)]))).toEqual(['1 Criss-cross']);
+  });
+
+  test('a collection holding mosaics counts them on a line of their own, last: "3 Mosaics", "1 Mosaic"', () => {
+    const criss = n => `CRSS-${String(n).padStart(4, '0')}`;
+    const mosaic = n => `MOSA-${String(n).padStart(4, '0')}`;
+    expect(kindBreakdown(collection('A', '', [mosaic(1), id(1), mosaic(2), criss(1), mosaic(3)])))
+      .toEqual(['1 Wordsearch', '1 Criss-cross', '3 Mosaics']);
+    expect(kindBreakdown(collection('A', '', [mosaic(1)]))).toEqual(['1 Mosaic']);
   });
 
   test('an empty collection has no breakdown line', () => {

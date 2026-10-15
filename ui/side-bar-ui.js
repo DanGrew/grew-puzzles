@@ -1,7 +1,8 @@
-// The side bar's kinds (components/site-bar.js): Wordsearches, Mazes, Minesweeper and Criss-cross,
-// each with its puzzle count and its types beneath, a dot by each type (core/kind-core.js dotTone),
-// then Collections' count — read from the indexes, never a puzzle file (ui/indexes-ui.js). The landing
-// page's Words | Mazes | Mines | Criss-cross switch, shown on a phone, is filled from the same map. An
+// The side bar's kinds (components/site-bar.js): Wordsearches, Mazes, Minesweeper, Criss-cross and
+// Mosaic, each with its puzzle count and its types beneath, a dot by each type (core/kind-core.js
+// dotTone), then Collections' count — read from the indexes, never a puzzle file (ui/indexes-ui.js).
+// The landing page's Words | Mazes | Mines | Criss-cross | Mosaic switch, shown on a phone, is filled
+// from the same map. An
 // entry is marked current for the page's place: the page's own data-current, or — on the landing
 // page, whose place is its address — what markPlace is told. A kind with no index yet, or a site
 // with no collections file, reads as none.
@@ -43,7 +44,7 @@ function kindEntry(kind) {
   return [a, types];
 }
 
-// The phone's switch names each kind short — Words | Mazes | Mines | Criss-cross — as the full names
+// The phone's switch names each kind short — Words | Mazes | Mines | Criss-cross | Mosaic — as the full names
 // don't fit.
 function switchEntry(kind) {
   var a = link('', { name: kind.short, query: kind.query, mark: kind.mark });

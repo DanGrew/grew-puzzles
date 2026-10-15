@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The site split by kind (TASK-96): the kind is where the player is — Wordsearches, Mazes,
-// Minesweeper (TASK-135) or Criss-cross (TASK-149), from the side bar or, on a phone, the switch above
+// Minesweeper (TASK-135), Criss-cross (TASK-149) or Mosaic (TASK-165), from the side bar or, on a phone, the switch above
 // the grid — and the type
 // is what they filter within it. The indexes are stand-ins; every puzzle file asked for is counted,
 // and none ever should be.
@@ -32,6 +32,14 @@ const CRISSES = [
   { ...puzzle('CRSS', 1, 'Vanilla', 'Big Holiday'), ...saved('Hard', 29, 30), wordCount: 60 },
   { ...puzzle('CRSS', 2, 'Vanilla', 'Summer Holidays'), ...saved('Easy', 17, 15), wordCount: 20 },
 ];
+// A mosaic's index entry carries its difficulty and its size, as a board's does — a board follows
+// its picture's shape, so not always square. Its picture's name is the finish's alone; Mosaic 002's
+// carries one here so the tile is seen never to show it.
+const MOSAICS = [
+  { ...puzzle('MOSA', 1, 'Vanilla', 'Mosaic 001'), ...saved('Hard', 50, 38) },
+  { ...puzzle('MOSA', 2, 'Vanilla', 'Mosaic 002'), ...saved('Easy', 50, 50), name: 'Robot 20' },
+  { ...puzzle('MOSA', 3, 'Vanilla', 'Mosaic 003'), ...saved('Medium', 200, 200) },
+];
 
 async function serve(page) {
   const fileRequests = [];
@@ -39,8 +47,9 @@ async function serve(page) {
   await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: MAZES } }));
   await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: BOARDS } }));
   await page.route('**/content/puzzles/crisscross/index.json', r => r.fulfill({ json: { puzzles: CRISSES } }));
+  await page.route('**/content/puzzles/mosaic/index.json', r => r.fulfill({ json: { puzzles: MOSAICS } }));
   await page.route('**/content/collections/index.json', r => r.fulfill({ status: 404, body: 'Not found' }));
-  await page.route(/\/puzzles\/.*(WSCH|MAZE|MINE|CRSS)-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.abort(); });
+  await page.route(/\/puzzles\/.*(WSCH|MAZE|MINE|CRSS|MOSA)-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.abort(); });
   return fileRequests;
 }
 
@@ -213,13 +222,13 @@ test('every puzzle tile shows its kind\'s picture between its strip and its titl
 });
 
 // TASK-135: Minesweeper is the third kind, everything the other two have.
-test('the side bar reads Wordsearches, Mazes, Minesweeper, Criss-cross and Collections, Minesweeper with its count and its Vanilla dot', async ({ page }) => {
+test('the side bar reads Wordsearches, Mazes, Minesweeper, Criss-cross, Mosaic and Collections, Minesweeper with its count and its Vanilla dot', async ({ page }) => {
   await serve(page);
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
     { slug: 'mix', name: 'Mix', description: '', created: '2026-10-09', puzzles: [{ id: 'MINE-0001', number: 1 }] },
   ] } }));
   await page.goto('/app/');
-  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches3', 'Mazes6', 'Minesweeper2', 'Criss-cross2', 'Collections1', 'Scorecard']);
+  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches3', 'Mazes6', 'Minesweeper2', 'Criss-cross2', 'Mosaic3', 'Collections1', 'Scorecard']);
   const vanilla = side(page).locator('.types').nth(2).locator('.type');
   await expect(vanilla).toHaveText(['Vanilla']);
   await expect(vanilla.locator('.dot')).toHaveCSS('background-color', 'rgb(159, 216, 174)');
@@ -378,6 +387,70 @@ test('a criss-cross\'s tile wears the criss-cross picture, its own, reads its wo
   expect(fileRequests).toEqual([]);
 });
 
+// TASK-165: Mosaic is the fifth kind, everything the other four have — and only data.
+test('Mosaic sits after Criss-cross in the side bar, with its count and its Vanilla dot in Easy\'s colour', async ({ page }) => {
+  await serve(page);
+  await page.goto('/app/');
+  await expect(side(page).locator('.kind').nth(4)).toHaveText('Mosaic3');
+  await expect(side(page).locator('.kind').nth(4)).toHaveAttribute('href', 'index.html?kind=mosaic');
+  const vanilla = side(page).locator('.types').nth(4).locator('.type');
+  await expect(vanilla).toHaveText(['Vanilla']);
+  await expect(vanilla.locator('.dot')).toHaveCSS('background-color', 'rgb(159, 216, 174)');
+});
+
+test('Mosaic shows only mosaics, easiest first, Filters picks their difficulty and type, and sort works as for any kind', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.goto('/app/');
+  await side(page).locator('.kind', { hasText: 'Mosaic' }).click();
+  await expect(page).toHaveURL(/\/app\/index\.html\?kind=mosaic$/);
+  await expect(page.locator('#browse-title')).toHaveText('Mosaic');
+  await expect(names(page)).toHaveText(['Mosaic 002', 'Mosaic 003', 'Mosaic 001']);
+  await expect(current(page)).toHaveText(['Mosaic3']);
+  await page.locator('#filter-button').click();
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Vanilla']]]);
+  await page.locator('#filters').getByRole('button', { name: 'Hard', exact: true }).click();
+  await expect(names(page)).toHaveText(['Mosaic 001']);
+  await expect(page).toHaveURL(/\?kind=mosaic&difficulty=Hard$/);
+  await side(page).locator('.types').nth(4).locator('.type', { hasText: 'Vanilla' }).click();
+  await expect(page).toHaveURL(/\?kind=mosaic&type=Vanilla$/);
+  await expect(names(page)).toHaveText(['Mosaic 002', 'Mosaic 003', 'Mosaic 001']);
+  await expect(current(page)).toHaveText(['Mosaic3', 'Vanilla']);
+  await page.goto('/app/?kind=mosaic&sort=date');
+  await expect(names(page)).toHaveText(['Mosaic 003', 'Mosaic 002', 'Mosaic 001']);
+  await page.goto('/app/?kind=mosaic&sort=difficulty&dir=asc');
+  await expect(names(page)).toHaveText(['Mosaic 001', 'Mosaic 003', 'Mosaic 002']);
+  expect(fileRequests).toEqual([]);
+});
+
+test('a mosaic\'s tile wears the mosaic picture, the same on every one, reads its size, never its picture\'s name, and opens the mosaic page', async ({ page }) => {
+  const fileRequests = await serve(page);
+  const pictureOf = async address => {
+    await page.goto(address);
+    await expect(names(page)).not.toHaveCount(0);
+    return page.locator('#tiles .tile .pic svg').first().evaluate(s => s.outerHTML);
+  };
+  const others = [
+    await pictureOf('/app/'), await pictureOf('/app/?kind=maze'), await pictureOf('/app/?kind=minesweeper'), await pictureOf('/app/?kind=crisscross'),
+  ];
+  await page.goto('/app/?kind=mosaic');
+  await expect(names(page)).toHaveCount(3);
+  const mosaics = await page.locator('#tiles .tile .pic svg').evaluateAll(svgs => svgs.map(s => s.outerHTML));
+  expect(new Set(mosaics).size).toBe(1);
+  others.forEach(other => expect(mosaics[0]).not.toBe(other));
+  await expect(page.locator('#tiles .tile', { hasText: 'Mosaic 001' }).locator('.detail .line')).toHaveText(['Vanilla', '50×38']);
+  const tile = page.locator('#tiles .tile', { hasText: 'Mosaic 002' });
+  await expect(tile.locator('.detail .line')).toHaveText(['Vanilla', '50×50']);
+  await expect(page.locator('#tiles')).not.toContainText('Robot');
+  await expect(tile).toHaveAttribute('href', 'mosaic.html?id=MOSA-0002');
+  await expect(tile).toHaveAttribute('data-tone', 'Easy');
+  await expect(page.locator('#tiles .tile', { hasText: 'Mosaic 001' })).toHaveAttribute('data-tone', 'Hard');
+  const pic = await tile.locator('.pic').boundingBox();
+  const name = await tile.locator('.name').boundingBox();
+  expect(pic.height).toBeGreaterThan(0);
+  expect(pic.y + pic.height).toBeLessThanOrEqual(name.y);
+  expect(fileRequests).toEqual([]);
+});
+
 test('a collection tile has no picture', async ({ page }) => {
   await serve(page);
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
@@ -392,11 +465,11 @@ test('a collection tile has no picture', async ({ page }) => {
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('a Words | Mazes | Mines | Criss-cross switch sits above the grid, the current kind filled', async ({ page }) => {
+  test('a Words | Mazes | Mines | Criss-cross | Mosaic switch sits above the grid, the current kind filled', async ({ page }) => {
     await serve(page);
     await page.goto('/app/');
     const kinds = page.locator('main .kind-switch a');
-    await expect(kinds).toHaveText(['Words3', 'Mazes6', 'Mines2', 'Criss-cross2']);
+    await expect(kinds).toHaveText(['Words3', 'Mazes6', 'Mines2', 'Criss-cross2', 'Mosaic3']);
     await expect(kinds.first()).toHaveAttribute('aria-current', 'page');
     const box = await page.locator('.kind-switch').boundingBox();
     expect(box.y + box.height).toBeLessThanOrEqual((await page.locator('#tiles').boundingBox()).y);
@@ -413,6 +486,10 @@ test.describe('on a phone', () => {
     await expect(page).toHaveURL(/\/app\/index\.html\?kind=crisscross$/);
     await expect(names(page)).toHaveText(['Summer Holidays', 'Big Holiday']);
     await expect(kinds.nth(3)).toHaveAttribute('aria-current', 'page');
+    await kinds.nth(4).click();
+    await expect(page).toHaveURL(/\/app\/index\.html\?kind=mosaic$/);
+    await expect(names(page)).toHaveText(['Mosaic 002', 'Mosaic 003', 'Mosaic 001']);
+    await expect(kinds.nth(4)).toHaveAttribute('aria-current', 'page');
   });
 
   test('the burger\'s drawer is the same side bar, and a type in it opens its kind filtered to it', async ({ page }) => {
@@ -461,6 +538,21 @@ test.describe('on a phone', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
 
+  test('a collection holding mosaics counts them on a line of their own, last: 3 Mosaics', async ({ page }) => {
+    await serve(page);
+    await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [
+      { slug: 'mix', name: 'Mix', description: 'Every kind.', created: '2026-10-09', puzzles: [
+        { id: 'MOSA-0001', number: 1 }, { id: 'WSCH-0001', number: 2 }, { id: 'MINE-0001', number: 3 }, { id: 'MAZE-0001', number: 4 },
+        { id: 'CRSS-0001', number: 5 }, { id: 'MOSA-0002', number: 6 }, { id: 'MOSA-0003', number: 7 },
+      ] },
+    ] } }));
+    await page.goto('/app/?kind=collections');
+    const lines = page.locator('#tiles .tile.collection .detail .line');
+    await expect(lines).toHaveText(['Every kind.', '1 Wordsearch', '1 Maze', '1 Minesweeper', '1 Criss-cross', '3 Mosaics']);
+    expect(await lines.evaluateAll(els => els.some(el => el.scrollWidth > el.clientWidth))).toBe(false);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  });
+
   test('a collection holding boards counts them on a line of their own: 3 Minesweepers', async ({ page }) => {
     await serve(page);
     await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [
@@ -480,20 +572,20 @@ test.describe('on a phone', () => {
 });
 
 // The switch was built for two kinds, and three's full names run past a phone's switch, so on a
-// phone it reads Words | Mazes | Mines (the spec's call, TASK-135) — and Criss-cross fourth
-// (TASK-149). Four don't fit the narrowest phone, so there the switch scrolls sideways inside
+// phone it reads Words | Mazes | Mines (the spec's call, TASK-135) — Criss-cross fourth
+// (TASK-149) and Mosaic fifth (TASK-165). Four don't fit the narrowest phone, so there the switch scrolls sideways inside
 // itself: each name whole, on one row, the page never pushed sideways, and the current kind shown.
 test.describe('on the narrowest phone', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
   const wordsearches = Array.from({ length: 120 }, (_, i) => puzzle('WSCH', i + 1, 'Vanilla', `Puzzle ${i + 1}`));
 
-  test('the switch reads Words | Mazes | Mines | Criss-cross on one row, every name whole, scrolling inside itself', async ({ page }) => {
+  test('the switch reads Words | Mazes | Mines | Criss-cross | Mosaic on one row, every name whole, scrolling inside itself', async ({ page }) => {
     await serve(page);
     await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles: wordsearches } }));
     await page.goto('/app/');
     const kinds = page.locator('main .kind-switch a');
-    await expect(kinds).toHaveText(['Words120', 'Mazes6', 'Mines2', 'Criss-cross2']);
+    await expect(kinds).toHaveText(['Words120', 'Mazes6', 'Mines2', 'Criss-cross2', 'Mosaic3']);
     expect(await kinds.evaluateAll(els => els.some(el => el.scrollWidth > el.clientWidth))).toBe(false);
     const tops = await kinds.evaluateAll(els => els.map(el => el.getBoundingClientRect().top));
     expect(new Set(tops).size).toBe(1);
@@ -511,6 +603,20 @@ test.describe('on the narrowest phone', () => {
     await expect(criss).toHaveAttribute('aria-current', 'page');
     const nav = await page.locator('.kind-switch').boundingBox();
     const box = await criss.boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(nav.x - 0.5);
+    expect(box.x + box.width).toBeLessThanOrEqual(nav.x + nav.width + 0.5);
+    expect(await page.evaluate(() => [window.scrollX, document.documentElement.scrollWidth])).toEqual([0, 360]);
+  });
+
+  test('on Mosaic, last on the switch, the switch scrolls to show Mosaic whole, filled, and the page stays put', async ({ page }) => {
+    await serve(page);
+    await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles: wordsearches } }));
+    await page.goto('/app/?kind=mosaic');
+    const mosaic = page.locator('main .kind-switch a').nth(4);
+    await expect(mosaic).toHaveAttribute('aria-current', 'page');
+    expect(await page.locator('.kind-switch').evaluate(el => el.scrollLeft)).toBeGreaterThan(0);
+    const nav = await page.locator('.kind-switch').boundingBox();
+    const box = await mosaic.boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(nav.x - 0.5);
     expect(box.x + box.width).toBeLessThanOrEqual(nav.x + nav.width + 0.5);
     expect(await page.evaluate(() => [window.scrollX, document.documentElement.scrollWidth])).toEqual([0, 360]);
