@@ -64,6 +64,15 @@ test.describe('a minesweeper board', () => {
     await expect(page.locator('#count')).toHaveText('0/15');
   });
 
+  test('a square marked no mine is tinted the mosaic\'s blank grey, never dotted — hovered too', async ({ page }) => {
+    const s = square(page, 0, 0);
+    await s.click();
+    await expect(s).toHaveCSS('background-color', 'rgb(207, 219, 214)');
+    expect(await s.evaluate(el => getComputedStyle(el, '::after').content)).toBe('none');
+    await page.mouse.move(0, 0);
+    await expect(s).toHaveCSS('background-color', 'rgb(207, 219, 214)');
+  });
+
   test('a key marks a square as a tap does', async ({ page }) => {
     await square(page, 0, 0).focus();
     await page.keyboard.press('Enter');
