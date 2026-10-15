@@ -395,6 +395,33 @@
       "difficulty": "Hard",
       "width": 20,
       "height": 20
+    },
+    {
+      "hiddenId": "MINE-0044",
+      "type": "Keys",
+      "created": "2026-10-15",
+      "title": "Keys 003",
+      "difficulty": "Easy",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0045",
+      "type": "Keys",
+      "created": "2026-10-15",
+      "title": "Keys 004",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MINE-0046",
+      "type": "Keys",
+      "created": "2026-10-15",
+      "title": "Keys 005",
+      "difficulty": "Medium",
+      "width": 30,
+      "height": 30
     }
   ]
 }

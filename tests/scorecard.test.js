@@ -70,7 +70,8 @@ async function site(context, { served = indexes(), rows = {}, signedIn = true, d
     const limit = Math.min(Number(url.searchParams.get('limit') || 1000), 1000);
     return route.fulfill({ headers: CORS, json: db.rows[table].slice(offset, offset + limit) });
   });
-  for (const [kind, puzzles] of Object.entries(served)) {
+  // No mosaics unless a test serves some, so the site's own published ones never count.
+  for (const [kind, puzzles] of Object.entries({ mosaic: [], ...served })) {
     await context.route(`**/content/puzzles/${kind}/index.json`, async r => {
       await wait(delay);
       return r.fulfill({ json: { puzzles } });
