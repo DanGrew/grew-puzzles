@@ -13,7 +13,7 @@ import {
   mosaicTitle, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
   meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, openedMelt
 } from '../../core/mosaic/play-core.js';
-import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
+import { joinedMosaic, joinedMosaicHistory } from '../../core/mosaic/progress-core.js';
 import { withSavedMosaic, wireMosaicProgress, mosaicTapped } from './progress-ui.js';
 import {
   checkLine, newMinesHistory, tappedHistory, undoneMines, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState,
@@ -198,8 +198,8 @@ function showBoard(id, board, saved) {
 
   // Signing in mid-board: the board saved elsewhere, joined to the one on screen.
   function joinSaved(saved) {
-    history = joinedHistory(play, history);
-    play = joinedMines(play, saved);
+    history = joinedMosaicHistory(play, history, board);
+    play = joinedMosaic(play, saved, board);
     checked = [];
     melt = openedMelt(play, board);
     render();
