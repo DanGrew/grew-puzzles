@@ -281,6 +281,26 @@ test('a Reveal board is left out of its collection\'s book, and the book\'s page
   await expect(page.locator('#sheets')).not.toContainText('Reveal 001');
 });
 
+// A Canaries board (TASK-204) never prints either, as a Reveal board doesn't: the 10×10 Canaries
+// fixture, served as MINE-0920.
+const CANARIES_10 = require('./fixtures/MINE-0920.json');
+
+test('a Canaries board is left out of its collection\'s book, and the book\'s page names it as playing on screen only', async ({ page }) => {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [{
+    slug: 'canaries', name: 'Canaries', description: 'A Canaries board beside a Vanilla one.', created: '2026-10-15',
+    puzzles: [{ id: 'MINE-0920', number: 1 }, { id: 'MINE-0001', number: 2 }],
+  }] } }));
+  await page.route(/\/content\/puzzles\/minesweeper\/MINE-\d+\.json$/, r => r.fulfill({ json: { ...MINES, 'MINE-0920': CANARIES_10 }[r.request().url().match(/(MINE-\d+)\.json$/)[1]] }));
+  await catchPrint(page);
+  await page.goto('/app/book.html?slug=canaries&print=plain');
+  await expect(page.locator('#ready')).toBeVisible();
+  await expect(page.locator('#left-out')).toHaveText('Puzzle 1 plays on screen only, so it isn\'t in the book.');
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 2']);
+  await expect(page.locator('#sheets')).not.toContainText('Canaries 001');
+});
+
 // A Keys board (TASK-177) never prints either, as a Reveal board doesn't: the 6×6 Keys fixture,
 // served as MINE-0903.
 const KEYS_6 = require('./fixtures/MINE-0903.json');

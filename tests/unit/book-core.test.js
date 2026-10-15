@@ -1,4 +1,10 @@
+import { createRequire } from 'module';
 import { bookView, pageNumbers, printStyleOf, PRINT_STYLES, printedPages, leftOutNote } from '../../core/book-core.js';
+import { minesBoard } from '../../core/minesweeper/play-core.js';
+const require = createRequire(import.meta.url);
+// MINE-0920 — a real 10×10 Hard Canaries board of 1 canary, made by tooling's generator and
+// passing its checks.
+const CANARIES_FILE = require('../fixtures/MINE-0920.json');
 
 const collections = () => [
   { slug: 'other', name: 'Other', description: 'Not this one.', created: '2026-10-01', puzzles: [{ id: 'WSCH-0001', number: 1 }] },
@@ -101,6 +107,16 @@ describe('book-core.js', () => {
       left: [4],
       screen: [1, 3],
     });
+  });
+
+  // TASK-204: a Canaries board plays on screen as a Reveal board does, so a book leaves it out the same.
+  test('a Canaries board, read from its own file, never takes a page, and is named as playing on screen only', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const vanilla = { rule: 'vanilla', cols: 10, rows: 10 };
+    const canaries = minesBoard(CANARIES_FILE);
+    const printed = printedPages([page(1, 'minesweeper'), page(2, 'minesweeper')], [vanilla, canaries]);
+    expect(printed).toEqual({ pages: [page(1, 'minesweeper')], boards: [vanilla], left: [], screen: [2] });
+    expect(leftOutNote(printed.left, printed.screen)).toBe('Puzzle 2 plays on screen only, so it isn\'t in the book.');
   });
 
   test('the book\'s page names each board left out as too big to print; none left out, no note', () => {

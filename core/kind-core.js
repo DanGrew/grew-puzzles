@@ -75,10 +75,11 @@ export function levelsOf(kind, puzzles) {
 
 // A kind's own order for its types after Vanilla, where it has one: Minesweeper's builds up from
 // Vanilla, each type a rule more than the one before (the product's TASK-177: Vanilla, Reveal, Keys
-// and Limited Flags). A type not listed comes after those that are.
+// and Limited Flags; TASK-204 puts Canaries straight after Reveal, as tooling's types file lists it).
+// A type not listed comes after those that are.
 function typeOrder(kind, type) {
-  const order = new Map([['minesweeper:Reveal', 1], ['minesweeper:Keys', 2], ['minesweeper:Limited Flags', 3]]);
-  return order.get(`${kind}:${type}`) ?? 4;
+  const order = new Map([['minesweeper:Reveal', 1], ['minesweeper:Canaries', 2], ['minesweeper:Keys', 3], ['minesweeper:Limited Flags', 4]]);
+  return order.get(`${kind}:${type}`) ?? 5;
 }
 
 // The types a kind's puzzles have, once each — never a hand-kept list — easiest first; within a

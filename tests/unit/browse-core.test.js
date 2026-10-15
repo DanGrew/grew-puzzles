@@ -478,6 +478,15 @@ describe('browse-core.js', () => {
     expect(browseItems([board], [])[0]).toMatchObject({ place: 'minesweeper', href: 'minesweeper.html?id=MINE-0001', lines: ['Vanilla', '10×10'] });
   });
 
+  test('a Canaries board\'s tile reads its canaries under its type, from its index entry, in its size\'s place as a criss-cross\'s word count is (TASK-204)', () => {
+    const board = { hiddenId: 'MINE-0020', type: 'Canaries', created: '2026-10-15', title: 'Canaries 001', difficulty: 'Hard', width: 10, height: 10 };
+    expect(tileDetail({ ...board, canaries: 2 })).toEqual(['Canaries', '🐤 2']);
+    expect(tileDetail({ ...board, canaries: 1 })).toEqual(['Canaries', '🐤 1']);
+    expect(browseItems([{ ...board, canaries: 3 }], [])[0]).toMatchObject({ href: 'minesweeper.html?id=MINE-0020', lines: ['Canaries', '🐤 3'] });
+    // An entry naming no canaries — every other board's — reads its size alone.
+    expect(tileDetail(board)).toEqual(['Canaries', '10×10']);
+  });
+
   test('the total reads in puzzles, singular for one', () => {
     expect(totalLabel([])).toBe('0 puzzles');
     expect(totalLabel(browseItems(puzzles(1), []))).toBe('1 puzzle');
