@@ -87,12 +87,18 @@
         </button>
       </div>
       <!-- A Reveal board's switch, right under it: what a tap does — a Limited Flags board's row of
-           flags above it, a box emptying for each mark. -->
+           flags above it, a box emptying for each mark; a Canaries board's Canary beside it, apart
+           from the switch, for one tap at a time, and its row of canaries above it, a box emptying
+           for each canary lost. -->
       <div class="mines-switch" id="mines-switch">
         <div class="flag-slots" id="flag-slots" role="img"></div>
-        <div class="mines-tool-pick" role="group" aria-label="What a tap does">
-          <button type="button" id="tool-open" aria-pressed="false"><span class="tool-icon" aria-hidden="true"></span>Open</button>
-          <button type="button" id="tool-mark" aria-pressed="true"><span class="tool-icon mine" aria-hidden="true"></span>Mark mine</button>
+        <div class="canary-slots" id="canary-slots" role="img"></div>
+        <div class="mines-switch-row">
+          <div class="mines-tool-pick" role="group" aria-label="What a tap does">
+            <button type="button" id="tool-open" aria-pressed="false"><span class="tool-icon" aria-hidden="true"></span>Open</button>
+            <button type="button" id="tool-mark" aria-pressed="true"><span class="tool-icon mine" aria-hidden="true"></span>Mark mine</button>
+          </div>
+          <button type="button" class="canary-pick" id="tool-canary" aria-pressed="false"><span aria-hidden="true">🐤</span>Canary</button>
         </div>
       </div>
       <!-- Under the board: Check rings any mark the answer disagrees with, and the line says how
@@ -123,7 +129,9 @@
           </div>
         </div>
         <div class="mines-how" data-rule="reveal">
-          <p class="reveal-rule">Open every square that isn't a mine. Each number counts the mines in the eight squares around it. You never need to guess. Open a mine and it's game over.</p>
+          <p class="reveal-rule">Open every square that isn't a mine. Each number counts the mines in the eight squares around it.<span class="no-guess"> You never need to guess.</span> Open a mine and it's game over.</p>
+          <!-- A Canaries board's own line and square (#play's data-canaries). -->
+          <p class="canaries-rule">Logic alone won't finish this board. When you have to guess, pick Canary and tap a square: if it's a mine, you lose the canary, not the game.</p>
           <!-- A Keys board's own line and squares (#play's data-keys). -->
           <p class="keys-rule">Find the hidden keys to unlock the padlocked squares. Each key hides under a square outside its zone, and opening it unlocks that zone.</p>
           <!-- A Limited Flags board's own line (#play's data-limited). -->
@@ -134,6 +142,7 @@
             <span class="mines-square" data-mark="number">2</span><span>Tap a number once you've marked that many mines around it to open the rest of its squares.</span>
             <span class="mines-square keys-only" data-cover="covered" data-mark="blank" data-zone="1" data-lock="1"></span><span class="keys-only">Padlocked. It can't be opened or marked until its zone's key is found.</span>
             <span class="mines-square keys-only" data-cover="open" data-mark="number" data-found="1">1</span><span class="keys-only">A key found. Its zone's padlocks drop away.</span>
+            <span class="mines-square canaries-only" data-cover="open" data-mark="mine" data-state="blown"></span><span class="canaries-only">A mine a canary found. It stays shown.</span>
           </div>
         </div>
       </div>

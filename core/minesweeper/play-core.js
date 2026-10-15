@@ -101,7 +101,9 @@ export function minesBoard(puzzle) {
     keys: keysOf(puzzle),
     keyed: 'keys' in puzzle,
     flagLimit: puzzle.flagLimit || 0,
-    limited: 'flagLimit' in puzzle
+    limited: 'flagLimit' in puzzle,
+    canaries: puzzle.canaries || 0,
+    canaried: 'canaries' in puzzle
   };
 }
 
