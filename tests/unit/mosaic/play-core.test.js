@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   mosaicUrl, mosaicFile, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic,
   mosaicCount, mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, viewSpan,
-  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize
+  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares
 } from '../../../core/mosaic/play-core.js';
 import { tappedHistory, undoneMines } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
@@ -58,6 +58,37 @@ describe('the board', () => {
     expect(BOARD.numbers['0,4']).toBe(0);
     expect(Object.keys(BOARD.numbers)).toHaveLength(BOARD_FILE.numbers.join('').replace(/\./g, '').length);
     expect(Object.keys(BOARD.shaded)).toHaveLength(BOARD_FILE.answer.join('').replace(/\./g, '').length);
+  });
+});
+
+describe('paper', () => {
+  it('prints a board up to 30 squares along both sides; a bigger one either way stays on the site', () => {
+    expect(mosaicPrints(BOARD)).toBe(true);
+    expect(mosaicPrints({ cols: 30, rows: 30 })).toBe(true);
+    expect(mosaicPrints({ cols: 31, rows: 10 })).toBe(false);
+    expect(mosaicPrints({ cols: 30, rows: 38 })).toBe(false);
+    expect(mosaicPrints({ cols: 198, rows: 198 })).toBe(false);
+  });
+
+  it('prints each square\'s number, a 0 too, row by row, every other square blank', () => {
+    expect(paperSquares(SMALL).map(s => s.number)).toEqual(['2', '', '', '', '', '1']);
+    expect(paperSquares(BOARD).map(s => s.number).join('')).toBe(BOARD_FILE.numbers.join('').replace(/\./g, ''));
+    expect(paperSquares(BOARD)[4].number).toBe('0');
+  });
+
+  it('never prints a shaded square, whatever the player shaded: only numbers and lines', () => {
+    expect(Object.keys(paperSquares(BOARD)[0]).sort()).toEqual(['below', 'number', 'right']);
+  });
+
+  it('draws a heavier line after every fifth column and row, but never on the board\'s edge', () => {
+    const ten = mosaicBoard({ ...structuredClone(BOARD_FILE), width: 10, height: 11,
+      numbers: Array(11).fill('..........'), answer: Array(11).fill('..........') });
+    const squares = paperSquares(ten);
+    expect(squares).toHaveLength(110);
+    expect(squares.slice(0, 10).map(s => s.right)).toEqual([false, false, false, false, true, false, false, false, false, false]);
+    expect(squares.filter((_, i) => i % 10 === 0).map(s => s.below)).toEqual([false, false, false, false, true, false, false, false, false, true, false]);
+    expect(paperSquares(BOARD).slice(0, 12).filter(s => s.right).length).toBe(2);
+    expect(paperSquares(SMALL).some(s => s.right || s.below)).toBe(false);
   });
 });
 

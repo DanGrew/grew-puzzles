@@ -6,7 +6,7 @@
 // answer and its name, and never works a board out. A number never changes how it looks, as
 // spotting one that's met is the player's, and finding a mistake is Check's (the owner, 2026-10-14).
 import { puzzleDifficulty } from '../kind-core.js';
-import { around, keyOf } from '../minesweeper/play-core.js';
+import { around, keyOf, minesPrints } from '../minesweeper/play-core.js';
 
 // ---- Finding the board ----
 
@@ -164,6 +164,33 @@ export function squareSaid(play, board, cell) {
 // The answer as a play: every square of the picture shaded — what the card's back draws.
 export function answerPlay(board) {
   return { marks: Object.fromEntries(Object.keys(board.shaded).map(function (k) { return [k, 'shade']; })), events: [] };
+}
+
+// ---- Paper ----
+
+// A board prints on one 8.5×11 sheet, and goes into a book, only while its numbers stay readable
+// there: at most 30 squares along both sides, as a minesweeper board (the owner, 2026-10-13; the
+// product's TASK-168) — a 30×38 stays on the site. A bigger board plays on the site alone, with no
+// Print and no page in a book.
+export function mosaicPrints(board) {
+  return minesPrints(board.cols, board.rows);
+}
+
+// The squares on paper, row by row: each its number or '' for the pencil, and whether a heavier
+// line follows it on its right or below — after every fifth column and row but the board's last,
+// which its border draws, so a big board is easy to count across (the product's
+// docs/MOCKUP-MOSAIC.html). Never a shaded square, so nothing of the answer or the player's squares
+// reaches the paper.
+export function paperSquares(board) {
+  var guide = function (i, size) { return (i + 1) % 5 === 0 && i < size - 1; };
+  var squares = [];
+  for (var r = 0; r < board.rows; r++) {
+    for (var c = 0; c < board.cols; c++) {
+      var key = r + ',' + c;
+      squares.push({ number: key in board.numbers ? String(board.numbers[key]) : '', right: guide(c, board.cols), below: guide(r, board.rows) });
+    }
+  }
+  return squares;
 }
 
 // ---- Pointing at a square ----

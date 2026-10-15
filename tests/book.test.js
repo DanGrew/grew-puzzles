@@ -442,6 +442,97 @@ test('a book with criss-crosses saved Colour is still a KDP bleed interior, ever
   }
 });
 
+// Mosaics for a book (TASK-168): the 12×12 (MOSA-0001) and a 30×30 (MOSA-0003, the 198×198 cut
+// down) print; the 198×198 (MOSA-0002) and a 30×38 (MOSA-0004, cut down too) are too big. Each
+// one's own file tells.
+const MOSA_12 = require('./fixtures/MOSA-0001.json');
+const MOSA_198 = require('./fixtures/MOSA-0002.json');
+const mosaicCut = (id, width, height) => ({
+  ...MOSA_198, hiddenId: id, title: 'Mosaic ' + id.slice(-3), width, height,
+  numbers: MOSA_198.numbers.slice(0, height).map(row => row.slice(0, width)),
+  answer: MOSA_198.answer.slice(0, height).map(row => row.slice(0, width)),
+});
+const MOSAICS = { 'MOSA-0001': MOSA_12, 'MOSA-0002': MOSA_198, 'MOSA-0003': mosaicCut('MOSA-0003', 30, 30), 'MOSA-0004': mosaicCut('MOSA-0004', 30, 38) };
+const mosaicBook = {
+  slug: 'mosaics', name: 'Mosaics', description: 'Four mosaics and a wordsearch.', created: '2026-10-15',
+  puzzles: [{ id: 'MOSA-0002', number: 2 }, { id: 'WSCH-0007', number: 3 }, { id: 'MOSA-0001', number: 1 }, { id: 'MOSA-0003', number: 4 }, { id: 'MOSA-0004', number: 5 }],
+};
+
+async function openMosaics(page, style = 'plain') {
+  await serve(page);
+  await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [mosaicBook] } }));
+  await page.route(/\/content\/puzzles\/mosaic\/MOSA-\d+\.json$/, r => r.fulfill({ json: MOSAICS[r.request().url().match(/(MOSA-\d+)\.json$/)[1]] }));
+  await catchPrint(page);
+  await page.goto(`/app/book.html?slug=mosaics&print=${style}`);
+  await expect(page.locator('#ready')).toBeVisible();
+}
+
+test('a mosaic up to 30 a side takes its page in its collection\'s book in number order with the rest; a 198×198 and a 30×38 are left out, named on the book\'s page', async ({ page }) => {
+  await openMosaics(page);
+  await expect(page.locator('#left-out')).toHaveText('Puzzles 2 and 5 are too big to print, so they play on the site only.');
+  await page.emulateMedia({ media: 'print' });
+  await expect(sheets(page).locator('.sheet-number')).toHaveText(['Puzzle 1', 'Puzzle 3', 'Puzzle 4']);
+  await expect(sheets(page).locator('.mosaic-sheet h1')).toHaveText(['Mosaic 001', 'Mosaic 003']);
+  await expect(page.locator('.sheet .page-number')).toHaveText(['3', '4', '5']);
+  await expect(page.locator('#sheets')).not.toContainText('too big');
+  // The pictures' names stay a surprise.
+  for (const name of [MOSA_12.name, MOSA_198.name]) await expect(page.locator('#sheets')).not.toContainText(name);
+});
+
+test('a mosaic\'s book page is exactly its own printout, its number above the title, never a shaded square or the answer', async ({ page, browser }) => {
+  await openMosaics(page);
+  await page.emulateMedia({ media: 'print' });
+  const inBook = sheets(page).nth(0).locator('.mosaic-sheet');
+  const play = await browser.newPage();
+  await play.route('**/content/puzzles/mosaic/MOSA-0001.json', r => r.fulfill({ json: MOSA_12 }));
+  await play.goto('/app/mosaic.html?id=MOSA-0001');
+  await expect(play.locator('#play')).toBeVisible();
+  await play.emulateMedia({ media: 'print' });
+  const own = play.locator('#mosaic-sheet');
+  for (const part of ['title', 'ident', 'grid']) {
+    expect(await inBook.locator(`[data-part="${part}"]`).innerHTML()).toBe(await own.locator(`[data-part="${part}"]`).innerHTML());
+  }
+  expect(await inBook.locator('.mosaic-sheet-rule').innerHTML()).toBe(await own.locator('.mosaic-sheet-rule').innerHTML());
+  for (const part of ['[data-part="grid"]', '.mosaic-sheet-rule']) {
+    const [b, o] = [await inBook.locator(part).boundingBox(), await own.locator(part).boundingBox()];
+    expect([b.width, b.height]).toEqual([o.width, o.height]);
+  }
+  await expect(inBook.locator('> .sheet-number')).toHaveText('Puzzle 1');
+  const number = await inBook.locator('.sheet-number').boundingBox();
+  const title = await inBook.locator('h1').boundingBox();
+  expect(number.y + number.height).toBeLessThanOrEqual(title.y);
+  await expect(page.locator('.sheet:has(.mosaic-sheet) :is(.back-face, canvas, .mosaic-square)')).toHaveCount(0);
+  await play.close();
+});
+
+test('every mosaic page fits its page, a 30×30 too: the grid ends above its page number, which keeps clear of the foot', async ({ page }) => {
+  await page.setViewportSize({ width: 816, height: 1056 });
+  await openMosaics(page);
+  await page.emulateMedia({ media: 'print' });
+  for (const depth of await page.evaluate(pageDepths)) {
+    expect(depth.content).toBeLessThan(depth.numberTop);
+    expect(depth.numberBottom).toBeLessThanOrEqual(11 - 0.25);
+  }
+});
+
+test('saved as a PDF, a book with mosaics passes as a wordsearch book does: every page 8.5×11 in, every font embedded, no links, notes or bookmarks', async ({ page }) => {
+  await openMosaics(page);
+  const pdf = await savePdf(page);
+  // The title and copyright pages, then Puzzles 1, 3 and 4.
+  expect(pageSizes(pdf)).toEqual(Array(5).fill(LETTER));
+  expect(unembeddedFonts(pdf)).toEqual([]);
+  for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
+});
+
+test('a book with mosaics saved Colour is still a KDP bleed interior, every page 8.625 × 11.25 in, each mosaic Plain until it is Themed', async ({ page }) => {
+  await page.setViewportSize({ width: 828, height: 1080 });
+  await openMosaics(page, 'colour');
+  expect(pageSizes(await savePdf(page))).toEqual(Array(5).fill([0, 0, 621.12, 810]));
+  await page.emulateMedia({ media: 'print' });
+  expect(await sheets(page).nth(0).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toBe('none');
+  await expect(sheets(page).nth(0).locator('.mosaic-paper span').first()).toHaveCSS('color', 'rgb(0, 0, 0)');
+});
+
 test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {
   await openBook(page);
   await page.emulateMedia({ media: 'print' });

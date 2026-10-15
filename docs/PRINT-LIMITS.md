@@ -18,9 +18,10 @@ site alone: no print menu, no sheet, and left out of a collection's book.
 | Maze | exactly **32×40** — 0.2 in a cell, 6.4 × 8 in on the page | `core/maze/play-core.js` `mazePrints` |
 | Minesweeper | **30 squares or fewer** along its longer side — that side 7.2 in on the page | `core/minesweeper/play-core.js` `minesPrints` |
 | Criss-cross | **25 squares or fewer** a side, **and** its list in **36 lines or fewer** — a line a word, plus one heading for each word length | `core/crisscross/play-core.js` `crissPrints` |
+| Mosaic | **30 squares or fewer** along both sides — a 30×38 stays on the site; the longer side 7.2 in on the page | `core/mosaic/play-core.js` `mosaicPrints` |
 | Wordsearch | **any size** — no gate; the grid shrinks to fit, down to a floor | — |
 
-In a book, a bigger maze is never fetched; a bigger board or criss-cross is fetched, left out,
+In a book, a bigger maze is never fetched; a bigger board, criss-cross or mosaic is fetched, left out,
 and named on screen (`Puzzle 2 is too big to print, so it plays on the site only.`), never on
 paper.
 
@@ -40,6 +41,7 @@ on a Saga's grid sheet). The 15×15 default is well inside.
 
 ## Changing a limit
 
-A limit is the owner's call — mazes 2026-10-08, minesweeper and criss-cross 2026-10-11. Change
+A limit is the owner's call — mazes 2026-10-08, minesweeper and criss-cross 2026-10-11, mosaic
+2026-10-13. Change
 the gate above and its unit test, then the book follows, since `core/book-core.js` asks the same
 gates.

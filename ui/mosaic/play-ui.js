@@ -1,14 +1,15 @@
 // The mosaic play page's DOM: loads the board a play URL names, draws the squares on view and its
 // answer from play-core's board, and wires the taps and the phone's Cycle | Fill switch, the right-click
 // fill, the keys, Check and Undo, the zoom and moving round a big board, the flip, and the finish —
-// the numbers and lines melting away to the picture, and the title to its name. The board is drawn
+// the numbers and lines melting away to the picture, and the title to its name — and the print
+// menu, the printed sheet being ui/mosaic/sheet-ui.js's. The board is drawn
 // into a canvas, only the squares on view, so a 200×200 plays as smoothly as a 10×10 (the
 // product's TASK-164 spec). Every rule lives in core/mosaic/play-core.js and
 // core/minesweeper/play-core.js, whose frame and zoom it shares; nothing here decides anything.
 import {
   mosaicUrl, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic, mosaicCount,
   mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
-  meltAt, meltLength, showing, ringWidth, numberSize
+  meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints
 } from '../../core/mosaic/play-core.js';
 import {
   checkLine, newMinesHistory, tappedHistory, undoneMines, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState,
@@ -20,11 +21,16 @@ import { isPhone } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { sizeScale } from '../../core/size-core.js';
 import { wireSizeMenu, sizeSquare } from '../size-ui.js';
+import { printIn } from '../theme-ui.js';
+import { drawMosaicSheet } from './sheet-ui.js';
 
 // Beside the grid card, the Squares card and the gap before it; on a phone it sits underneath.
 var MOSAIC_SIDE_ROOM = { true: 0, false: 330 };
 // Room under the grid card when it fills the window's height, so its shadow and edge show.
 var MOSAIC_WINDOW_MARGIN = 24;
+// Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; a bigger
+// one has neither.
+var MOSAIC_SHEETS = { true: showSheet, false: noop };
 
 function mosaicEl(id) {
   return document.getElementById(id);
@@ -32,12 +38,27 @@ function mosaicEl(id) {
 
 function noop() {}
 
+// Plain paper loads nothing before the dialog opens: a mosaic isn't Themed yet (the product's
+// TASK-170).
+function nothingToLoad() {
+  return Promise.resolve();
+}
+
 export function openMosaicPage(search) {
+  mosaicEl('print').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { printIn(b.dataset.print, nothingToLoad); });
+  });
   Promise.resolve(search)
     .then(mosaicUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
     .then(function (puzzle) { showBoard(mosaicBoard(puzzle)); }, showMissing);
+}
+
+// The printout: always the blank board, whatever the player has shaded on screen.
+function showSheet(board) {
+  drawMosaicSheet(mosaicEl('mosaic-sheet'), board);
+  mosaicEl('print').hidden = false;
 }
 
 function showMissing() {
@@ -80,6 +101,7 @@ function showBoard(board) {
   drawIdent(mosaicEl, board);
   mosaicEl('label').textContent = board.label;
   mosaicEl('solution-label').textContent = board.solutionLabel;
+  MOSAIC_SHEETS[mosaicPrints(board)](board);
   mosaicEl('play').hidden = false;
   wireFlip(noop);
   wirePress();
