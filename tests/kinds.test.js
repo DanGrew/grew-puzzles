@@ -310,7 +310,8 @@ test('Minesweeper\'s filters offer Vanilla, Reveal, Keys and Limited Flags; a Ke
 });
 
 // A Canaries board (TASK-204) is its own type too, straight after Reveal, every one Hard or Extreme;
-// its index entry carries its canaries (tooling's TASK-202), which its tile reads in its size's place.
+// its index entry carries its canaries (tooling's TASK-202), which its tile reads in its type's place,
+// its size under them (the owner, 2026-10-15).
 const CANARIES = [
   { ...puzzle('MINE', 6, 'Canaries', 'Canaries 001'), ...saved('Hard', 10, 10), canaries: 2 },
   { ...puzzle('MINE', 7, 'Canaries', 'Canaries 002'), ...saved('Extreme', 16, 16), canaries: 1 },
@@ -329,8 +330,8 @@ test('Minesweeper lists Canaries after Reveal; filtered to it, only its Hard and
   await expect(page).toHaveURL(/\?kind=minesweeper&type=Canaries$/);
   expect(await page.locator('#tiles .tile').evaluateAll(tiles => tiles.map(t => t.dataset.tone))).toEqual(['Hard', 'Extreme']);
   const tile = page.locator('#tiles .tile', { hasText: 'Canaries 001' });
-  await expect(tile.locator('.detail .line')).toHaveText(['Canaries', '🐤 2']);
-  await expect(page.locator('#tiles .tile', { hasText: 'Canaries 002' }).locator('.detail .line')).toHaveText(['Canaries', '🐤 1']);
+  await expect(tile.locator('.detail .line')).toHaveText(['🐤 2', '10×10']);
+  await expect(page.locator('#tiles .tile', { hasText: 'Canaries 002' }).locator('.detail .line')).toHaveText(['🐤 1', '16×16']);
   await expect(tile).toHaveAttribute('href', 'minesweeper.html?id=MINE-0006');
   const canaries = await tile.locator('.pic svg').evaluate(s => s.outerHTML);
   // From the side bar, Canaries opens the kind filtered to it alone, and is what the page is current for.
