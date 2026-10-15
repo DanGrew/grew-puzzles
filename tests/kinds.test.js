@@ -219,7 +219,7 @@ test('the side bar reads Wordsearches, Mazes, Minesweeper, Criss-cross and Colle
     { slug: 'mix', name: 'Mix', description: '', created: '2026-10-09', puzzles: [{ id: 'MINE-0001', number: 1 }] },
   ] } }));
   await page.goto('/app/');
-  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches3', 'Mazes6', 'Minesweeper2', 'Criss-cross2', 'Collections1']);
+  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches3', 'Mazes6', 'Minesweeper2', 'Criss-cross2', 'Collections1', 'Scorecard']);
   const vanilla = side(page).locator('.types').nth(2).locator('.type');
   await expect(vanilla).toHaveText(['Vanilla']);
   await expect(vanilla.locator('.dot')).toHaveCSS('background-color', 'rgb(159, 216, 174)');

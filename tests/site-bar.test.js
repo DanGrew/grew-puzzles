@@ -24,7 +24,7 @@ async function serve(page, { collections = [ISSUE], mazes = MAZES } = {}) {
 
 const side = page => page.locator('#site-side');
 const PAGES = ['/app/', '/app/play.html?id=WSCH-0007', '/app/maze.html?id=MAZE-0001', '/app/collection.html?slug=issue-1',
-  '/app/how-to-play.html', '/app/saving.html', '/app/about.html', '/app/unofficial.html', '/app/feedback.html', '/app/privacy.html'];
+  '/app/scorecard.html', '/app/how-to-play.html', '/app/saving.html', '/app/about.html', '/app/unofficial.html', '/app/feedback.html', '/app/privacy.html'];
 
 test('the site address lands on the page with the Grew Puzzles site bar and the side bar beside the page', async ({ page }) => {
   await serve(page);
@@ -52,7 +52,7 @@ test('the brand returns to the landing page', async ({ page }) => {
 test('the side bar lists each kind with its count and its types, then Collections, the text pages and the look', async ({ page }) => {
   await serve(page);
   await page.goto('/app/');
-  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
+  await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1', 'Scorecard']);
   await expect(side(page).locator('.types').first().locator('.type')).toHaveText(['Vanilla', 'Saga', 'Mirra?e']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveText(['Vanilla', 'Keys', 'Keylecticodes']);
   await expect(side(page).locator('.page')).toHaveText(['How to play', 'Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
@@ -81,7 +81,7 @@ test('each wordsearch type\'s dot is its difficulty\'s colour; each maze type\'s
 test('Mazes with no mazes yet counts 0 and lists no types; Collections hides with no collections', async ({ page }) => {
   await serve(page, { collections: [], mazes: [] });
   await page.goto('/app/');
-  await expect(side(page).locator('.kind:visible')).toHaveText(['Wordsearches4', 'Mazes0', 'Minesweeper0', 'Criss-cross0']);
+  await expect(side(page).locator('.kind:visible')).toHaveText(['Wordsearches4', 'Mazes0', 'Minesweeper0', 'Criss-cross0', 'Scorecard']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveCount(0);
 });
 
@@ -90,7 +90,7 @@ for (const address of PAGES) {
     await serve(page);
     await page.route(/\/content\/puzzles\/(wordsearch|maze)\/(WSCH|MAZE)-\d+\.json$/, r => r.fulfill({ status: 404, body: 'Not found' }));
     await page.goto(address);
-    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
+    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1', 'Scorecard']);
     await expect(page.locator('.site .burger')).toBeHidden();
     const bar = await side(page).boundingBox();
     expect(bar.x).toBeLessThan(40);
@@ -147,7 +147,7 @@ test.describe('on a phone', () => {
     const drawer = await side(page).boundingBox();
     expect(drawer.x).toBe(0);
     expect(drawer.width).toBeLessThan(390);
-    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1']);
+    await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Collections1', 'Scorecard']);
   });
 
   test('the burger, from the keyboard, closes the drawer again', async ({ page }) => {
