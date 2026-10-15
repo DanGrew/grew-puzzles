@@ -258,8 +258,8 @@ describe('what each square shows', () => {
 
   it('after a kaboom: the mine that went off, every other mine shown, a right mark kept, and a wrong mark proved wrong', () => {
     const squares = revealSquares(taps([['2,0', 'mark'], ['0,3', 'mark'], ['0,2', 'open']]), BOARD);
-    expect(at(squares, '0,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'boom', checked: '', label: 'Row 1, column 3, mine, opened' });
-    expect(at(squares, '4,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'shown', checked: '', label: 'Row 5, column 3, mine' });
+    expect(at(squares, '0,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'boom', lock: '', found: '', checked: '', label: 'Row 1, column 3, mine, opened' });
+    expect(at(squares, '4,2')).toMatchObject({ cover: 'open', mark: 'mine', number: '', state: 'shown', lock: '', found: '', checked: '', label: 'Row 5, column 3, mine' });
     expect(at(squares, '2,0')).toMatchObject({ cover: 'covered', mark: 'mine', state: '', checked: '' });
     expect(at(squares, '0,3')).toMatchObject({ cover: 'covered', mark: 'mine', checked: 'wrong' });
     expect(at(squares, '0,0')).toMatchObject({ cover: 'covered', mark: 'blank', checked: '' });
@@ -313,7 +313,9 @@ describe('a Keys board', () => {
       keys: { 1: '5,0', 2: '0,5' }
     });
     expect(Object.keys(keysBoard().zones)).toHaveLength(5);
-    expect(BOARD).toMatchObject({ zones: {}, keys: {}, keyed: false });
+    expect(BOARD.zones).toEqual({});
+    expect(BOARD.keys).toEqual({});
+    expect(BOARD.keyed).toBe(false);
   });
 
   it('knows the zone whose key hides on a square, and none on any other', () => {
@@ -450,8 +452,7 @@ describe('what a Keys board\'s squares show', () => {
   it('a kaboom shows a padlocked mine as a mine, its padlock gone', () => {
     const board = keysBoard(['......', '......', '....1.', '......', '......', '......'], [{ key: 1, row: 0, col: 0 }]);
     const squares = revealSquares(keyTaps(board, [['0,2', 'open']]), board);
-    expect(at(squares, '2,4')).toMatchObject({ cover: 'open', mark: 'mine', state: 'shown', zone: '1', lock: '' });
-  });
+    expect(at(squares, '2,4')).toMatchObject({ cover: 'open', mark: 'mine', state: 'shown', zone: '1', lock: '', found: '' });  });
 
   it('the answer side shows every key where it hid', () => {
     const board = keysBoard();
