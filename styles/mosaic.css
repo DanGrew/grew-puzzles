@@ -75,3 +75,33 @@ button.puzzle-size { left: 87px; transform: translateY(-35%); }
 .mosaic-square[data-mark="shade"] { background: var(--ink); }
 .mosaic-square[data-mark="number"] { background: var(--clue-bg); }
 .mosaic-square[data-mark="blank"] { background: var(--blank); }
+
+/* ---- The printout ----
+   A board up to 30 squares a side prints on one 8.5×11 page, drawn by ui/mosaic/sheet-ui.js into
+   .mosaic-sheet, the mosaic page's own or the book's copy, after the product's
+   docs/MOCKUP-MOSAIC.html: the title, its difficulty and code, the one-line rule, then the grid of
+   numbers as big as the page allows — its longer side 7.2 in, the page's 7.5 in less its border —
+   black and white, Plain. Paper is always the blank board: never a shaded square, never the answer,
+   never the picture's name. Its lines hold up on cheap printing, each a whole pixel so the browser
+   never thins it: 0.75 pt between squares, 1.5 pt after every fifth, and a 2.25 pt border round the
+   grid. The page keeps its own half inch inside, so no margin is set, as the book's
+   (styles/book.css), which loads this file first so its own pages stay its. */
+@page { size: 8.5in 11in; margin: 0; }
+.mosaic-sheet { display: none; }
+@media print {
+  .mosaic-page .wrap { max-width: none; padding: .5in .5in 0; }
+  .mosaic-page .site-main > :not(.mosaic-sheet) { display: none; }
+
+  .mosaic-sheet { --sq: calc(7.2in / max(var(--cols), var(--rows)));
+    display: flex; flex-direction: column; align-items: center; color: #000; break-inside: avoid; }
+  .mosaic-sheet .play-head { margin: 0; text-align: center; }
+  .mosaic-sheet-rule { max-width: 34em; margin: 14pt 0 18pt; text-align: center; font: 400 11pt/1.5 var(--font-body); text-wrap: balance; }
+  /* Each square draws its right and bottom line; the grid's own border is thinner on those sides by
+     as much, so all four edges print 2.25 pt. */
+  .mosaic-paper { display: grid; grid-template-columns: repeat(var(--cols), var(--sq)); grid-auto-rows: var(--sq);
+    border: solid #000; border-width: 2.25pt 1.5pt 1.5pt 2.25pt; }
+  .mosaic-paper > span { box-sizing: border-box; display: grid; place-items: center; border: solid #000; border-width: 0 .75pt .75pt 0;
+    font: 700 calc(var(--sq) * .5)/1 var(--font-body); font-variant-numeric: tabular-nums; }
+  .mosaic-paper > span[data-right="true"] { border-right-width: 1.5pt; }
+  .mosaic-paper > span[data-below="true"] { border-bottom-width: 1.5pt; }
+}

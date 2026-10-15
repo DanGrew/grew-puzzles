@@ -16,7 +16,14 @@
 </head>
 <body class="play-page mosaic-page">
 <div class="wrap">
-  <header class="site" data-site-bar data-home="index.html" data-current="mosaic"></header>
+  <header class="site" data-site-bar data-home="index.html" data-current="mosaic">
+    <!-- Only a board up to 30 squares a side prints, and only Plain until a mosaic is Themed (the
+         product's TASK-170): ui/mosaic/play-ui.js shows the menu once it knows the size. -->
+    <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
+      <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="plain">Plain</button>
+    </div>
+  </header>
 
   <header class="play-head">
     <h1 id="title"></h1>
@@ -100,6 +107,17 @@
       </div>
     </aside>
   </main>
+
+  <!-- The printout, paper only: the title — never the picture's name — the rule and the numbers on
+       a blank grid, drawn by ui/mosaic/sheet-ui.js. The book prints a copy of it. -->
+  <section class="mosaic-sheet" id="mosaic-sheet">
+    <header class="play-head">
+      <h1 data-part="title"></h1>
+      <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
+    </header>
+    <p class="mosaic-sheet-rule">Shade squares to reveal a picture. Each number counts the shaded squares in its 3×3 block: the square itself and the eight around it.</p>
+    <div class="mosaic-paper" data-part="grid" aria-hidden="true"></div>
+  </section>
 </div>
 <script src="../components/site-bar.js"></script>
 <script src="../vendor/supabase.js"></script>

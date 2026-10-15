@@ -1,33 +1,38 @@
 // The collection book's DOM: the title page, then one copy of each puzzle's own printout — a
 // wordsearch the play page's, drawn by its drawSheet; a maze the maze page's sheet, drawn by its
 // drawMazeSheet; a minesweeper board the minesweeper page's sheet, drawn by its drawMinesSheet; a
-// criss-cross the criss-cross page's sheet, drawn by its drawCrissSheet — and the print dialog once
-// every page is drawn. Every rule lives in core/book-core.js; how a puzzle's page looks is
-// styles/play.css's, styles/maze.css's, styles/minesweeper.css's and styles/crisscross.css's.
+// criss-cross the criss-cross page's sheet, drawn by its drawCrissSheet; a mosaic the mosaic page's
+// sheet, drawn by its drawMosaicSheet — and the print dialog once every page is drawn. Every rule
+// lives in core/book-core.js; how a puzzle's page looks is styles/play.css's, styles/maze.css's,
+// styles/minesweeper.css's, styles/crisscross.css's and styles/mosaic.css's.
 import { slugOf } from '../core/collection-core.js';
 import { bookView, pageNumbers, printStyleOf, printedPages, leftOutNote } from '../core/book-core.js';
 import { puzzleUrl, playJson, playBoard } from '../core/wordsearch/play-core.js';
 import { mazeUrl, mazeBoard } from '../core/maze/play-core.js';
 import { minesUrl, minesBoard } from '../core/minesweeper/play-core.js';
 import { crissUrl, crissBoard } from '../core/crisscross/play-core.js';
+import { mosaicUrl, mosaicBoard } from '../core/mosaic/play-core.js';
 import { characterAt } from '../core/theme-core.js';
 import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui.js';
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
 import { drawMinesSheet, dressMinesSheet } from './minesweeper/sheet-ui.js';
 import { drawCrissSheet, dressCrissSheet } from './crisscross/sheet-ui.js';
+import { drawMosaicSheet } from './mosaic/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
 // The longest the print dialog waits on the page's background, which is the screen behind it only.
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
-// that page dressed in its character. A maze, a minesweeper board and a criss-cross are always one
-// sheet.
+// that page dressed in its character. A maze, a minesweeper board, a criss-cross and a mosaic are
+// always one sheet. A mosaic prints Plain in every style, as it isn't Themed yet (the product's
+// TASK-170), so its page wears nothing.
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
   minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: dressMinesPage },
   crisscross: { url: crissUrl, board: crissBoard, sheets: function () { return { sheets: [] }; }, page: crissPage, dress: dressCrissPage },
+  mosaic: { url: mosaicUrl, board: mosaicBoard, sheets: function () { return { sheets: [] }; }, page: mosaicPage, dress: function () {} },
 };
 
 function bookEl(id) {
@@ -53,6 +58,7 @@ export function openBook(search) {
     fetch('maze.html').then(function (r) { return r.text(); }),
     fetch('minesweeper.html').then(function (r) { return r.text(); }),
     fetch('crisscross.html').then(function (r) { return r.text(); }),
+    fetch('mosaic.html').then(function (r) { return r.text(); }),
   ]).then(function (got) {
     var book = bookView(got[0].collections, slugOf(search), got[1].puzzles);
     showTitlePage(book);
@@ -61,6 +67,7 @@ export function openBook(search) {
       maze: sheetTemplate(got[3], ['.maze-sheet']),
       minesweeper: sheetTemplate(got[4], ['.mines-sheet']),
       crisscross: sheetTemplate(got[5], ['.criss-sheet']),
+      mosaic: sheetTemplate(got[6], ['.mosaic-sheet']),
     }, scene);
   });
 }
@@ -199,6 +206,17 @@ function crissPage(template, heading, board, numbers) {
   number.textContent = heading;
   page.querySelector('.criss-sheet').prepend(number);
   drawCrissSheet(page.querySelector('.criss-sheet'), board);
+  return numbered(page, numbers);
+}
+
+// One mosaic's page, drawn exactly as the mosaic page draws its printout, its number heading the
+// sheet, above the title.
+function mosaicPage(template, heading, board, numbers) {
+  var page = template.cloneNode(true);
+  var number = page.querySelector('.sheet-number');
+  number.textContent = heading;
+  page.querySelector('.mosaic-sheet').prepend(number);
+  drawMosaicSheet(page.querySelector('.mosaic-sheet'), board);
   return numbered(page, numbers);
 }
 

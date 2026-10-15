@@ -91,6 +91,29 @@ describe('book-core.js', () => {
     });
   });
 
+  test('a mosaic takes its place in number order, its file opened whatever its size', () => {
+    const mosaics = [{
+      slug: 'mosaics', name: 'Mosaics', description: '', created: '2026-10-15',
+      puzzles: [{ id: 'WSCH-0001', number: 2 }, { id: 'MOSA-0001', number: 1 }],
+    }];
+    expect(bookView(mosaics, 'mosaics', []).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'mosaic', search: '?id=MOSA-0001' },
+      { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0001' },
+    ]);
+  });
+
+  test('once the boards are in, a mosaic up to 30 squares along both sides keeps its page; a bigger one is left out, by number', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const pages = [page(1, 'mosaic'), page(2, 'wordsearch'), page(3, 'mosaic'), page(4, 'mosaic'), page(5, 'mosaic')];
+    const boards = [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 30, rows: 38 }, { cols: 198, rows: 198 }, { cols: 12, rows: 12 }];
+    expect(printedPages(pages, boards)).toEqual({
+      pages: [page(1, 'mosaic'), page(2, 'wordsearch'), page(5, 'mosaic')],
+      boards: [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 12, rows: 12 }],
+      left: [3, 4],
+      screen: [],
+    });
+  });
+
   test('a Reveal board never takes a page, whatever its size, and is named apart from those too big', () => {
     const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
     const pages = [page(1, 'minesweeper'), page(2, 'minesweeper'), page(3, 'minesweeper'), page(4, 'minesweeper')];
