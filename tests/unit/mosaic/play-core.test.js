@@ -3,7 +3,8 @@ import { createRequire } from 'module';
 import {
   mosaicUrl, mosaicFile, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic,
   mosaicCount, mosaicTitle, completeLine, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, viewSpan,
-  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares, openedMelt
+  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares, openedMelt, givenMosaic,
+  onlyGiven
 } from '../../../core/mosaic/play-core.js';
 import { tappedHistory, undoneMines } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
@@ -89,6 +90,63 @@ describe('paper', () => {
     expect(squares.filter((_, i) => i % 10 === 0).map(s => s.below)).toEqual([false, false, false, false, true, false, false, false, false, true, false]);
     expect(paperSquares(BOARD).slice(0, 12).filter(s => s.right).length).toBe(2);
     expect(paperSquares(SMALL).some(s => s.right || s.below)).toBe(false);
+  });
+});
+
+describe('a board as it opens', () => {
+  // Three rows of five: a 9 in the middle of the left block, a 0 in the top-right corner, and a 3
+  // that's the player's, so the filled-in squares alone don't finish it.
+  //   numbers  . . . . 0     answer  # # # . .
+  //            . 9 . . .             # # # . .
+  //            . . . 3 .             # # # . #
+  let GIVEN;
+  beforeEach(() => {
+    GIVEN = mosaicBoard({
+      hiddenId: 'MOSA-0010', type: 'Vanilla', created: '2026-10-15', title: 'Mosaic 010', difficulty: 'Easy', width: 5, height: 3,
+      numbersPerStep: 1, numbers: ['....0', '.9...', '...3.'], answer: ['###..', '###..', '###.#'], name: 'Block', pattern: { style: 'mirror', size: 5, seed: 1 }
+    });
+  });
+
+  it('has every square of a 9\'s block shaded, the 9\'s own too', () => {
+    const marks = givenMosaic(GIVEN).marks;
+    ['0,0', '0,1', '0,2', '1,0', '1,1', '1,2', '2,0', '2,1', '2,2'].forEach(k => expect(marks[k]).toBe('shade'));
+  });
+
+  it('has a 0\'s block left blank, only the squares on the board in a corner', () => {
+    const marks = givenMosaic(GIVEN).marks;
+    ['0,3', '0,4', '1,3', '1,4'].forEach(k => expect(marks[k]).toBe('blank'));
+    expect(Object.keys(marks)).toHaveLength(13);
+  });
+
+  it('leaves any other number\'s block clear, even one it would settle', () => {
+    expect(givenMosaic(GIVEN).marks['2,4']).toBeUndefined();
+    expect(givenMosaic(SMALL)).toEqual(newMosaicPlay());
+  });
+
+  it('sets nothing off and counts its shaded squares', () => {
+    expect(givenMosaic(GIVEN).events).toEqual([]);
+    expect(mosaicCount(givenMosaic(GIVEN))).toBe('9 shaded');
+  });
+
+  it('a square of it cycles as any other: a blank to shaded, a shaded to clear', () => {
+    expect(tapMosaic(givenMosaic(GIVEN), [0, 4], GIVEN, 'cycle').marks['0,4']).toBe('shade');
+    expect(tapMosaic(givenMosaic(GIVEN), [1, 1], GIVEN, 'cycle').marks['1,1']).toBeUndefined();
+  });
+
+  it('Check finds nothing wrong in it, and Undo has nothing to take back', () => {
+    expect(mosaicMistakes(givenMosaic(GIVEN), GIVEN)).toEqual([]);
+    expect(canUndoMosaic([], givenMosaic(GIVEN), GIVEN)).toBe(false);
+  });
+
+  it('is only as it opens until the player changes a square', () => {
+    const opened = givenMosaic(GIVEN);
+    expect(onlyGiven(opened, GIVEN)).toBe(true);
+    expect(onlyGiven(tapMosaic(opened, [2, 4], GIVEN, 'cycle'), GIVEN)).toBe(false);
+    expect(onlyGiven(tapMosaic(opened, [0, 4], GIVEN, 'cycle'), GIVEN)).toBe(false);
+    expect(onlyGiven(taps([[0, 4], [0, 4]], GIVEN, 'cycle', opened), GIVEN)).toBe(false);
+    expect(onlyGiven(taps([[0, 4], [0, 4], [0, 4]], GIVEN, 'cycle', opened), GIVEN)).toBe(true);
+    expect(onlyGiven(newMosaicPlay(), GIVEN)).toBe(false);
+    expect(onlyGiven(newMosaicPlay(), SMALL)).toBe(true);
   });
 });
 

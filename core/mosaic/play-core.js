@@ -63,6 +63,28 @@ export function newMosaicPlay() {
   return { marks: {}, events: [] };
 }
 
+// What a 0 and a 9 settle, filled in before the first tap (the product's TASK-209): a 0's whole block
+// left blank and a 9's shaded, the number's own square too. Only those two — a corner 4 settles its
+// block as surely, but is the player's (the owner, 2026-10-15).
+var GIVEN_MARKS = { 0: 'blank', 9: 'shade' };
+
+// A board as it opens, never tapped: its 0s' and 9s' blocks filled in, ordinary squares a tap cycles
+// as any other. It's where Undo starts, not a tap, so Undo never takes it back.
+export function givenMosaic(board) {
+  var play = newMosaicPlay();
+  Object.keys(board.numbers).filter(function (k) { return board.numbers[k] in GIVEN_MARKS; }).forEach(function (k) {
+    around(k.split(',').map(Number), board).forEach(function (c) { play.marks[keyOf(c)] = GIVEN_MARKS[board.numbers[k]]; });
+  });
+  return play;
+}
+
+// Whether the squares are just as the board opens: nothing the player did is on it.
+export function onlyGiven(play, board) {
+  var given = givenMosaic(board).marks;
+  var keys = Object.keys(play.marks);
+  return keys.length === Object.keys(given).length && keys.every(function (k) { return play.marks[k] === given[k]; });
+}
+
 function markOf(play, cell) {
   return play.marks[keyOf(cell)] || 'clear';
 }
