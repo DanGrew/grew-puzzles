@@ -1,7 +1,8 @@
 const { test, expect } = require('@playwright/test');
 // A Limited Flags board (the product's TASK-179 spec): it plays as a Reveal board does, but no more
 // than its flag limit of mine marks sit on it at once — the Mines card counts the flags left, and
-// with none left a new mark takes the oldest one's place. The site publishes no Limited Flags board
+// with none left a new mark takes the oldest one's place; a row of flags above the switch empties a
+// box for each mark. The site publishes no Limited Flags board
 // yet: the fixture is served as MINE-0904, the 10×10 Reveal board MINE-0901 (mines-reveal.test.js
 // draws it) with a flag limit of 5, passing tooling's minesweeper checks — its start square's area
 // the six squares of rows 8 and 9, cols 6 to 8; (7,6), (8,5), (8,9), (9,9) and (6,5) mines, (7,7) a 1.
@@ -17,6 +18,8 @@ async function open(page, id = 'MINE-0904') {
 
 const square = (page, r, c) => page.locator('#grid .mines-square').nth(r * 10 + c);
 const count = page => page.locator('#count');
+const slots = page => page.locator('#flag-slots .flag-slot');
+const fullSlots = page => page.locator('#flag-slots .flag-slot[data-full="true"]');
 const isMine = (r, c) => BOARD.mines.some(m => m.row === r && m.col === c);
 const FIVE = [[7, 6], [8, 5], [8, 9], [9, 9], [6, 5]];
 
@@ -39,6 +42,9 @@ test.describe('a Limited Flags board', () => {
     await expect(page.locator('.flags-rule')).toBeVisible();
     await expect(page.locator('.flags-rule')).toHaveText('You can have only 5 mines marked at once. Mark another and your oldest mark moves to it.');
     await expect(count(page)).toHaveText('Flags left 5');
+    await expect(page.locator('#flag-slots')).toBeVisible();
+    await expect(slots(page)).toHaveCount(5);
+    await expect(fullSlots(page)).toHaveCount(5);
     await expect(page.locator('#grid [data-cover="covered"]')).toHaveCount(94);
     await expect(page.locator('#print')).toBeHidden();
   });
@@ -48,14 +54,20 @@ test.describe('a Limited Flags board', () => {
     await expect(count(page)).toHaveText('Flags left 4');
     await mark(page, 8, 5);
     await expect(count(page)).toHaveText('Flags left 3');
+    await expect(fullSlots(page)).toHaveCount(3);
+    await expect(slots(page).nth(3)).toHaveAttribute('data-full', 'false');
     await mark(page, 7, 6);
     await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'blank');
     await expect(count(page)).toHaveText('Flags left 4');
+    await expect(fullSlots(page)).toHaveCount(4);
+    await expect(page.locator('#flag-slots')).toHaveAttribute('aria-label', 'Flags left 4 of 5');
   });
 
   test('with no flags left, a new mark fades my oldest off its square and takes its place; Flags left stays at 0', async ({ page }) => {
     await markAll(page, FIVE);
     await expect(count(page)).toHaveText('Flags left 0');
+    await expect(fullSlots(page)).toHaveCount(0);
+    await expect(slots(page)).toHaveCount(5);
     await mark(page, 4, 4);
     await expect(square(page, 4, 4)).toHaveAttribute('data-mark', 'mine');
     await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'blank');
@@ -63,6 +75,7 @@ test.describe('a Limited Flags board', () => {
     await expect(square(page, 7, 6)).not.toHaveClass(/flag-lift/);
     await expect(page.locator('#grid [data-mark="mine"]')).toHaveCount(5);
     await expect(count(page)).toHaveText('Flags left 0');
+    await expect(fullSlots(page)).toHaveCount(0);
     // First in, first out: the next mark takes (8,5)'s place.
     await mark(page, 4, 6);
     await expect(square(page, 8, 5)).toHaveAttribute('data-mark', 'blank');
@@ -112,6 +125,7 @@ test.describe('a Limited Flags board', () => {
 test('a Reveal board with no flag limit has no flags rule, counts mines marked, and never moves a mark', async ({ page }) => {
   await open(page, 'MINE-0901');
   await expect(page.locator('.flags-rule')).toBeHidden();
+  await expect(page.locator('#flag-slots')).toBeHidden();
   await expect(count(page)).toHaveText('0/15');
   await markAll(page, [...FIVE, [4, 4]]);
   await expect(page.locator('#grid [data-mark="mine"]')).toHaveCount(6);

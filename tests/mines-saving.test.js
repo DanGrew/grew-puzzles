@@ -685,6 +685,7 @@ test('a Limited Flags board: signed in, coming back on another device, my marks 
 
   const here = await open(phone, 'MINE-0904');
   await expect(count(here)).toHaveText('Flags left 0');
+  await expect(here.locator('#flag-slots .flag-slot[data-full="true"]')).toHaveCount(0);
   for (const [r, c] of left) expect(await markOf(here, r, c)).toBe('mine');
   expect(await markOf(here, 9, 9)).toBe('blank');
   await square(here, 4, 6).click({ button: 'right' });

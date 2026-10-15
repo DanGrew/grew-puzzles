@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { minesBoard, minesMistakes, minesCount, answerSquares, keyHiddenAt } from '../../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, keysFound,
-  marksLifted, revealCount
+  marksLifted, revealCount, flagSlots
 } from '../../../core/minesweeper/reveal-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/reveal-core.js, against tooling's own valid Reveal board (its
@@ -288,6 +288,15 @@ describe('a Limited Flags board', () => {
     expect(revealCount(taps([['0,2', 'mark']]), BOARD)).toBe('1/6');
   });
 
+  it('the row of flags has a box per flag, the flags left full first, the used ones empty', () => {
+    expect(flagSlots(newRevealPlay(LIMITED), LIMITED)).toEqual([true, true]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark']]), LIMITED)).toEqual([true, false]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,4', 'mark']]), LIMITED)).toEqual([false, false]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,2', 'mark']]), LIMITED)).toEqual([true, false]);
+    // Any other Reveal board has none.
+    expect(flagSlots(taps([['0,2', 'mark']]), BOARD)).toEqual([]);
+  });
+
   it('marks up to its limit as any Reveal board does, nothing moved', () => {
     const play = limitedTaps([['0,2', 'mark'], ['0,3', 'mark']]);
     expect(play.marks).toEqual({ '0,2': 'mine', '0,3': 'mine' });
@@ -327,6 +336,7 @@ describe('a Limited Flags board', () => {
     expect(last.events).toEqual(['complete']);
     expect(Object.keys(last.marks)).toHaveLength(6);
     expect(revealCount(last, LIMITED)).toBe('Flags left 0');
+    expect(flagSlots(last, LIMITED)).toEqual([false, false]);
   });
 });
 

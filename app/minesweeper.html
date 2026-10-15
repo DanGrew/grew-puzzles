@@ -86,8 +86,10 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
         </button>
       </div>
-      <!-- A Reveal board's switch, right under it: what a tap does. -->
+      <!-- A Reveal board's switch, right under it: what a tap does — a Limited Flags board's row of
+           flags above it, a box emptying for each mark. -->
       <div class="mines-switch" id="mines-switch">
+        <div class="flag-slots" id="flag-slots" role="img"></div>
         <div class="mines-tool-pick" role="group" aria-label="What a tap does">
           <button type="button" id="tool-open" aria-pressed="true"><span class="tool-icon" aria-hidden="true"></span>Open</button>
           <button type="button" id="tool-mark" aria-pressed="false"><span class="tool-icon mine" aria-hidden="true"></span>Mark mine</button>

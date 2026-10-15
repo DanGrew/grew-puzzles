@@ -106,8 +106,18 @@ export function marksLifted(before, after) {
 // The Mines card's count: a Limited Flags board's flags left — never under none, though the finish
 // marks every mine — any other's mines marked of its mines (play-core's minesCount).
 export function revealCount(play, board) {
-  var left = Math.max(board.flagLimit - Object.keys(play.marks).length, 0);
-  return { true: 'Flags left ' + left, false: minesCount(play, board) }[board.limited];
+  return { true: 'Flags left ' + flagsLeft(play, board), false: minesCount(play, board) }[board.limited];
+}
+
+// The row of flags above the switch, one per flag of the limit: true while it's still to use, false
+// once a mark has taken it — the flags left first. A board with no limit has none.
+export function flagSlots(play, board) {
+  var left = flagsLeft(play, board);
+  return Array.from({ length: board.flagLimit }, function (_, i) { return i < left; });
+}
+
+function flagsLeft(play, board) {
+  return Math.max(board.flagLimit - Object.keys(play.marks).length, 0);
 }
 
 // An opened number whose mines are all marked opens its other covered squares, as a Vanilla number
