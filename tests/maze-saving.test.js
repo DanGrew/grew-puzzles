@@ -65,7 +65,7 @@ async function standInForSupabase(context, db) {
     if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, headers: CORS });
     const token = (request.headers().authorization || '').replace('Bearer ', '');
     if (url.pathname === '/rest/v1/progress' && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: db.lines });
-    if (['/rest/v1/mines_marks', '/rest/v1/criss_words'].includes(url.pathname) && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
+    if (['/rest/v1/mines_marks', '/rest/v1/criss_words', '/rest/v1/mosaic_squares'].includes(url.pathname) && request.method() === 'GET' && token.includes('.')) return route.fulfill({ headers: CORS, json: [] });
     const table = TABLES[url.pathname];
     if (!table || !token.includes('.')) {
       db.strays.push(`${request.method()} ${url.pathname}`);

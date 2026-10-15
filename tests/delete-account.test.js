@@ -78,7 +78,7 @@ async function standIn(context, db) {
     if (url.pathname === '/rest/v1/rpc/delete_account') return deleteAccount(route, db, claims(token).sub);
     if (url.pathname === '/rest/v1/progress') return progress(route, db, claims(token).sub);
     // The ticks and the rail read the player's maze finds and places too — none here; maze-saving.test.js's.
-    if (['/rest/v1/maze_found', '/rest/v1/maze_position', '/rest/v1/mines_marks', '/rest/v1/criss_words'].includes(url.pathname) && request.method() === 'GET') return route.fulfill({ headers: CORS, json: [] });
+    if (['/rest/v1/maze_found', '/rest/v1/maze_position', '/rest/v1/mines_marks', '/rest/v1/criss_words', '/rest/v1/mosaic_squares'].includes(url.pathname) && request.method() === 'GET') return route.fulfill({ headers: CORS, json: [] });
     db.strays.push(`${request.method()} ${url.pathname}`);
     return route.abort();
   });

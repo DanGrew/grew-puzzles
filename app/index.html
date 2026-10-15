@@ -92,9 +92,10 @@ let types = [];
 // The owner's characters: each tile wears its puzzle's, shown only while Themed is on.
 let characters = [];
 let state;
-// The puzzles the player has finished — none until they're looked up, and never signed out — and
-// each tile on show's ✓, repainted as they arrive.
+// The puzzles the player has finished — none until they're looked up, and never signed out — the
+// finished mosaics' names, and each tile on show's ✓ and name, repainted as they arrive.
 let done = [];
+let names = {};
 let ticks = [];
 // The puzzles still in play, most recently played first; those of them the rail shows — the
 // place's, among the picks — and which set of them is on show.
@@ -135,8 +136,8 @@ function card(item) {
 
 function tile(item) {
   const a = card(item);
-  ticks.push(() => paintDone(a, item, done));
-  paintDone(a, item, done);
+  ticks.push(() => paintDone(a, item, done, names));
+  paintDone(a, item, done, names);
   const li = document.createElement('li');
   li.append(a);
   return li;
@@ -293,6 +294,7 @@ const REDRAWS = { true: redraw, false: () => ticks.forEach(paint => paint()) };
 function tick(progress) {
   const again = REDRAWS[filtersByProgress(state)];
   done = progress.done;
+  names = progress.names;
   known = 'true';
   signedIn = progress.signedIn;
   state = withSignIn(state, signedIn);

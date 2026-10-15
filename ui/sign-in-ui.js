@@ -8,8 +8,10 @@
 // Google's client ID, are the only values the site holds — the database's own rules keep every
 // player's progress theirs. Its rules are core/auth-core.js's. Its client is the page's one way to
 // Supabase: the play page saves a signed-in player's finds through it, and its line under the words
-// opens the card (ui/wordsearch/progress-ui.js).
-import { hexOf, accountView, deletedAnswer } from '../core/auth-core.js';
+// opens the card (ui/wordsearch/progress-ui.js). A save that must outlive the page goes by
+// saveKept, which the client can't send: it waits on its own sign-in first, and a page being left
+// is gone by then.
+import { hexOf, accountView, deletedAnswer, sessionToken } from '../core/auth-core.js';
 
 var SUPABASE_URL = 'https://vxschtygvtilsadgixec.supabase.co';
 var SUPABASE_PUBLIC_KEY = 'sb_publishable_9q2ENh35OE6EbJvaZ4opsQ_ABWcyMW0';
@@ -17,6 +19,19 @@ var GOOGLE_CLIENT_ID = '802523799766-q1aeup0ahrm6ajbmd1v6u1qmjfqk248u.apps.googl
 var GOOGLE_SCRIPT = 'https://accounts.google.com/gsi/client';
 
 export var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
+// The signed-in player's token, kept as sign-in changes, for saveKept.
+var token = '';
+
+// Saves row over the player's row in table, as the client's upsert does, but sent at once with the
+// player's token and kept going by the browser if the page is left while it's on its way. Hands back
+// whether it was saved. The browser keeps only 64 KB going at once, so one at a time, each at most a
+// 200×200 mosaic's 40 KB.
+export function saveKept(table, row) {
+  return fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    method: 'POST', keepalive: true, body: JSON.stringify(row),
+    headers: { apikey: SUPABASE_PUBLIC_KEY, authorization: 'Bearer ' + token, 'content-type': 'application/json', prefer: 'resolution=merge-duplicates' }
+  }).then(function (answer) { return answer.ok; }, function () { return false; });
+}
 
 var account = document.createElement('div');
 account.className = 'account';
@@ -229,5 +244,6 @@ document.addEventListener('keydown', function (e) {
 
 // Every change of who is signed in — the first look on loading too — redraws the bar.
 client.auth.onAuthStateChange(function (event, session) {
+  token = sessionToken(session);
   show(accountView(session));
 });

@@ -153,6 +153,12 @@ export function completeLine(board) {
   return 'Solved — it\'s ' + board.name + '.';
 }
 
+// What the finish's line holds: that line once the board is solved — and nothing before, as the name
+// shows nowhere before.
+export function finishLine(play, board) {
+  return mosaicFinished(play, board) ? completeLine(board) : '';
+}
+
 // What a screen reader hears of a square: where it is, its number, and its mark.
 export function squareSaid(play, board, cell) {
   var said = { clear: 'clear', blank: 'left blank', shade: 'shaded' };
@@ -300,6 +306,12 @@ export function squareAt(view, cell) {
 // to 1 — 1 once it's over, and at once with no length, for a player who asks for less motion.
 export function meltAt(start, now, length) {
   return length > 0 ? Math.min(1, Math.max(0, (now - start) / length)) : 1;
+}
+
+// How far the melt has gone as the board opens: all the way on a board finished before — it opens
+// as its picture — and not at all on any other.
+export function openedMelt(play, board) {
+  return Number(mosaicFinished(play, board));
 }
 
 // How long the melt takes, ms: none for a player who asks for less motion.
