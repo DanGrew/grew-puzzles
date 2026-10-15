@@ -8,6 +8,7 @@
 .play.mosaic { display: grid; grid-template-columns: auto minmax(220px, 290px); gap: 40px; align-items: start; justify-content: center; }
 .play.mosaic[hidden] { display: none; }
 .play.mosaic aside { max-width: none; }
+#mosaic-card > .save-line { margin-top: 14px; }
 /* A board too big for the column reaches past it, as far as it needs, toward the window's edges
    (--reach-left and --reach-right), as minesweeper's does. */
 @media screen {

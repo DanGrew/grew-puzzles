@@ -59,8 +59,9 @@ function printsIn(mazes) {
 }
 
 // Why a minesweeper board takes no page: a Reveal board never prints, as paper can't cover a square
-// (the product's TASK-174); a Vanilla board only while its numbers stay readable on one sheet
-// (play-core's minesPrints). '' when it prints.
+// (the product's TASK-174) — nor any board playing by its rule, a Canaries board's too (TASK-204);
+// a Vanilla board only while its numbers stay readable on one sheet (play-core's minesPrints). ''
+// when it prints.
 function minesLeftOut(board) {
   if (board.rule === 'reveal') return 'screen';
   return minesPrints(board.cols, board.rows) ? '' : 'big';

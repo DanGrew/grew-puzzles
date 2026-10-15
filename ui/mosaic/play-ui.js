@@ -3,15 +3,18 @@
 // fill, the keys, Check and Undo, the zoom and moving round a big board, the flip, and the finish —
 // the numbers and lines melting away to the picture, and the title to its name — and the print
 // menu, the printed sheet being ui/mosaic/sheet-ui.js's, and dresses it Themed in its character.
-// The board is drawn into a canvas, only the squares on view, so a 200×200 plays as smoothly as a
-// 10×10 (the product's TASK-164 spec). Every rule lives in core/mosaic/play-core.js,
+// Saving the player's squares is ui/mosaic/progress-ui.js's: the board waits for what was saved
+// before it draws. The board is drawn into a canvas, only the squares on view, so a 200×200 plays as
+// smoothly as a 10×10 (the product's TASK-164 spec). Every rule lives in core/mosaic/play-core.js,
 // core/minesweeper/play-core.js, whose frame and zoom it shares, and core/theme-core.js; nothing
 // here decides anything.
 import {
-  mosaicUrl, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic, mosaicCount,
-  mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
-  meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints
+  mosaicUrl, mosaicBoard, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic, mosaicCount,
+  mosaicTitle, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
+  meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, openedMelt
 } from '../../core/mosaic/play-core.js';
+import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
+import { withSavedMosaic, wireMosaicProgress, mosaicTapped } from './progress-ui.js';
 import {
   checkLine, newMinesHistory, tappedHistory, undoneMines, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState,
   minesDrag, movedFar, pressKind
@@ -54,11 +57,14 @@ export function openMosaicPage(search) {
     .then(mosaicUrl)
     .then(function (url) { return fetch(url); })
     .then(playJson)
-    .then(function (puzzle) {
-      var board = mosaicBoard(puzzle);
-      dressMosaic(id, board);
-      showBoard(board);
-    }, showMissing);
+    .then(function (puzzle) { openBoard(id, mosaicBoard(puzzle)); }, showMissing);
+}
+
+// The board as the player left it — saved, signed in, under the hidden ID its address names — then
+// drawn.
+function openBoard(id, board) {
+  dressMosaic(id, board);
+  withSavedMosaic(id, board, function (play) { showBoard(id, board, play); });
 }
 
 // Themed, the board is dressed as a minesweeper board is: its own character, its background behind
@@ -119,14 +125,15 @@ function showMissing() {
 }
 
 // The board on its own play page: the squares on view in the grid card, its answer on the card's
-// back, and the Squares card beside it — under it on a phone.
-function showBoard(board) {
+// back, and the Squares card beside it — under it on a phone. A board finished before opens as its
+// picture, already melted, and doesn't celebrate again.
+function showBoard(id, board, saved) {
   var frame = { fit: 0, width: 0, height: 0 };
   var view = { cell: 1, x: 0, y: 0 };
   // The first frame opens the board; every one after refits it.
   var fitView = function (v, before, next) { return minesOpenView(next, board); };
-  var play = newMosaicPlay(), answer = answerPlay(board), history = newMinesHistory();
-  var tool = 'cycle', checked = [], melt = 0, meltStart = 0, length = meltLength(matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var play = saved, answer = answerPlay(board), history = newMinesHistory();
+  var tool = 'cycle', checked = [], melt = openedMelt(play, board), meltStart = 0, length = meltLength(matchMedia('(prefers-reduced-motion: reduce)').matches);
   // The square the keys move, from the board's middle.
   var focus = [Math.floor(board.rows / 2), Math.floor(board.cols / 2)];
   var puzzleSize = 'normal';
@@ -161,6 +168,7 @@ function showBoard(board) {
   wireSizeMenu(mosaicEl('puzzle-size'), mosaicEl('puzzle-size-menu'), sizeSquare, function (size) { puzzleSize = size; }, sizeBoard);
   mosaicEl('check').addEventListener('click', onCheck);
   mosaicEl('undo').addEventListener('click', onUndo);
+  wireMosaicProgress(id, board, function () { return play; }, joinSaved);
   wireSize();
   render();
 
@@ -170,6 +178,7 @@ function showBoard(board) {
     var next = tapMosaic(play, cell, board, with_);
     history = tappedHistory(history, play, next);
     play = next;
+    mosaicTapped(id, board, play);
     checked = [];
     focus = cell;
     render();
@@ -182,7 +191,17 @@ function showBoard(board) {
     var undone = undoneMines(history, play);
     history = undone.history;
     play = undone.play;
+    mosaicTapped(id, board, play);
     checked = [];
+    render();
+  }
+
+  // Signing in mid-board: the board saved elsewhere, joined to the one on screen.
+  function joinSaved(saved) {
+    history = joinedHistory(play, history);
+    play = joinedMines(play, saved);
+    checked = [];
+    melt = openedMelt(play, board);
     render();
   }
 
@@ -196,7 +215,6 @@ function showBoard(board) {
 
   // Solved: it pops and sparkles, the title becomes its name, and the numbers and lines melt away.
   function finish() {
-    mosaicEl('complete').textContent = completeLine(board);
     celebrate();
     meltStart = performance.now();
     requestAnimationFrame(meltStep);
@@ -219,6 +237,7 @@ function showBoard(board) {
     mosaicEl('check-line').hidden = true;
     mosaicEl('undo').disabled = !canUndoMosaic(history, play, board);
     mosaicEl('complete').hidden = !solved;
+    mosaicEl('complete').textContent = finishLine(play, board);
     draw();
   }
 

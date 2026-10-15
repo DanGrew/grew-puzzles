@@ -269,6 +269,132 @@
       "difficulty": "Easy",
       "width": 15,
       "height": 15
+    },
+    {
+      "hiddenId": "MINE-0031",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 001",
+      "difficulty": "Hard",
+      "width": 10,
+      "height": 10,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0032",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 002",
+      "difficulty": "Hard",
+      "width": 10,
+      "height": 10,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0033",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 003",
+      "difficulty": "Hard",
+      "width": 20,
+      "height": 20,
+      "canaries": 2
+    },
+    {
+      "hiddenId": "MINE-0034",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 004",
+      "difficulty": "Hard",
+      "width": 20,
+      "height": 20,
+      "canaries": 3
+    },
+    {
+      "hiddenId": "MINE-0035",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 005",
+      "difficulty": "Extreme",
+      "width": 20,
+      "height": 20,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0036",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 006",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0037",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 007",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0038",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 008",
+      "difficulty": "Hard",
+      "width": 50,
+      "height": 50,
+      "canaries": 2
+    },
+    {
+      "hiddenId": "MINE-0039",
+      "type": "Canaries",
+      "created": "2026-10-15",
+      "title": "Canaries 009",
+      "difficulty": "Hard",
+      "width": 50,
+      "height": 50,
+      "canaries": 1
+    },
+    {
+      "hiddenId": "MINE-0040",
+      "type": "Limited Flags",
+      "created": "2026-10-15",
+      "title": "Limited Flags 001",
+      "difficulty": "Medium",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0041",
+      "type": "Limited Flags",
+      "created": "2026-10-15",
+      "title": "Limited Flags 002",
+      "difficulty": "Medium",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0042",
+      "type": "Limited Flags",
+      "created": "2026-10-15",
+      "title": "Limited Flags 003",
+      "difficulty": "Medium",
+      "width": 20,
+      "height": 20
+    },
+    {
+      "hiddenId": "MINE-0043",
+      "type": "Limited Flags",
+      "created": "2026-10-15",
+      "title": "Limited Flags 004",
+      "difficulty": "Hard",
+      "width": 20,
+      "height": 20
     }
   ]
 }

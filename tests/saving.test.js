@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // progress), reached from the side bar on every page, after How to play. Its words name puzzles,
 // never kinds (FEAT-48), so no kind needs a line of its own.
 const WORDS = [
-  'Sign in with Google and we\'ll save your progress as you play, the moment you make it! Close the page, come back tomorrow, and pick up right where you left off.',
+  'Sign in with Google and we\'ll save your progress as you play! Close the page, come back tomorrow, and pick up right where you left off.',
   'Play anywhere. Start a puzzle on your phone and finish it on your laptop! Sign in with the same Google account and your progress will be waiting. Playing on two at once? Just reopen the puzzle on the other one to catch up.',
   'Lost your connection? Don\'t worry, we\'ll keep trying until your progress is saved. A little note on the puzzle lets you know until it is, so keep the puzzle open.',
   'Ticks and Continue playing. Finished a puzzle? It gets a ✓ on its tile. Wandered off halfway? It\'ll be waiting for you under Continue playing at the top of the page.',
