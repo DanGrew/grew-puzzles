@@ -16,7 +16,7 @@ const ISSUE = { slug: 'issue-1', name: 'Issue #1', description: 'Both kinds.', c
 async function serve(page, { collections = [ISSUE], mazes = MAZES } = {}) {
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles: WORDSEARCHES } }));
   await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: mazes } }));
-  await page.route(/\/content\/puzzles\/(minesweeper|crisscross)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
+  await page.route(/\/content\/puzzles\/(minesweeper|crisscross|mosaic)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
   await page.route('**/content/collections/index.json', r => r.fulfill(
     collections.length ? { json: { collections } } : { status: 404, body: 'Not found' },
   ));
