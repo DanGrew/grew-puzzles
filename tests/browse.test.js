@@ -244,7 +244,7 @@ test('the popup has a Difficulty row, Easy to Extreme, then a Type row, every ty
   await serve(page, graded());
   await page.goto('/app/');
   await openFilters(page);
-  expect(await rowsOf(page)).toEqual([
+  await expect.poll(() => rowsOf(page)).toEqual([
     ['Difficulty', ['Easy', 'Medium', 'Hard', 'Extreme']],
     ['Type', ['Vanilla', 'Saga', 'Wildcards', 'Missing', 'Repeats', 'Mirra?e']],
   ]);
@@ -319,7 +319,7 @@ test('the rows end with Type, with no Collections row; Clear filters sits at the
   await serve(page, graded(), [issue()]);
   await page.goto('/app/');
   await openFilters(page);
-  expect((await rowsOf(page)).map(([name]) => name)).toEqual(['Difficulty', 'Type']);
+  await expect.poll(async () => (await rowsOf(page)).map(([name]) => name)).toEqual(['Difficulty', 'Type']);
   await expect(chip(page, 'Collections')).toHaveCount(0);
   await expect(popup(page).locator('.chip.levels:visible')).toHaveCount(4);
   await expect(page.locator('#clear')).toBeHidden();
@@ -341,7 +341,7 @@ test('a difficulty no puzzle has is not offered, and a type with no difficulty i
   await serve(page, served);
   await page.goto('/app/');
   await openFilters(page);
-  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Vanilla', 'Brand New', 'Mirra?e']]]);
+  await expect.poll(() => rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme']], ['Type', ['Vanilla', 'Brand New', 'Mirra?e']]]);
   await level(page, 'Easy').click();
   await expect(tileTypes(page)).toHaveText(['Vanilla', 'Brand New']);
 });
@@ -702,7 +702,7 @@ test('the filter popup shows a Kids row last, after Extreme, holding the Kids ty
   await serve(page, withKids());
   await page.goto('/app/');
   await openFilters(page);
-  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme', 'Kids']], ['Type', ['Vanilla', 'Mirra?e', 'Kids']]]);
+  await expect.poll(() => rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Extreme', 'Kids']], ['Type', ['Vanilla', 'Mirra?e', 'Kids']]]);
   expect(await level(page, 'Kids').evaluate(el => getComputedStyle(el).textDecorationColor)).toBe(KIDS_YELLOW);
   await level(page, 'Kids').click();
   await expect(tileNames(page)).toHaveText(['Little Farm']);
