@@ -70,6 +70,11 @@ describe('a saved board coming back', () => {
     expect(restoredMosaic(SMALL, [{ squares: '1x3' }])).toEqual(play({ '0,0': 'shade' }));
   });
 
+  it('a clear square comes back as no mark at all, so a board of clear squares is untouched on signing in', () => {
+    expect(Object.keys(restoredMosaic(SMALL, [{ squares: '010000' }]).marks)).toEqual(['0,1']);
+    expect(syncRows('MOSA-0009', restoredMosaic(SMALL, [{ squares: '000000' }]), SMALL)).toEqual([]);
+  });
+
   it('only the first row counts', () => {
     expect(restoredMosaic(SMALL, [{ squares: '100000' }, { squares: '010000' }])).toEqual(play({ '0,0': 'shade' }));
   });
