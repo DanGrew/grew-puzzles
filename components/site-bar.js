@@ -1,7 +1,7 @@
 // The site bar every page shares: fills <header class="site" data-site-bar data-home="…"
 // data-current="…">, and puts the side bar — the map of the site — down the page's left, the rest
 // of the page beside it. data-home is the landing page's path from the page; data-current names
-// the side bar entry this page belongs to — a kind (wordsearch, maze, minesweeper, crisscross), collections, or a text
+// the side bar entry this page belongs to — a kind (wordsearch, maze, minesweeper, crisscross, mosaic), collections, or a text
 // page. The kinds, each with its types, and Collections' count are filled from the indexes by
 // ui/side-bar-ui.js; Collections starts hidden until a collection is found. Scorecard, every puzzle
 // ticked off as it's finished, follows it, shown always and with no score. How to play, Saving

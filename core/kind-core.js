@@ -1,4 +1,4 @@
-// The site's kinds of puzzle — Wordsearches, Mazes, Minesweeper and Criss-cross — and the side bar
+// The site's kinds of puzzle — Wordsearches, Mazes, Minesweeper, Criss-cross and Mosaic — and the side bar
 // that maps the site by them: which kind a puzzle is, how hard each kind's types are, and where each side bar entry goes.
 // The kind is where the player is; the type is what they filter within it. A type is always taken
 // with its kind — each kind has its own Vanilla. Collections is a place of its own, beside the
@@ -8,7 +8,7 @@
 export const COLLECTIONS = 'collections';
 
 // Every kind, in the side bar's order: its address name, what players call it — one of it, several
-// counted ("3 Minesweepers", "2 Criss-crosses", the owner's calls, 2026-10-11), and short, on a
+// counted ("3 Minesweepers", "2 Criss-crosses", "3 Mosaics", the owner's calls, 2026-10-11), and short, on a
 // phone's switch, where the full names don't fit (TASK-135) — its hidden IDs' prefix and its play page.
 export function kinds() {
   return [
@@ -16,6 +16,7 @@ export function kinds() {
     { kind: 'maze', name: 'Mazes', one: 'Maze', many: 'Mazes', short: 'Mazes', prefix: 'MAZE', page: 'maze.html' },
     { kind: 'minesweeper', name: 'Minesweeper', one: 'Minesweeper', many: 'Minesweepers', short: 'Mines', prefix: 'MINE', page: 'minesweeper.html' },
     { kind: 'crisscross', name: 'Criss-cross', one: 'Criss-cross', many: 'Criss-crosses', short: 'Criss-cross', prefix: 'CRSS', page: 'crisscross.html' },
+    { kind: 'mosaic', name: 'Mosaic', one: 'Mosaic', many: 'Mosaics', short: 'Mosaic', prefix: 'MOSA', page: 'mosaic.html' },
   ];
 }
 

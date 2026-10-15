@@ -4,8 +4,8 @@
   box-shadow: var(--shadow); padding: 10px 20px; }
 .browse-head h1 { font: 600 22px var(--font-display); margin: 0; }
 .browse-head span { color: var(--band-fg); opacity: .85; font-size: 14px; font-variant-numeric: tabular-nums; }
-/* On a phone, with no side bar beside the grid, a Words | Mazes | Mines | Criss-cross switch above it, the
-   current kind filled. Where the four don't fit, the switch scrolls sideways inside itself, never the page (TASK-149). */
+/* On a phone, with no side bar beside the grid, a Words | Mazes | Mines | Criss-cross | Mosaic switch above it, the
+   current kind filled. Where the five don't fit, the switch scrolls sideways inside itself, never the page (TASK-149). */
 .kind-switch { display: none; }
 @media (max-width: 759px) {
   .kind-switch { display: flex; margin: 0 0 20px; background: var(--surface); border: var(--ow) solid var(--line);
