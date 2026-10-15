@@ -194,11 +194,12 @@ test.describe('a mosaic', () => {
     await expect(page.locator('#play')).toHaveAttribute('data-solved', 'true');
     await expect(page.locator('#board')).toHaveClass(/pop/);
     // Melted: a numbered square, a blank one and the line between two clear squares are all plain white.
+    // Each read waits out the melt's last frames.
     await expect.poll(async () => (await look(page, 0, 4)).middle).toBe(WHITE);
-    expect((await look(page, 0, 4)).fill).toBe(WHITE);
-    expect((await look(page, 1, 1)).middle).toBe(WHITE);
-    expect((await look(page, 1, 2)).edge).toBe(WHITE);
-    expect((await look(page, 0, 0)).middle).toBe(INK);
+    await expect.poll(async () => (await look(page, 0, 4)).fill).toBe(WHITE);
+    await expect.poll(async () => (await look(page, 1, 1)).middle).toBe(WHITE);
+    await expect.poll(async () => (await look(page, 1, 2)).edge).toBe(WHITE);
+    await expect.poll(async () => (await look(page, 0, 0)).middle).toBe(INK);
     await expect(page.locator('#undo')).toBeDisabled();
     // Solved, the board takes no more taps.
     await tap(page, 1, 2);
@@ -211,8 +212,9 @@ test.describe('a mosaic', () => {
     await page.click('#flip');
     await expect(page.locator('#card')).toHaveClass(/flipped/);
     await expect(page.locator('#flip')).toHaveAttribute('aria-label', 'Back to puzzle');
-    for (const [r, c] of answer(BOARD).slice(0, 6)) expect((await look(page, r, c, '#solution-grid')).fill).toBe(INK);
-    expect((await look(page, 1, 5, '#solution-grid')).fill).toBe(WHITE);
+    // The answer is drawn on the next frame, which a busy machine can be slow to reach.
+    for (const [r, c] of answer(BOARD).slice(0, 6)) await expect.poll(async () => (await look(page, r, c, '#solution-grid')).fill).toBe(INK);
+    await expect.poll(async () => (await look(page, 1, 5, '#solution-grid')).fill).toBe(WHITE);
     await page.click('#flip');
     await expect(page.locator('#card')).not.toHaveClass(/flipped/);
     await expectMark(page, 0, 1, 'blank');
