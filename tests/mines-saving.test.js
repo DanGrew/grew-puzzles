@@ -732,6 +732,41 @@ test('a Keys board: signed in, coming back, the zones I unlocked are still unloc
   await expect(keysSquare(back, 4, 4)).toHaveAttribute('data-cover', 'open');
 });
 
+// ---- A Canaries board (TASK-203) ----
+// A mine a canary found is saved among the opened squares, where no other mine ever is, so the
+// table needs nothing new. The board is tooling's own valid Canaries board, two canaries, served as
+// MINE-0905: its start square's area rows 3 to 5, cols 2 to 5; (4,0) and (5,1) mines, (3,0) a 1.
+const CANARIES = require('./fixtures/MINE-0905.json');
+const canarySquare = (page, r, c) => square(page, r, c, 6);
+const CANARY_START = [3, 4, 5].flatMap(r => [2, 3, 4, 5].map(c => [r, c]));
+
+test('a Canaries board: signed in, coming back, my opened squares, marks, canaries\' mines and Canaries left are as I left them; a Kaboom clears them all', async ({ context }) => {
+  const db = await playing(context);
+  await context.route('**/content/puzzles/minesweeper/MINE-0905.json', route => route.fulfill({ json: CANARIES }));
+  const page = await open(context, 'MINE-0905');
+  await page.click('#tool-canary');
+  await canarySquare(page, 4, 0).click();
+  await canarySquare(page, 3, 0).click();
+  await canarySquare(page, 3, 1).click({ button: 'right' });
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([[3, 1]], [...CANARY_START, [3, 0], [4, 0]].sort(byCell), false, 'MINE-0905')]);
+
+  await page.reload();
+  await expect(page.locator('#play')).toBeVisible();
+  await expect(count(page)).toHaveText('Canaries 1');
+  await expect(canarySquare(page, 4, 0)).toHaveAttribute('data-state', 'blown');
+  await expect(canarySquare(page, 3, 0)).toHaveAttribute('data-cover', 'open');
+  await expect(canarySquare(page, 3, 1)).toHaveAttribute('data-mark', 'mine');
+
+  await pickOpen(page);
+  await canarySquare(page, 5, 1).click();
+  await expect(page.locator('#kaboom')).toBeVisible();
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([], [], false, 'MINE-0905')]);
+  await page.reload();
+  await expect(page.locator('#play')).toBeVisible();
+  await expect(count(page)).toHaveText('Canaries 2');
+  await expect(page.locator('#grid [data-state="blown"]')).toHaveCount(0);
+});
+
 test('a finished Reveal board wears its ✓, a started one sits in Continue playing, and Finished filters it — no board\'s file opened', async ({ context }) => {
   const db = minesTable({ boards: [
     marks(REVEAL_MINES, REVEAL_SAFE, { puzzle: 'MINE-0901', finished: true }),

@@ -80,21 +80,22 @@ export function joinedHistory(play, history) {
 // Reveal board's opened squares are its proven-safe ones — and its mine marks in mines, in the order
 // they were placed, so a Limited Flags board's oldest mark is known on any device (the product's
 // TASK-179). Only a Reveal board's own page reads them, so they never mean dots to a Vanilla one. A
-// kaboom saves the row empty, so the board comes back at its start.
+// kaboom saves the row empty, so the board comes back at its start. A Canaries board's mines a canary
+// found go in no_mines too (the product's TASK-203): no square there is ever a mine otherwise, since
+// opening one is a kaboom, so a mine among them is a canary's, and the table needs nothing new.
 
 function keysCells(keys) {
   return keys.map(cellOf).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
 }
 
-// The board's row: its hidden ID, its mine marks, oldest first, its opened squares row by row and
-// whether it's finished — or,
-// once a mine has gone off, empty.
+// The board's row: its hidden ID, its mine marks, oldest first, its opened squares and its canaries'
+// mines row by row, and whether it's finished — or, once a mine has gone off, empty.
 export function revealRow(puzzle, play, board) {
   var live = play.boom === '';
   return {
     puzzle: puzzle,
     mines: Object.keys(play.marks).filter(function () { return live; }).map(cellOf),
-    no_mines: keysCells(Object.keys(play.open).filter(function () { return live; })),
+    no_mines: keysCells(Object.keys(play.open).concat(Object.keys(play.blown)).filter(function () { return live; })),
     finished: live && revealFinished(play, board)
   };
 }
@@ -111,18 +112,22 @@ function onBoard(cell, board) {
 }
 
 // The board as it was left, from its saved rows — none, or an empty one, and it's at its start. A
-// saved open square opens only if it isn't a mine, and a saved mark lands only on a square still
+// saved open square opens only if it isn't a mine; a saved mine there is a canary's, on a Canaries
+// board alone and no more of them than it gives; and a saved mark lands only on a square still
 // covered. A finished board comes back finished, its mines marked as the finish marks them, and
 // nothing is set off, so it doesn't celebrate again.
 export function restoredReveal(board, rows) {
   var play = newRevealPlay(board);
   rows.slice(0, 1).forEach(function (row) {
-    row.no_mines.filter(function (cell) { return onBoard(cell, board) && !board.mines.includes(keyOf(cell)); })
+    var saved = row.no_mines.filter(function (cell) { return onBoard(cell, board); });
+    saved.filter(function (cell) { return !board.mines.includes(keyOf(cell)); })
       .forEach(function (cell) { play.open[keyOf(cell)] = true; });
-    row.mines.filter(function (cell) { return onBoard(cell, board) && !play.open[keyOf(cell)]; })
+    saved.filter(function (cell) { return board.mines.includes(keyOf(cell)); }).slice(0, board.canaries)
+      .forEach(function (cell) { play.blown[keyOf(cell)] = true; });
+    row.mines.filter(function (cell) { return onBoard(cell, board) && !play.open[keyOf(cell)] && !play.blown[keyOf(cell)]; })
       .forEach(function (cell) { play.marks[keyOf(cell)] = 'mine'; });
   });
-  return { open: play.open, marks: finishedMarks(play, board), boom: '', events: [] };
+  return { open: play.open, marks: finishedMarks(play, board), blown: play.blown, boom: '', events: [] };
 }
 
 function finishedMarks(play, board) {
@@ -130,10 +135,11 @@ function finishedMarks(play, board) {
   return { true: all, false: play.marks }[revealFinished(play, board)];
 }
 
-// Played: anything marked, or opened past the start square's area — and no mine gone off.
+// Played: anything marked, opened past the start square's area, or a canary lost — and no mine gone
+// off.
 function revealPlayed(play, board) {
   var opened = Object.keys(play.open).length > Object.keys(newRevealPlay(board).open).length;
-  return play.boom === '' && (opened || Object.keys(play.marks).length > 0);
+  return play.boom === '' && (opened || Object.keys(play.marks).length + Object.keys(play.blown).length > 0);
 }
 
 // What signing in saves of the board on screen: nothing, if the player hasn't played it.
@@ -144,7 +150,7 @@ export function revealSyncRows(puzzle, play, board) {
 // The play once the saved board is joined to it: the board on screen, if it's been played, else the
 // saved board.
 export function joinedReveal(play, saved, board) {
-  return { true: { open: play.open, marks: play.marks, boom: '', events: [] }, false: saved }[revealPlayed(play, board)];
+  return { true: { open: play.open, marks: play.marks, blown: play.blown, boom: '', events: [] }, false: saved }[revealPlayed(play, board)];
 }
 
 // Undo's history once the saved board is joined, as joinedHistory's.

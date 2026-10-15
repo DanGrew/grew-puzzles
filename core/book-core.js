@@ -4,12 +4,14 @@
 // page's (ui/wordsearch/play-ui.js drawSheet), a maze's the maze page's (ui/maze/sheet-ui.js
 // drawMazeSheet), a minesweeper board's the minesweeper page's (ui/minesweeper/sheet-ui.js
 // drawMinesSheet), a criss-cross's the criss-cross page's (ui/crisscross/sheet-ui.js
-// drawCrissSheet) — nothing here says how a puzzle looks. Nothing the book adds names a hidden ID
+// drawCrissSheet), a mosaic's the mosaic page's (ui/mosaic/sheet-ui.js drawMosaicSheet) — nothing
+// here says how a puzzle looks. Nothing the book adds names a hidden ID
 // or gives an answer: the answers stay on the site.
 import { kindOf } from './kind-core.js';
 import { mazePrints } from './maze/play-core.js';
 import { minesPrints } from './minesweeper/play-core.js';
 import { crissPrints } from './crisscross/play-core.js';
+import { mosaicPrints } from './mosaic/play-core.js';
 // The print styles a book or a puzzle's page prints in, as the side bar lists them: Colour, Black
 // and white (mono), Plain.
 export const PRINT_STYLES = ['colour', 'mono', 'plain'];
@@ -42,8 +44,8 @@ export function pageNumbers(boards) {
 // A wordsearch always prints in the book; a maze only at 32×40 (play-core's mazePrints), told by
 // its width and height in the mazes' index (mazes, its entries). A bigger maze, or one the index
 // doesn't list, plays on the site alone and is left out, its number skipped — as is any kind with
-// no rule here. A minesweeper board's or a criss-cross's file is opened whatever its size, and
-// printedPages decides.
+// no rule here. A minesweeper board's, a criss-cross's or a mosaic's file is opened whatever its
+// size, and printedPages decides.
 function printsIn(mazes) {
   const sizes = new Map(mazes.map(m => [m.hiddenId, m]));
   const PRINTS = {
@@ -51,13 +53,15 @@ function printsIn(mazes) {
     maze: id => [sizes.get(id)].filter(Boolean).some(m => mazePrints(m.width, m.height)),
     minesweeper: () => true,
     crisscross: () => true,
+    mosaic: () => true,
   };
   return id => Object.hasOwn(PRINTS, kindOf(id)) && PRINTS[kindOf(id)](id);
 }
 
 // Why a minesweeper board takes no page: a Reveal board never prints, as paper can't cover a square
-// (the product's TASK-174) — nor any board playing by its rule, a Canaries board's too (TASK-204); a Vanilla board only while its numbers stay readable on one sheet
-// (play-core's minesPrints). '' when it prints.
+// (the product's TASK-174) — nor any board playing by its rule, a Canaries board's too (TASK-204);
+// a Vanilla board only while its numbers stay readable on one sheet (play-core's minesPrints). ''
+// when it prints.
 function minesLeftOut(board) {
   if (board.rule === 'reveal') return 'screen';
   return minesPrints(board.cols, board.rows) ? '' : 'big';
@@ -65,11 +69,16 @@ function minesLeftOut(board) {
 
 // Which of the book's puzzles take a page, once each one's board is in (its kind's own, as
 // pageNumbers takes): a minesweeper board as minesLeftOut says — told by its own file, as its index
-// entry carries its size only with a difficulty — and a criss-cross only while its squares and its
-// list fit one (play-core's crissPrints). A puzzle left out has its number skipped, and is named in
-// the note on the book's page (leftOutNote): left those too big, screen the Reveal boards.
+// entry carries its size only with a difficulty — a criss-cross only while its squares and its
+// list fit one (play-core's crissPrints), and a mosaic only up to 30 squares a side (play-core's
+// mosaicPrints). A puzzle left out has its number skipped, and is named in the note on the book's
+// page (leftOutNote): left those too big, screen the Reveal boards.
 export function printedPages(pages, boards) {
-  const LEFT_OUT = { minesweeper: minesLeftOut, crisscross: board => (crissPrints(board) ? '' : 'big') };
+  const LEFT_OUT = {
+    minesweeper: minesLeftOut,
+    crisscross: board => (crissPrints(board) ? '' : 'big'),
+    mosaic: board => (mosaicPrints(board) ? '' : 'big'),
+  };
   const why = pages.map((page, i) => (Object.hasOwn(LEFT_OUT, page.kind) ? LEFT_OUT[page.kind](boards[i]) : ''));
   const numbers = reason => pages.filter((_, i) => why[i] === reason).map(page => page.number);
   return {

@@ -2,9 +2,8 @@ import { createRequire } from 'module';
 import { bookView, pageNumbers, printStyleOf, PRINT_STYLES, printedPages, leftOutNote } from '../../core/book-core.js';
 import { minesBoard } from '../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
-// MINE-0920 — a real 10×10 Hard Canaries board of 1 canary, made by tooling's generator and
-// passing its checks.
-const CANARIES_FILE = require('../fixtures/MINE-0920.json');
+// MINE-0905 — tooling's own valid 6×6 Hard Canaries board, two canaries, passing its checks.
+const CANARIES_FILE = require('../fixtures/MINE-0905.json');
 
 const collections = () => [
   { slug: 'other', name: 'Other', description: 'Not this one.', created: '2026-10-01', puzzles: [{ id: 'WSCH-0001', number: 1 }] },
@@ -92,6 +91,29 @@ describe('book-core.js', () => {
     expect(printedPages(pages, boards)).toEqual({
       pages: [page(1, 'crisscross'), page(2, 'wordsearch'), page(5, 'minesweeper')],
       boards: [shape(17, 15, 20), { sheets: [] }, { cols: 10, rows: 10 }],
+      left: [3, 4],
+      screen: [],
+    });
+  });
+
+  test('a mosaic takes its place in number order, its file opened whatever its size', () => {
+    const mosaics = [{
+      slug: 'mosaics', name: 'Mosaics', description: '', created: '2026-10-15',
+      puzzles: [{ id: 'WSCH-0001', number: 2 }, { id: 'MOSA-0001', number: 1 }],
+    }];
+    expect(bookView(mosaics, 'mosaics', []).pages).toEqual([
+      { heading: 'Puzzle 1', number: 1, kind: 'mosaic', search: '?id=MOSA-0001' },
+      { heading: 'Puzzle 2', number: 2, kind: 'wordsearch', search: '?id=WSCH-0001' },
+    ]);
+  });
+
+  test('once the boards are in, a mosaic up to 30 squares along both sides keeps its page; a bigger one is left out, by number', () => {
+    const page = (number, kind) => ({ heading: `Puzzle ${number}`, number, kind, search: '' });
+    const pages = [page(1, 'mosaic'), page(2, 'wordsearch'), page(3, 'mosaic'), page(4, 'mosaic'), page(5, 'mosaic')];
+    const boards = [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 30, rows: 38 }, { cols: 198, rows: 198 }, { cols: 12, rows: 12 }];
+    expect(printedPages(pages, boards)).toEqual({
+      pages: [page(1, 'mosaic'), page(2, 'wordsearch'), page(5, 'mosaic')],
+      boards: [{ cols: 30, rows: 30 }, { sheets: [] }, { cols: 12, rows: 12 }],
       left: [3, 4],
       screen: [],
     });
