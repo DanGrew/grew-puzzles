@@ -26,6 +26,13 @@ async function open(page, id) {
   await page.route('**/content/puzzles/minesweeper/MINE-0001.json', route => route.fulfill({ json: VANILLA }));
   await page.goto('/app/minesweeper.html?id=' + (id || 'MINE-0901'));
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
+}
+
+// Mark mine is picked as each page opens; these tests play with Open picked, so a click opens and a
+// right-click marks. A Vanilla board has no switch, and the pick does nothing on it.
+async function pickOpen(page) {
+  await page.locator('#tool-open').evaluate(button => button.click());
 }
 
 const square = (page, r, c, cols = 10) => page.locator('#grid .mines-square').nth(r * cols + c);
@@ -39,7 +46,7 @@ async function pick(page, tool) {
   await page.click('#tool-' + tool);
 }
 
-// A right-click: the tool that isn't picked, so with Open picked, as each page opens, it marks.
+// A right-click: the tool that isn't picked, so with Open picked, it marks.
 async function mark(page, r, c) {
   await square(page, r, c).click({ button: 'right' });
 }
@@ -76,9 +83,16 @@ test.describe('a Reveal board', () => {
     await expect(page.locator('#complete')).toBeHidden();
   });
 
-  test('Open | Mark mine sits right under the board, Open picked', async ({ page }) => {
-    await expect(page.locator('#tool-open')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#tool-mark')).toHaveAttribute('aria-pressed', 'false');
+  test('Open | Mark mine sits right under the board, Mark mine picked as the page opens', async ({ page }) => {
+    await page.reload();
+    await expect(page.locator('#play')).toBeVisible();
+    await expect(page.locator('#tool-mark')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#tool-open')).toHaveAttribute('aria-pressed', 'false');
+    // A tap marks, then, and a right-click opens.
+    await square(page, 7, 6).click();
+    await expect(square(page, 7, 6)).toHaveAttribute('data-mark', 'mine');
+    await square(page, 7, 7).click({ button: 'right' });
+    await expect(square(page, 7, 7)).toHaveAttribute('data-cover', 'open');
     const stage = await page.locator('#stage').boundingBox();
     const pickBox = await page.locator('.mines-tool-pick').boundingBox();
     expect(pickBox.y).toBeGreaterThan(stage.y + stage.height);

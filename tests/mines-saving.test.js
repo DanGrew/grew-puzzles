@@ -127,7 +127,14 @@ async function open(context, id = 'MINE-0001') {
   const page = await context.newPage();
   await page.goto('/app/minesweeper.html?id=' + id);
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
   return page;
+}
+
+// Mark mine is picked as each page opens; these tests play with Open picked, so a click opens and a
+// right-click marks. A Vanilla board has no switch, and the pick does nothing on it.
+async function pickOpen(page) {
+  await page.locator('#tool-open').evaluate(button => button.click());
 }
 
 const square = (page, r, c, cols = 10) => page.locator('#grid .mines-square').nth(r * cols + c);
@@ -665,6 +672,36 @@ test('a Reveal board: signing in at its start picks the board up where I left it
   expect(db.saves).toEqual([]);
 });
 
+// ---- A Limited Flags board (TASK-179) ----
+// It saves nothing new: its mine marks go in the order they were placed, so the oldest is known on
+// any device. The board is the 10×10 Reveal fixture with a flag limit of 5, served as MINE-0904.
+const FLAGS = require('./fixtures/MINE-0904.json');
+
+test('a Limited Flags board: signed in, coming back on another device, my marks and Flags left are as I left them, the oldest still the oldest', async ({ browser }) => {
+  const db = minesTable();
+  const laptop = await browser.newContext();
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  for (const context of [laptop, phone]) {
+    await playing(context, { db });
+    await context.route('**/content/puzzles/minesweeper/MINE-0904.json', route => route.fulfill({ json: FLAGS }));
+  }
+  const there = await open(laptop, 'MINE-0904');
+  for (const [r, c] of [[9, 9], [7, 6], [8, 5], [8, 9], [6, 5], [4, 4]]) await square(there, r, c).click({ button: 'right' });
+  const left = [[7, 6], [8, 5], [8, 9], [6, 5], [4, 4]];
+  await expect.poll(() => boardsSaved(db)).toEqual([saved(left, REVEAL_START, false, 'MINE-0904')]);
+
+  const here = await open(phone, 'MINE-0904');
+  await expect(count(here)).toHaveText('Flags left 0');
+  await expect(here.locator('#flag-slots .flag-slot[data-full="true"]')).toHaveCount(0);
+  for (const [r, c] of left) expect(await markOf(here, r, c)).toBe('mine');
+  expect(await markOf(here, 9, 9)).toBe('blank');
+  await square(here, 4, 6).click({ button: 'right' });
+  await expect.poll(() => markOf(here, 7, 6)).toBe('blank');
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([...left.slice(1), [4, 6]], REVEAL_START, false, 'MINE-0904')]);
+  await laptop.close();
+  await phone.close();
+});
+
 // ---- A Keys board (TASK-177) ----
 // It saves nothing new: a zone is unlocked once its key's square is open, and opened squares are
 // saved. The board is the 6×6 Keys fixture, served as MINE-0903: Zone 2's key on (0,5), Zone 1's on
@@ -680,6 +717,7 @@ test('a Keys board: signed in, coming back, the zones I unlocked are still unloc
   await expect.poll(() => boardsSaved(db).map(row => row.no_mines.some(([r, c]) => r === 0 && c === 5))).toEqual([true]);
   await page.reload();
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
   await expect(keysSquare(page, 0, 5)).toHaveAttribute('data-found', '2');
   await expect(keysSquare(page, 0, 5)).not.toHaveClass(/key-pop/);
   await expect(keysSquare(page, 5, 0)).toHaveAttribute('data-lock', '');

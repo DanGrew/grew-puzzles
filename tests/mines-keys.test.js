@@ -24,6 +24,13 @@ async function open(page, id = 'MINE-0903') {
   await page.route('**/content/puzzles/minesweeper/MINE-0901.json', route => route.fulfill({ json: REVEAL }));
   await page.goto('/app/minesweeper.html?id=' + id);
   await expect(page.locator('#play')).toBeVisible();
+  await pickOpen(page);
+}
+
+// Mark mine is picked as each page opens; these tests play with Open picked, so a click opens and a
+// right-click marks. A Vanilla board has no switch, and the pick does nothing on it.
+async function pickOpen(page) {
+  await page.locator('#tool-open').evaluate(button => button.click());
 }
 
 const square = (page, r, c) => page.locator('#grid .mines-square').nth(r * 6 + c);

@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import { minesBoard, minesMistakes, minesCount, answerSquares, keyHiddenAt } from '../../../core/minesweeper/play-core.js';
 import {
-  newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, keysFound
+  newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, keysFound,
+  marksLifted, revealCount, flagSlots
 } from '../../../core/minesweeper/reveal-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/reveal-core.js, against tooling's own valid Reveal board (its
@@ -18,13 +19,14 @@ const BIG_FILE = require('../../fixtures/MINE-0901.json');
 
 // Built per test, never at load: the mutation runner doesn't reload this file between mutants.
 let BOARD;
+const BOARD_FILE = () => ({
+  hiddenId: 'MINE-0002', type: 'Reveal', created: '2026-10-14', title: 'Reveal 001', difficulty: 'Medium', width: 6, height: 6,
+  numbersPerStep: 3, numbers: ['01.100', '121211', '.101.1', '231211', '.3.100', '2.2100'],
+  mines: [{ row: 0, col: 2 }, { row: 2, col: 0 }, { row: 2, col: 4 }, { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 5, col: 1 }],
+  start: { row: 2, col: 2 }
+});
 beforeEach(() => {
-  BOARD = minesBoard({
-    hiddenId: 'MINE-0002', type: 'Reveal', created: '2026-10-14', title: 'Reveal 001', difficulty: 'Medium', width: 6, height: 6,
-    numbersPerStep: 3, numbers: ['01.100', '121211', '.101.1', '231211', '.3.100', '2.2100'],
-    mines: [{ row: 0, col: 2 }, { row: 2, col: 0 }, { row: 2, col: 4 }, { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 5, col: 1 }],
-    start: { row: 2, col: 2 }
-  });
+  BOARD = minesBoard(BOARD_FILE());
 });
 
 const START = ['1,1', '1,2', '1,3', '2,1', '2,2', '2,3', '3,1', '3,2', '3,3'];
@@ -191,46 +193,150 @@ describe('the finish', () => {
   });
 });
 
+// Each tap played as the page plays it, its history kept as the page keeps it.
+function played(steps, board = BOARD) {
+  return steps.reduce(({ play, history }, [key, tool]) => {
+    const next = tapReveal(play, cell(key), board, tool);
+    return { play: next, history: revealTapped(history, play, next) };
+  }, { play: newRevealPlay(board), history: [] });
+}
+
+const undoAll = ({ play, history }) => (canUndoReveal(history, play, BOARD) ? undoAll(undoneReveal(history, play)) : { play, history });
+
 describe('Undo', () => {
-  it('a tap that changed a mark joins the history; an opening, or a tap that changed nothing, doesn\'t', () => {
+  it('a tap that changed a mark joins the history as the marks before it; an opening, or a tap that changed nothing, doesn\'t', () => {
     const play = newRevealPlay(BOARD);
     const marked = tapReveal(play, [0, 2], BOARD, 'mark');
-    expect(revealTapped([], play, marked, [0, 2])).toEqual(['0,2']);
-    expect(revealTapped(['1,0'], play, tapReveal(play, [0, 3], BOARD, 'open'), [0, 3])).toEqual(['1,0']);
-    expect(revealTapped([], play, tapReveal(play, [1, 2], BOARD, 'open'), [1, 2])).toEqual([]);
+    expect(revealTapped([], play, marked)).toEqual([{}]);
+    expect(revealTapped([{}], marked, tapReveal(marked, [0, 3], BOARD, 'mark'))).toEqual([{}, { '0,2': 'mine' }]);
+    expect(revealTapped([{}], play, tapReveal(play, [0, 3], BOARD, 'open'))).toEqual([{}]);
+    expect(revealTapped([], play, tapReveal(play, [1, 2], BOARD, 'open'))).toEqual([]);
   });
 
   it('takes the last mark off, and puts back a mark taken off, newest first', () => {
-    const one = taps([['0,2', 'mark']]);
-    const two = taps([['0,3', 'mark']], one);
-    const undone = undoneReveal(['0,2', '0,3'], two);
+    const two = played([['0,2', 'mark'], ['0,3', 'mark']]);
+    const undone = undoneReveal(two.history, two.play);
     expect(undone.play.marks).toEqual({ '0,2': 'mine' });
-    expect(undone.history).toEqual(['0,2']);
-    const cleared = taps([['0,2', 'mark']], one);
-    expect(undoneReveal(['0,2', '0,2'], cleared).play.marks).toEqual({ '0,2': 'mine' });
+    expect(undone.history).toEqual([{}]);
+    const cleared = played([['0,2', 'mark'], ['0,2', 'mark']]);
+    expect(undoneReveal(cleared.history, cleared.play).play.marks).toEqual({ '0,2': 'mine' });
+  });
+
+  it('puts a mark taken off back where it was in the order placed', () => {
+    const { play, history } = played([['0,2', 'mark'], ['0,3', 'mark'], ['0,2', 'mark']]);
+    expect(Object.keys(play.marks)).toEqual(['0,3']);
+    expect(Object.keys(undoneReveal(history, play).play.marks)).toEqual(['0,2', '0,3']);
   });
 
   it('never undoes an opening: a square opened since is passed over', () => {
     // (0,3) marked, cleared, then opened: only (0,2)'s mark is left to take back.
-    const play = taps([['0,2', 'mark'], ['0,3', 'mark'], ['0,3', 'mark'], ['0,3', 'open']]);
-    const undone = undoneReveal(['0,2', '0,3', '0,3'], play);
+    const { play, history } = played([['0,2', 'mark'], ['0,3', 'mark'], ['0,3', 'mark'], ['0,3', 'open']]);
+    const undone = undoneReveal(history, play);
     expect(undone.play.marks).toEqual({});
     expect(undone.play.open['0,3']).toBe(true);
     expect(undone.history).toEqual([]);
   });
 
+  it('passes over a mark cleared from a square opened since, to the mark placed before it', () => {
+    // (0,3) and (0,4) marked, (0,3) cleared then opened: Undo takes (0,4)'s mark off, then greys.
+    const { play, history } = played([['0,3', 'mark'], ['0,4', 'mark'], ['0,3', 'mark'], ['0,3', 'open']]);
+    const undone = undoneReveal(history, play);
+    expect(undone.play.marks).toEqual({});
+    expect(undone.history).toEqual([{}]);
+    expect(canUndoReveal(undone.history, undone.play, BOARD)).toBe(false);
+    expect(undoAll({ play, history }).play.marks).toEqual({});
+  });
+
   it('with nothing left to take back, the play is as it was', () => {
     const play = taps([['0,3', 'open']]);
-    expect(undoneReveal(['0,3'], play)).toEqual({ play: { open: play.open, marks: {}, boom: '', events: [] }, history: [] });
+    expect(undoneReveal([{ '0,3': 'mine' }], play)).toEqual({ play: { open: play.open, marks: {}, boom: '', events: [] }, history: [] });
+    expect(undoneReveal([], play)).toEqual({ play: { open: play.open, marks: {}, boom: '', events: [] }, history: [] });
+    // Undo never takes back a kaboom.
+    expect(undoneReveal([{}], taps([['0,3', 'mark'], ['0,2', 'open']])).play.boom).toBe('0,2');
   });
 
   it('greys out with no marks left to take back, once only openings are left, and once the game is over', () => {
-    const play = taps([['0,3', 'mark']]);
+    const { play, history } = played([['0,3', 'mark']]);
     expect(canUndoReveal([], play, BOARD)).toBe(false);
-    expect(canUndoReveal(['0,3'], play, BOARD)).toBe(true);
-    expect(canUndoReveal(['0,3'], taps([['0,3', 'mark'], ['0,3', 'open']], play), BOARD)).toBe(false);
-    expect(canUndoReveal(['0,3'], taps([['0,2', 'open']], play), BOARD)).toBe(false);
-    expect(canUndoReveal(['0,3'], openAll(taps([['0,3', 'mark']], play)), BOARD)).toBe(false);
+    expect(canUndoReveal(history, play, BOARD)).toBe(true);
+    const opened = played([['0,3', 'mark'], ['0,3', 'mark'], ['0,3', 'open']]);
+    expect(canUndoReveal(opened.history, opened.play, BOARD)).toBe(false);
+    expect(canUndoReveal(history, taps([['0,2', 'open']], play), BOARD)).toBe(false);
+    expect(canUndoReveal(history, openAll(taps([['0,3', 'mark']], play)), BOARD)).toBe(false);
+  });
+});
+
+// A Limited Flags board (the product's TASK-179): the same 6×6 Reveal board, with a flag limit of 2.
+describe('a Limited Flags board', () => {
+  let LIMITED;
+  beforeEach(() => {
+    LIMITED = minesBoard({ ...BOARD_FILE(), type: 'Limited Flags', title: 'Limited Flags 001', flagLimit: 2 });
+  });
+  const limitedTaps = steps => played(steps, LIMITED).play;
+
+  it('reads its flag limit from its file; any other board has none', () => {
+    expect(LIMITED).toMatchObject({ rule: 'reveal', limited: true, flagLimit: 2 });
+    expect(BOARD).toMatchObject({ limited: false, flagLimit: 0 });
+  });
+
+  it('the Mines card reads the flags left: down one for each mark, back up for each taken off', () => {
+    expect(revealCount(newRevealPlay(LIMITED), LIMITED)).toBe('Flags left 2');
+    expect(revealCount(limitedTaps([['0,2', 'mark']]), LIMITED)).toBe('Flags left 1');
+    expect(revealCount(limitedTaps([['0,2', 'mark'], ['0,3', 'mark']]), LIMITED)).toBe('Flags left 0');
+    expect(revealCount(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,2', 'mark']]), LIMITED)).toBe('Flags left 1');
+    // Any other Reveal board counts mines marked of its mines.
+    expect(revealCount(taps([['0,2', 'mark']]), BOARD)).toBe('1/6');
+  });
+
+  it('the row of flags has a box per flag, the flags left full first, the used ones empty', () => {
+    expect(flagSlots(newRevealPlay(LIMITED), LIMITED)).toEqual([true, true]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark']]), LIMITED)).toEqual([true, false]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,4', 'mark']]), LIMITED)).toEqual([false, false]);
+    expect(flagSlots(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,2', 'mark']]), LIMITED)).toEqual([true, false]);
+    // Any other Reveal board has none.
+    expect(flagSlots(taps([['0,2', 'mark']]), BOARD)).toEqual([]);
+  });
+
+  it('marks up to its limit as any Reveal board does, nothing moved', () => {
+    const play = limitedTaps([['0,2', 'mark'], ['0,3', 'mark']]);
+    expect(play.marks).toEqual({ '0,2': 'mine', '0,3': 'mine' });
+    expect(play.events).toEqual([]);
+  });
+
+  it('with no flags left, a new mark takes the oldest one\'s place, and says it moved', () => {
+    const play = limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,4', 'mark']]);
+    expect(Object.keys(play.marks)).toEqual(['0,3', '0,4']);
+    expect(play.events).toEqual(['moved']);
+    expect(revealCount(play, LIMITED)).toBe('Flags left 0');
+    expect(marksLifted(limitedTaps([['0,2', 'mark'], ['0,3', 'mark']]), play)).toEqual(['0,2']);
+    // First in, first out: the next takes (0,3)'s.
+    expect(Object.keys(limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,4', 'mark'], ['0,5', 'mark']]).marks)).toEqual(['0,4', '0,5']);
+  });
+
+  it('a mark taken off and put back is the newest, so it is the last to move', () => {
+    const play = limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,2', 'mark'], ['0,2', 'mark'], ['0,4', 'mark']]);
+    expect(Object.keys(play.marks)).toEqual(['0,2', '0,4']);
+  });
+
+  it('taking a mark off frees its flag and moves nothing', () => {
+    const play = limitedTaps([['0,2', 'mark'], ['0,3', 'mark'], ['0,3', 'mark']]);
+    expect(play).toMatchObject({ marks: { '0,2': 'mine' }, events: [] });
+  });
+
+  it('Undo after a move takes the new mark off and puts the oldest back where it was, the oldest still', () => {
+    const moved = played([['0,2', 'mark'], ['0,3', 'mark'], ['0,4', 'mark']], LIMITED);
+    const undone = undoneReveal(moved.history, moved.play);
+    expect(Object.keys(undone.play.marks)).toEqual(['0,2', '0,3']);
+    expect(revealCount(undone.play, LIMITED)).toBe('Flags left 0');
+    expect(Object.keys(tapReveal(undone.play, [0, 5], LIMITED, 'mark').marks)).toEqual(['0,3', '0,5']);
+  });
+
+  it('the finish marks every mine, the flags left never under none', () => {
+    const last = SAFE().reduce((p, key) => (p.open[key] ? p : tapReveal(p, cell(key), LIMITED, 'open')), limitedTaps([['0,2', 'mark']]));
+    expect(last.events).toEqual(['complete']);
+    expect(Object.keys(last.marks)).toHaveLength(6);
+    expect(revealCount(last, LIMITED)).toBe('Flags left 0');
+    expect(flagSlots(last, LIMITED)).toEqual([false, false]);
   });
 });
 

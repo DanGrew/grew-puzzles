@@ -10,7 +10,8 @@ import {
   minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, boardPrints
 } from '../../core/minesweeper/play-core.js';
 import {
-  newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished, keysFound
+  newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished, keysFound,
+  marksLifted, revealCount, flagSlots
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
@@ -43,8 +44,8 @@ var MINES_OPENS = { vanilla: openVanilla, reveal: openReveal };
 var REVEAL_HOLD_MS = 420;
 // What a finished Reveal board says.
 var REVEAL_COMPLETE = 'Solved — every safe square open';
-// How long a padlock's shake, a key's pop and a padlock's drop take to play out, ms
-// (styles/minesweeper.css), before the square loses the class that plays it.
+// How long a padlock's shake, a key's pop, a padlock's drop and a moved mark's fade take to play
+// out, ms (styles/minesweeper.css), before the square loses the class that plays it.
 var KEYS_MOTION_MS = 1000;
 
 function minesEl(id) {
@@ -326,17 +327,21 @@ function vanillaGame(id, board, play, squares) {
 
 // A Reveal board's game, after the product's docs/MOCKUP-MINES-REVEAL.html: covered but for its
 // start square's area; a tap opens a square or marks it, as Open | Mark mine under the board picks
-// — Open each time the page opens — and a right-click, or a press held still, taps with the other. Opening
+// — Mark mine each time the page opens — and a right-click, or a press held still, taps with the other. Opening
 // a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
 // back mine marks only, this visit's alone. play is the board as the player left it, already in
 // place; signed in, every tap and Undo that changes it is saved under its hidden ID, and a kaboom
 // saves it cleared, so it comes back at its start. A Keys board's zones wear padlocks in their
 // colours until their keys turn up: a tap on one shakes its padlock, and opening a key's square pops
-// the key up on it and drops its zone's padlocks (the product's TASK-177).
+// the key up on it and drops its zone's padlocks (the product's TASK-177). A Limited Flags board's
+// Mines card counts the flags left and says its limit, a row of flags above the switch empties a box
+// for each mark, and a mark past it fades the oldest off its square (the product's TASK-179).
 function revealGame(id, board, play, squares, cells) {
-  var history = [], tool = 'open';
+  var history = [], tool = 'mark';
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
-  var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate, locked: shakeLock };
+  var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate, locked: shakeLock, moved: fadeMoved };
+  minesEl('play').dataset.limited = String(board.limited);
+  minesEl('flag-limit').textContent = board.flagLimit;
   // A finger or a pen held still taps with the other tool; the mouse does by its right button.
   var HOLDS = { true: noop, false: startHold };
   var HOLD_MOVES = { true: endHold, false: noop };
@@ -361,11 +366,16 @@ function revealGame(id, board, play, squares, cells) {
   function step(cell, next) {
     var before = play;
     saveTap(id, board, play, next);
-    history = revealTapped(history, play, next, cell);
+    history = revealTapped(history, play, next);
     play = next;
     render();
-    play.events.forEach(function (e) { REVEAL_EVENTS[e](cell); });
+    play.events.forEach(function (e) { REVEAL_EVENTS[e](cell, before); });
     keysFound(before, play, board).forEach(popKey);
+  }
+
+  // A mark past the flag limit: the oldest fades off its square as the new one lands.
+  function fadeMoved(cell, before) {
+    marksLifted(before, play).forEach(function (k) { playOut(squares.get(k), 'flag-lift'); });
   }
 
   // A padlocked square tapped: its padlock shakes, and nothing else happens.
@@ -487,15 +497,30 @@ function revealGame(id, board, play, squares, cells) {
       square.textContent = s.number;
       square.setAttribute('aria-label', s.label);
     });
-    minesEl('count').textContent = minesCount(play, board);
+    minesEl('count').textContent = revealCount(play, board);
+    renderFlags();
     minesEl('check-line').hidden = true;
     minesEl('undo').disabled = !canUndoReveal(history, play, board);
     minesEl('complete').hidden = !revealFinished(play, board);
     minesEl('kaboom').hidden = !play.boom;
   }
+
+  // One box per flag: a flag in it while it's still to use, empty once a mark has taken it.
+  function renderFlags() {
+    var slots = flagSlots(play, board);
+    var row = minesEl('flag-slots');
+    row.replaceChildren.apply(row, slots.map(function (full) {
+      var box = document.createElement('span');
+      box.className = 'flag-slot';
+      box.dataset.full = String(full);
+      return box;
+    }));
+    row.setAttribute('aria-label', 'Flags left ' + slots.filter(Boolean).length + ' of ' + slots.length);
+  }
 }
 
-// A square's one-off motion played from its start, its class gone again once it has played out.
+// A square's one-off motion — a Keys board's, or a Limited Flags mark fading — played from its
+// start, its class gone again once it has played out.
 function playOut(square, motion) {
   square.classList.remove(motion);
   void square.offsetWidth;
