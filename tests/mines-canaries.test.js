@@ -95,6 +95,25 @@ test.describe('a Canaries board', () => {
     await expect(canary(page)).toBeDisabled();
   });
 
+  test('a row of canaries above the switch, a box per canary, empties a box for each one lost', async ({ page }) => {
+    const slots = page.locator('#canary-slots .canary-slot');
+    const full = page.locator('#canary-slots .canary-slot[data-full="true"]');
+    await expect(page.locator('#canary-slots')).toBeVisible();
+    await expect(page.locator('#flag-slots')).toBeHidden();
+    await expect(slots).toHaveCount(2);
+    await expect(full).toHaveCount(2);
+    await sendCanary(page, 3, 1);
+    await expect(full).toHaveCount(2);
+    await sendCanary(page, 4, 0);
+    await expect(full).toHaveCount(1);
+    await expect(slots.nth(1)).toHaveAttribute('data-full', 'false');
+    await expect(page.locator('#canary-slots')).toHaveAttribute('aria-label', 'Canaries left 1 of 2');
+    await page.click('#tool-open');
+    await square(page, 5, 1).click();
+    await page.click('#again');
+    await expect(full).toHaveCount(2);
+  });
+
   test('Open on a mine is Kaboom! with Try again, canaries left or not; Try again gives every canary back', async ({ page }) => {
     await sendCanary(page, 4, 0);
     await page.click('#tool-open');
@@ -176,6 +195,7 @@ test('a Reveal board with no canaries has no Canary, keeps "You never need to gu
   await open(page, 'MINE-0901');
   await expect(canary(page)).toBeHidden();
   await expect(page.locator('.canaries-rule')).toBeHidden();
+  await expect(page.locator('#canary-slots')).toBeHidden();
   await expect(page.locator('.reveal-rule')).toContainText('You never need to guess.');
   await expect(count(page)).toHaveText('0/15');
 });

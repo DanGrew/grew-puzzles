@@ -11,7 +11,7 @@ import {
 } from '../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished, keysFound,
-  marksLifted, revealCount, flagSlots, canariesLeft
+  marksLifted, revealCount, flagSlots, canariesLeft, canarySlots
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
@@ -339,7 +339,8 @@ function vanillaGame(id, board, play, squares) {
 // Canaries board's Canary, beside the switch and apart from it, is picked for one tap: on a mine
 // it's lost, the mine shown for good and the Mines card counting the canaries left, never the game;
 // a right-click or a held press still taps with the one of Open | Mark mine not picked, spending no
-// canary (the product's TASK-203).
+// canary; a row of canaries above the switch empties a box for each one lost (the product's
+// TASK-203).
 function revealGame(id, board, play, squares, cells) {
   var history = [], tool = 'mark', canary = false;
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
@@ -514,24 +515,25 @@ function revealGame(id, board, play, squares, cells) {
     });
     minesEl('count').textContent = revealCount(play, board);
     minesEl('tool-canary').disabled = canariesLeft(play, board) < 1;
-    renderFlags();
+    renderSlots('flag-slots', 'flag-slot', 'Flags left', flagSlots(play, board));
+    renderSlots('canary-slots', 'canary-slot', 'Canaries left', canarySlots(play, board));
     minesEl('check-line').hidden = true;
     minesEl('undo').disabled = !canUndoReveal(history, play, board);
     minesEl('complete').hidden = !revealFinished(play, board);
     minesEl('kaboom').hidden = !play.boom;
   }
 
-  // One box per flag: a flag in it while it's still to use, empty once a mark has taken it.
-  function renderFlags() {
-    var slots = flagSlots(play, board);
-    var row = minesEl('flag-slots');
+  // One box per flag or canary: one in it while it's still to use, empty once a mark has taken it
+  // or the canary is lost.
+  function renderSlots(id, className, name, slots) {
+    var row = minesEl(id);
     row.replaceChildren.apply(row, slots.map(function (full) {
       var box = document.createElement('span');
-      box.className = 'flag-slot';
+      box.className = className;
       box.dataset.full = String(full);
       return box;
     }));
-    row.setAttribute('aria-label', 'Flags left ' + slots.filter(Boolean).length + ' of ' + slots.length);
+    row.setAttribute('aria-label', name + ' ' + slots.filter(Boolean).length + ' of ' + slots.length);
   }
 }
 

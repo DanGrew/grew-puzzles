@@ -91,6 +91,12 @@ export function canariesLeft(play, board) {
   return board.canaries - Object.keys(play.blown).length;
 }
 
+// The row of canaries above the switch, one per canary the board gives, as the flags row is: true
+// while it's still to use, false once lost — the canaries left first. A board with none has none.
+export function canarySlots(play, board) {
+  return slots(canariesLeft(play, board), board.canaries);
+}
+
 // A canary sent to a covered square: a mine takes it, and shows; any other square opens. With none
 // left, nothing happens.
 function canaryOpens(play, key, board) {
@@ -137,8 +143,12 @@ export function revealCount(play, board) {
 // The row of flags above the switch, one per flag of the limit: true while it's still to use, false
 // once a mark has taken it — the flags left first. A board with no limit has none.
 export function flagSlots(play, board) {
-  var left = flagsLeft(play, board);
-  return Array.from({ length: board.flagLimit }, function (_, i) { return i < left; });
+  return slots(flagsLeft(play, board), board.flagLimit);
+}
+
+// A row of boxes, one per thing a board gives: true while it's still to use, those first.
+function slots(left, total) {
+  return Array.from({ length: total }, function (_, i) { return i < left; });
 }
 
 function flagsLeft(play, board) {

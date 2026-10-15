@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import { minesBoard, minesMistakes, minesCount, answerSquares, keyHiddenAt } from '../../../core/minesweeper/play-core.js';
 import {
   newRevealPlay, revealFinished, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, keysFound,
-  marksLifted, revealCount, flagSlots, canariesLeft
+  marksLifted, revealCount, flagSlots, canariesLeft, canarySlots
 } from '../../../core/minesweeper/reveal-core.js';
 const require = createRequire(import.meta.url);
 // core/minesweeper/reveal-core.js, against tooling's own valid Reveal board (its
@@ -598,6 +598,15 @@ describe('a Canaries board', () => {
   it('the Mines card reads the canaries left: the file\'s count to start', () => {
     expect(revealCount(newRevealPlay(CANARIES), CANARIES)).toBe('Canaries 2');
     expect(canariesLeft(newRevealPlay(CANARIES), CANARIES)).toBe(2);
+  });
+
+  it('the row of canaries has a box per canary, the canaries left full first, the lost ones empty', () => {
+    expect(canarySlots(newRevealPlay(CANARIES), CANARIES)).toEqual([true, true]);
+    expect(canarySlots(canaryTaps([['3,1', 'canary']]), CANARIES)).toEqual([true, true]);
+    expect(canarySlots(canaryTaps([['4,0', 'canary']]), CANARIES)).toEqual([true, false]);
+    expect(canarySlots(canaryTaps([['4,0', 'canary'], ['5,1', 'canary']]), CANARIES)).toEqual([false, false]);
+    // Any other board has none.
+    expect(canarySlots(newRevealPlay(BOARD), BOARD)).toEqual([]);
   });
 
   it('a canary on a safe square opens it as Open would, and survives', () => {

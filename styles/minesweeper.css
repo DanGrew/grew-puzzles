@@ -165,7 +165,18 @@ button.mines-square[data-lock]:not([data-lock=""]):hover { background: color-mix
    board (#play's data-canaries) shows Canary, its rule line and its square in the Mines card, and
    drops the Reveal rule's "You never need to guess". */
 .mines-switch-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
-.play.mines:not([data-canaries="true"]) :is(.canary-pick, .canaries-rule, .canaries-only) { display: none; }
+.play.mines:not([data-canaries="true"]) :is(.canary-pick, .canaries-rule, .canaries-only, .canary-slots) { display: none; }
+/* Above the switch, a box per canary, as the flags row is: a canary in it while it's still to use,
+   empty once lost. Its height is set, so the frame, sized before the row is drawn, leaves room. */
+.canary-slots { display: flex; gap: 6px; height: 30px; }
+.canary-slot { box-sizing: border-box; display: grid; place-items: center; width: 30px; height: 30px; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 6px; box-shadow: 2px 2px 0 var(--line); }
+.canary-slot::after { content: "🐤"; font-size: 17px; line-height: 1; transition: opacity .2s, transform .2s; }
+.canary-slot[data-full="false"] { background: var(--cover); box-shadow: none; }
+.canary-slot[data-full="false"]::after { opacity: 0; transform: scale(.4); }
+@media (prefers-reduced-motion: reduce) {
+  .canary-slot::after { transition: none; }
+}
 .play.mines[data-canaries="true"] .no-guess { display: none; }
 .canary-pick { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 9px 18px; font: 600 14px var(--font-display); color: var(--fg);
   background: var(--surface); border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; }
