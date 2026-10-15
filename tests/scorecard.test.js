@@ -35,13 +35,14 @@ const entry = (prefix, n, type, extra = {}) => ({
   hiddenId: code(prefix, n), type, created: new Date(Date.UTC(2026, 0, n)).toISOString().slice(0, 10), title: `${prefix} ${n}`, ...extra,
 });
 
-// Ten wordsearches, Vanilla and Missing by turns; three mazes; two boards; a criss-cross.
+// Ten wordsearches, Vanilla and Missing by turns; three mazes; two boards; a criss-cross; no mosaics.
 function indexes() {
   return {
     wordsearch: Array.from({ length: 10 }, (_, i) => entry('WSCH', i + 1, ['Missing', 'Vanilla'][(i + 1) % 2])),
     maze: [entry('MAZE', 1, 'Keys'), entry('MAZE', 2, 'Vanilla'), entry('MAZE', 3, 'Vanilla', { difficulty: 'Hard' })],
     minesweeper: [entry('MINE', 1, 'Vanilla', { difficulty: 'Medium' }), entry('MINE', 2, 'Reveal', { difficulty: 'Hard' })],
     crisscross: [entry('CRSS', 1, 'Vanilla')],
+    mosaic: [],
   };
 }
 
@@ -277,6 +278,7 @@ test('600 puzzles, 450 finished: the list draws at once, the ticks follow quickl
     maze: Array.from({ length: 50 }, (_, i) => entry('MAZE', i + 1, 'Vanilla')),
     minesweeper: Array.from({ length: 300 }, (_, i) => entry('MINE', i + 1, 'Vanilla', { difficulty: 'Easy' })),
     crisscross: Array.from({ length: 50 }, (_, i) => entry('CRSS', i + 1, 'Vanilla')),
+    mosaic: [],
   };
   const rows = {
     progress: Array.from({ length: 150 }, (_, i) => finishedLines(code('WSCH', i + 1))).flat(),
