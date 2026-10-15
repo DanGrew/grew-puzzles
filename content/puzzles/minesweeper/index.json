@@ -251,6 +251,24 @@
       "difficulty": "Easy",
       "width": 30,
       "height": 30
+    },
+    {
+      "hiddenId": "MINE-0029",
+      "type": "Keys",
+      "created": "2026-10-14",
+      "title": "Keys 001",
+      "difficulty": "Easy",
+      "width": 10,
+      "height": 10
+    },
+    {
+      "hiddenId": "MINE-0030",
+      "type": "Keys",
+      "created": "2026-10-14",
+      "title": "Keys 002",
+      "difficulty": "Easy",
+      "width": 15,
+      "height": 15
     }
   ]
 }
