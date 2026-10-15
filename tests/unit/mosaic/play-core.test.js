@@ -3,7 +3,7 @@ import { createRequire } from 'module';
 import {
   mosaicUrl, mosaicFile, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic,
   mosaicCount, mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, viewSpan,
-  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares
+  boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares, openedMelt
 } from '../../../core/mosaic/play-core.js';
 import { tappedHistory, undoneMines } from '../../../core/minesweeper/play-core.js';
 const require = createRequire(import.meta.url);
@@ -360,6 +360,12 @@ describe('the melt, the ring and the type', () => {
     expect(meltLength(true)).toBe(0);
     expect(meltLength(false)).toBe(900);
     expect(meltAt(100, 100, 0)).toBe(1);
+  });
+
+  it('a board finished before opens melted all the way, its picture; any other not at all', () => {
+    expect(openedMelt(taps([...shade([0, 0]), ...shade([1, 1])], SMALL), SMALL)).toBe(1);
+    expect(openedMelt(taps([...shade([0, 0])], SMALL), SMALL)).toBe(0);
+    expect(openedMelt(newMosaicPlay(), SMALL)).toBe(0);
   });
 
   it('shows less of the numbers and lines as it goes', () => {

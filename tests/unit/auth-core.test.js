@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { hexOf, accountView, deletedAnswer } from '../../core/auth-core.js';
+import { hexOf, accountView, deletedAnswer, sessionToken } from '../../core/auth-core.js';
 
 const player = (metadata) => ({ user: { email: 'pat@example.com', user_metadata: metadata } });
 
@@ -43,5 +43,15 @@ describe('auth-core.js', () => {
   test('any refusal leaves the account where it was', () => {
     expect(deletedAnswer({ data: null, error: { message: 'Failed to fetch' }, status: 0 })).toBe(false);
     expect(deletedAnswer({ data: null, error: { code: '42501', message: 'permission denied' }, status: 403 })).toBe(false);
+  });
+});
+
+describe('the token a save outliving the page carries', () => {
+  it('is the session\'s, signed in', () => {
+    expect(sessionToken({ access_token: 'abc.def.ghi', user: {} })).toBe('abc.def.ghi');
+  });
+
+  it('is none, signed out', () => {
+    expect(sessionToken(null)).toBe('');
   });
 });

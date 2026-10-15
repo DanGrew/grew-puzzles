@@ -16,6 +16,12 @@ export function accountView(session) {
   return session ? signedIn(session.user) : signedOut;
 }
 
+// The token a save sent as the page is left carries: the session's, or none signed out — which the
+// database refuses.
+export function sessionToken(session) {
+  return session ? session.access_token : '';
+}
+
 // Whether Delete my account's answer means the account is gone. Any refusal — the connection lost,
 // or the database saying no — leaves the player signed in, their account and progress as they were.
 export function deletedAnswer(answer) {

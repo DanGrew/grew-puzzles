@@ -302,6 +302,12 @@ export function meltAt(start, now, length) {
   return length > 0 ? Math.min(1, Math.max(0, (now - start) / length)) : 1;
 }
 
+// How far the melt has gone as the board opens: all the way on a board finished before — it opens
+// as its picture — and not at all on any other.
+export function openedMelt(play, board) {
+  return Number(mosaicFinished(play, board));
+}
+
 // How long the melt takes, ms: none for a player who asks for less motion.
 export function meltLength(reduced) {
   return reduced ? 0 : 900;
