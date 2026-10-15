@@ -13,6 +13,8 @@ var PICTURES = {
   'minesweeper:Reveal': '<svg viewBox="-3 -3 96 78"><path d="M18 18h18v18h-18zM72 18h18v18h-18zM54 36h36v36h-36z" fill="currentColor" opacity=".22"/><rect x="0" y="0" width="90" height="72" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M18 0v72M36 0v72M54 0v72M72 0v72M0 18h90M0 36h90M0 54h90" fill="none" stroke="currentColor" stroke-width="1" opacity=".45"/><circle cx="27" cy="27" r="4.6" fill="var(--accent)"/><g font-family="Sora, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="currentColor"><text x="9" y="12.5">1</text><text x="27" y="12.5">1</text><text x="45" y="12.5">1</text><text x="9" y="30.5">1</text><text x="45" y="30.5">2</text><text x="63" y="30.5">1</text><text x="9" y="48.5">1</text><text x="27" y="48.5">1</text><text x="45" y="48.5">2</text><text x="45" y="66.5">1</text></g></svg>',
   collections: '',
 };
+// A Keys board's is a Reveal board's: it plays by the Reveal rule, its zones too small to draw here.
+PICTURES['minesweeper:Keys'] = PICTURES['minesweeper:Reveal'];
 
 // A tile's picture: its type's own, where it has one, else its kind's.
 export function kindPicture(place, type) {

@@ -276,6 +276,30 @@ test('Minesweeper\'s filters offer Vanilla then Reveal; a Reveal tile wears the 
   expect(fileRequests).toEqual([]);
 });
 
+// A Keys board (TASK-177) is its own type too, and Minesweeper's types build up: Vanilla, Reveal,
+// Keys, Limited Flags — whichever order the index lists them in.
+const KEYS = { ...puzzle('MINE', 4, 'Keys', 'Keys 001'), ...saved('Easy', 6, 6) };
+const FEW_FLAGS = { ...puzzle('MINE', 5, 'Limited Flags', 'Limited Flags 001'), ...saved('Hard', 10, 10) };
+
+test('Minesweeper\'s filters offer Vanilla, Reveal, Keys and Limited Flags; a Keys tile wears a Reveal board\'s picture and opens the minesweeper page', async ({ page }) => {
+  const fileRequests = await serve(page);
+  await page.route('**/content/puzzles/minesweeper/index.json', r => r.fulfill({ json: { puzzles: [FEW_FLAGS, KEYS, ...BOARDS, REVEAL] } }));
+  await page.goto('/app/?kind=minesweeper');
+  await page.locator('#filter-button').click();
+  expect(await rowsOf(page)).toEqual([['Difficulty', ['Easy', 'Medium', 'Hard']], ['Type', ['Vanilla', 'Reveal', 'Keys', 'Limited Flags']]]);
+  await expect(side(page).locator('.types').nth(2).locator('.type')).toHaveText(['Vanilla', 'Reveal', 'Keys', 'Limited Flags']);
+  await page.locator('#filters').getByRole('button', { name: 'Keys', exact: true }).click();
+  await expect(names(page)).toHaveText(['Keys 001']);
+  await expect(page).toHaveURL(/\?kind=minesweeper&type=Keys$/);
+  const tile = page.locator('#tiles .tile', { hasText: 'Keys 001' });
+  await expect(tile.locator('.detail .line')).toHaveText(['Keys', '6×6']);
+  await expect(tile).toHaveAttribute('href', 'minesweeper.html?id=MINE-0004');
+  const keys = await tile.locator('.pic svg').evaluate(s => s.outerHTML);
+  await page.goto('/app/?kind=minesweeper&type=Reveal');
+  expect(await page.locator('#tiles .tile .pic svg').first().evaluate(s => s.outerHTML)).toBe(keys);
+  expect(fileRequests).toEqual([]);
+});
+
 test('a board\'s tile wears the minesweeper picture, reads its size as a maze tile does, and opens the minesweeper page', async ({ page }) => {
   const fileRequests = await serve(page);
   await page.goto('/app/?kind=maze');

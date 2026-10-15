@@ -665,6 +665,35 @@ test('a Reveal board: signing in at its start picks the board up where I left it
   expect(db.saves).toEqual([]);
 });
 
+// ---- A Keys board (TASK-177) ----
+// It saves nothing new: a zone is unlocked once its key's square is open, and opened squares are
+// saved. The board is the 6×6 Keys fixture, served as MINE-0903: Zone 2's key on (0,5), Zone 1's on
+// (5,0) inside Zone 2, Zone 1 the four squares at the bottom right.
+const KEYS = require('./fixtures/MINE-0903.json');
+const keysSquare = (page, r, c) => square(page, r, c, 6);
+
+test('a Keys board: signed in, coming back, the zones I unlocked are still unlocked and their keys sit greyed where I found them', async ({ context }) => {
+  const db = await playing(context);
+  await context.route('**/content/puzzles/minesweeper/MINE-0903.json', route => route.fulfill({ json: KEYS }));
+  const page = await open(context, 'MINE-0903');
+  await keysSquare(page, 0, 5).click();
+  await expect.poll(() => boardsSaved(db).map(row => row.no_mines.some(([r, c]) => r === 0 && c === 5))).toEqual([true]);
+  await page.reload();
+  await expect(page.locator('#play')).toBeVisible();
+  await expect(keysSquare(page, 0, 5)).toHaveAttribute('data-found', '2');
+  await expect(keysSquare(page, 0, 5)).not.toHaveClass(/key-pop/);
+  await expect(keysSquare(page, 5, 0)).toHaveAttribute('data-lock', '');
+  await expect(keysSquare(page, 4, 4)).toHaveAttribute('data-lock', '1');
+  await keysSquare(page, 5, 0).click();
+  await expect.poll(() => boardsSaved(db).map(row => row.no_mines.some(([r, c]) => r === 5 && c === 0))).toEqual([true]);
+  const back = await open(context, 'MINE-0903');
+  await expect(keysSquare(back, 5, 0)).toHaveAttribute('data-found', '1');
+  await expect(keysSquare(back, 5, 0)).toHaveText('2');
+  await expect(back.locator('#grid [data-lock]:not([data-lock=""])')).toHaveCount(0);
+  await keysSquare(back, 4, 4).click();
+  await expect(keysSquare(back, 4, 4)).toHaveAttribute('data-cover', 'open');
+});
+
 test('a finished Reveal board wears its ✓, a started one sits in Continue playing, and Finished filters it — no board\'s file opened', async ({ context }) => {
   const db = minesTable({ boards: [
     marks(REVEAL_MINES, REVEAL_SAFE, { puzzle: 'MINE-0901', finished: true }),

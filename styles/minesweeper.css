@@ -87,6 +87,53 @@ button.mines-square[data-cover="covered"]:hover { background: var(--cover-hi); }
   .mines-square[data-cover="open"][data-mark="number"], .mines-square[data-state="boom"], .board.shake, .kaboom-card { animation: none; }
 }
 
+/* ---- A Keys board ----
+   The product's TASK-177: each zone's covered squares tinted in its colour and wearing its padlock
+   until its key turns up — the colours the generator paints zones in, Zone 1 first. A tap on one
+   shakes the padlock; a key found pops up on its square in its zone's colour, then greys, sitting in
+   the square's corner beside its number, and its zone's padlocks drop away. The answer side shows
+   every key where it hid, in its colour. Only a Keys board (#play's data-keys) shows its rule line
+   and its squares in the Mines card. */
+:root {
+  --padlock: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 7V5a3.5 3.5 0 0 1 7 0v2' fill='none' stroke='%23000' stroke-width='2'/%3E%3Crect x='2.5' y='7' width='11' height='8' rx='1.5'/%3E%3C/svg%3E");
+  --key: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='4.5' cy='8' r='3.5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3Cpath d='M8 8h7M12 8v3M14.5 8v2.5' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3C/svg%3E");
+}
+/* A square's zone colours its padlock, and a key found its key — listed after, so a key hidden in
+   another zone wears its own zone's colour. */
+.mines-square[data-zone="1"] { --zone: #e4572e; }
+.mines-square[data-zone="2"] { --zone: #f3a712; }
+.mines-square[data-zone="3"] { --zone: #2a9fd6; }
+.mines-square[data-zone="4"] { --zone: #8e5ac8; }
+.mines-square[data-zone="5"] { --zone: #2e9e5b; }
+.mines-square[data-zone="6"] { --zone: #d64f9e; }
+.mines-square[data-found="1"] { --zone: #e4572e; }
+.mines-square[data-found="2"] { --zone: #f3a712; }
+.mines-square[data-found="3"] { --zone: #2a9fd6; }
+.mines-square[data-found="4"] { --zone: #8e5ac8; }
+.mines-square[data-found="5"] { --zone: #2e9e5b; }
+.mines-square[data-found="6"] { --zone: #d64f9e; }
+.mines-square[data-lock]:not([data-lock=""]),
+button.mines-square[data-lock]:not([data-lock=""]):hover { background: color-mix(in srgb, var(--zone) 24%, var(--cover-hi)); cursor: not-allowed; }
+.mines-square[data-lock]:not([data-lock=""])::after,
+.mines-square.unlocking[data-cover="covered"][data-mark="blank"]::after { content: ""; width: 50%; height: 50%; background: var(--zone);
+  -webkit-mask: var(--padlock) center / contain no-repeat; mask: var(--padlock) center / contain no-repeat; }
+.mines-square.lock-shake::after { animation: lock-shake .4s; }
+@keyframes lock-shake { 20% { transform: translateX(-3px) rotate(-8deg); } 40% { transform: translateX(3px) rotate(8deg); } 60% { transform: translateX(-2px) rotate(-5deg); } 80% { transform: translateX(1px); } }
+.mines-square.unlocking[data-lock=""]::after { animation: lock-drop .5s ease-in forwards; }
+@keyframes lock-drop { to { opacity: 0; transform: translateY(60%) rotate(25deg); } }
+/* The key: in the square's top-left corner, greyed once found. */
+.mines-square[data-found]:not([data-found=""])::before { content: ""; position: absolute; left: 6%; top: 6%; width: 36%; height: 36%; background: var(--muted); opacity: .7;
+  -webkit-mask: var(--key) center / contain no-repeat; mask: var(--key) center / contain no-repeat; }
+.mines-square.key-pop::before { animation: key-pop .9s ease-out; }
+@keyframes key-pop { 0% { transform: scale(.4); background: var(--zone); opacity: 1; } 35% { transform: scale(1.9); background: var(--zone); opacity: 1; } 65% { transform: scale(1); background: var(--zone); opacity: 1; } }
+.back-face .mines-square[data-found]:not([data-found=""])::before { background: var(--zone); opacity: 1; }
+.play.mines:not([data-keys="true"]) :is(.keys-rule, .keys-only) { display: none; }
+.keys-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+@media (prefers-reduced-motion: reduce) {
+  .mines-square.lock-shake::after, .mines-square.key-pop::before { animation: none; }
+  .mines-square.unlocking[data-lock=""]::after { animation: none; opacity: 0; }
+}
+
 /* Check and Undo under the board, and the line Check leaves under them. */
 .mines-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
 .mines-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);
