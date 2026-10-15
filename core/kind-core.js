@@ -72,14 +72,22 @@ export function levelsOf(kind, puzzles) {
   return difficulties().filter(d => held.includes(d));
 }
 
+// A kind's own order for its types after Vanilla, where it has one: Minesweeper's builds up from
+// Vanilla, each type a rule more than the one before (the product's TASK-177: Vanilla, Reveal, Keys
+// and Limited Flags). A type not listed comes after those that are.
+function typeOrder(kind, type) {
+  const order = new Map([['minesweeper:Reveal', 1], ['minesweeper:Keys', 2], ['minesweeper:Limited Flags', 3]]);
+  return order.get(`${kind}:${type}`) ?? 4;
+}
+
 // The types a kind's puzzles have, once each — never a hand-kept list — easiest first; within a
 // difficulty Vanilla first, every kind's plain one (the owner's call, 2026-10-14: Vanilla before
-// Reveal), then A to Z.
+// Reveal), then in the kind's own order (typeOrder), then A to Z.
 export function typesOf(kind, puzzles) {
   const rank = type => difficulties().indexOf(difficultyOf(kind, type));
   const plain = type => Number(type !== 'Vanilla');
   return [...new Set(puzzles.filter(p => kindOf(p.hiddenId) === kind).map(p => p.type))]
-    .sort((a, b) => rank(a) - rank(b) || plain(a) - plain(b) || a.localeCompare(b));
+    .sort((a, b) => rank(a) - rank(b) || plain(a) - plain(b) || typeOrder(kind, a) - typeOrder(kind, b) || a.localeCompare(b));
 }
 
 // The address's part that says where browse is: the place — none for the first, where the landing

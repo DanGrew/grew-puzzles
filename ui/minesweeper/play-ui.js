@@ -6,11 +6,11 @@
 // core/theme-core.js; nothing here decides anything. Saving the player's board is ui/minesweeper/progress-ui.js; the printed
 // sheet is ui/minesweeper/sheet-ui.js.
 import {
-  minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares,
+  minesUrl, minesBoard, tapMines, minesSquares, squareMarks, minesCount, minesFinished, answerSquares, keyOf,
   minesMistakes, checkLine, newMinesHistory, tappedHistory, undoneMines, canUndo, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState, minesDrag, movedFar, pressKind, boardPrints
 } from '../../core/minesweeper/play-core.js';
 import {
-  newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished
+  newRevealPlay, tapReveal, otherTool, revealTapped, undoneReveal, canUndoReveal, revealSquares, revealFinished, keysFound
 } from '../../core/minesweeper/reveal-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, worldTransform } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
@@ -43,6 +43,9 @@ var MINES_OPENS = { vanilla: openVanilla, reveal: openReveal };
 var REVEAL_HOLD_MS = 420;
 // What a finished Reveal board says.
 var REVEAL_COMPLETE = 'Solved — every safe square open';
+// How long a padlock's shake, a key's pop and a padlock's drop take to play out, ms
+// (styles/minesweeper.css), before the square loses the class that plays it.
+var KEYS_MOTION_MS = 1000;
 
 function minesEl(id) {
   return document.getElementById(id);
@@ -122,6 +125,7 @@ function showBoard(id, board, makeGame) {
   minesEl('play').style.setProperty('--cols', board.cols);
   minesEl('play').style.setProperty('--rows', board.rows);
   minesEl('play').dataset.rule = board.rule;
+  minesEl('play').dataset.keys = String(board.keyed);
   minesSquares(board).forEach(function (s) {
     var button = squareButton(s);
     button.addEventListener('click', function () { game.tap(s.cell); });
@@ -326,11 +330,13 @@ function vanillaGame(id, board, play, squares) {
 // a mine is a kaboom: every mine shows, and Try again puts the board back to its start. Undo takes
 // back mine marks only, this visit's alone. play is the board as the player left it, already in
 // place; signed in, every tap and Undo that changes it is saved under its hidden ID, and a kaboom
-// saves it cleared, so it comes back at its start.
+// saves it cleared, so it comes back at its start. A Keys board's zones wear padlocks in their
+// colours until their keys turn up: a tap on one shakes its padlock, and opening a key's square pops
+// the key up on it and drops its zone's padlocks (the product's TASK-177).
 function revealGame(id, board, play, squares, cells) {
   var history = [], tool = 'open';
   var hold = { timer: 0, held: false, from: { x: 0, y: 0 }, mouse: true };
-  var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate };
+  var REVEAL_EVENTS = { kaboom: kaboom, complete: celebrate, locked: shakeLock };
   // A finger or a pen held still taps with the other tool; the mouse does by its right button.
   var HOLDS = { true: noop, false: startHold };
   var HOLD_MOVES = { true: endHold, false: noop };
@@ -353,11 +359,25 @@ function revealGame(id, board, play, squares, cells) {
   // Every tap that changes the board is saved, signed in; one that changes a mark is kept for Undo;
   // any tap clears Check's rings.
   function step(cell, next) {
+    var before = play;
     saveTap(id, board, play, next);
     history = revealTapped(history, play, next, cell);
     play = next;
     render();
-    play.events.forEach(function (e) { REVEAL_EVENTS[e](); });
+    play.events.forEach(function (e) { REVEAL_EVENTS[e](cell); });
+    keysFound(before, play, board).forEach(popKey);
+  }
+
+  // A padlocked square tapped: its padlock shakes, and nothing else happens.
+  function shakeLock(cell) {
+    playOut(squares.get(keyOf(cell)), 'lock-shake');
+  }
+
+  // A key turned up: it pops up on its square in its zone's colour, then greys, and its zone's
+  // padlocks drop away.
+  function popKey(found) {
+    playOut(squares.get(found.square), 'key-pop');
+    found.unlocked.forEach(function (k) { playOut(squares.get(k), 'unlocking'); });
   }
 
   // The last mark taken back, and saved as a tap is.
@@ -461,6 +481,9 @@ function revealGame(id, board, play, squares, cells) {
       square.dataset.mark = s.mark;
       square.dataset.state = s.state;
       square.dataset.checked = s.checked;
+      square.dataset.zone = s.zone;
+      square.dataset.lock = s.lock;
+      square.dataset.found = s.found;
       square.textContent = s.number;
       square.setAttribute('aria-label', s.label);
     });
@@ -470,6 +493,14 @@ function revealGame(id, board, play, squares, cells) {
     minesEl('complete').hidden = !revealFinished(play, board);
     minesEl('kaboom').hidden = !play.boom;
   }
+}
+
+// A square's one-off motion played from its start, its class gone again once it has played out.
+function playOut(square, motion) {
+  square.classList.remove(motion);
+  void square.offsetWidth;
+  square.classList.add(motion);
+  setTimeout(function () { square.classList.remove(motion); }, KEYS_MOTION_MS);
 }
 
 // Check's rings on each mark the answer disagrees with, and the line under the board saying how
@@ -536,12 +567,14 @@ function squareButton(s) {
   return button;
 }
 
-// A square of the answer: its number, a mine, or nothing.
+// A square of the answer: its number, a mine, or nothing — and on a Keys board, the key hidden
+// there, in its zone's colour.
 function answerSquare(s) {
   var square = document.createElement('span');
   square.className = 'mines-square';
   square.textContent = s.number;
   square.dataset.mark = { true: 'mine', false: 'blank' }[s.mine];
+  square.dataset.found = s.found;
   square.style.gridArea = (s.cell[0] + 1) + ' / ' + (s.cell[1] + 1);
   return square;
 }

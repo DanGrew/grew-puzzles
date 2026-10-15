@@ -51,9 +51,32 @@ function startOf(puzzle) {
   return [puzzle.start].filter(Boolean).map(function (s) { return keyOf([s.row, s.col]); }).concat([''])[0];
 }
 
+// A Keys board's padlocked zones (tooling's mines 10): each zoned square's zone, '1' to '6', by its
+// key. Any other board paints none, so nothing on it is ever padlocked.
+function zonesOf(puzzle) {
+  var zones = {};
+  (puzzle.zones || []).forEach(function (row, r) {
+    row.split('').forEach(function (zone, c) {
+      if (zone !== '.') zones[r + ',' + c] = zone;
+    });
+  });
+  return zones;
+}
+
+// Where each zone's key hides (tooling's mines 10 and 11): its square's key, by its zone.
+function keysOf(puzzle) {
+  return Object.fromEntries((puzzle.keys || []).map(function (k) { return [String(k.key), keyOf([k.row, k.col])]; }));
+}
+
+// The zone whose key hides on a square, '' on a square hiding none.
+export function keyHiddenAt(key, board) {
+  return Object.keys(board.keys).filter(function (zone) { return board.keys[zone] === key; }).concat([''])[0];
+}
+
 // What the page needs of a board file: its title, difficulty and code, its type's band, its size,
 // its numbers by square and its mines — the answer, shown only on the card's back — and how it
-// plays: its rule, and a Reveal board's start square by its key, '' on any other.
+// plays: its rule, a Reveal board's start square by its key, '' on any other, and a Keys board's
+// zones and keys — none on any other — and whether it has any (keyed).
 export function minesBoard(puzzle) {
   var numbers = {};
   puzzle.numbers.forEach(function (row, r) {
@@ -72,7 +95,10 @@ export function minesBoard(puzzle) {
     numbers: numbers,
     mines: puzzle.mines.map(function (m) { return m.row + ',' + m.col; }),
     rule: ruleOf(puzzle),
-    start: startOf(puzzle)
+    start: startOf(puzzle),
+    zones: zonesOf(puzzle),
+    keys: keysOf(puzzle),
+    keyed: 'keys' in puzzle
   };
 }
 
@@ -210,10 +236,11 @@ export function minesCount(play, board) {
   return mines + '/' + board.mines.length;
 }
 
-// The answer, on the card's back: each square its number, a mine, or nothing.
+// The answer, on the card's back: each square its number, a mine, or nothing — and on a Keys board,
+// the zone whose key hides there, '' where none does.
 export function answerSquares(board) {
   return minesSquares(board).map(function (s) {
-    return { key: s.key, cell: s.cell, number: s.number, mine: board.mines.includes(s.key) };
+    return { key: s.key, cell: s.cell, number: s.number, mine: board.mines.includes(s.key), found: keyHiddenAt(s.key, board) };
   });
 }
 

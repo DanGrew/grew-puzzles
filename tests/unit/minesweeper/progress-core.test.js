@@ -4,7 +4,7 @@ import {
   marksRow, tapRows, restoredMines, syncRows, joinedMines, joinedHistory,
   revealRow, revealTapRows, restoredReveal, revealSyncRows, joinedReveal, joinedRevealHistory
 } from '../../../core/minesweeper/progress-core.js';
-import { newRevealPlay, tapReveal, revealFinished } from '../../../core/minesweeper/reveal-core.js';
+import { newRevealPlay, tapReveal, revealFinished, revealSquares } from '../../../core/minesweeper/reveal-core.js';
 // core/minesweeper/progress-core.js, against a small board, two rows of three:
 //   2 . .      the 2 touches (0,1), (1,0) and (1,1); the 1 touches (0,1), (0,2) and (1,1)
 //   . . 1      its mines are (0,1) and (1,0)
@@ -213,6 +213,26 @@ describe('a saved Reveal board coming back', () => {
 
   it('only the first row counts — there is only ever one', () => {
     expect(restoredReveal(REVEAL, [revealed([], []), revealed([[0, 2]], [])]).marks).toEqual({});
+  });
+
+  // The product's TASK-177: a Keys board saves nothing new — a zone is unlocked once its key's
+  // square is open, and opened squares are saved. Zone 1 is (4,4) (4,5) (5,4) (5,5), its key on
+  // (5,0) in Zone 2, whose key is on (0,5).
+  it('a Keys board comes back with the zones it had unlocked still unlocked, and their keys found', () => {
+    const keys = minesBoard({
+      hiddenId: 'MINE-0903', type: 'Keys', created: '2026-10-14', title: 'Keys 001', difficulty: 'Easy', width: 6, height: 6,
+      numbersPerStep: 3, numbers: ['01.100', '121211', '.101.1', '231211', '.3.100', '2.2100'],
+      mines: [{ row: 0, col: 2 }, { row: 2, col: 0 }, { row: 2, col: 4 }, { row: 4, col: 0 }, { row: 4, col: 2 }, { row: 5, col: 1 }],
+      start: { row: 2, col: 2 },
+      zones: ['......', '......', '......', '......', '....11', '2...11'],
+      keys: [{ key: 1, row: 5, col: 0 }, { key: 2, row: 0, col: 5 }]
+    });
+    const left = ['0,5', '5,0'].reduce((p, key) => tapReveal(p, key.split(',').map(Number), keys, 'open'), newRevealPlay(keys));
+    const play = restoredReveal(keys, [revealRow('MINE-0903', left, keys)]);
+    expect(play).toEqual({ ...left, events: [] });
+    expect(revealSquares(play, keys).filter(s => s.found !== '').map(s => s.key)).toEqual(['0,5', '5,0']);
+    expect(revealSquares(play, keys).filter(s => s.lock !== '')).toEqual([]);
+    expect(tapReveal(play, [4, 4], keys, 'open').open['4,4']).toBe(true);
   });
 });
 

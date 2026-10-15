@@ -103,6 +103,16 @@ describe('kind-core.js', () => {
     expect(typesOf('minesweeper', [puzzle('MINE-0001', 'Zigzag'), puzzle('MINE-0002', 'Vanilla')])).toEqual(['Vanilla', 'Zigzag']);
   });
 
+  // The product's TASK-177: Minesweeper's types build up, each a rule more than the one before.
+  test('Minesweeper\'s types go Vanilla, Reveal, Keys, Limited Flags, whichever comes first, then any other A to Z', () => {
+    const boards = ['Limited Flags', 'Keys', 'Alpha', 'Reveal', 'Vanilla', 'Aardvark'].map((type, i) => puzzle(`MINE-000${i + 1}`, type));
+    expect(typesOf('minesweeper', boards)).toEqual(['Vanilla', 'Reveal', 'Keys', 'Limited Flags', 'Aardvark', 'Alpha']);
+    expect(typesOf('minesweeper', [...boards].reverse())).toEqual(['Vanilla', 'Reveal', 'Keys', 'Limited Flags', 'Aardvark', 'Alpha']);
+    // Another kind's types of the same names keep A to Z.
+    const mazes = ['Reveal', 'Keys', 'Limited Flags'].map((type, i) => puzzle(`MAZE-000${i + 1}`, type));
+    expect(typesOf('maze', mazes)).toEqual(['Limited Flags', 'Reveal', 'Keys']);
+  });
+
   test('two types of one difficulty go A to Z, whichever comes first', () => {
     expect(typesOf('wordsearch', [puzzle('WSCH-0001', 'Repeats'), puzzle('WSCH-0002', 'Missing')])).toEqual(['Missing', 'Repeats']);
     expect(typesOf('wordsearch', [puzzle('WSCH-0001', 'Missing'), puzzle('WSCH-0002', 'Repeats')])).toEqual(['Missing', 'Repeats']);

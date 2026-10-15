@@ -302,11 +302,11 @@ describe('what the board shows', () => {
     expect(minesCount(taps([[0, 1], [1, 0], [1, 0]], SMALL), SMALL)).toBe('1/2');
   });
 
-  it('the answer: each square its number, a mine, or nothing', () => {
+  it('the answer: each square its number, a mine, or nothing — and no key, on a board with none', () => {
     expect(answerSquares(SMALL)).toEqual([
-      { key: '0,0', cell: [0, 0], number: '2', mine: false }, { key: '0,1', cell: [0, 1], number: '', mine: true },
-      { key: '0,2', cell: [0, 2], number: '', mine: false }, { key: '1,0', cell: [1, 0], number: '', mine: true },
-      { key: '1,1', cell: [1, 1], number: '', mine: false }, { key: '1,2', cell: [1, 2], number: '1', mine: false }
+      { key: '0,0', cell: [0, 0], number: '2', mine: false, found: '' }, { key: '0,1', cell: [0, 1], number: '', mine: true, found: '' },
+      { key: '0,2', cell: [0, 2], number: '', mine: false, found: '' }, { key: '1,0', cell: [1, 0], number: '', mine: true, found: '' },
+      { key: '1,1', cell: [1, 1], number: '', mine: false, found: '' }, { key: '1,2', cell: [1, 2], number: '1', mine: false, found: '' }
     ]);
   });
 });

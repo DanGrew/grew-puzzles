@@ -1,0 +1,15 @@
+{
+  "hiddenId": "MINE-0903",
+  "type": "Keys",
+  "created": "2026-10-14",
+  "title": "Keys 001",
+  "difficulty": "Easy",
+  "width": 6,
+  "height": 6,
+  "numbersPerStep": 3,
+  "numbers": ["01.100", "121211", ".101.1", "231211", ".3.100", "2.2100"],
+  "mines": [{ "row": 0, "col": 2 }, { "row": 2, "col": 0 }, { "row": 2, "col": 4 }, { "row": 4, "col": 0 }, { "row": 4, "col": 2 }, { "row": 5, "col": 1 }],
+  "start": { "row": 2, "col": 2 },
+  "zones": ["......", "......", "......", "......", "....11", "2...11"],
+  "keys": [{ "key": 1, "row": 5, "col": 0 }, { "key": 2, "row": 0, "col": 5 }]
+}
