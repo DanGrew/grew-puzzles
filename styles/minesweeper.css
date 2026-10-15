@@ -1,7 +1,8 @@
 /* The minesweeper play page — over play.css's cards, after docs/MOCKUP-MINESWEEPER.html in the
    product entry: the board in the grid card, the Mines card beside it, under it on a phone. A
-   number sits on a pale square; a mark is a ringed dot for a mine and a small dot for no mine. */
-:root { --clue-bg: #f1f6f3; }
+   number sits on a pale square; a mine mark is a ringed dot, and a square marked no mine is tinted
+   --blank, the grey a mosaic's blank square wears (styles/mosaic.css). */
+:root { --clue-bg: #f1f6f3; --blank: #cfdbd6; }
 
 .play.mines { display: grid; grid-template-columns: auto minmax(220px, 290px); gap: 40px; align-items: start; justify-content: center; }
 .play.mines[hidden] { display: none; }
@@ -33,7 +34,7 @@ button.mines-square:focus-visible { outline: 2px solid var(--select); outline-of
 .mines-square[data-mark="number"], button.mines-square[data-mark="number"]:hover { background: var(--clue-bg); }
 .mines-square[data-mark="mine"]::after { content: ""; width: 56%; height: 56%; border-radius: 50%; background: var(--fg);
   box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--fg); }
-.mines-square[data-mark="dot"]::after { content: ""; width: 16%; height: 16%; border-radius: 50%; background: var(--muted); }
+.mines-square[data-mark="dot"], button.mines-square[data-mark="dot"]:hover { background: var(--blank); }
 .back-face .mines-square[data-mark="mine"]::after { background: var(--band); box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--band); }
 
 /* Check's ring: a mark the answer disagrees with, ringed in red on the square's edge — over its
