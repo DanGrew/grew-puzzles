@@ -159,6 +159,22 @@ button.mines-square[data-lock]:not([data-lock=""]):hover { background: color-mix
   .flag-slot::after { transition: none; }
 }
 
+/* ---- A Canaries board ----
+   The product's TASK-203: Canary sits beside Open | Mark mine, apart from it, picked for one tap and
+   greyed once none are left; a mine a canary found shows on canary yellow for good. Only a Canaries
+   board (#play's data-canaries) shows Canary, its rule line and its square in the Mines card, and
+   drops the Reveal rule's "You never need to guess". */
+.mines-switch-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+.play.mines:not([data-canaries="true"]) :is(.canary-pick, .canaries-rule, .canaries-only) { display: none; }
+.play.mines[data-canaries="true"] .no-guess { display: none; }
+.canary-pick { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 9px 18px; font: 600 14px var(--font-display); color: var(--fg);
+  background: var(--surface); border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; }
+.canary-pick[aria-pressed="true"] { color: var(--fg); background: #ffd84d; }
+.canary-pick:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
+.canary-pick:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
+.canaries-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+.mines-square[data-state="blown"], button.mines-square[data-state="blown"]:hover { background: #ffe680; }
+
 /* Check and Undo under the board, and the line Check leaves under them. */
 .mines-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
 .mines-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);

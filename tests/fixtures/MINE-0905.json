@@ -1,0 +1,53 @@
+{
+  "hiddenId": "MINE-0905",
+  "type": "Canaries",
+  "created": "2026-10-15",
+  "title": "Canaries 001",
+  "difficulty": "Hard",
+  "width": 6,
+  "height": 6,
+  "numbersPerStep": 3,
+  "numbers": [
+    "1222.1",
+    "1..422",
+    "13.3.1",
+    "121211",
+    ".21000",
+    "2.1000"
+  ],
+  "mines": [
+    {
+      "row": 0,
+      "col": 4
+    },
+    {
+      "row": 1,
+      "col": 1
+    },
+    {
+      "row": 1,
+      "col": 2
+    },
+    {
+      "row": 2,
+      "col": 2
+    },
+    {
+      "row": 2,
+      "col": 4
+    },
+    {
+      "row": 4,
+      "col": 0
+    },
+    {
+      "row": 5,
+      "col": 1
+    }
+  ],
+  "start": {
+    "row": 5,
+    "col": 5
+  },
+  "canaries": 2
+}

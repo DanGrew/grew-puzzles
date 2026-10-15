@@ -5,6 +5,8 @@ import {
   revealRow, revealTapRows, restoredReveal, revealSyncRows, joinedReveal, joinedRevealHistory
 } from '../../../core/minesweeper/progress-core.js';
 import { newRevealPlay, tapReveal, revealFinished, revealSquares } from '../../../core/minesweeper/reveal-core.js';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 // core/minesweeper/progress-core.js, against a small board, two rows of three:
 //   2 . .      the 2 touches (0,1), (1,0) and (1,1); the 1 touches (0,1), (0,2) and (1,1)
 //   . . 1      its mines are (0,1) and (1,0)
@@ -210,6 +212,8 @@ describe('a saved Reveal board coming back', () => {
     const play = restoredReveal(REVEAL, [revealed([[1, 1], [6, 0], [0, 6], [0, 4]], [[0, 2], [6, 0], [0, 6]])]);
     expect(play.open).toEqual(newRevealPlay(REVEAL).open);
     expect(play.marks).toEqual({ '0,4': 'mine' });
+    // A board with no canaries never reads a saved mine as one a canary found.
+    expect(play.blown).toEqual({});
   });
 
   it('a finished board comes back finished, every mine marked, and nothing set off', () => {
@@ -260,7 +264,7 @@ describe('signing in mid-way through a Reveal board', () => {
   it('the board on screen is kept over the saved one once played, and nothing is set off', () => {
     const play = revealTaps([[[0, 3], 'open']]);
     const saved = restoredReveal(REVEAL, [revealed([[0, 2]], START_CELLS)]);
-    expect(joinedReveal(play, saved, REVEAL)).toEqual({ open: play.open, marks: {}, boom: '', events: [] });
+    expect(joinedReveal(play, saved, REVEAL)).toEqual({ open: play.open, marks: {}, blown: {}, boom: '', events: [] });
     expect(joinedRevealHistory(play, ['0,4'], REVEAL)).toEqual(['0,4']);
   });
 
@@ -268,5 +272,51 @@ describe('signing in mid-way through a Reveal board', () => {
     const saved = restoredReveal(REVEAL, [revealed([[0, 2]], START_CELLS)]);
     expect(joinedReveal(newRevealPlay(REVEAL), saved, REVEAL)).toBe(saved);
     expect(joinedRevealHistory(newRevealPlay(REVEAL), ['0,4'], REVEAL)).toEqual([]);
+  });
+});
+
+// ---- A Canaries board (the product's TASK-203) ----
+// Tooling's own valid Canaries board, two canaries, its mines (0,4) (1,1) (1,2) (2,2) (2,4) (4,0)
+// (5,1); its start square's area rows 3 to 5, cols 2 to 5. A mine a canary found is saved in
+// no_mines, where no other mine ever is.
+describe('a Canaries board\'s row', () => {
+  let CANARIES;
+  beforeEach(() => {
+    CANARIES = minesBoard(structuredClone(require('../../fixtures/MINE-0905.json')));
+  });
+  const canaryTaps = (steps, play) => steps.reduce((p, [cell, tool]) => tapReveal(p, cell, CANARIES, tool), play || newRevealPlay(CANARIES));
+  const CANARY_START = [[3, 2], [3, 3], [3, 4], [3, 5], [4, 2], [4, 3], [4, 4], [4, 5], [5, 2], [5, 3], [5, 4], [5, 5]];
+  const canaryRow = (mines, noMines, finished = false) => ({ puzzle: 'MINE-0905', mines, no_mines: noMines, finished });
+
+  it('a mine a canary found is saved among its opened squares, row by row', () => {
+    const play = canaryTaps([[[5, 1], 'canary'], [[3, 1], 'mark']]);
+    expect(revealRow('MINE-0905', play, CANARIES)).toEqual(canaryRow([[3, 1]], [...CANARY_START.slice(0, 4), ...CANARY_START.slice(4, 8), [5, 1], ...CANARY_START.slice(8)]));
+  });
+
+  it('a canary lost saves the board; a kaboom saves it cleared, every canary back', () => {
+    const start = newRevealPlay(CANARIES);
+    const lost = canaryTaps([[[4, 0], 'canary']]);
+    expect(revealTapRows('MINE-0905', start, lost, CANARIES)).toEqual([canaryRow([], [...CANARY_START.slice(0, 4), [4, 0], ...CANARY_START.slice(4)])]);
+    expect(revealRow('MINE-0905', canaryTaps([[[5, 1], 'open']], lost), CANARIES)).toEqual(canaryRow([], []));
+  });
+
+  it('comes back with its canaries\' mines shown and its canaries left as they were', () => {
+    const left = canaryTaps([[[4, 0], 'canary'], [[3, 1], 'open'], [[5, 1], 'mark']]);
+    const play = restoredReveal(CANARIES, [revealRow('MINE-0905', left, CANARIES)]);
+    expect(play).toEqual({ ...left, events: [] });
+    expect(revealSquares(play, CANARIES).find(s => s.key === '4,0')).toMatchObject({ state: 'blown' });
+  });
+
+  it('a saved mine never comes back as more canaries lost than the board gives, nor as a mark too', () => {
+    const play = restoredReveal(CANARIES, [canaryRow([[4, 0], [0, 4]], [[4, 0], [5, 1], [2, 2], ...CANARY_START])]);
+    expect(play.blown).toEqual({ '4,0': true, '5,1': true });
+    expect(play.marks).toEqual({ '0,4': 'mine' });
+  });
+
+  it('signing in mid-board, a canary lost is played: the board on screen is kept and saved', () => {
+    const lost = canaryTaps([[[4, 0], 'canary']]);
+    expect(revealSyncRows('MINE-0905', lost, CANARIES)).toEqual([revealRow('MINE-0905', lost, CANARIES)]);
+    const saved = restoredReveal(CANARIES, [canaryRow([[3, 1]], CANARY_START)]);
+    expect(joinedReveal(lost, saved, CANARIES)).toEqual({ ...lost, events: [] });
   });
 });
