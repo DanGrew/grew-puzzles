@@ -1,3 +1,76 @@
 {
-  "puzzles": []
+  "puzzles": [
+    {
+      "hiddenId": "MOSA-0001",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 001",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MOSA-0002",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 002",
+      "difficulty": "Hard",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MOSA-0003",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 003",
+      "difficulty": "Extreme",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MOSA-0004",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 004",
+      "difficulty": "Extreme",
+      "width": 30,
+      "height": 30
+    },
+    {
+      "hiddenId": "MOSA-0005",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 005",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MOSA-0006",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 006",
+      "difficulty": "Hard",
+      "width": 100,
+      "height": 100
+    },
+    {
+      "hiddenId": "MOSA-0007",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 007",
+      "difficulty": "Extreme",
+      "width": 50,
+      "height": 50
+    },
+    {
+      "hiddenId": "MOSA-0008",
+      "type": "Vanilla",
+      "created": "2026-10-15",
+      "title": "Mosaic 008",
+      "difficulty": "Extreme",
+      "width": 50,
+      "height": 50
+    }
+  ]
 }
