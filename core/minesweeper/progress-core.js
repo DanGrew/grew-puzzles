@@ -77,21 +77,23 @@ export function joinedHistory(play, history) {
 
 // ---- A Reveal board ----
 // The same table, the same one row (the product's TASK-174): its opened squares in no_mines — a
-// Reveal board's opened squares are its proven-safe ones — and its mine marks in mines. Only a
-// Reveal board's own page reads them, so they never mean dots to a Vanilla one. A kaboom saves the
-// row empty, so the board comes back at its start.
+// Reveal board's opened squares are its proven-safe ones — and its mine marks in mines, in the order
+// they were placed, so a Limited Flags board's oldest mark is known on any device (the product's
+// TASK-179). Only a Reveal board's own page reads them, so they never mean dots to a Vanilla one. A
+// kaboom saves the row empty, so the board comes back at its start.
 
 function keysCells(keys) {
   return keys.map(cellOf).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
 }
 
-// The board's row: its hidden ID, its mine marks, its opened squares and whether it's finished — or,
+// The board's row: its hidden ID, its mine marks, oldest first, its opened squares row by row and
+// whether it's finished — or,
 // once a mine has gone off, empty.
 export function revealRow(puzzle, play, board) {
   var live = play.boom === '';
   return {
     puzzle: puzzle,
-    mines: keysCells(Object.keys(play.marks).filter(function () { return live; })),
+    mines: Object.keys(play.marks).filter(function () { return live; }).map(cellOf),
     no_mines: keysCells(Object.keys(play.open).filter(function () { return live; })),
     finished: live && revealFinished(play, board)
   };

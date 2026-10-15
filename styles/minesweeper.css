@@ -134,6 +134,18 @@ button.mines-square[data-lock]:not([data-lock=""]):hover { background: color-mix
   .mines-square.unlocking[data-lock=""]::after { animation: none; opacity: 0; }
 }
 
+/* ---- A Limited Flags board ----
+   The product's TASK-179: only a Limited Flags board (#play's data-limited) shows its rule line, and
+   a mark past its limit fades the oldest mark off its square, Themed's figure too (styles/look.css). */
+.play.mines:not([data-limited="true"]) .flags-rule { display: none; }
+.flags-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+.mines-square.flag-lift[data-mark="blank"]::after { content: ""; width: 56%; height: 56%; border-radius: 50%; background: var(--fg);
+  box-shadow: 0 0 0 calc(var(--cell) * .07) var(--surface), 0 0 0 calc(var(--cell) * .1) var(--fg); animation: flag-lift .6s ease-in forwards; }
+@keyframes flag-lift { to { opacity: 0; transform: scale(.5); } }
+@media (prefers-reduced-motion: reduce) {
+  .mines-square.flag-lift[data-mark="blank"]::after { animation: none; opacity: 0; }
+}
+
 /* Check and Undo under the board, and the line Check leaves under them. */
 .mines-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
 .mines-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);

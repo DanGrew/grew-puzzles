@@ -124,6 +124,8 @@
           <p class="reveal-rule">Open every square that isn't a mine. Each number counts the mines in the eight squares around it. You never need to guess. Open a mine and it's game over.</p>
           <!-- A Keys board's own line and squares (#play's data-keys). -->
           <p class="keys-rule">Find the hidden keys to unlock the padlocked squares. Each key hides under a square outside its zone, and opening it unlocks that zone.</p>
+          <!-- A Limited Flags board's own line (#play's data-limited). -->
+          <p class="flags-rule">You can have only <span id="flag-limit"></span> mines marked at once. Mark another and your oldest mark moves to it.</p>
           <div class="mines-legend">
             <span class="mines-square" data-cover="covered" data-mark="blank"></span><span>Covered. Tap it with Open picked to see its number.</span>
             <span class="mines-square" data-cover="covered" data-mark="mine"></span><span>Marked as a mine. Tap with Mark mine picked. A right-click, or a press and hold, does whichever isn't picked.</span>

@@ -6,12 +6,14 @@
 // 9), so a square opens to the number the file gives it, and the page never works out a move.
 // Board reading, Check's mistakes and line, the Mines card's count and the frame are
 // core/minesweeper/play-core.js's, shared with a Vanilla board. A Keys board plays by this rule too,
-// its zones padlocked until their keys turn up (the product's TASK-177).
-import { keyOf, around, keyHiddenAt } from './play-core.js';
+// its zones padlocked until their keys turn up (the product's TASK-177), and so does a Limited Flags
+// board, with no more than its flag limit of mine marks on it at once (the product's TASK-179).
+import { keyOf, around, keyHiddenAt, minesCount } from './play-core.js';
 
 // A play is { open, marks, boom, events }: open each opened square's key, true; marks each marked
 // square's 'mine' by its key, as a Vanilla board's marks are, so the count, Check and a number's
-// fill read them alike; boom the mine opened, '' until one is; events what this tap set off.
+// fill read them alike — kept in the order they were placed, oldest first; boom the mine opened, ''
+// until one is; events what this tap set off.
 
 function cellOf(key) {
   return key.split(',').map(Number);
@@ -76,12 +78,36 @@ function opening(play, keys, board) {
   return { open: open, marks: marks, boom: '', events: done ? ['complete'] : [] };
 }
 
-// A covered square's mine mark, on or off.
-function toggled(play, key) {
+// ---- Limited Flags ----
+// A Limited Flags board allows only its flag limit of mine marks on it at once: a mark taken off
+// frees its flag, and with none left, a new mark takes the oldest one's place — first in, first out
+// (the owner, 2026-10-13). Any other board has no limit.
+
+function overLimit(marks, board) {
+  return board.limited && Object.keys(marks).length > board.flagLimit;
+}
+
+// A covered square's mine mark, on or off — the newest mark last. A mark past the limit moves the
+// oldest off its square, and says so ('moved'), for the page to fade it.
+function toggled(play, key, board) {
   var marks = Object.assign({}, play.marks);
   marks[key] = 'mine';
   if (play.marks[key]) delete marks[key];
-  return { open: play.open, marks: marks, boom: '', events: [] };
+  var moved = overLimit(marks, board);
+  if (moved) delete marks[Object.keys(marks)[0]];
+  return { open: play.open, marks: marks, boom: '', events: { true: ['moved'], false: [] }[moved] };
+}
+
+// The squares a tap took a mark off — on a 'moved' tap, the oldest mark's — for the page to fade.
+export function marksLifted(before, after) {
+  return Object.keys(before.marks).filter(function (k) { return !after.marks[k]; });
+}
+
+// The Mines card's count: a Limited Flags board's flags left — never under none, though the finish
+// marks every mine — any other's mines marked of its mines (play-core's minesCount).
+export function revealCount(play, board) {
+  var left = Math.max(board.flagLimit - Object.keys(play.marks).length, 0);
+  return { true: 'Flags left ' + left, false: minesCount(play, board) }[board.limited];
 }
 
 // An opened number whose mines are all marked opens its other covered squares, as a Vanilla number
@@ -108,7 +134,7 @@ export function tapReveal(play, cell, board, tool) {
   if (revealOver(play, board)) return still(play);
   if (padlocked(play.open, key, board)) return locked(play);
   if (play.open[key]) return numberOpens(play, key, board);
-  if (tool === 'mark') return toggled(play, key);
+  if (tool === 'mark') return toggled(play, key, board);
   if (play.marks[key]) return still(play);
   return opening(play, [key], board);
 }
@@ -129,24 +155,36 @@ export function otherTool(tool) {
 }
 
 // ---- Undo ----
-// Undo takes back mine marks only: opening a square is never undone. The history is the squares
-// whose mark a tap changed, oldest first, held in the open page only. A square opened since can
-// never be marked again, so its entries are dropped as they're reached.
+// Undo takes back mine marks only: opening a square is never undone. The history is the marks as
+// they were before each tap that changed them, oldest first, held in the open page only — the whole
+// set in the order placed, so taking back a Limited Flags move puts the oldest mark back where it
+// was, the oldest still. A square opened since can never be marked again, so it drops out of what
+// comes back, and a step that would then change nothing is passed over.
 
-export function revealTapped(history, before, after, cell) {
-  var key = keyOf(cell);
-  return history.concat([key].filter(function () { return before.marks[key] !== after.marks[key]; }));
+function inOrder(marks) {
+  return Object.keys(marks).join(' ');
 }
 
+export function revealTapped(history, before, after) {
+  return history.concat([before.marks].filter(function () { return inOrder(before.marks) !== inOrder(after.marks); }));
+}
+
+function stillCovered(marks, play) {
+  return Object.fromEntries(Object.keys(marks).filter(function (k) { return !play.open[k]; }).map(function (k) { return [k, 'mine']; }));
+}
+
+// The history up to its last step that would still change the marks.
 function markable(history, play) {
-  return history.filter(function (k) { return !play.open[k]; });
+  var changes = history.map(function (marks) { return inOrder(stillCovered(marks, play)) !== inOrder(play.marks); });
+  return history.slice(0, changes.lastIndexOf(true) + 1);
 }
 
-// The last mark change still on a covered square taken back, and the history before it.
+// The marks before the last tap that would still change them, and the history before it — with
+// none, the play as it is.
 export function undoneReveal(history, play) {
   var left = markable(history, play);
-  if (!left.length) return { play: still(play), history: [] };
-  return { play: toggled(play, left[left.length - 1]), history: left.slice(0, -1) };
+  var marks = left.slice(-1).map(function (m) { return stillCovered(m, play); }).concat([play.marks])[0];
+  return { play: { open: play.open, marks: marks, boom: play.boom, events: [] }, history: left.slice(0, -1) };
 }
 
 // Undo greys out once only openings are left, and once the game is over.

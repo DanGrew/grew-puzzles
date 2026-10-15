@@ -147,9 +147,17 @@ const revealed = (mines, noMines, finished = false) => ({ puzzle: 'MINE-0901', m
 const openAll = () => SAFE_KEYS.reduce((p, key) => (p.open[key] ? p : tapReveal(p, key.split(',').map(Number), REVEAL, 'open')), newRevealPlay(REVEAL));
 
 describe('a Reveal board\'s row', () => {
-  it('its opened squares are its no_mines and its mine marks its mines, each row by row', () => {
+  it('its opened squares are its no_mines, row by row, and its mine marks its mines, in the order placed', () => {
     const play = revealTaps([[[0, 3], 'open'], [[0, 2], 'mark']]);
     expect(revealRow('MINE-0901', play, REVEAL)).toEqual(revealed([[0, 2]], [[0, 3], ...START_CELLS]));
+    const later = revealTaps([[[4, 0], 'mark'], [[0, 4], 'mark'], [[2, 0], 'mark']], play);
+    expect(revealRow('MINE-0901', later, REVEAL).mines).toEqual([[0, 2], [4, 0], [0, 4], [2, 0]]);
+  });
+
+  // The product's TASK-179: a Limited Flags board's oldest mark is the first saved, on any device.
+  it('a saved board comes back with its marks in the order placed', () => {
+    const play = restoredReveal(REVEAL, [revealed([[4, 0], [0, 2], [2, 0]], START_CELLS)]);
+    expect(Object.keys(play.marks)).toEqual(['4,0', '0,2', '2,0']);
   });
 
   it('says finished once every safe square is open', () => {

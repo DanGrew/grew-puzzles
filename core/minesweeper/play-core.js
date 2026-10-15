@@ -75,8 +75,9 @@ export function keyHiddenAt(key, board) {
 
 // What the page needs of a board file: its title, difficulty and code, its type's band, its size,
 // its numbers by square and its mines — the answer, shown only on the card's back — and how it
-// plays: its rule, a Reveal board's start square by its key, '' on any other, and a Keys board's
-// zones and keys — none on any other — and whether it has any (keyed).
+// plays: its rule, a Reveal board's start square by its key, '' on any other, a Keys board's
+// zones and keys — none on any other — and whether it has any (keyed), and a Limited Flags board's
+// flag limit (tooling's mines 13), whether it has one (limited), 0 on any other.
 export function minesBoard(puzzle) {
   var numbers = {};
   puzzle.numbers.forEach(function (row, r) {
@@ -98,7 +99,9 @@ export function minesBoard(puzzle) {
     start: startOf(puzzle),
     zones: zonesOf(puzzle),
     keys: keysOf(puzzle),
-    keyed: 'keys' in puzzle
+    keyed: 'keys' in puzzle,
+    flagLimit: puzzle.flagLimit || 0,
+    limited: 'flagLimit' in puzzle
   };
 }
 

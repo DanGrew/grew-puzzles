@@ -665,6 +665,35 @@ test('a Reveal board: signing in at its start picks the board up where I left it
   expect(db.saves).toEqual([]);
 });
 
+// ---- A Limited Flags board (TASK-179) ----
+// It saves nothing new: its mine marks go in the order they were placed, so the oldest is known on
+// any device. The board is the 10×10 Reveal fixture with a flag limit of 5, served as MINE-0904.
+const FLAGS = require('./fixtures/MINE-0904.json');
+
+test('a Limited Flags board: signed in, coming back on another device, my marks and Flags left are as I left them, the oldest still the oldest', async ({ browser }) => {
+  const db = minesTable();
+  const laptop = await browser.newContext();
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  for (const context of [laptop, phone]) {
+    await playing(context, { db });
+    await context.route('**/content/puzzles/minesweeper/MINE-0904.json', route => route.fulfill({ json: FLAGS }));
+  }
+  const there = await open(laptop, 'MINE-0904');
+  for (const [r, c] of [[9, 9], [7, 6], [8, 5], [8, 9], [6, 5], [4, 4]]) await square(there, r, c).click({ button: 'right' });
+  const left = [[7, 6], [8, 5], [8, 9], [6, 5], [4, 4]];
+  await expect.poll(() => boardsSaved(db)).toEqual([saved(left, REVEAL_START, false, 'MINE-0904')]);
+
+  const here = await open(phone, 'MINE-0904');
+  await expect(count(here)).toHaveText('Flags left 0');
+  for (const [r, c] of left) expect(await markOf(here, r, c)).toBe('mine');
+  expect(await markOf(here, 9, 9)).toBe('blank');
+  await square(here, 4, 6).click({ button: 'right' });
+  await expect.poll(() => markOf(here, 7, 6)).toBe('blank');
+  await expect.poll(() => boardsSaved(db)).toEqual([saved([...left.slice(1), [4, 6]], REVEAL_START, false, 'MINE-0904')]);
+  await laptop.close();
+  await phone.close();
+});
+
 // ---- A Keys board (TASK-177) ----
 // It saves nothing new: a zone is unlocked once its key's square is open, and opened squares are
 // saved. The board is the 6×6 Keys fixture, served as MINE-0903: Zone 2's key on (0,5), Zone 1's on
