@@ -56,7 +56,7 @@ export function mosaicBoard(puzzle) {
 }
 
 // ---- Marking ----
-// A play is { marks, events }: marks each marked square's mark by its key — 'dot' for left
+// A play is { marks, events }: marks each marked square's mark by its key — 'blank' for left
 // blank, 'shade' for shaded; a square not in it is clear — and events what this tap set off.
 
 export function newMosaicPlay() {
@@ -67,16 +67,17 @@ function markOf(play, cell) {
   return play.marks[keyOf(cell)] || 'clear';
 }
 
-// The board is solved once the shaded squares are exactly its answer; dots don't count.
+// The board is solved once the shaded squares are exactly its answer; blanks don't count.
 export function mosaicFinished(play, board) {
   var shaded = Object.keys(play.marks).filter(function (k) { return play.marks[k] === 'shade'; });
   return shaded.length === Object.keys(board.shaded).length && shaded.every(function (k) { return board.shaded[k]; });
 }
 
-// Every square, a number's too, cycles dot, shade, clear — most squares a player settles are dots
-// (the owner, 2026-10-14), and marking single squares is the focus (the owner, 2026-10-15).
+// Every square, a number's too, cycles blank, shade, clear — most squares a player settles are blank
+// (the owner, 2026-10-14), and marking single squares is the focus (the owner, 2026-10-15). A blank
+// square shows as a pale tint, not a dot, which could hide a number (the owner, 2026-10-15).
 function nextMark(mark) {
-  return { clear: 'dot', dot: 'shade', shade: 'clear' }[mark];
+  return { clear: 'blank', blank: 'shade', shade: 'clear' }[mark];
 }
 
 function marked(play, cells, mark) {
@@ -90,20 +91,20 @@ function cycled(play, cell) {
   return marked(play, [cell], nextMark(markOf(play, cell)));
 }
 
-// A number's fill — the shortcut, by a right-click or with Fill picked: once its block, itself
-// included, holds its count of shaded squares, its clear squares are dotted; once its clear squares
+// A number's fill — the shortcut, by a right-click, or a tap with Fill picked on a phone: once its block, itself
+// included, holds its count of shaded squares, its clear squares are left blank; once its clear squares
 // are exactly what it still needs, they're shaded. Otherwise, and on a block with one too many, it
 // does nothing. Only the player's own squares count, so a wrong one already there carries in.
 function numberFill(play, cell, board) {
   var block = around(cell, board);
   var missing = board.numbers[keyOf(cell)] - block.filter(function (c) { return markOf(play, c) === 'shade'; }).length;
   var clear = block.filter(function (c) { return markOf(play, c) === 'clear'; });
-  if (missing === 0) return marked(play, clear, 'dot');
+  if (missing === 0) return marked(play, clear, 'blank');
   if (missing === clear.length) return marked(play, clear, 'shade');
   return play.marks;
 }
 
-// A tap on a square, with the tool picked — 'mark' or 'fill': Fill on a number fills its block,
+// A tap on a square, with the tool picked — 'cycle' or 'fill': Fill on a number fills its block,
 // anything else cycles the square. Once solved, the board takes no more taps. events is
 // ['complete'] on the tap that solves it.
 export function tapMosaic(play, cell, board, tool) {
@@ -123,7 +124,7 @@ export function rightTool() {
 // with the answer and never scores or blocks the finish; Undo takes back this visit's taps, a
 // fill as one, newest first (core/minesweeper/play-core.js tappedHistory, undoneMines).
 
-// The marked squares the answer disagrees with: a square shaded that isn't, a dot on one that is.
+// The marked squares the answer disagrees with: a square shaded that isn't, a blank on one that is.
 // A clear square is never checked.
 export function mosaicMistakes(play, board) {
   return Object.keys(play.marks).filter(function (k) { return (play.marks[k] === 'shade') !== Boolean(board.shaded[k]); });
@@ -154,7 +155,7 @@ export function completeLine(board) {
 
 // What a screen reader hears of a square: where it is, its number, and its mark.
 export function squareSaid(play, board, cell) {
-  var said = { clear: 'clear', dot: 'left blank', shade: 'shaded' };
+  var said = { clear: 'clear', blank: 'left blank', shade: 'shaded' };
   var key = keyOf(cell);
   var number = key in board.numbers ? 'number ' + board.numbers[key] + ', ' : '';
   return 'Row ' + (cell[0] + 1) + ', column ' + (cell[1] + 1) + ', ' + number + said[markOf(play, cell)];
@@ -198,8 +199,8 @@ export function cellShows(view, frame, cell) {
 
 // ---- What the board on view draws ----
 // Only the squares on view are drawn, however big the board, each layer as a list the page draws
-// without deciding anything: the shaded squares; a numbered square's tint while it isn't shaded;
-// the dots, a numbered square's in its top-right corner; the numbers, light on a shaded square;
+// without deciding anything: the shaded squares; a numbered square's tint while it's clear;
+// the blank squares, a numbered one's too; the numbers, light on a shaded square;
 // Check's rings; and the grid lines between squares. A square too small to read draws no number, and
 // too small to see a line between, no lines. Every place is px from the frame's top-left.
 
@@ -216,12 +217,6 @@ export function viewSpan(view, frame, board) {
 // Numbers show from 10px squares, lines from 6px.
 var SMALLEST_NUMBER = 10;
 var SMALLEST_LINE = 6;
-
-// A dot sits in the middle of a square, or in a numbered square's top-right corner, smaller.
-function dotIn(x, y, cell, numbered) {
-  var at = numbered ? { across: 0.8, down: 0.2, r: 0.06 } : { across: 0.5, down: 0.5, r: 0.08 };
-  return { x: x + cell * at.across, y: y + cell * at.down, r: cell * at.r };
-}
 
 // Each edge of a span of squares — columns from view.x, or rows from view.y — px, snapped to the
 // screen's own pixels (ratio of them to a px), so squares side by side meet with no seam: each
@@ -242,7 +237,7 @@ export function boardDrawing(play, board, view, frame, checked, ratio) {
   var cols = edges(span.left, span.right, view.x, cell, ratio), rows = edges(span.top, span.bottom, view.y, cell, ratio);
   var rings = new Set(checked);
   var readable = cell >= SMALLEST_NUMBER;
-  var out = { size: cell, shaded: [], tints: [], dots: [], numbers: [], rings: [], lines: cell >= SMALLEST_LINE ? gridLines(span, view, frame) : [] };
+  var out = { size: cell, shaded: [], tints: [], blanks: [], numbers: [], rings: [], lines: cell >= SMALLEST_LINE ? gridLines(span, view, frame) : [] };
   for (var r = span.top; r <= span.bottom; r++) {
     for (var c = span.left; c <= span.right; c++) {
       var key = r + ',' + c;
@@ -250,8 +245,8 @@ export function boardDrawing(play, board, view, frame, checked, ratio) {
       var numbered = key in board.numbers;
       var p = { x: cols[c].at, y: rows[r].at, w: cols[c].size, h: rows[r].size };
       if (mark === 'shade') out.shaded.push(p);
-      if (numbered && mark !== 'shade') out.tints.push(p);
-      if (mark === 'dot') out.dots.push(dotIn(p.x, p.y, cell, numbered));
+      if (numbered && !mark) out.tints.push(p);
+      if (mark === 'blank') out.blanks.push(p);
       if (numbered && readable) out.numbers.push({ x: p.x + cell / 2, y: p.y + cell / 2, text: String(board.numbers[key]), light: mark === 'shade' });
       if (rings.has(key)) out.rings.push(p);
     }
@@ -285,7 +280,7 @@ export function meltLength(reduced) {
   return reduced ? 0 : 900;
 }
 
-// How much of the numbers, dots, tints and lines still show, from how far the melt has gone.
+// How much of the numbers, blanks, tints and lines still show, from how far the melt has gone.
 export function showing(melt) {
   return 1 - melt;
 }

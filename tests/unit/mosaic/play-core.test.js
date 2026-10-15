@@ -24,7 +24,7 @@ beforeEach(() => {
 });
 
 function taps(cells, board, tool, play) {
-  return cells.reduce((p, cell) => tapMosaic(p, cell, board, tool || 'mark'), play || newMosaicPlay());
+  return cells.reduce((p, cell) => tapMosaic(p, cell, board, tool || 'cycle'), play || newMosaicPlay());
 }
 
 const shade = cell => [cell, cell];
@@ -66,9 +66,9 @@ describe('marking a square', () => {
     expect(newMosaicPlay()).toEqual({ marks: {}, events: [] });
   });
 
-  it('cycles dot, shade, clear — a blank square and a number\'s alike', () => {
+  it('cycles blank, shade, clear — a blank square and a number\'s alike', () => {
     [[0, 1], [0, 0]].forEach(cell => {
-      expect(taps([cell], SMALL).marks).toEqual({ [cell.join(',')]: 'dot' });
+      expect(taps([cell], SMALL).marks).toEqual({ [cell.join(',')]: 'blank' });
       expect(taps([cell, cell], SMALL).marks).toEqual({ [cell.join(',')]: 'shade' });
       expect(taps([cell, cell, cell], SMALL).marks).toEqual({});
     });
@@ -76,13 +76,13 @@ describe('marking a square', () => {
 
   it('leaves the other marks as they were, and never changes the play it was given', () => {
     const before = taps([[0, 1]], SMALL);
-    const after = tapMosaic(before, [0, 2], SMALL, 'mark');
-    expect(after.marks).toEqual({ '0,1': 'dot', '0,2': 'dot' });
-    expect(before.marks).toEqual({ '0,1': 'dot' });
+    const after = tapMosaic(before, [0, 2], SMALL, 'cycle');
+    expect(after.marks).toEqual({ '0,1': 'blank', '0,2': 'blank' });
+    expect(before.marks).toEqual({ '0,1': 'blank' });
   });
 
   it('Fill on a square with no number cycles it too', () => {
-    expect(taps([[0, 1]], SMALL, 'fill').marks).toEqual({ '0,1': 'dot' });
+    expect(taps([[0, 1]], SMALL, 'fill').marks).toEqual({ '0,1': 'blank' });
   });
 
   it('a right-click always fills', () => {
@@ -91,19 +91,19 @@ describe('marking a square', () => {
 });
 
 describe('a number\'s fill', () => {
-  it('dots the rest of its block once its count is met — its own square too', () => {
+  it('leaves the rest of its block blank once its count is met — its own square too', () => {
     const play = taps([[1, 1], [1, 1], [0, 1], [0, 1]], SMALL);
-    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'dot', '0,1': 'shade', '1,0': 'dot', '1,1': 'shade' });
+    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'blank', '0,1': 'shade', '1,0': 'blank', '1,1': 'shade' });
   });
 
-  it('shades its clear squares when they\'re exactly what it still needs, and leaves its dots', () => {
+  it('shades its clear squares when they\'re exactly what it still needs, and leaves its blanks', () => {
     const play = taps([[0, 1], [1, 0]], SMALL);
-    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'shade', '0,1': 'dot', '1,0': 'dot', '1,1': 'shade' });
+    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'shade', '0,1': 'blank', '1,0': 'blank', '1,1': 'shade' });
   });
 
   it('shades a part of its block once the rest is settled', () => {
     const play = taps([[0, 1], [1, 0], ...shade([0, 0])], SMALL);
-    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'shade', '0,1': 'dot', '1,0': 'dot', '1,1': 'shade' });
+    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'shade', '0,1': 'blank', '1,0': 'blank', '1,1': 'shade' });
   });
 
   it('changes nothing while its count doesn\'t settle it', () => {
@@ -119,17 +119,17 @@ describe('a number\'s fill', () => {
 
   it('counts only the player\'s own squares, so a wrong one carries in', () => {
     const play = taps([...shade([0, 1]), ...shade([1, 0])], SMALL);
-    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'dot', '0,1': 'shade', '1,0': 'shade', '1,1': 'dot' });
+    expect(tapMosaic(play, [0, 0], SMALL, 'fill').marks).toEqual({ '0,0': 'blank', '0,1': 'shade', '1,0': 'shade', '1,1': 'blank' });
   });
 
   it('with Mark picked, a number cycles as any square does', () => {
     const play = taps([[0, 1], [1, 0]], SMALL);
-    expect(tapMosaic(play, [0, 0], SMALL, 'mark').marks).toEqual({ '0,0': 'dot', '0,1': 'dot', '1,0': 'dot' });
+    expect(tapMosaic(play, [0, 0], SMALL, 'cycle').marks).toEqual({ '0,0': 'blank', '0,1': 'blank', '1,0': 'blank' });
   });
 });
 
 describe('the finish', () => {
-  it('a board is solved once its shaded squares are exactly the answer, dots or not', () => {
+  it('a board is solved once its shaded squares are exactly the answer, blanks or not', () => {
     expect(mosaicFinished(newMosaicPlay(), SMALL)).toBe(false);
     expect(mosaicFinished(taps([...shade([0, 0])], SMALL), SMALL)).toBe(false);
     expect(mosaicFinished(taps([...shade([0, 0]), ...shade([1, 1])], SMALL), SMALL)).toBe(true);
@@ -141,13 +141,13 @@ describe('the finish', () => {
   it('the tap that solves it sets off complete, and only that one', () => {
     const almost = taps([...shade([0, 0]), [1, 1]], SMALL);
     expect(almost.events).toEqual([]);
-    expect(tapMosaic(almost, [1, 1], SMALL, 'mark').events).toEqual(['complete']);
+    expect(tapMosaic(almost, [1, 1], SMALL, 'cycle').events).toEqual(['complete']);
     expect(tapMosaic(taps([[0, 1], [1, 0]], SMALL), [0, 0], SMALL, 'fill').events).toEqual(['complete']);
   });
 
   it('a solved board takes no more taps', () => {
     const solved = taps([...shade([0, 0]), ...shade([1, 1])], SMALL);
-    const after = tapMosaic(solved, [0, 2], SMALL, 'mark');
+    const after = tapMosaic(solved, [0, 2], SMALL, 'cycle');
     expect(after).toEqual({ marks: solved.marks, events: [] });
   });
 
@@ -164,7 +164,7 @@ describe('the finish', () => {
 });
 
 describe('Check and Undo', () => {
-  it('rings a square shaded that isn\'t and a dot on one that is, never a clear square', () => {
+  it('rings a square shaded that isn\'t and a blank on one that is, never a clear square', () => {
     expect(mosaicMistakes(newMosaicPlay(), SMALL)).toEqual([]);
     expect(mosaicMistakes(taps([[0, 1], ...shade([0, 0])], SMALL), SMALL)).toEqual([]);
     expect(mosaicMistakes(taps([...shade([0, 1]), [1, 1], [1, 2]], SMALL), SMALL)).toEqual(['0,1', '1,1']);
@@ -261,13 +261,19 @@ describe('what the board on view draws', () => {
     expect(viewSpan({ cell: 10, x: -1, y: -1 }, { width: 500, height: 500 }, SMALL)).toEqual({ top: 0, left: 0, bottom: 1, right: 2 });
   });
 
-  it('draws the shaded squares, a number\'s tint while it isn\'t shaded, and the dots — a number\'s in its corner', () => {
-    const play = taps([...shade([0, 0]), [0, 1], [1, 2]], SMALL);
+  it('draws the shaded squares, a number\'s tint while it\'s clear, and the blank squares', () => {
+    const play = taps([...shade([0, 0]), [0, 1]], SMALL);
     const d = boardDrawing(play, SMALL, whole, frame, [], 1);
     expect(d.size).toBe(30);
     expect(d.shaded).toEqual([{ x: 0, y: 0, w: 30, h: 30 }]);
     expect(d.tints).toEqual([{ x: 60, y: 30, w: 30, h: 30 }]);
-    expect(d.dots).toEqual([{ x: 45, y: 15, r: expect.closeTo(2.4) }, { x: 84, y: 36, r: expect.closeTo(1.8) }]);
+    expect(d.blanks).toEqual([{ x: 30, y: 0, w: 30, h: 30 }]);
+  });
+
+  it('draws a blank number in the blank tint, not its own', () => {
+    const d = boardDrawing(taps([[0, 0], [1, 2]], SMALL), SMALL, whole, frame, [], 1);
+    expect(d.tints).toEqual([]);
+    expect(d.blanks).toEqual([{ x: 0, y: 0, w: 30, h: 30 }, { x: 60, y: 30, w: 30, h: 30 }]);
   });
 
   it('draws each number in the middle of its square, light on a shaded one', () => {

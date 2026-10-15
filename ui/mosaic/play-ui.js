@@ -1,5 +1,5 @@
 // The mosaic play page's DOM: loads the board a play URL names, draws the squares on view and its
-// answer from play-core's board, and wires the taps and the Mark | Fill switch, the right-click
+// answer from play-core's board, and wires the taps and the phone's Cycle | Fill switch, the right-click
 // fill, the keys, Check and Undo, the zoom and moving round a big board, the flip, and the finish —
 // the numbers and lines melting away to the picture, and the title to its name. The board is drawn
 // into a canvas, only the squares on view, so a 200×200 plays as smoothly as a 10×10 (the
@@ -55,7 +55,7 @@ function showBoard(board) {
   // The first frame opens the board; every one after refits it.
   var fitView = function (v, before, next) { return minesOpenView(next, board); };
   var play = newMosaicPlay(), answer = answerPlay(board), history = newMinesHistory();
-  var tool = 'mark', checked = [], melt = 0, meltStart = 0, length = meltLength(matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var tool = 'cycle', checked = [], melt = 0, meltStart = 0, length = meltLength(matchMedia('(prefers-reduced-motion: reduce)').matches);
   // The square the keys move, from the board's middle.
   var focus = [Math.floor(board.rows / 2), Math.floor(board.cols / 2)];
   var puzzleSize = 'normal';
@@ -153,7 +153,7 @@ function showBoard(board) {
   // ---- Tools and keys ----
 
   function wireTools() {
-    ['mark', 'fill'].forEach(function (t) {
+    ['cycle', 'fill'].forEach(function (t) {
       mosaicEl('tool-' + t).addEventListener('click', function () { pickTool(t); });
     });
     // A right-click fills, whichever tool is picked.
@@ -165,7 +165,7 @@ function showBoard(board) {
 
   function pickTool(t) {
     tool = t;
-    mosaicEl('tool-mark').setAttribute('aria-pressed', String(t === 'mark'));
+    mosaicEl('tool-cycle').setAttribute('aria-pressed', String(t === 'cycle'));
     mosaicEl('tool-fill').setAttribute('aria-pressed', String(t === 'fill'));
   }
 
@@ -241,10 +241,8 @@ function showBoard(board) {
     ctx.globalAlpha = show;
     ctx.fillStyle = colours.getPropertyValue('--clue-bg').trim();
     d.tints.forEach(function (s) { ctx.fillRect(s.x, s.y, s.w, s.h); });
-    ctx.fillStyle = colours.getPropertyValue('--muted').trim();
-    ctx.beginPath();
-    d.dots.forEach(function (s) { ctx.moveTo(s.x + s.r, s.y); ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI); });
-    ctx.fill();
+    ctx.fillStyle = colours.getPropertyValue('--blank').trim();
+    d.blanks.forEach(function (s) { ctx.fillRect(s.x, s.y, s.w, s.h); });
     ctx.strokeStyle = colours.getPropertyValue('--rule').trim();
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -354,7 +352,7 @@ function showBoard(board) {
   }
 
   // As minesweeper's: the card's edges round the frame and, wider than a phone, the Squares card
-  // beside it; the Mark | Fill switch fits the window's height with it. The board may reach past
+  // beside it; the phone's Cycle | Fill switch fits the window's height with it. The board may reach past
   // the page's column to the window's 24px edges, never over the side bar.
   function sizeBoard() {
     var playEl = mosaicEl('play'), face = mosaicEl('front'), frameEl = mosaicEl('view');

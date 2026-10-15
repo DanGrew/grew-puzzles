@@ -13,12 +13,11 @@ async function open(page, id) {
   await expect(page.locator('#play')).toHaveAttribute('data-view', /./);
 }
 
-const numbered = (file, r, c) => file.numbers[r][c] !== '.';
 const answer = file => file.answer.flatMap((row, r) => [...row].map((ch, c) => [ch, r, c])).filter(s => s[0] === '#').map(s => [s[1], s[2]]);
 
 // The board is drawn into a canvas: what a square looks like is read off its pixels — its fill near
-// its bottom-left corner, clear of any number, and its dot in its middle, or a numbered square's
-// top-right corner. canvas: '#grid', the player's side, or '#solution-grid', the answer.
+// its bottom-left corner, clear of any number: ink shaded, the blank tint left blank. canvas: '#grid',
+// the player's side, or '#solution-grid', the answer.
 async function look(page, r, c, canvas = '#grid') {
   return page.evaluate(([r, c, id]) => {
     const grid = document.querySelector(id);
@@ -26,19 +25,18 @@ async function look(page, r, c, canvas = '#grid') {
     const ratio = grid.width / grid.getBoundingClientRect().width;
     const ctx = grid.getContext('2d');
     const at = (x, y) => Array.from(ctx.getImageData(Math.floor(((c - vx) * cell + x * cell) * ratio), Math.floor(((r - vy) * cell + y * cell) * ratio), 1, 1).data).slice(0, 3).join(',');
-    return { fill: at(0.15, 0.85), middle: at(0.5, 0.5), corner: at(0.8, 0.2), edge: at(0.04, 0.5) };
+    return { fill: at(0.15, 0.85), middle: at(0.5, 0.5), edge: at(0.04, 0.5) };
   }, [r, c, canvas]);
 }
 
-const INK = '15,42,36', MUTED = '76,102,96', RED = '224,71,59', WHITE = '255,255,255';
+const INK = '15,42,36', BLANK = '207,219,214', RED = '224,71,59', WHITE = '255,255,255';
 
-async function markOf(page, file, r, c) {
-  const l = await look(page, r, c);
-  const dot = numbered(file, r, c) ? l.corner : l.middle;
-  return l.fill === INK ? 'shade' : dot === MUTED ? 'dot' : 'clear';
+async function markOf(page, r, c) {
+  const { fill } = await look(page, r, c);
+  return { [INK]: 'shade', [BLANK]: 'blank' }[fill] || 'clear';
 }
 
-const expectMark = (page, r, c, mark, file = BOARD) => expect.poll(() => markOf(page, file, r, c)).toBe(mark);
+const expectMark = (page, r, c, mark) => expect.poll(() => markOf(page, r, c)).toBe(mark);
 
 // Where a square sits on the canvas at the view now, to press it.
 async function spot(page, r, c) {
@@ -84,9 +82,9 @@ test.describe('a mosaic', () => {
     expect(side.x).toBeGreaterThan(card.x + card.width);
   });
 
-  test('a blank square cycles dot, shade, clear — and only a shaded one counts', async ({ page }) => {
+  test('a blank square cycles blank, shade, clear — and only a shaded one counts', async ({ page }) => {
     await tap(page, 0, 1);
-    await expectMark(page, 0, 1, 'dot');
+    await expectMark(page, 0, 1, 'blank');
     await expect(page.locator('#count')).toHaveText('0 shaded');
     await tap(page, 0, 1);
     await expectMark(page, 0, 1, 'shade');
@@ -96,9 +94,9 @@ test.describe('a mosaic', () => {
     await expect(page.locator('#count')).toHaveText('0 shaded');
   });
 
-  test('a numbered square cycles too, its dot in its corner', async ({ page }) => {
+  test('a numbered square cycles too, blank tinted like any other', async ({ page }) => {
     await tap(page, 5, 5);
-    await expectMark(page, 5, 5, 'dot');
+    await expectMark(page, 5, 5, 'blank');
     await tap(page, 5, 5);
     await expectMark(page, 5, 5, 'shade');
     await tap(page, 5, 5);
@@ -117,16 +115,16 @@ test.describe('a mosaic', () => {
     });
     const before = await number();
     await tapAll(page, [[0, 5], [1, 5]]);
-    await expectMark(page, 1, 5, 'dot');
+    await expectMark(page, 1, 5, 'blank');
     expect(await number()).toBe(before);
     await tapAll(page, [[0, 5]]);
     await expectMark(page, 0, 5, 'shade');
     expect(await number()).toBe(before);
   });
 
-  test('a right-click on a number whose count is met dots the rest of its block, its own square too', async ({ page }) => {
+  test('a right-click on a number whose count is met leaves the rest of its block blank, its own square too', async ({ page }) => {
     await tap(page, 0, 4, 'right');
-    for (const [r, c] of [[0, 3], [0, 4], [0, 5], [1, 3], [1, 4], [1, 5]]) await expectMark(page, r, c, 'dot');
+    for (const [r, c] of [[0, 3], [0, 4], [0, 5], [1, 3], [1, 4], [1, 5]]) await expectMark(page, r, c, 'blank');
     await expectMark(page, 0, 2, 'clear');
     await expectMark(page, 2, 4, 'clear');
   });
@@ -147,17 +145,8 @@ test.describe('a mosaic', () => {
     expect(await page.locator('#board').evaluate(el => el.getAnimations({ subtree: true }).length)).toBe(0);
   });
 
-  test('with Fill picked, a tap on a number fills, and on any other square marks', async ({ page }) => {
-    await page.click('#tool-fill');
-    await expect(page.locator('#tool-fill')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#tool-mark')).toHaveAttribute('aria-pressed', 'false');
-    await tap(page, 0, 4);
-    await expectMark(page, 1, 3, 'dot');
-    await tap(page, 3, 1);
-    await expectMark(page, 3, 1, 'dot');
-    await page.click('#tool-mark');
-    await tap(page, 0, 4);
-    await expectMark(page, 0, 4, 'shade');
+  test('with a mouse there\'s no Cycle | Fill switch — a right-click is the fill', async ({ page }) => {
+    await expect(page.locator('#mosaic-switch')).toBeHidden();
   });
 
   test('a right-click never opens the browser\'s menu', async ({ page }) => {
@@ -175,18 +164,18 @@ test.describe('a mosaic', () => {
     await page.keyboard.press('ArrowUp');
     await page.keyboard.press('ArrowLeft');
     await page.keyboard.press('Enter');
-    await expectMark(page, 5, 5, 'dot');
+    await expectMark(page, 5, 5, 'blank');
     await expect(page.locator('#said')).toHaveText('Row 6, column 6, number 5, left blank');
     for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowUp');
     await page.keyboard.press('ArrowLeft');
     await page.keyboard.press('f');
-    await expectMark(page, 1, 3, 'dot');
+    await expectMark(page, 1, 3, 'blank');
   });
 
   test('only the keys\' focus wears a ring — a tap never does', async ({ page }) => {
     const BAND = '31,111,92';
     await tap(page, 3, 3);
-    await expectMark(page, 3, 3, 'dot');
+    await expectMark(page, 3, 3, 'blank');
     expect((await look(page, 3, 3)).edge).not.toBe(BAND);
     await page.keyboard.press('ArrowRight');
     await expect.poll(async () => (await look(page, 3, 4)).edge).toBe(BAND);
@@ -204,7 +193,7 @@ test.describe('a mosaic', () => {
     await expect(page).toHaveTitle('Robot 20 · Grew Puzzles');
     await expect(page.locator('#play')).toHaveAttribute('data-solved', 'true');
     await expect(page.locator('#board')).toHaveClass(/pop/);
-    // Melted: a numbered square, a dot and the line between two clear squares are all plain white.
+    // Melted: a numbered square, a blank one and the line between two clear squares are all plain white.
     await expect.poll(async () => (await look(page, 0, 4)).middle).toBe(WHITE);
     expect((await look(page, 0, 4)).fill).toBe(WHITE);
     expect((await look(page, 1, 1)).middle).toBe(WHITE);
@@ -226,7 +215,7 @@ test.describe('a mosaic', () => {
     expect((await look(page, 1, 5, '#solution-grid')).fill).toBe(WHITE);
     await page.click('#flip');
     await expect(page.locator('#card')).not.toHaveClass(/flipped/);
-    await expectMark(page, 0, 1, 'dot');
+    await expectMark(page, 0, 1, 'blank');
     await expectMark(page, 0, 2, 'shade');
   });
 
@@ -238,13 +227,13 @@ test.describe('a mosaic', () => {
 });
 
 // Check and Undo, under the board, as minesweeper's. On MOSA-0001, (0,0) is in the picture and (0,1)
-// isn't; the 0 at (0,4) fills six squares with dots.
+// isn't; the 0 at (0,4) leaves six squares blank.
 test.describe('Check and Undo', () => {
   test.beforeEach(async ({ page }) => { await open(page); });
 
   const line = page => page.locator('#check-line');
 
-  test('a square shaded that isn\'t in the picture, and a dot on one that is, are ringed in red, and the line says 2 mistakes', async ({ page }) => {
+  test('a square shaded that isn\'t in the picture, and a blank on one that is, are ringed in red, and the line says 2 mistakes', async ({ page }) => {
     await tapAll(page, [[0, 1], [0, 1], [0, 0], [0, 4]]);
     await page.click('#check');
     await expect(line(page)).toBeVisible();
@@ -274,7 +263,7 @@ test.describe('Check and Undo', () => {
     await expect(page.locator('#undo')).toBeDisabled();
     await tapAll(page, [[0, 1], [0, 1]]);
     await page.click('#undo');
-    await expectMark(page, 0, 1, 'dot');
+    await expectMark(page, 0, 1, 'blank');
     await page.click('#undo');
     await expectMark(page, 0, 1, 'clear');
     await expect(page.locator('#undo')).toBeDisabled();
@@ -282,7 +271,7 @@ test.describe('Check and Undo', () => {
 
   test('a fill is one tap to take back', async ({ page }) => {
     await tap(page, 0, 4, 'right');
-    await expectMark(page, 1, 5, 'dot');
+    await expectMark(page, 1, 5, 'blank');
     await page.click('#undo');
     for (const [r, c] of [[0, 3], [0, 4], [1, 5]]) await expectMark(page, r, c, 'clear');
     await expect(page.locator('#undo')).toBeDisabled();
@@ -318,14 +307,14 @@ test.describe('a 198×198 mosaic', () => {
     const [, vx, vy] = (await page.locator('#play').getAttribute('data-view')).split(' ').map(Number);
     const r = Math.ceil(vy) + 2, c = Math.ceil(vx) + 2;
     await tapAll(page, [[r, c], [r, c]]);
-    await expectMark(page, r, c, 'shade', BIG);
+    await expectMark(page, r, c, 'shade');
   });
 });
 
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
 
-  test('the Squares card sits under the board, and Mark | Fill right under it', async ({ page }) => {
+  test('the Squares card sits under the board, and Cycle | Fill right under it', async ({ page }) => {
     await open(page);
     const card = await page.locator('#stage').boundingBox();
     const tools = await page.locator('#mosaic-switch').boundingBox();
@@ -335,11 +324,20 @@ test.describe('on a phone', () => {
     expect(card.x + card.width).toBeLessThanOrEqual(390);
   });
 
-  test('a tap with Fill picked fills a number', async ({ page }) => {
+  test('with Fill picked, a tap on a number fills, and on any other square cycles', async ({ page }) => {
     await open(page);
+    const tapAt = async (r, c) => page.locator('#grid').tap({ position: await spot(page, r, c) });
+    await expect(page.locator('#tool-cycle')).toHaveAttribute('aria-pressed', 'true');
     await page.locator('#tool-fill').tap();
-    await page.locator('#grid').tap({ position: await spot(page, 0, 4) });
-    for (const [r, c] of [[0, 3], [1, 5]]) await expectMark(page, r, c, 'dot');
+    await expect(page.locator('#tool-fill')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#tool-cycle')).toHaveAttribute('aria-pressed', 'false');
+    await tapAt(0, 4);
+    for (const [r, c] of [[0, 3], [1, 5]]) await expectMark(page, r, c, 'blank');
+    await tapAt(3, 1);
+    await expectMark(page, 3, 1, 'blank');
+    await page.locator('#tool-cycle').tap();
+    await tapAt(0, 4);
+    await expectMark(page, 0, 4, 'shade');
   });
 
   test('a 198×198 opens zoomed, inside the screen', async ({ page }) => {

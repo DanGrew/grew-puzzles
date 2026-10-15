@@ -64,11 +64,11 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
         </button>
       </div>
-      <!-- Right under the board: what a tap does. Mark cycles a square; Fill fills a number's block
-           — what a right-click does, whichever is picked. -->
+      <!-- Right under the board, on a touch screen only: what a tap does. Cycle cycles a square; Fill
+           fills a number's block — what a right-click does with a mouse. -->
       <div class="mosaic-switch" id="mosaic-switch">
         <div class="mosaic-tool-pick" role="group" aria-label="What a tap does">
-          <button type="button" id="tool-mark" aria-pressed="true"><span class="tool-icon" aria-hidden="true"></span>Mark</button>
+          <button type="button" id="tool-cycle" aria-pressed="true"><span class="tool-icon" aria-hidden="true"></span>Cycle</button>
           <button type="button" id="tool-fill" aria-pressed="false"><span class="tool-icon fill" aria-hidden="true"></span>Fill</button>
         </div>
       </div>
@@ -92,10 +92,10 @@
         </div>
         <p class="mosaic-rule">Shade squares to reveal a picture. Each number counts the shaded squares in its 3×3 block: the square itself and the eight around it.</p>
         <div class="mosaic-legend">
-          <span class="mosaic-square" data-mark="dot"></span><span>Tap once: leave blank</span>
+          <span class="mosaic-square" data-mark="blank"></span><span>Tap once: leave blank</span>
           <span class="mosaic-square" data-mark="shade"></span><span>Tap again: shade</span>
           <span class="mosaic-square" data-mark="clear"></span><span>Tap again: clear</span>
-          <span class="mosaic-square" data-mark="number">4</span><span>A number's square cycles too. Right-click a number, or tap it with Fill picked, to fill in its block once its count settles it</span>
+          <span class="mosaic-square" data-mark="number">4</span><span>A number's square cycles too. Right-click a number, or on a touch screen tap it with Fill picked, to fill in its block once its count settles it</span>
         </div>
       </div>
     </aside>
