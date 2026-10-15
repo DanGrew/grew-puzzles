@@ -4,7 +4,8 @@
 // The ladder: the wordsearch's letter steps, 10 to 32px against its Normal's 22, run on by 5px twice
 // more. The wordsearch takes the first five rungs; the maze starts two up, so its Tiny is the
 // maze page as it was before the choice came to it, and minesweeper and the criss-cross one up, so
-// each one's Small is its page as it was (the owner's calls, 2026-10-14).
+// each one's Small is its page as it was (the owner's calls, 2026-10-14) — and the mosaic, a board
+// of squares as minesweeper's is, with them.
 function sizeRungs() {
   return [10, 15, 22, 27, 32, 37, 42];
 }
@@ -14,7 +15,7 @@ function sizeOrder() {
 }
 
 function kindShift() {
-  return { wordsearch: 0, maze: 2, minesweeper: 1, crisscross: 1 };
+  return { wordsearch: 0, maze: 2, minesweeper: 1, crisscross: 1, mosaic: 1 };
 }
 
 // A size's ratio to the wordsearch's Normal, on a kind: what that kind's page multiplies by.

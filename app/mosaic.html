@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grew Puzzles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../styles/theme.css">
+<link rel="stylesheet" href="../styles/site-bar.css">
+<link rel="stylesheet" href="../styles/play.css">
+<link rel="stylesheet" href="../styles/mosaic.css">
+<link rel="stylesheet" href="../styles/look.css">
+<link rel="stylesheet" href="../styles/blueprint.css">
+</head>
+<body class="play-page mosaic-page">
+<div class="wrap">
+  <header class="site" data-site-bar data-home="index.html" data-current="mosaic"></header>
+
+  <header class="play-head">
+    <h1 id="title"></h1>
+    <p class="ident" id="ident" hidden><span class="difficulty" id="difficulty"></span> · <span class="code" id="code"></span></p>
+  </header>
+
+  <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
+
+  <main class="play mosaic" id="play" hidden>
+    <div class="mosaic-col">
+      <div class="stage" id="stage">
+        <div class="card" id="card">
+          <div class="face front-face" id="front">
+            <div class="band" id="label"></div>
+            <!-- The frame: the squares on view drawn into it, at the player's zoom — only those, so
+                 any size plays (ui/mosaic/play-ui.js). Arrows move the square in focus, Enter or
+                 Space taps it, F fills it. -->
+            <div class="board" id="board">
+              <div class="mosaic-view" id="view">
+                <canvas class="mosaic-grid" id="grid" tabindex="0" role="img" aria-roledescription="mosaic board" aria-label="The board"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="face back-face" id="back" aria-hidden="true" inert>
+            <div class="band" id="solution-label"></div>
+            <div class="board">
+              <div class="mosaic-view">
+                <canvas class="mosaic-grid" id="solution-grid" role="img" aria-label="The answer"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="corner zoom-out" id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9"/></svg>
+        </button>
+        <button class="corner zoom-in" id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M8 3.5v9"/></svg>
+        </button>
+        <button class="corner puzzle-size" id="puzzle-size" type="button" popovertarget="puzzle-size-menu" aria-label="Puzzle size" title="Puzzle size">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="6.5" width="8" height="8" rx="1"/><path d="M9 2h5v5M14 2 9.5 6.5"/></svg>
+        </button>
+        <!-- The five sizes, each a square at its size; pressing outside closes it. -->
+        <div class="size-menu" id="puzzle-size-menu" popover role="menu" aria-label="Puzzle size"></div>
+        <button class="corner flip" id="flip" type="button" aria-pressed="false" aria-label="Show solution" title="Show solution">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 8a5.5 5.5 0 0 1 9.6-3.7M13.5 8a5.5 5.5 0 0 1-9.6 3.7"/><path d="M12.4 1.8v2.8H9.6M3.6 14.2v-2.8h2.8"/></svg>
+        </button>
+      </div>
+      <!-- Right under the board, on a touch screen only: what a tap does. Cycle cycles a square; Fill
+           fills a number's block — what a right-click does with a mouse. -->
+      <div class="mosaic-switch" id="mosaic-switch">
+        <div class="mosaic-tool-pick" role="group" aria-label="What a tap does">
+          <button type="button" id="tool-cycle" aria-pressed="true"><span class="tool-icon" aria-hidden="true"></span>Cycle</button>
+          <button type="button" id="tool-fill" aria-pressed="false"><span class="tool-icon fill" aria-hidden="true"></span>Fill</button>
+        </div>
+      </div>
+      <!-- Under the board: Check rings any square the answer disagrees with, and the line says how
+           many; Undo takes back the last tap this visit, a fill as one. -->
+      <div class="mosaic-tools">
+        <button class="tool" id="check" type="button">Check</button>
+        <button class="tool" id="undo" type="button" disabled>Undo</button>
+      </div>
+      <p class="check-line" id="check-line" role="status" hidden></p>
+      <div class="complete" id="complete" role="status" hidden></div>
+      <p class="said" id="said" aria-live="polite"></p>
+    </div>
+
+    <!-- Beside the board, or under it on a phone: how many squares are shaded, and the rule. -->
+    <aside id="mosaic-card">
+      <div class="words-box">
+        <div class="list-head">
+          <h2>Squares</h2>
+          <span class="count" id="count"></span>
+        </div>
+        <p class="mosaic-rule">Shade squares to reveal a picture. Each number counts the shaded squares in its 3×3 block: the square itself and the eight around it.</p>
+        <div class="mosaic-legend">
+          <span class="mosaic-square" data-mark="blank"></span><span>Tap once: leave blank</span>
+          <span class="mosaic-square" data-mark="shade"></span><span>Tap again: shade</span>
+          <span class="mosaic-square" data-mark="clear"></span><span>Tap again: clear</span>
+          <span class="mosaic-square" data-mark="number">4</span><span>A number's square cycles too. Right-click a number, or on a touch screen tap it with Fill picked, to fill in its block once its count settles it</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+<script src="../components/site-bar.js"></script>
+<script src="../vendor/supabase.js"></script>
+<script type="module" src="../ui/sign-in-ui.js"></script>
+<script type="module" src="../ui/side-bar-ui.js"></script>
+<script type="module">
+import { openMosaicPage } from '../ui/mosaic/play-ui.js';
+openMosaicPage(location.search);
+</script>
+</body>
+</html>
