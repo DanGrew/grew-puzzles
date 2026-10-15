@@ -9,7 +9,7 @@
 // core/minesweeper/play-core.js, whose frame and zoom it shares; nothing here decides anything.
 import {
   mosaicUrl, mosaicBoard, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic, mosaicCount,
-  mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
+  mosaicTitle, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
   meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, openedMelt
 } from '../../core/mosaic/play-core.js';
 import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
@@ -112,7 +112,6 @@ function showBoard(id, board, saved) {
   drawIdent(mosaicEl, board);
   mosaicEl('label').textContent = board.label;
   mosaicEl('solution-label').textContent = board.solutionLabel;
-  mosaicEl('complete').textContent = completeLine(board);
   MOSAIC_SHEETS[mosaicPrints(board)](board);
   mosaicEl('play').hidden = false;
   wireFlip(noop);
@@ -192,6 +191,7 @@ function showBoard(id, board, saved) {
     mosaicEl('check-line').hidden = true;
     mosaicEl('undo').disabled = !canUndoMosaic(history, play, board);
     mosaicEl('complete').hidden = !solved;
+    mosaicEl('complete').textContent = finishLine(play, board);
     draw();
   }
 

@@ -153,6 +153,12 @@ export function completeLine(board) {
   return 'Solved — it\'s ' + board.name + '.';
 }
 
+// What the finish's line holds: that line once the board is solved — and nothing before, as the name
+// shows nowhere before.
+export function finishLine(play, board) {
+  return mosaicFinished(play, board) ? completeLine(board) : '';
+}
+
 // What a screen reader hears of a square: where it is, its number, and its mark.
 export function squareSaid(play, board, cell) {
   var said = { clear: 'clear', blank: 'left blank', shade: 'shaded' };

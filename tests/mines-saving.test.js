@@ -45,12 +45,12 @@ const saved = (mines, noMines, finished = false, puzzle = 'MINE-0001') => ({ use
 const boardsSaved = db => db.boards.map(({ tapped_at, ...row }) => row);
 
 // lines are the wordsearch's progress table, finds and places the maze tables, shapes the
-// criss-cross table, all read only.
+// criss-cross table, mosaics the mosaic table, all read only.
 function minesTable({ boards = [], lines = [], finds = [], places = [], shapes = [] } = {}) {
-  return { boards: [...boards], lines, finds, places, shapes, reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
+  return { boards: [...boards], lines, finds, places, shapes, mosaics: [], reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
 }
 
-const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places', '/rest/v1/criss_words': 'shapes' };
+const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places', '/rest/v1/criss_words': 'shapes', '/rest/v1/mosaic_squares': 'mosaics' };
 
 // The player is whoever the request's token names; a request with no player's token — signed out —
 // or to any other table is a stray.

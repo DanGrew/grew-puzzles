@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { createRequire } from 'module';
 import {
   mosaicUrl, mosaicFile, mosaicBoard, newMosaicPlay, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic,
-  mosaicCount, mosaicTitle, completeLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, viewSpan,
+  mosaicCount, mosaicTitle, completeLine, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, viewSpan,
   boardDrawing, squareAt, meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, paperSquares, openedMelt
 } from '../../../core/mosaic/play-core.js';
 import { tappedHistory, undoneMines } from '../../../core/minesweeper/play-core.js';
@@ -191,6 +191,12 @@ describe('the finish', () => {
     expect(mosaicTitle(newMosaicPlay(), SMALL)).toBe('Mosaic 009');
     expect(mosaicTitle(taps([...shade([0, 0]), ...shade([1, 1])], SMALL), SMALL)).toBe('Barn Owl');
     expect(completeLine(SMALL)).toBe('Solved — it\'s Barn Owl.');
+  });
+
+  it('the finish\'s line holds the name once it\'s solved, and nothing before', () => {
+    expect(finishLine(newMosaicPlay(), SMALL)).toBe('');
+    expect(finishLine(taps([...shade([0, 0])], SMALL), SMALL)).toBe('');
+    expect(finishLine(taps([...shade([0, 0]), ...shade([1, 1])], SMALL), SMALL)).toBe('Solved — it\'s Barn Owl.');
   });
 });
 

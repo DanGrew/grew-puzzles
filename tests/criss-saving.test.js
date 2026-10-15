@@ -54,12 +54,12 @@ const shapesSaved = db => db.shapes.map(({ placed_at, ...row }) => row);
 const ALL = SHAPE.words.map(w => w.word).filter(w => w !== SHAPE.given);
 
 // lines are the wordsearch's progress table, finds and places the maze tables, boards the
-// minesweeper table, all read only.
+// minesweeper table, mosaics the mosaic table, all read only.
 function crissTable({ shapes = [], lines = [], finds = [], places = [], boards = [] } = {}) {
-  return { shapes: [...shapes], lines, finds, places, boards, reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
+  return { shapes: [...shapes], lines, finds, places, boards, mosaics: [], reads: [], saves: [], strays: [], offline: false, slowNext: 0, failNext: 0 };
 }
 
-const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places', '/rest/v1/mines_marks': 'boards' };
+const READ_ONLY = { '/rest/v1/progress': 'lines', '/rest/v1/maze_found': 'finds', '/rest/v1/maze_position': 'places', '/rest/v1/mines_marks': 'boards', '/rest/v1/mosaic_squares': 'mosaics' };
 
 // The player is whoever the request's token names; a request with no player's token — signed out —
 // or to any other table is a stray.

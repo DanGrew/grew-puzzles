@@ -18,7 +18,7 @@ const PLAYER = {
   user_metadata: { full_name: 'Pat Player' }, created_at: '2026-10-04T00:00:00Z',
 };
 const LINES = PUZZLE.words.map(w => ({ page: w.grid, start_row: w.start.row, start_col: w.start.col, direction: w.direction }));
-const TABLES = ['progress', 'maze_found', 'maze_position', 'mines_marks', 'criss_words'];
+const TABLES = ['progress', 'maze_found', 'maze_position', 'mines_marks', 'criss_words', 'mosaic_squares'];
 
 const part = o => Buffer.from(JSON.stringify(o)).toString('base64url');
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -49,7 +49,7 @@ const finishedLines = puzzle => LINES.map(line => ({ puzzle, ...line, found_at: 
 const board = (puzzle, finished) => ({ puzzle, mines: [[0, 0]], no_mines: [], finished, tapped_at: '2026-10-04T00:00:00+00:00' });
 
 async function site(context, { served = indexes(), rows = {}, signedIn = true, delay = 0 } = {}) {
-  const db = { rows: { progress: [], maze_found: [], maze_position: [], mines_marks: [], criss_words: [], ...rows }, reads: [], strays: [] };
+  const db = { rows: { progress: [], maze_found: [], maze_position: [], mines_marks: [], criss_words: [], mosaic_squares: [], ...rows }, reads: [], strays: [] };
   const opened = [];
   await context.route(`${SUPABASE}/**`, async route => {
     const request = route.request();
@@ -294,7 +294,7 @@ test('600 puzzles, 450 finished: the list draws at once, the ticks follow quickl
   expect(drawn).toBeLessThan(1500);
   expect(ticked).toBeLessThan(3000);
   // Each table read once — 1200 wordsearch lines is two pages of 1000 — and only the started wordsearches' files opened.
-  expect(db.reads.sort()).toEqual(['criss_words', 'maze_found', 'maze_position', 'mines_marks', 'progress', 'progress']);
+  expect(db.reads.sort()).toEqual(['criss_words', 'maze_found', 'maze_position', 'mines_marks', 'mosaic_squares', 'progress', 'progress']);
   expect(opened).toHaveLength(150);
   // Long groups still draw eight lines each until Show all.
   await expect(page.locator('.score-line')).toHaveCount(32);
