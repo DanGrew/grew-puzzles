@@ -524,13 +524,17 @@ test('saved as a PDF, a book with mosaics passes as a wordsearch book does: ever
   for (const kept of ['/Annots', '/Outlines']) expect(pdf).not.toContain(kept);
 });
 
-test('a book with mosaics saved Colour is still a KDP bleed interior, every page 8.625 × 11.25 in, each mosaic Plain until it is Themed', async ({ page }) => {
+test('a book with mosaics saved Colour is still a KDP bleed interior, every page 8.625 × 11.25 in, each mosaic on its background with its character, its squares black and white', async ({ page }) => {
   await page.setViewportSize({ width: 828, height: 1080 });
   await openMosaics(page, 'colour');
   expect(pageSizes(await savePdf(page))).toEqual(Array(5).fill([0, 0, 621.12, 810]));
   await page.emulateMedia({ media: 'print' });
-  expect(await sheets(page).nth(0).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toBe('none');
-  await expect(sheets(page).nth(0).locator('.mosaic-paper span').first()).toHaveCSS('color', 'rgb(0, 0, 0)');
+  for (const n of [0, 2]) {
+    expect(await sheets(page).nth(n).evaluate(s => getComputedStyle(s, '::before').backgroundImage)).toMatch(/^url\(.*-bg\.webp"\)$/);
+    await expect(sheets(page).nth(n).locator('.mosaic-sheet .print-figure')).toBeVisible();
+    await expect(sheets(page).nth(n).locator('.mosaic-paper')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(sheets(page).nth(n).locator('.mosaic-paper span').first()).toHaveCSS('color', 'rgb(0, 0, 0)');
+  }
 });
 
 test('the book opens on a title page: the collection\'s name, with the help of the Grawrables, by Amanda Prew, its description, the site\'s address, and where the answers are', async ({ page }) => {

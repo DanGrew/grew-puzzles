@@ -4,6 +4,7 @@ const SMALL_MAZE = require('./fixtures/MAZE-0001.json');
 const MAZE = require('./fixtures/MAZE-0002.json');
 const BOARD = require('./fixtures/MINE-0001.json');
 const SHAPE = require('./fixtures/CRSS-0003.json');
+const MOSAIC = require('./fixtures/MOSA-0001.json');
 
 // Blueprint on paper (TASK-184): with the look on Blueprint, Print Colour and Black and white put
 // the puzzle on a Blueprint sheet in place of a character's — a faint drafting grid to the paper's
@@ -34,6 +35,7 @@ const KINDS = {
   maze: { path: 'maze.html', file: EVERY, route: /\/puzzles\/maze\/MAZE-\d+\.json$/, card: null, sheets: 1 },
   minesweeper: { path: 'minesweeper.html', file: BOARD, route: /\/puzzles\/minesweeper\/MINE-\d+\.json$/, card: '.mines-print-card', sheets: 1 },
   crisscross: { path: 'crisscross.html', file: SHAPE, route: /\/puzzles\/crisscross\/CRSS-\d+\.json$/, card: '.criss-print-card', sheets: 1 },
+  mosaic: { path: 'mosaic.html', file: MOSAIC, route: /\/puzzles\/mosaic\/MOSA-\d+\.json$/, card: '.mosaic-print-card', sheets: 1 },
 };
 
 // Opens a kind's page in a look, the print dialog stood in for, noting every character image asked for.
@@ -92,7 +94,7 @@ for (const kind of Object.keys(KINDS)) {
   });
 }
 
-for (const kind of ['wordsearch', 'saga', 'minesweeper', 'crisscross']) {
+for (const kind of ['wordsearch', 'saga', 'minesweeper', 'crisscross', 'mosaic']) {
   test(`Blueprint, Print Colour: the ${kind} grid card has its dimension lines on paper — columns along its foot, rows down its left, a tick at each end`, async ({ page }) => {
     await open(page, kind, 'blueprint');
     await printIn(page, 'colour');
@@ -137,7 +139,7 @@ test('Blueprint, Print Black and white is the same sheet in black and greys', as
   await expect(page.locator('#card .print-figure')).toBeHidden();
 });
 
-for (const kind of ['wordsearch', 'maze', 'minesweeper', 'crisscross']) {
+for (const kind of ['wordsearch', 'maze', 'minesweeper', 'crisscross', 'mosaic']) {
   test(`Blueprint, Print Plain: the ${kind} printout is today's sheet — white paper, black ink, no drafting grid, no title block`, async ({ page }) => {
     await open(page, kind, 'blueprint');
     await printIn(page, 'plain');
@@ -197,7 +199,7 @@ test('Blueprint, Print Colour: a maze is in the ink alone — no character on it
   expect(head.x + head.width).toBeLessThanOrEqual(note.x);
 });
 
-test('Blueprint, Print Colour: a minesweeper board and a criss-cross are ruled in navy', async ({ page, browser }) => {
+test('Blueprint, Print Colour: a minesweeper board, a criss-cross and a mosaic are ruled in navy', async ({ page, browser }) => {
   await open(page, 'minesweeper', 'blueprint');
   await printIn(page, 'colour');
   expect(await css(page.locator('#mines-sheet .mines-paper'), 'border-top-color')).toBe(NAVY);
@@ -208,6 +210,12 @@ test('Blueprint, Print Colour: a minesweeper board and a criss-cross are ruled i
   expect(await css(criss.locator('#criss-sheet .criss-paper > span').first(), 'border-top-color')).toBe(NAVY);
   expect(await css(criss.locator('#criss-sheet .criss-paper-card'), 'border-top-color')).toBe(NAVY);
   await criss.close();
+  const mosaic = await browser.newPage();
+  await open(mosaic, 'mosaic', 'blueprint');
+  await printIn(mosaic, 'colour');
+  expect(await css(mosaic.locator('#mosaic-sheet .mosaic-paper'), 'border-top-color')).toBe(NAVY);
+  expect(await css(mosaic.locator('#mosaic-sheet .mosaic-paper > span').first(), 'border-right-color')).toBe(NAVY);
+  await mosaic.close();
 });
 
 // A book of a wordsearch, a Saga and a 32×40 maze, its puzzles served as the site's files are.

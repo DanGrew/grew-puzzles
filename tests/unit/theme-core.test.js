@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import {
   charactersFile, charactersOf, dressOf, sceneFile, figureFile, characterAt, characterFor, tileCharacter, randomCharacter, idNumber,
   isPhone, figureTransform, siteChoices, siteScale, mazeScale, boxFrom, sitePlacement, siteDress,
-  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress, minesPrintFrame, crissPrintFrame
+  printPaper, printCell, printCardWidth, printCardTop, printPlacement, inkBox, printRise, printChoices, printDress, minesPrintFrame, crissPrintFrame, mosaicPrintFrame
 } from '../../core/theme-core.js';
 
 // Three characters stand in for the owner's list, in order.
@@ -180,6 +180,29 @@ describe('printed Colour or Black and white: a criss-cross\'s sheet', () => {
     expect(printChoices('one', crissPrintFrame(17, 15, false), outline('Bunnosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
     expect(printChoices('one', crissPrintFrame(25, 8, false), outline('Bunnosaur'))).toEqual(['topRight', 'topLeft']);
     expect(printChoices('one', crissPrintFrame(25, 8, false), outline('Catosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
+  });
+});
+
+// TASK-170: a mosaic prints on Letter as a minesweeper board does, its grid as big as the page
+// allows, under its own rule.
+describe('printed Colour or Black and white: a mosaic\'s sheet', () => {
+  test('it is always US Letter, its card the board\'s longer side at 7.2 in and the 5 px its border adds', () => {
+    expect(mosaicPrintFrame(12, 12, false).paper).toEqual({ width: 816, height: 1056 });
+    expect(mosaicPrintFrame(12, 12, false).cardWidth).toBeCloseTo(691.2 + 5, 5);
+    expect(mosaicPrintFrame(30, 20, false).cardWidth).toBeCloseTo(691.2 + 5, 5);
+    expect(mosaicPrintFrame(20, 30, false).cardWidth).toBeCloseTo(460.8 + 5, 5);
+  });
+
+  test('its card\'s top sits under the half inch, the title on its tag and the rule — in the book under the puzzle\'s number too', () => {
+    expect(mosaicPrintFrame(12, 12, false).cardTop).toBeCloseTo(48 + 162.66, 5);
+    expect(mosaicPrintFrame(12, 12, true).cardTop).toBeCloseTo(48 + 29 + 162.66, 5);
+  });
+
+  test('Bunnosaur peers only over a top corner of a full-width board; slimmer Catosaur may peek past a side too', () => {
+    const { characters } = JSON.parse(readFileSync(new URL('../../content/characters/index.json', import.meta.url), 'utf8'));
+    const outline = name => characters.find(c => c.name === name).outline;
+    expect(printChoices('one', mosaicPrintFrame(12, 12, false), outline('Bunnosaur'))).toEqual(['topRight', 'topLeft']);
+    expect(printChoices('one', mosaicPrintFrame(12, 12, false), outline('Catosaur'))).toEqual(['right', 'left', 'topRight', 'topLeft']);
   });
 });
 
