@@ -18,6 +18,8 @@ var PICTURES = {
 };
 // A Keys board's is a Reveal board's: it plays by the Reveal rule, its zones too small to draw here.
 PICTURES['minesweeper:Keys'] = PICTURES['minesweeper:Reveal'];
+// A Canaries board's is a Reveal board's too: it plays by the Reveal rule, its canaries read on the tile.
+PICTURES['minesweeper:Canaries'] = PICTURES['minesweeper:Reveal'];
 
 // A tile's picture: its type's own, where it has one, else its kind's.
 export function kindPicture(place, type) {

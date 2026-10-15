@@ -244,11 +244,13 @@ export function dirLabel(state) {
 // minesweeper board whose index entry has it — its size, width by height, a line each (a
 // wordsearch's its one grid's, however many it has: tooling's TASK-189); a criss-cross's entry carries
 // its word count, which it reads instead of its size, since the count is what a player weighs (the
-// owner's call, 2026-10-11). No date: the Date sort reads it, no tile shows it.
+// owner's call, 2026-10-11) — and a Canaries board's its canaries the same way, `🐤 2` (the product's
+// TASK-204; tooling's TASK-202 writes them). No date: the Date sort reads it, no tile shows it.
 export function tileDetail(puzzle) {
   const words = [puzzle].filter(p => p.wordCount).map(p => counted(p.wordCount, 'word'));
-  const size = [puzzle].filter(p => p.width && p.height && !p.wordCount).map(p => `${p.width}×${p.height}`);
-  return [puzzle.type, ...words, ...size];
+  const canaries = [puzzle].filter(p => p.canaries).map(p => `🐤 ${p.canaries}`);
+  const size = [puzzle].filter(p => p.width && p.height && !p.wordCount && !p.canaries).map(p => `${p.width}×${p.height}`);
+  return [puzzle.type, ...words, ...canaries, ...size];
 }
 
 // A puzzle's play page, its kind's: a maze plays on its own page, a wordsearch on the play page.
