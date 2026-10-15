@@ -36,6 +36,13 @@ describe('the size every kind shares', () => {
     expect(sizeScale('crisscross', 'huge')).toBe(37 / 22);
   });
 
+  // TASK-164: the mosaic, a board of squares as minesweeper's is, on the same rung.
+  it('scales the mosaic one rung up the ladder, as minesweeper', () => {
+    expect(sizeScale('mosaic', 'tiny')).toBe(15 / 22);
+    expect(sizeScale('mosaic', 'small')).toBe(1);
+    expect(sizeScale('mosaic', 'huge')).toBe(37 / 22);
+  });
+
   it('lists Tiny, Small, Normal, Large, Huge, smallest first, ticking the one picked', () => {
     expect(sizeMenu('large')).toEqual([
       { size: 'tiny', label: 'Tiny', picked: false },

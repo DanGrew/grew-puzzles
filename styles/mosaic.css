@@ -1,0 +1,75 @@
+/* The mosaic play page — over play.css's cards, after docs/MOCKUP-MOSAIC.html in the product
+   entry: the board in the grid card, the Squares card beside it, under it on a phone. The board is
+   drawn into a canvas by ui/mosaic/play-ui.js in these colours, read from here each time it draws:
+   a shaded square --ink, a numbered square tinted --clue-bg, a dot --muted, a line --rule, and
+   Check's ring --wrong. */
+:root { --clue-bg: #f1f6f3; --ink: #0f2a24; }
+
+.play.mosaic { display: grid; grid-template-columns: auto minmax(220px, 290px); gap: 40px; align-items: start; justify-content: center; }
+.play.mosaic[hidden] { display: none; }
+.play.mosaic aside { max-width: none; }
+/* A board too big for the column reaches past it, as far as it needs, toward the window's edges
+   (--reach-left and --reach-right), as minesweeper's does. */
+@media screen {
+  .play.mosaic { margin-left: var(--reach-left, 0px); margin-right: var(--reach-right, 0px); }
+}
+@media (max-width: 760px) {
+  .play.mosaic { grid-template-columns: 100%; justify-items: center; gap: 28px; }
+  .play.mosaic aside { max-width: 460px; }
+}
+
+/* The frame: the grid card's window onto the board, sized by ui/mosaic/play-ui.js (--frame-w,
+   --frame-h), the canvas filling it. A board that zooms takes a drag or a pinch on it, not the
+   page's; a right-click is the fill, never the browser's menu. */
+.mosaic-view { position: relative; width: var(--frame-w, 0px); height: var(--frame-h, 0px); overflow: hidden; outline: var(--ow) solid var(--line);
+  transition: outline-color .6s; }
+.mosaic-grid { display: block; width: var(--frame-w, 0px); height: var(--frame-h, 0px); cursor: pointer; -webkit-touch-callout: none;
+  user-select: none; -webkit-user-select: none; }
+.mosaic-grid:focus-visible { outline: none; }
+.play.mosaic[data-zoomable="true"] #view { touch-action: none; }
+.back-face .mosaic-grid { cursor: default; }
+/* Solved, the frame's edge melts with the lines inside it, and the picture stands alone. */
+.play.mosaic[data-solved="true"] #view { outline-color: transparent; }
+.play.mosaic[data-solved="true"] .mosaic-grid { cursor: default; }
+@media (prefers-reduced-motion: reduce) { .mosaic-view { transition: none; } }
+
+/* Mark | Fill, right under the board. */
+.mosaic-switch { display: flex; justify-content: center; padding-top: 14px; }
+.mosaic-tool-pick { display: inline-flex; overflow: hidden; background: var(--surface); border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); }
+.mosaic-tool-pick button { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 9px 18px; font: 600 14px var(--font-display);
+  color: var(--fg); background: transparent; border: 0; cursor: pointer; }
+.mosaic-tool-pick button + button { border-left: var(--ow) solid var(--line); }
+.mosaic-tool-pick button[aria-pressed="true"] { color: #fff; background: var(--band); }
+.mosaic-tool-pick button:focus-visible { outline: 2px solid var(--select, var(--band)); outline-offset: -4px; }
+.mosaic-tool-pick .tool-icon { width: 14px; height: 14px; border-radius: 3px; background: currentColor; }
+.mosaic-tool-pick .tool-icon.fill { background: linear-gradient(135deg, currentColor 50%, transparent 50%); box-shadow: inset 0 0 0 1.5px currentColor; }
+
+/* Check and Undo under the board, and the line Check leaves under them — minesweeper's. */
+.mosaic-tools { display: flex; justify-content: center; gap: 10px; margin-top: 16px; }
+.mosaic-tools .tool { font: 600 14px var(--font-display); height: 36px; padding: 0 18px; color: var(--fg); background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: 999px; box-shadow: 2px 2px 0 var(--line); cursor: pointer; }
+.mosaic-tools .tool:hover:not(:disabled) { background: color-mix(in srgb, var(--band) 12%, var(--surface)); }
+.mosaic-tools .tool:disabled { opacity: .45; cursor: default; box-shadow: none; }
+.play.mosaic .check-line { width: max-content; max-width: 100%; box-sizing: border-box; margin: 10px auto 0; padding: 5px 14px; font-size: 14px; font-weight: 600;
+  text-align: center; background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; }
+.play.mosaic .check-line[hidden] { display: none; }
+/* What a screen reader hears of the square in focus; nothing on screen. */
+.said { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; margin: 0; }
+
+/* Zoom out and in at the card's top-left, while the board zooms; the size after them, or first. */
+button.zoom-out { left: 0; transform: translate(-35%, -35%); }
+button.zoom-in { left: 37px; transform: translateY(-35%); }
+button.zoom-out svg, button.zoom-in svg, button.puzzle-size svg { display: block; }
+.play.mosaic button.corner:disabled { opacity: .45; cursor: default; border-color: var(--line); }
+.play.mosaic:not([data-zoomable="true"]) :is(.zoom-in, .zoom-out) { display: none; }
+button.puzzle-size { left: 87px; transform: translateY(-35%); }
+.play.mosaic:not([data-zoomable="true"]) button.puzzle-size { left: 0; transform: translate(-35%, -35%); }
+
+/* The Squares card: the rule, then what a tap does. */
+.mosaic-rule { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+.mosaic-legend { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; align-items: center; font-size: 13.5px; line-height: 1.4; }
+.mosaic-square { box-sizing: border-box; position: relative; display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--rule);
+  background: var(--surface); font: 700 15px/1 var(--font-body); color: var(--fg); }
+.mosaic-square[data-mark="shade"] { background: var(--ink); }
+.mosaic-square[data-mark="number"] { background: var(--clue-bg); }
+.mosaic-square[data-mark="dot"]::after { content: ""; width: 16%; height: 16%; border-radius: 50%; background: var(--muted); }
