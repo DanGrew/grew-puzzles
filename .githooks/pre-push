@@ -8,6 +8,8 @@ fail() { echo "[pre-push] FAILED: $1"; exit 1; }
 
 [ -f .port ] && export PORT=$(cat .port)
 
+bash scripts/ensure-deps.sh || fail "npm ci"
+
 echo "[pre-push] arch checks..."
 node scripts/arch-check.js no-dom-in-core        "$TMPDIR_HOOK/no-dom.txt"         || fail "no-dom-in-core"
 node scripts/arch-check.js no-ui-imports         "$TMPDIR_HOOK/no-ui-imports.txt"  || fail "no-ui-imports"
