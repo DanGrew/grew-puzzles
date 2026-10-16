@@ -423,6 +423,46 @@
       "title": "Colours - Diagonal",
       "width": 5,
       "height": 5
+    },
+    {
+      "hiddenId": "WSCH-0054",
+      "type": "Kids",
+      "created": "2026-10-16",
+      "title": "Kids Home 1",
+      "width": 6,
+      "height": 6
+    },
+    {
+      "hiddenId": "WSCH-0055",
+      "type": "Kids",
+      "created": "2026-10-16",
+      "title": "Kids Home 2",
+      "width": 6,
+      "height": 6
+    },
+    {
+      "hiddenId": "WSCH-0056",
+      "type": "Kids",
+      "created": "2026-10-16",
+      "title": "Kids Home 3",
+      "width": 6,
+      "height": 6
+    },
+    {
+      "hiddenId": "WSCH-0057",
+      "type": "Kids",
+      "created": "2026-10-16",
+      "title": "Kids Home 4",
+      "width": 6,
+      "height": 6
+    },
+    {
+      "hiddenId": "WSCH-0058",
+      "type": "Kids",
+      "created": "2026-10-16",
+      "title": "Kids Home 5",
+      "width": 6,
+      "height": 6
     }
   ]
 }
