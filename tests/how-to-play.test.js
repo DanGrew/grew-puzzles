@@ -37,6 +37,42 @@ const KINDS = [
   ['crisscross', 'Criss-cross', CRISS_TYPES],
   ['mosaic', 'Mosaic', []],
 ];
+// Wordsearches' Basics and Advanced (the product's TASK-218), as the owner marked them on the
+// worksheet (its docs/RULES.md) and worded them (its docs/CONTENT.md, How to play): every basic said
+// with its example, a sentence beside its picture; every advanced move in, its name, when it
+// happens, then the puzzle, how it's spotted and the word found, each captioned. The pictures are
+// tooling's tools/grew-puzzles-rules, drawn from the worksheet's made-up grids.
+const WORDSEARCH_BASICS = [
+  ['every', 'Find every word in the list. The puzzle\'s done when they\'re all found: here, CAT, DOG and HEN.', 'A small grid with CAT, DOG and HEN found, and all three crossed off the word list.'],
+  ['eight', 'Words run in eight directions: across, down, diagonally, and backwards in any of them. OWL here reads up and to the left, on a diagonal and backwards.', 'A small grid with OWL found reading diagonally up and to the left.'],
+  ['share', 'Words can cross, sharing a letter. COW and CAT share their C, and a shared letter gets a circle.', 'A small grid with COW running across and CAT running down from the same circled C.'],
+  ['inside', 'A word inside another word doesn\'t count. The PIG inside PIGLET isn\'t the one you\'re after: PIG is hidden on its own.', 'A small grid with PIGLET found across the top, and PIG found on its own, running upwards.'],
+  ['mark', 'To mark a word, tap its first letter, then its last. Tap the F, then the X. Either end works.', 'A small grid with FOX found on a diagonal, its F circled where the tap began.'],
+  ['struck', 'A found word is crossed off the list. FOX is found, so it\'s crossed off.', 'A word list of FOX, HEN and OWL, with FOX crossed off.'],
+];
+const STEPS = ['puzzle', 'spot', 'found'];
+const WORDSEARCH_MOVES = [
+  ['rare', 'Hunt the rarest letter first', 'When a word has a letter the grid hardly uses, like Z, Q, X or J.', [
+    ['The puzzle', 'Find WIZARD.', 'A 6 by 6 grid of letters, WIZARD hidden somewhere in it.'],
+    ['Spot it', 'Z is WIZARD\'s rarest letter, and this grid has only one Z.', 'The same grid with its only Z circled.'],
+    ['Found', 'WIZARD runs through the Z, corner to corner.', 'The same grid with WIZARD found, corner to corner.']]],
+  ['double', 'Double letters', 'When a word has the same letter twice in a row, like the TT in KITTEN.', [
+    ['The puzzle', 'Find KITTEN. There are Ts everywhere.', 'A 6 by 6 grid full of Ts, KITTEN hidden somewhere in it.'],
+    ['Spot it', 'Only one pair of Ts sits side by side.', 'The same grid with its one side-by-side pair of Ts circled.'],
+    ['Found', 'KITTEN runs through the pair.', 'The same grid with KITTEN found through the pair of Ts.']]],
+  ['ends', 'A word\'s first and last letter together', 'When the grid is full of a word\'s letters, look for its first and last, the word\'s length apart.', [
+    ['The puzzle', 'Find ROCKET. The grid is full of Rs and Ts.', 'A 6 by 6 grid full of Rs and Ts, ROCKET hidden somewhere in it.'],
+    ['Spot it', 'ROCKET\'s R and T sit 6 letters apart in a line. Only one R and T do.', 'The same grid with one R and one T circled, six letters apart in a line.'],
+    ['Found', 'ROCKET runs between them, upwards.', 'The same grid with ROCKET found, running upwards.']]],
+  ['direction', 'One direction at a time', 'When a word just won\'t turn up. Read the grid one way only, right to left, say.', [
+    ['The puzzle', 'Find TIGER.', 'A 6 by 6 grid of letters, TIGER hidden somewhere in it.'],
+    ['Spot it', 'Read every row right to left, and nothing else. Row 4 gives TIGER.', 'The same grid with the fourth row circled, letter by letter.'],
+    ['Found', 'TIGER, running backwards.', 'The same grid with TIGER found, running right to left.']]],
+  ['long', 'A long word before a short one', 'When the list has long words and short ones. A long word has far fewer places it can fit.', [
+    ['The puzzle', 'Find RAINBOW and OWL.', 'A 7 by 7 grid above a word list of RAINBOW and OWL.'],
+    ['Spot it', 'RAINBOW fills a whole line of 7, edge to edge. Of the Rs on the edge, only one has a W on the far edge.', 'The same grid with an R and a W circled in opposite corners, and the other edge Rs circled in red.'],
+    ['Found', 'RAINBOW is found first. Now look for OWL.', 'The same grid with RAINBOW found corner to corner, and crossed off the list.']]],
+];
 const PLAY_PAGES = [
   ['/app/play.html?id=WSCH-0001', 'wordsearch', 'Wordsearches'],
   ['/app/maze.html?id=MAZE-0001', 'maze', 'Mazes'],
@@ -134,6 +170,87 @@ test('Variants\' pictures are each type\'s own, its alt text naming the type and
       expect(await picture.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     }
   }
+});
+
+const loaded = img => img.evaluate(i => i.complete && i.naturalWidth > 0);
+
+test('Wordsearches opens on Basics: each basic a sentence beside its picture, in the owner\'s words', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/app/how-to-play.html?kind=wordsearch');
+  await expect(shown(page)).toHaveAttribute('data-part', 'basics');
+  await expect(shown(page).locator('.rule')).toHaveCount(WORDSEARCH_BASICS.length);
+  await expect(shown(page).locator('.rule p')).toHaveText(WORDSEARCH_BASICS.map(([, words]) => words));
+  for (const [id, , alt] of WORDSEARCH_BASICS) {
+    const picture = page.locator(`#wordsearch-${id} img`);
+    await expect(picture).toHaveAttribute('src', `../content/how-to-play/wordsearch-${id}.png`);
+    await expect(picture).toHaveAttribute('alt', alt);
+    expect(await loaded(picture)).toBe(true);
+    const box = await picture.boundingBox(), words = await page.locator(`#wordsearch-${id} p`).boundingBox();
+    expect(box.x + box.width).toBeLessThan(words.x);
+    expect(words.y).toBeLessThan(box.y + box.height);
+  }
+});
+
+test('Wordsearches\' Advanced: each move named, when it happens, then the puzzle, how it\'s spotted and the word found in a row, each captioned', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/app/how-to-play.html?kind=wordsearch');
+  await pill(page, 'Advanced').click();
+  await expect(shown(page).locator('.move')).toHaveCount(WORDSEARCH_MOVES.length);
+  await expect(shown(page).locator('.move h2')).toHaveText(WORDSEARCH_MOVES.map(([, name]) => name));
+  await expect(shown(page).locator('.move > p')).toHaveText(WORDSEARCH_MOVES.map(([, , when]) => when));
+  for (const [id, , , steps] of WORDSEARCH_MOVES) {
+    const figures = page.locator(`#wordsearch-${id} figure`);
+    await expect(figures.locator('figcaption')).toHaveText(steps.map(([label, words]) => `${label} ${words}`));
+    await expect(figures.locator('figcaption b')).toHaveText(steps.map(([label]) => label));
+    const boxes = [];
+    for (const [i, [, , alt]] of steps.entries()) {
+      const picture = figures.nth(i).locator('img');
+      await expect(picture).toHaveAttribute('src', `../content/how-to-play/wordsearch-${id}-${STEPS[i]}.png`);
+      await expect(picture).toHaveAttribute('alt', alt);
+      expect(await loaded(picture)).toBe(true);
+      boxes.push(await picture.boundingBox());
+    }
+    expect(boxes.map(b => Math.round(b.y))).toEqual(boxes.map(() => Math.round(boxes[0].y)));
+    expect(boxes[0].x + boxes[0].width).toBeLessThan(boxes[1].x);
+    expect(boxes[1].x + boxes[1].width).toBeLessThan(boxes[2].x);
+  }
+});
+
+test.describe('on a phone, Wordsearches\' rules', () => {
+  test.use({ viewport: { width: 375, height: 700 } });
+
+  test('a move\'s three pictures stack top to bottom in order, each with its caption under it', async ({ page }) => {
+    await page.goto('/app/how-to-play.html?kind=wordsearch');
+    await pill(page, 'Advanced').click();
+    for (const [id] of WORDSEARCH_MOVES) {
+      const figures = page.locator(`#wordsearch-${id} figure`);
+      let below = 0;
+      for (let i = 0; i < STEPS.length; i++) {
+        const picture = await figures.nth(i).locator('img').boundingBox();
+        const caption = await figures.nth(i).locator('figcaption').boundingBox();
+        expect(picture.y).toBeGreaterThanOrEqual(below);
+        expect(caption.y).toBeGreaterThanOrEqual(picture.y + picture.height);
+        below = caption.y + caption.height;
+      }
+    }
+  });
+
+  test('a basic\'s picture sits above its sentence', async ({ page }) => {
+    await page.goto('/app/how-to-play.html?kind=wordsearch');
+    for (const [id] of WORDSEARCH_BASICS) {
+      const picture = await page.locator(`#wordsearch-${id} img`).boundingBox();
+      const words = await page.locator(`#wordsearch-${id} p`).boundingBox();
+      expect(picture.y + picture.height).toBeLessThanOrEqual(words.y);
+    }
+  });
+
+  test('Basics and Advanced read without scrolling sideways', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto('/app/how-to-play.html?kind=wordsearch');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+    await pill(page, 'Advanced').click();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  });
 });
 
 test('a part with nothing written yet is still a pill, and shows empty — no heading, no coming soon', async ({ page }) => {

@@ -23,7 +23,25 @@
 .how-to-play .type img { width: 100%; height: auto; border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
 .how-to-play .type:nth-of-type(even) img { order: 2; }
 .how-to-play .type h2 { margin-top: 0; }
+/* Basics: a sentence a basic, beside its picture at the size it was drawn (its width and height, half
+   its pixels), the pictures centred in one column so every sentence starts level, each led in bold.
+   Advanced: a move's name and when it happens, then its three pictures in a row, each captioned
+   under it, the step's name in bold. */
+.how-to-play .rule { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 24px; align-items: center; }
+.how-to-play .rule + .rule { margin-top: 28px; }
+.how-to-play .move + .move { margin-top: 36px; }
+.how-to-play .move h2 { margin-top: 0; }
+.how-to-play .rule img, .how-to-play .steps img { display: block; height: auto;
+  border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
+.how-to-play .rule img { justify-self: center; max-width: 100%; }
+.how-to-play .steps img { width: 100%; }
+.how-to-play .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
+.how-to-play .steps figure { margin: 0; }
+.how-to-play .steps figcaption { margin-top: 8px; font-size: 14px; line-height: 1.45; }
+.how-to-play .steps figcaption b { display: block; font: var(--dw) 13px var(--font-display); }
 @media (max-width: 559px) {
+  .how-to-play .rule { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .how-to-play .steps { grid-template-columns: 1fr; gap: 20px; }
   .how-to-play .part-pills { width: 100%; }
   .how-to-play .part-pills button { padding: 10px 6px; font-size: 14px; }
   .how-to-play .type { grid-template-columns: 1fr; gap: 12px; }
