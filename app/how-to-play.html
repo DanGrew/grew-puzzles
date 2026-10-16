@@ -33,8 +33,85 @@
     <div class="page-card">
     <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
     <span class="name-tag" id="name-tag"></span>
-    <div class="part" data-kind="wordsearch" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden></div>
-    <div class="part" data-kind="wordsearch" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden></div>
+    <!-- Basics and Advanced cover what the owner marked on the kind's worksheet (the product's
+         docs/RULES.md), in their words (its docs/CONTENT.md, How to play): a basic is a sentence, beside
+         its picture where it's marked with an example; an advanced move its name, when it happens, then
+         three pictures in a row — the puzzle, how it's spotted, the word found — each captioned, one
+         under the next on a phone. The pictures are made-up grids, drawn by tooling's
+         tools/grew-puzzles-rules (its docs/MEDIA.md), never by hand. -->
+    <div class="part" data-kind="wordsearch" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
+      <section class="rule" id="wordsearch-every">
+        <img src="../content/how-to-play/wordsearch-every.png" width="252" height="342" alt="A small grid with CAT, DOG and HEN found, and all three crossed off the word list.">
+        <p><strong>Find every word in the list.</strong> The puzzle's done when they're all found: here, CAT, DOG and HEN.</p>
+      </section>
+      <section class="rule" id="wordsearch-eight">
+        <img src="../content/how-to-play/wordsearch-eight.png" width="220" height="220" alt="A small grid with OWL found reading diagonally up and to the left.">
+        <p><strong>Words run in eight directions: across, down, diagonally, and backwards in any of them.</strong> OWL here reads up and to the left, on a diagonal and backwards.</p>
+      </section>
+      <section class="rule" id="wordsearch-share">
+        <img src="../content/how-to-play/wordsearch-share.png" width="220" height="220" alt="A small grid with COW running across and CAT running down from the same circled C.">
+        <p><strong>Words can cross, sharing a letter.</strong> COW and CAT share their C, and a shared letter gets a circle.</p>
+      </section>
+      <section class="rule" id="wordsearch-inside">
+        <img src="../content/how-to-play/wordsearch-inside.png" width="264" height="264" alt="A small grid with PIGLET found across the top, and PIG found on its own, running upwards.">
+        <p><strong>A word inside another word doesn't count.</strong> The PIG inside PIGLET isn't the one you're after: PIG is hidden on its own.</p>
+      </section>
+      <section class="rule" id="wordsearch-mark">
+        <img src="../content/how-to-play/wordsearch-mark.png" width="220" height="220" alt="A small grid with FOX found on a diagonal, its F circled where the tap began.">
+        <p><strong>To mark a word, tap its first letter, then its last.</strong> Tap the F, then the X. Either end works.</p>
+      </section>
+      <section class="rule" id="wordsearch-struck">
+        <img src="../content/how-to-play/wordsearch-struck.png" width="208" height="98" alt="A word list of FOX, HEN and OWL, with FOX crossed off.">
+        <p><strong>A found word is crossed off the list.</strong> FOX is found, so it's crossed off.</p>
+      </section>
+    </div>
+    <div class="part" data-kind="wordsearch" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
+      <section class="move" id="wordsearch-rare" aria-labelledby="wordsearch-rare-title">
+        <h2 id="wordsearch-rare-title">Hunt the rarest letter first</h2>
+        <p>When a word has a letter the grid hardly uses, like Z, Q, X or J.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/wordsearch-rare-puzzle.png" width="528" height="528" alt="A 6 by 6 grid of letters, WIZARD hidden somewhere in it."><figcaption><b>The puzzle</b> Find WIZARD.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-rare-spot.png" width="528" height="528" alt="The same grid with its only Z circled."><figcaption><b>Spot it</b> Z is WIZARD's rarest letter, and this grid has only one Z.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-rare-found.png" width="528" height="528" alt="The same grid with WIZARD found, corner to corner."><figcaption><b>Found</b> WIZARD runs through the Z, corner to corner.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="wordsearch-double" aria-labelledby="wordsearch-double-title">
+        <h2 id="wordsearch-double-title">Double letters</h2>
+        <p>When a word has the same letter twice in a row, like the TT in KITTEN.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/wordsearch-double-puzzle.png" width="528" height="528" alt="A 6 by 6 grid full of Ts, KITTEN hidden somewhere in it."><figcaption><b>The puzzle</b> Find KITTEN. There are Ts everywhere.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-double-spot.png" width="528" height="528" alt="The same grid with its one side-by-side pair of Ts circled."><figcaption><b>Spot it</b> Only one pair of Ts sits side by side.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-double-found.png" width="528" height="528" alt="The same grid with KITTEN found through the pair of Ts."><figcaption><b>Found</b> KITTEN runs through the pair.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="wordsearch-ends" aria-labelledby="wordsearch-ends-title">
+        <h2 id="wordsearch-ends-title">A word's first and last letter together</h2>
+        <p>When the grid is full of a word's letters, look for its first and last, the word's length apart.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/wordsearch-ends-puzzle.png" width="528" height="528" alt="A 6 by 6 grid full of Rs and Ts, ROCKET hidden somewhere in it."><figcaption><b>The puzzle</b> Find ROCKET. The grid is full of Rs and Ts.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-ends-spot.png" width="528" height="528" alt="The same grid with one R and one T circled, six letters apart in a line."><figcaption><b>Spot it</b> ROCKET's R and T sit 6 letters apart in a line. Only one R and T do.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-ends-found.png" width="528" height="528" alt="The same grid with ROCKET found, running upwards."><figcaption><b>Found</b> ROCKET runs between them, upwards.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="wordsearch-direction" aria-labelledby="wordsearch-direction-title">
+        <h2 id="wordsearch-direction-title">One direction at a time</h2>
+        <p>When a word just won't turn up. Read the grid one way only, right to left, say.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/wordsearch-direction-puzzle.png" width="528" height="528" alt="A 6 by 6 grid of letters, TIGER hidden somewhere in it."><figcaption><b>The puzzle</b> Find TIGER.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-direction-spot.png" width="528" height="528" alt="The same grid with the fourth row circled, letter by letter."><figcaption><b>Spot it</b> Read every row right to left, and nothing else. Row 4 gives TIGER.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-direction-found.png" width="528" height="528" alt="The same grid with TIGER found, running right to left."><figcaption><b>Found</b> TIGER, running backwards.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="wordsearch-long" aria-labelledby="wordsearch-long-title">
+        <h2 id="wordsearch-long-title">A long word before a short one</h2>
+        <p>When the list has long words and short ones. A long word has far fewer places it can fit.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/wordsearch-long-puzzle.png" width="680" height="860" alt="A 7 by 7 grid above a word list of RAINBOW and OWL."><figcaption><b>The puzzle</b> Find RAINBOW and OWL.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-long-spot.png" width="616" height="616" alt="The same grid with an R and a W circled in opposite corners, and the other edge Rs circled in red."><figcaption><b>Spot it</b> RAINBOW fills a whole line of 7, edge to edge. Of the Rs on the edge, only one has a W on the far edge.</figcaption></figure>
+          <figure><img src="../content/how-to-play/wordsearch-long-found.png" width="680" height="860" alt="The same grid with RAINBOW found corner to corner, and crossed off the list."><figcaption><b>Found</b> RAINBOW is found first. Now look for OWL.</figcaption></figure>
+        </div>
+      </section>
+    </div>
     <div class="part" data-kind="wordsearch" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="vanilla" aria-labelledby="vanilla-title">
         <img src="../content/how-to-play/vanilla.png" width="792" height="616" alt="A Vanilla wordsearch, with the word BULLOCK found in the grid.">
