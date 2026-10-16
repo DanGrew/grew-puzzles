@@ -2152,3 +2152,120 @@ test('a Kids puzzle\'s printed words keep to their columns, sized in the big typ
   expect(column).toBeGreaterThanOrEqual(Math.floor(widest));
   expect(column).toBeLessThan(widest + 2);
 });
+
+// ---- Kids in lower case (TASK-227): ABC / abc on a puzzle in capitals, kept per device ----
+
+const CASE_KEY = 'grew-puzzles.letter-case';
+const caseButton = (page, name) => page.locator('#case-switch').getByRole('button', { name });
+// What the player reads: innerText draws the case the page shows, where textContent keeps the file's.
+const shownWords = page => page.locator('#words li').evaluateAll(lis => lis.map(li => li.innerText));
+const shownRow = (page, r, puzzle = KIDS) => page.locator('#grid .cell').evaluateAll((cells, [r, cols]) =>
+  cells.slice(r * cols, (r + 1) * cols).map(c => c.innerText).join(''), [r, puzzle.grids[0].rows[0].length]);
+
+test('a Kids puzzle shows ABC / abc beside its words, on ABC, its letters and words in capitals as before', async ({ page }) => {
+  await openKids(page);
+  await expect(page.locator('#case-switch')).toBeVisible();
+  await expect(caseButton(page, 'Capitals')).toHaveText('ABC');
+  await expect(caseButton(page, 'Capitals')).toHaveAttribute('aria-pressed', 'true');
+  await expect(caseButton(page, 'Lower case')).toHaveAttribute('aria-pressed', 'false');
+  expect(await shownWords(page)).toEqual(KIDS_WORDS);
+  expect(await shownRow(page, 0)).toBe(KIDS.grids[0].rows[0]);
+});
+
+test('abc turns every letter and word lower case, still 1.5× big; ABC turns them back', async ({ page }) => {
+  await openKids(page);
+  await caseButton(page, 'Lower case').click();
+  await expect(caseButton(page, 'Lower case')).toHaveAttribute('aria-pressed', 'true');
+  expect(await shownWords(page)).toEqual(KIDS_WORDS.map(w => w.toLowerCase()));
+  expect(await shownRow(page, 0)).toBe(KIDS.grids[0].rows[0].toLowerCase());
+  await expect(cell(page, 0, 0)).toHaveCSS('font-size', '33px');
+  await expect(page.locator('#words li').first()).toHaveCSS('font-size', '24px');
+  await page.locator('#flip').click();
+  expect(await page.locator('#solution-grid > *').first().evaluate(c => c.innerText)).toBe(KIDS.grids[0].rows[0][0].toLowerCase());
+  await page.locator('#flip').click();
+
+  await caseButton(page, 'Capitals').click();
+  expect(await shownWords(page)).toEqual(KIDS_WORDS);
+  expect(await shownRow(page, 0)).toBe(KIDS.grids[0].rows[0]);
+});
+
+for (const layout of ['bottom', 'right']) {
+  test(`in ${layout}, lower case lays the words out again in their own narrower widths, and ABC lays them back as they were`, async ({ page }) => {
+    await openKids(page, layout);
+    const column = () => page.locator('#words').evaluate(l => parseFloat(l.style.getPropertyValue('--word-w')));
+    const upper = await column();
+    await caseButton(page, 'Lower case').click();
+    expect(await column()).toBeLessThan(upper);
+    await caseButton(page, 'Capitals').click();
+    expect(await column()).toBe(upper);
+  });
+}
+
+test('on abc the printout\'s grid and words are lower case; on ABC, capitals; the switch never prints', async ({ page }) => {
+  await openKids(page);
+  await caseButton(page, 'Lower case').click();
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('#case-switch')).toBeHidden();
+  expect(await shownWords(page)).toEqual(KIDS_WORDS.map(w => w.toLowerCase()));
+  expect(await shownRow(page, 0)).toBe(KIDS.grids[0].rows[0].toLowerCase());
+  const height = text => page.locator('#words li', { hasText: text }).evaluate(li => li.getBoundingClientRect().height);
+  expect(await height('ICE CREAM')).toBe(await height('COW'));
+
+  await page.emulateMedia({ media: 'screen' });
+  await caseButton(page, 'Capitals').click();
+  await page.emulateMedia({ media: 'print' });
+  expect(await shownWords(page)).toEqual(KIDS_WORDS);
+  expect(await shownRow(page, 0)).toBe(KIDS.grids[0].rows[0]);
+});
+
+test('on abc paper\'s word columns are sized in lower case, the type they print in', async ({ page }) => {
+  await openKids(page);
+  const column = () => page.locator('#words').evaluate(l => parseFloat(l.style.getPropertyValue('--print-word-w')));
+  const upper = await column();
+  await caseButton(page, 'Lower case').click();
+  expect(await column()).toBeLessThan(upper);
+});
+
+test('abc is remembered on this device: a reload and another Kids puzzle open on abc', async ({ page }) => {
+  await openKids(page);
+  await caseButton(page, 'Lower case').click();
+  expect(await page.evaluate(key => localStorage.getItem(key), CASE_KEY)).toBe('lower');
+  await page.reload();
+  await expect(caseButton(page, 'Lower case')).toHaveAttribute('aria-pressed', 'true');
+  expect(await shownWords(page)).toEqual(KIDS_WORDS.map(w => w.toLowerCase()));
+  await page.route('**/content/puzzles/wordsearch/WSCH-0008.json', route => route.fulfill({ json: { ...KIDS, hiddenId: 'WSCH-0008' } }));
+  await page.goto('/app/play.html?id=WSCH-0008');
+  await expect(caseButton(page, 'Lower case')).toHaveAttribute('aria-pressed', 'true');
+  expect(await shownWords(page)).toEqual(KIDS_WORDS.map(w => w.toLowerCase()));
+});
+
+test('a page that cannot read or store the case opens on ABC and still switches', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } });
+  });
+  await open(page, null, { ...KIDS, hiddenId: 'WSCH-0007' });
+  // Overlay, as a page that can't read its layout opens: the switch shows with the list.
+  await page.locator('#words-toggle').click();
+  await expect(caseButton(page, 'Capitals')).toHaveAttribute('aria-pressed', 'true');
+  await caseButton(page, 'Lower case').click();
+  expect(await shownWords(page)).toEqual(KIDS_WORDS.map(w => w.toLowerCase()));
+});
+
+test('words found stay marked through a switch, and a word is still found in lower case', async ({ page }) => {
+  await openKids(page);
+  await tapAll(page, [[0, 0], [0, 7]]);
+  const drawn = await page.locator('#overlay').innerHTML();
+  await caseButton(page, 'Lower case').click();
+  expect(await page.locator('#overlay').innerHTML()).toBe(drawn);
+  await expect(page.locator('#words li.done')).toHaveCount(1);
+  expect(await page.locator('#words li.done').evaluate(li => li.innerText)).toBe('ice cream');
+  await expect(page.locator('#count')).toHaveText('1/8');
+});
+
+test('a Vanilla puzzle shows no switch, and stays as written whatever was picked on a Kids puzzle', async ({ page }) => {
+  await page.addInitScript(key => localStorage.setItem(key, 'lower'), CASE_KEY);
+  await openSized(page, 'bottom');
+  await expect(page.locator('#case-switch')).toBeHidden();
+  await expect(page.locator('#words li', { hasText: 'Ice' })).toHaveText('Ice cream', { useInnerText: true });
+  expect(await shownRow(page, 0, PUZZLE)).toBe(PUZZLE.grids[0].rows[0]);
+});

@@ -137,6 +137,15 @@ aside { min-width: 0; }
   background: var(--band); border-bottom: var(--ow) solid var(--line); }
 .list-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 17px; margin: 0; color: var(--band-fg); }
 .count { font-size: 13px; color: var(--band-fg); font-variant-numeric: tabular-nums; }
+/* ABC / abc: a puzzle in capitals draws its grid and its words in the case picked (#play's
+   --letter-case, ui/wordsearch/play-ui.js), on screen and on paper — the cells too, which as buttons
+   would otherwise keep their own case. The switch itself is the screen's alone. */
+.play .grid > *, ul.words li, .print-measure { text-transform: var(--letter-case, none); }
+.case-switch { display: inline-flex; align-self: center; margin-left: 4px; border: 1.5px solid var(--band-fg); border-radius: 999px; overflow: hidden; }
+.case-switch[hidden] { display: none; }
+.case-switch button { padding: 2px 9px; border: 0; background: none; color: var(--band-fg); cursor: pointer;
+  font: 600 13px/1.3 var(--font-body); }
+.case-switch button[aria-pressed="true"] { background: var(--band-fg); color: var(--band); }
 ul.words { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px 16px; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
 ul.words li { font-size: 16px; position: relative; width: fit-content; justify-self: center; text-align: center; transition: color .3s; }
 ul.words li.done { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--found); text-decoration-thickness: 2px; }
@@ -279,7 +288,7 @@ ul.words li.has-entry:focus-visible { outline: 2px solid var(--accent); outline-
   .play { --print-cell: max(14pt, min(36px, calc(165mm / var(--cols)), calc(105mm / var(--rows))));
     --cell: min(calc(var(--print-cell) * var(--letters, 1)), max(var(--print-cell), calc(165mm / var(--cols))), calc(7.5in / var(--cols))); }
   .wrap { max-width: none; padding: 0; }
-  .site, .size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count,
+  .site, .size-menu, button.corner, .complete, .save-line, .back-face, svg.overlay, .spark, .count, .case-switch,
   .word-popup, .word-popup:popover-open { display: none; }
   ul.words li.has-entry { background: none; }
 

@@ -5,7 +5,7 @@
 import {
   puzzleUrl, playJson, playBoard, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, playMarks, wordLines, lineMarks,
   printedPieces, printedColumnWidth, printedSpread, countLabel, nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale,
-  playReach, playMargins
+  playReach, playMargins, savedLetterCase, saveLetterCase
 } from '../../core/wordsearch/play-core.js';
 import { mergedPlay } from '../../core/wordsearch/progress-core.js';
 import {
@@ -27,6 +27,9 @@ var PLAY_LAYOUT_HOMES = { bottom: 'words-home', right: 'words-home', overlay: 's
 // size; in Overlay, where the card lies over the grid, under the grid card.
 var PLAY_SAVE_LINE_HOMES = { bottom: 'words-list', right: 'words-list', overlay: 'words-home' };
 var PLAY_LIST_LABELS = { true: 'Hide words', false: 'Show words' };
+var PLAY_CASE_KEY = 'grew-puzzles.letter-case';
+// How the grid's letters and the words are drawn in each case (styles/play.css, --letter-case).
+var PLAY_CASE_TRANSFORMS = { upper: 'none', lower: 'lowercase' };
 var PLAY_MARK_WIDTHS = { found: 0.09, wrong: 0.09, shared: 0.06, select: 0.07 };
 var PLAY_RING_RADII = { shared: 0.4, select: 0.42, wrong: 0.42 };
 // Each kind of line in the word list (play-core's wordLines): how it's drawn once, for the screen
@@ -97,6 +100,7 @@ export function sizePrintedWords(list, book) {
   var line = document.createElement('span');
   line.className = 'print-measure';
   line.style.setProperty('--letters', list.closest('.play').style.getPropertyValue('--letters'));
+  line.style.setProperty('--letter-case', list.closest('.play').style.getPropertyValue('--letter-case'));
   document.body.appendChild(line);
   var pieces = Array.from(list.children, function (li) {
     return printedPieces(li.firstChild.textContent).map(function (piece) { return measurePiece(line, piece); });
@@ -227,6 +231,7 @@ function showPuzzle(opened, found) {
   wireTextSize();
   wireWords();
   wireWordsFit();
+  wireLetterCase(board.caseSwitch);
   document.fonts.ready.then(function () { sizePrintedWords(playEl('words'), false); });
   wireProgress(opened.id, board.words, function () { return play.found; }, joinSaved);
   showPage(0);
@@ -382,6 +387,34 @@ function showList(open) {
   toggle.setAttribute('aria-label', PLAY_LIST_LABELS[open]);
   toggle.title = PLAY_LIST_LABELS[open];
   playEl('grid').inert = open;
+  layoutWords();
+}
+
+// A puzzle in capitals shows the ABC / abc switch in its words card's head; the case picked draws
+// the grid and the words, on screen and on paper, and is kept on the device (play-core's
+// savedLetterCase). Any other puzzle hides it, and its letters stay as they are. The book's copies
+// of the page never show it, so the book prints capitals.
+function wireLetterCase(caseSwitch) {
+  playEl('case-switch').hidden = !caseSwitch;
+  showLetterCase(savedLetterCase(function () { return localStorage.getItem(PLAY_CASE_KEY); }, caseSwitch));
+  playEl('case-switch').querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { pickLetterCase(b.dataset.case); });
+  });
+}
+
+function pickLetterCase(letterCase) {
+  showLetterCase(letterCase);
+  saveLetterCase(function (c) { localStorage.setItem(PLAY_CASE_KEY, c); }, letterCase);
+  sizePrintedWords(playEl('words'), false);
+}
+
+// Lower case draws narrower words, so the list is laid out again.
+function showLetterCase(letterCase) {
+  playEl('play').dataset.case = letterCase;
+  playEl('play').style.setProperty('--letter-case', PLAY_CASE_TRANSFORMS[letterCase]);
+  playEl('case-switch').querySelectorAll('button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.case === letterCase));
+  });
   layoutWords();
 }
 
