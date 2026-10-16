@@ -57,8 +57,9 @@
     border-left: 0; border-radius: 0 var(--r) var(--r) 0; }
   .side[data-open] + .side-scrim { display: block; position: fixed; inset: 0; z-index: 39; background: rgb(15 42 36 / .33); }
 }
+/* Paper is the puzzle alone: the side bar never prints, nor the drawer left open on a phone. */
 @media print {
-  .side, .side-scrim, .burger { display: none; }
+  .side, .side[data-open], .side-scrim, .side[data-open] + .side-scrim, .burger { display: none; }
   .site-body { display: block; }
 }
 
