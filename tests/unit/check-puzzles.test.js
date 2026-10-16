@@ -14,8 +14,10 @@ let root;
 let site;
 let checksLog;
 
+// Run from the pre-push hook, git exports GIT_DIR (and friends) for the site's own repo — left in,
+// every git call here would init, add and commit into it instead of the throwaway repos.
 const env = () => ({
-  ...process.env,
+  ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))),
   GIT_CONFIG_GLOBAL: '/dev/null',
   GIT_CONFIG_NOSYSTEM: '1',
   GIT_AUTHOR_NAME: 'test',
