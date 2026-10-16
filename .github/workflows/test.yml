@@ -274,8 +274,8 @@ jobs:
           path: reports/validate-json.txt
 
   puzzles:
-    # Every puzzle under content/ against grew-puzzles-tooling's origin/main checks —
-    # local only (scripts/check-puzzles.sh).
+    # content/ against grew-puzzles-tooling's origin/main checks, solving only the puzzles
+    # changed against origin/main — local only (scripts/check-puzzles.sh).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
