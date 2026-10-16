@@ -50,7 +50,6 @@ const WORDSEARCH_BASICS = [
   ['mark', 'To mark a word, tap its first letter, then its last. Tap the F, then the X. Either end works.', 'A small grid with FOX found on a diagonal, its F circled where the tap began.'],
   ['struck', 'A found word is crossed off the list. FOX is found, so it\'s crossed off.', 'A word list of FOX, HEN and OWL, with FOX crossed off.'],
 ];
-const STEPS = ['puzzle', 'spot', 'found'];
 const WORDSEARCH_MOVES = [
   ['rare', 'Hunt the rarest letter first', 'When a word has a letter the grid hardly uses, like Z, Q, X or J.', [
     ['The puzzle', 'Find WIZARD.', 'A 6 by 6 grid of letters, WIZARD hidden somewhere in it.'],
@@ -72,6 +71,45 @@ const WORDSEARCH_MOVES = [
     ['The puzzle', 'Find RAINBOW and OWL.', 'A 7 by 7 grid above a word list of RAINBOW and OWL.'],
     ['Spot it', 'RAINBOW fills a whole line of 7, edge to edge. Of the Rs on the edge, only one has a W on the far edge.', 'The same grid with an R and a W circled in opposite corners, and the other edge Rs circled in red.'],
     ['Found', 'RAINBOW is found first. Now look for OWL.', 'The same grid with RAINBOW found corner to corner, and crossed off the list.']]],
+];
+// Minesweeper's (the product's TASK-220), the same way: its pictures the worksheet's made-up boards,
+// played on the minesweeper page itself, and a move's last step what it settles.
+const MINESWEEPER_BASICS = [
+  ['goal', 'Find every mine. Mark them all and the board is solved: here, all four. Squares marked no mine don\'t count toward it.', 'A 5 by 5 board with its four mines marked, and Solved — every mine found under it.'],
+  ['count', 'A number counts the mines in the eight squares around it. This 3 has three mines in the eight squares around it, inside the box.', 'A board with a 3 in the middle, a dashed box round the eight squares around it, and three mines marked inside the box.'],
+  ['never', 'A numbered square is never a mine. The 2\'s two mines are in the blank squares around it. The 1 beside it is a number, so it\'s never one of them, and it can\'t be marked.', 'A board with a 2 and a 1 side by side, and a dashed box round the 2\'s squares.'],
+  ['edges', 'Edges and corners have fewer squares around them. A number in a corner has only three squares around it, and one on an edge has five. Each 1 here has its one mine inside its box.', 'A board with a 1 in its top-left corner and a 1 on its right edge, each with a dashed box round its squares.'],
+  ['tap', 'Tap a square once to mark it no mine, again to mark it a mine, and again to clear it. A square marked no mine turns grey. The Mines card beside the board says the same.', 'One square tapped three times: blank, then grey for no mine, then marked as a mine, then blank again.'],
+  ['fill', 'Tap a number to fill in around it. This 2 has both its mines marked, so its other blank squares fill in as no mine. If a number\'s blank squares must all be mines, they fill in as mines. Otherwise nothing happens. It goes by your own marks, so a wrong mark carries in.', 'A board with a 2 ringed and both its mines marked, then the same board once the 2 is tapped, its other squares grey.'],
+  ['check', 'Check shows your mistakes. It rings in red every mark that\'s wrong: here, a mine where there isn\'t one, and no mine on a mine. The line under it says how many, and the rings go at your next tap. Blank squares are never checked.', 'A board with two marks ringed in red, Check and Undo under it, and 2 mistakes under them.'],
+  ['undo', 'Undo takes back a tap. Here it takes back the 2\'s fill, all in one go. Press it again to go further back. There\'s no Redo.', 'A board just after its 2 was tapped, then the same board after Undo, the 2\'s fill taken back.'],
+  ['no-guess', 'You never need to guess. Every board has exactly one answer, and its numbers alone lead to it. This one is solved from its six numbers.', 'A 5 by 4 board with six numbers and nothing marked.'],
+];
+const MINESWEEPER_MOVES = [
+  ['met', 'A number already met', 'When a number already has all its mines marked.', [
+    ['The board', 'A 1 with a mine already marked next to it.', 'A 5 by 5 board, a 1 in the middle with a mine marked beside it.'],
+    ['Spot it', 'The 1 already has its one mine. Its count is met.', 'The same board with the 1 ringed.'],
+    ['Settled', 'Every other square around it is no mine. Tapping the 1 fills them in.', 'The same board with the 1\'s other seven squares grey.']]],
+  ['full', 'A number whose blank squares must all be mines', 'When a number is missing as many mines as it has blank squares.', [
+    ['The board', 'A 3 with one mine marked and two blank squares left.', 'A 5 by 4 board, a 3 with one mine marked beside it and two blank squares above it.'],
+    ['Spot it', 'The 3 is missing two mines, and has just two blank squares left.', 'The same board with the 3 ringed.'],
+    ['Settled', 'Both are mines. Tapping the 3 fills them in.', 'The same board with both blank squares above the 3 marked as mines.']]],
+  ['edge', '1-1 against an edge', 'When two 1s sit side by side, the first against the board\'s edge.', [
+    ['The board', 'Two 1s side by side, the first against the board\'s edge.', 'A 5 by 4 board with two 1s side by side on its left edge, the row under them grey.'],
+    ['Spot it', 'The 1 on the edge has just two blank squares, and the other 1 sees both. So the other 1\'s mine is one of those two.', 'The same board with both 1s ringed.'],
+    ['Settled', 'The other 1\'s third blank square is no mine.', 'The same board with the second 1\'s third blank square, above and to its right, grey.']]],
+  ['121', '1-2-1 along a row', 'When a 1, a 2 and a 1 sit side by side, with a row of blank squares along them.', [
+    ['The board', 'A 1, 2 and 1 side by side, with a row of blank squares along them.', 'A 5 by 4 board with a 1, a 2 and a 1 side by side, and a row of blank squares above them.'],
+    ['Spot it', 'A mine over the 2 would fill both 1s and leave the 2 one short. So the square over the 2 is no mine.', 'The same board with the 1, the 2 and the 1 ringed.'],
+    ['Settled', 'A mine over each 1, and no mine anywhere else in the row.', 'The same board with a mine marked over each 1, and the rest of the row grey.']]],
+  ['1221', '1-2-2-1 along a row', 'When a 1, two 2s and a 1 sit side by side, with a row of blank squares along them.', [
+    ['The board', 'A 1, 2, 2 and 1 side by side, with a row of blank squares along them.', 'A 6 by 4 board with a 1, two 2s and a 1 side by side, and a row of blank squares above them.'],
+    ['Spot it', 'Each 2 sees one square the 1 beside it doesn\'t, and needs one more mine than that 1. So that square is a mine.', 'The same board with the 1, both 2s and the 1 ringed.'],
+    ['Settled', 'A mine over each 2, and no mine anywhere else in the row.', 'The same board with a mine marked over each 2, and the rest of the row grey.']]],
+  ['subtract', 'Taking one number\'s mines away from its neighbour\'s', 'When two numbers side by side share some of their squares.', [
+    ['The board', 'A 1 beside a 3.', 'A 5 by 4 board with a 1 beside a 3.'],
+    ['Spot it', 'The 1\'s one mine is in its two blank squares, and the 3 sees both. Take that mine away and the 3 still needs two more.', 'The same board with the 1 and the 3 ringed.'],
+    ['Settled', 'The 3 has just two other blank squares, so both are mines.', 'The same board with the 3\'s other two blank squares, on its right, marked as mines.']]],
 ];
 // Criss-crosses' Basics and Advanced (the product's TASK-221), likewise, from the worksheet's made-up
 // shapes. A basic shown in several steps — its picture a row of them — sits under its sentence, across
@@ -105,9 +143,11 @@ const CRISS_MOVES = [
     ['Spot it', 'Apple gives 2 down a P and 3 down an L. Only Pear starts with P, and only Lime with L.', 'The same shape with Apple\'s P and L highlighted.'],
     ['Settled', 'Pear and Lime go in. Their letters now cross 4 across, so keep working out from them.', 'The same shape with Pear in 2 down and Lime in 3 down, both outlined, and crossed off the list.']]],
 ];
-// Each kind with its rules written: its name, its basics, its moves and the file name of each step.
+// Each kind with its Basics and Advanced written: its basics, its moves, and its three steps'
+// picture names.
 const RULES = [
-  ['wordsearch', 'Wordsearches', WORDSEARCH_BASICS, WORDSEARCH_MOVES, STEPS],
+  ['wordsearch', 'Wordsearches', WORDSEARCH_BASICS, WORDSEARCH_MOVES, ['puzzle', 'spot', 'found']],
+  ['minesweeper', 'Minesweeper', MINESWEEPER_BASICS, MINESWEEPER_MOVES, ['puzzle', 'spot', 'settled']],
   ['crisscross', 'Criss-crosses', CRISS_BASICS, CRISS_MOVES, ['puzzle', 'spot', 'settled']],
 ];
 const PLAY_PAGES = [
@@ -211,7 +251,7 @@ test('Variants\' pictures are each type\'s own, its alt text naming the type and
 
 const loaded = img => img.evaluate(i => i.complete && i.naturalWidth > 0);
 
-for (const [kind, name, basics, moves, files] of RULES) {
+for (const [kind, name, basics, moves, stepNames] of RULES) {
   test(`${name} opens on Basics: each basic a sentence beside its picture — under it, one in several steps — in the owner's words`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto(`/app/how-to-play.html?kind=${kind}`);
@@ -234,7 +274,7 @@ for (const [kind, name, basics, moves, files] of RULES) {
     }
   });
 
-  test(`${name}' Advanced: each move named, when it happens, then the puzzle, how it's spotted and what it settles in a row, each captioned`, async ({ page }) => {
+  test(`${name}' Advanced: each move named, when it happens, then the puzzle, how it's spotted and what it finds in a row, each captioned`, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto(`/app/how-to-play.html?kind=${kind}`);
     await pill(page, 'Advanced').click();
@@ -248,7 +288,7 @@ for (const [kind, name, basics, moves, files] of RULES) {
       const boxes = [];
       for (const [i, [, , alt]] of steps.entries()) {
         const picture = figures.nth(i).locator('img');
-        await expect(picture).toHaveAttribute('src', `../content/how-to-play/${kind}-${id}-${files[i]}.png`);
+        await expect(picture).toHaveAttribute('src', `../content/how-to-play/${kind}-${id}-${stepNames[i]}.png`);
         await expect(picture).toHaveAttribute('alt', alt);
         expect(await loaded(picture)).toBe(true);
         boxes.push(await picture.boundingBox());
@@ -268,7 +308,7 @@ for (const [kind, name, basics, moves, files] of RULES) {
       for (const [id] of moves) {
         const figures = page.locator(`#${kind}-${id} figure`);
         let below = 0;
-        for (let i = 0; i < files.length; i++) {
+        for (let i = 0; i < stepNames.length; i++) {
           const picture = await figures.nth(i).locator('img').boundingBox();
           const caption = await figures.nth(i).locator('figcaption').boundingBox();
           expect(picture.y).toBeGreaterThanOrEqual(below);
@@ -393,6 +433,14 @@ test('Plain, the How to play page shows no character', async ({ page }) => {
   await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
+});
+
+test('on a wide screen the pills sit centred under the title', async ({ page }) => {
+  await page.goto('/app/how-to-play.html?kind=minesweeper');
+  const title = await page.locator('h1').boundingBox();
+  const pills = await page.locator('.part-pills').boundingBox();
+  expect(pills.y).toBeGreaterThan(title.y + title.height);
+  expect(Math.abs((pills.x + pills.width / 2) - (title.x + title.width / 2))).toBeLessThan(2);
 });
 
 test('on the narrowest phone the How to play page and its pills read without scrolling sideways', async ({ page }) => {

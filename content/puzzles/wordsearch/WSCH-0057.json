@@ -1,0 +1,65 @@
+{
+  "hiddenId": "WSCH-0057",
+  "type": "Kids",
+  "created": "2026-10-16",
+  "title": "Kids Home 4",
+  "wordGroups": [
+    "kids-home"
+  ],
+  "words": [
+    {
+      "word": "Bed",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 3
+    },
+    {
+      "word": "Book",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 1
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Toys",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Wall",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 5
+      },
+      "direction": "S",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "KWKWKW",
+        "EBEYBW",
+        "AOTDSA",
+        "LOBOEL",
+        "LKOEYL",
+        "LDKYDS"
+      ]
+    }
+  ],
+  "capitals": true,
+  "bigLetters": true
+}

@@ -1,0 +1,65 @@
+{
+  "hiddenId": "WSCH-0058",
+  "type": "Kids",
+  "created": "2026-10-16",
+  "title": "Kids Home 5",
+  "wordGroups": [
+    "kids-home"
+  ],
+  "words": [
+    {
+      "word": "Bath",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 0
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Key",
+      "grid": 0,
+      "start": {
+        "row": 1,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Lamp",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 2
+      },
+      "direction": "SE",
+      "length": 4
+    },
+    {
+      "word": "Sofa",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 4
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "ELSOFA",
+        "MHSTKB",
+        "BSLPEY",
+        "SAAAYE",
+        "PATBMF",
+        "LKEHMP"
+      ]
+    }
+  ],
+  "capitals": true,
+  "bigLetters": true
+}

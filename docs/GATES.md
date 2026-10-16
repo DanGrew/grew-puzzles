@@ -23,7 +23,9 @@ later. `checks-local --post` puts the local verdict on the PR.
 
 - `npm install` once — it also points git at `.githooks/`, whose `pre-push` runs the arch checks,
   `validate-json`, `puzzles`, `ui-cyclomatic`, `check-untested` and the unit suite. e2e runs in
-  `checks-local`, not the hook.
+  `checks-local`, not the hook. Before the gates, the hook runs `npm ci` itself whenever the
+  checkout's `node_modules` is missing or older than `package-lock.json`
+  (`scripts/ensure-deps.sh`), so a worktree or a wiped clone pushes without a manual install.
 - `claude-workflow/tools/checks-local.py <worktree>` runs the whole workflow before a push — it
   reads `test.yml`, so a new job is picked up without touching the tool.
 - Run directly, Playwright reuses whatever already serves its port (3000 unless `.port` or `PORT`
