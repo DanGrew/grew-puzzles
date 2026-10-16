@@ -44,6 +44,18 @@ const squaresOf = ({ shaded = [], blank = [] }, file = BOARD) => {
   blank.forEach(([r, c]) => { out[r * file.width + c] = '2'; });
   return out.join('');
 };
+// The squares a board opens with (the product's TASK-209): every square of a 0's block left blank —
+// neither fixture has a 9. Worked out here from the numbers, as the page does.
+const openedBlank = (file = BOARD) => file.numbers.flatMap((line, r) => [...line].map((ch, c) => [ch, r, c])).filter(s => s[0] === '0')
+  .flatMap(([, r, c]) => [-1, 0, 1].flatMap(dr => [-1, 0, 1].map(dc => [r + dr, c + dc])))
+  .filter(([r, c]) => r >= 0 && r < file.height && c >= 0 && c < file.width);
+// The board as the page saves it once it's played: as it opened, then the squares given — shaded,
+// blank, or cleared of what it opened with.
+const playedOf = ({ shaded = [], blank = [], clear = [] }, file = BOARD) => {
+  const out = [...squaresOf({ blank: openedBlank(file) }, file)];
+  [[shaded, '1'], [blank, '2'], [clear, '0']].forEach(([cells, ch]) => cells.forEach(([r, c]) => { out[r * file.width + c] = ch; }));
+  return out.join('');
+};
 // A mosaic's row as the table holds it, and as the page saves it — without its time.
 const row = (squares, { puzzle = 'MOSA-0001', finished = false, user = PLAYER.id, tappedAt = '2026-10-15T00:00:00+00:00' } = {}) =>
   ({ user_id: user, puzzle, squares, finished, tapped_at: tappedAt });
@@ -160,6 +172,7 @@ async function tapAll(page, cells) {
 }
 
 const shade = cells => cells.flatMap(c => [c, c]);
+const expectBlank = (page, r, c) => expect.poll(() => markOf(page, r, c)).toBe('blank');
 const count = page => page.locator('#count');
 const saveLine = page => page.locator('#save-line');
 const hint = page => page.locator('#save-hint');
@@ -171,11 +184,11 @@ test('signed in, my squares are saved once I pause — the whole board, there is
   const page = await open(context);
   await expect(page.getByRole('button', { name: /save/i })).toHaveCount(0);
   await tapAll(page, [[0, 0], [1, 1], [1, 1]]);
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ blank: [[0, 0]], shaded: [[1, 1]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ blank: [[0, 0]], shaded: [[1, 1]] }))]);
   expect(db.saves).toHaveLength(1);
   expect(db.saves[0].squares).toHaveLength(144);
   await tapAll(page, [[0, 0]]);
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[0, 0], [1, 1]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[0, 0], [1, 1]] }))]);
   await expect(saveLine(page)).toBeHidden();
 });
 
@@ -210,7 +223,7 @@ test('opening the board on another device, my squares are there', async ({ brows
   await playing(phone, { db });
   const there = await open(laptop);
   await tapAll(there, [...shade([[2, 3]]), [4, 4]]);
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[2, 3]], blank: [[4, 4]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[2, 3]], blank: [[4, 4]] }))]);
 
   const here = await open(phone);
   await expect(count(here)).toHaveText('1 shaded');
@@ -227,11 +240,11 @@ test('signed in, an Undo is saved as a tap is: another device opens the board as
   await playing(phone, { db });
   const there = await open(laptop);
   await tapAll(there, [...shade([[2, 3]]), [4, 4]]);
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[2, 3]], blank: [[4, 4]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[2, 3]], blank: [[4, 4]] }))]);
   await there.click('#undo');
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[2, 3]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[2, 3]] }))]);
   await there.click('#undo');
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ blank: [[2, 3]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ blank: [[2, 3]] }))]);
 
   const here = await open(phone);
   await expect(count(here)).toHaveText('0 shaded');
@@ -240,6 +253,28 @@ test('signed in, an Undo is saved as a tap is: another device opens the board as
   expect(await here.evaluate(() => Object.keys(localStorage).filter(k => k !== 'grew-puzzles.look' && !k.startsWith('sb-')))).toEqual([]);
   await laptop.close();
   await phone.close();
+});
+
+test('opening a mosaic and leaving it as it opened saves nothing — its filled-in squares aren\'t a start', async ({ context }) => {
+  const db = await playing(context);
+  const page = await open(context);
+  await expectBlank(page, 0, 4);
+  await page.waitForTimeout(1200);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
+  await page.waitForTimeout(300);
+  expect(db.saves).toEqual([]);
+});
+
+test('clearing a square the board opened with and reloading, it stays clear — never filled in again', async ({ context }) => {
+  const db = await playing(context);
+  const page = await open(context);
+  await tapAll(page, [[0, 4], [0, 4]]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ clear: [[0, 4]] }))]);
+
+  await page.reload();
+  await expect(page.locator('#play')).toHaveAttribute('data-view', /./);
+  await expect.poll(() => markOf(page, 0, 4)).toBe('clear');
+  expect(await markOf(page, 0, 3)).toBe('blank');
 });
 
 test('undoing every tap saves the board empty, so it comes back new', async ({ context }) => {
@@ -277,7 +312,7 @@ test('hiding the page before the pause saves what I tapped at once', async ({ co
     Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
-  await expect.poll(() => db.saves.map(r => r.squares), { timeout: 400 }).toEqual([squaresOf({ blank: [[0, 0]] })]);
+  await expect.poll(() => db.saves.map(r => r.squares), { timeout: 400 }).toEqual([playedOf({ blank: [[0, 0]] })]);
 });
 
 test('leaving the page before the pause saves what I tapped at once, in a request the browser keeps going', async ({ context }) => {
@@ -290,7 +325,7 @@ test('leaving the page before the pause saves what I tapped at once, in a reques
   });
   await tapAll(page, [[0, 0]]);
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
-  await expect.poll(() => db.saves.map(r => r.squares), { timeout: 400 }).toEqual([squaresOf({ blank: [[0, 0]] })]);
+  await expect.poll(() => db.saves.map(r => r.squares), { timeout: 400 }).toEqual([playedOf({ blank: [[0, 0]] })]);
   expect(await page.evaluate(() => window.kept)).toEqual([true]);
 });
 
@@ -299,7 +334,7 @@ test('finishing the mosaic saves it finished; it reopens as its picture under it
   const page = await open(context);
   await tapAll(page, shade(ANSWER));
   await expect(page.locator('#complete')).toBeVisible();
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: ANSWER }), true)]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: ANSWER }), true)]);
 
   await page.reload();
   await expect(page.locator('#play')).toHaveAttribute('data-view', /./);
@@ -330,9 +365,9 @@ test('tapping fast, the board saved last is the one on screen — an older save 
   await tapAll(page, [[0, 0]]);
   await expect.poll(() => db.saves.length).toBe(1);
   await tapAll(page, [[1, 0], [2, 0], [0, 0]]);
-  await expect.poll(() => mosaicsSaved(db), { timeout: 5000 }).toEqual([saved(squaresOf({ shaded: [[0, 0]], blank: [[1, 0], [2, 0]] }))]);
+  await expect.poll(() => mosaicsSaved(db), { timeout: 5000 }).toEqual([saved(playedOf({ shaded: [[0, 0]], blank: [[1, 0], [2, 0]] }))]);
   await page.waitForTimeout(800);
-  expect(mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[0, 0]], blank: [[1, 0], [2, 0]] }))]);
+  expect(mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[0, 0]], blank: [[1, 0], [2, 0]] }))]);
   expect(db.saves).toHaveLength(2);
 });
 
@@ -344,12 +379,16 @@ test('tapping quickly across a 198×198, every tap shows at once and the board i
     new PerformanceObserver(list => list.getEntries().forEach(e => { window.longest = Math.max(window.longest, e.duration); })).observe({ type: 'longtask' });
   });
   const [cell, vx, vy] = (await page.locator('#play').getAttribute('data-view')).split(' ').map(Number);
-  const cells = Array.from({ length: 12 }, (_, i) => [Math.ceil(vy) + 1 + (i % 4), Math.ceil(vx) + 1 + Math.floor(i / 4)]);
+  // Twelve squares on view that the board opened clear, so a tap leaves each blank.
+  const opened = new Set(openedBlank(BIG).map(([r, c]) => r + ',' + c));
+  const cells = Array.from({ length: 144 }, (_, i) => [Math.ceil(vy) + 1 + (i % 12), Math.ceil(vx) + 1 + Math.floor(i / 12)])
+    .filter(([r, c]) => !opened.has(r + ',' + c)).slice(0, 12);
+  expect(cells).toHaveLength(12);
   for (const [r, c] of cells) await page.locator('#grid').click({ position: { x: (c - vx + 0.5) * cell, y: (r - vy + 0.5) * cell } });
   await expect(count(page)).toHaveText('0 shaded');
   for (const [r, c] of cells) expect(await markOf(page, r, c)).toBe('blank');
   await expect.poll(() => db.saves.length).toBe(1);
-  expect(db.saves[0].squares).toBe(squaresOf({ blank: cells }, BIG));
+  expect(db.saves[0].squares).toBe(playedOf({ blank: cells }, BIG));
   expect(db.saves[0].squares).toHaveLength(198 * 198);
   await page.waitForTimeout(1200);
   expect(db.saves).toHaveLength(1);
@@ -418,7 +457,7 @@ test('with the connection off, play carries on and a note says the board isn\'t 
 
   db.offline = false;
   await expect(saveLine(page)).toBeHidden({ timeout: 5000 });
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[0, 0]], blank: [[5, 0]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[0, 0]], blank: [[5, 0]] }))]);
   await page.close();
   const later = await open(context);
   await expect(count(later)).toHaveText('1 shaded');
@@ -429,7 +468,7 @@ test('a save that fails once and lands on its retry says nothing', async ({ cont
   const page = await open(context);
   db.failNext = 1;
   await tapAll(page, [[0, 0]]);
-  await expect.poll(() => mosaicsSaved(db), { timeout: 5000 }).toEqual([saved(squaresOf({ blank: [[0, 0]] }))]);
+  await expect.poll(() => mosaicsSaved(db), { timeout: 5000 }).toEqual([saved(playedOf({ blank: [[0, 0]] }))]);
   await page.waitForTimeout(300);
   expect(db.saves).toHaveLength(2);
   expect(await page.evaluate(() => window.lineShown)).toEqual([]);
@@ -451,7 +490,7 @@ test('signing in mid-board having marked squares: my squares here are kept and s
   await signIn(page);
 
   await expect(saveLine(page)).toBeHidden();
-  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(squaresOf({ shaded: [[0, 0]] }))]);
+  await expect.poll(() => mosaicsSaved(db)).toEqual([saved(playedOf({ shaded: [[0, 0]] }))]);
   await expect(count(page)).toHaveText('1 shaded');
   expect([await markOf(page, 0, 0), await markOf(page, 1, 1)]).toEqual(['shade', 'clear']);
 });
@@ -626,7 +665,7 @@ test('Mosaic\'s rail holds only mosaics, newest first; Collections\' holds them 
   expect(db.strays).toEqual([]);
 });
 
-test('a mosaic whose every square was cleared isn\'t in Continue playing', async ({ context }) => {
+test('a mosaic back as it opened isn\'t in Continue playing', async ({ context }) => {
   const db = mosaicTable({ mosaics: [row('', { puzzle: 'MOSA-0003' })] });
   await site(context, { db });
   const page = await landing(context, '/app/?kind=mosaic');

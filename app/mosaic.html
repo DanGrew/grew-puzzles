@@ -17,14 +17,17 @@
 <body class="play-page mosaic-page">
 <div class="wrap">
   <header class="site" data-site-bar data-home="index.html" data-current="mosaic">
-    <!-- Only a board up to 30 squares a side prints, and only Plain until a mosaic is Themed (the
-         product's TASK-170): ui/mosaic/play-ui.js shows the menu once it knows the size. -->
+    <!-- Only a board up to 30 squares a side prints: ui/mosaic/play-ui.js shows the menu once it
+         knows the size. -->
     <div class="print-menu" data-menu-entry id="print" role="group" aria-labelledby="print-name" hidden>
       <span class="print-name" id="print-name">Print page</span>
+      <button type="button" data-print="colour">Colour</button>
+      <button type="button" data-print="mono">Black and white</button>
       <button type="button" data-print="plain">Plain</button>
     </div>
   </header>
 
+  <p class="play-rules" data-rules></p>
   <header class="play-head">
     <h1 id="title"></h1>
     <p class="ident" id="ident" hidden><span class="difficulty" id="difficulty"></span> · <span class="code" id="code"></span></p>
@@ -33,6 +36,9 @@
   <p class="missing" id="missing" hidden>There's no puzzle at this address. <a href="index.html">See all puzzles</a>.</p>
 
   <main class="play mosaic" id="play" hidden>
+    <!-- Themed, the board's character and its name, placed from the grid card (styles/look.css). -->
+    <span class="theme-figure" id="theme-figure" aria-hidden="true"></span>
+    <span class="name-tag" id="name-tag"></span>
     <div class="mosaic-col">
       <div class="stage" id="stage">
         <div class="card" id="card">
@@ -119,14 +125,18 @@
   </main>
 
   <!-- The printout, paper only: the title — never the picture's name — the rule and the numbers on
-       a blank grid, drawn by ui/mosaic/sheet-ui.js. The book prints a copy of it. -->
+       a blank grid, drawn by ui/mosaic/sheet-ui.js — printed Colour or Black and white, the
+       character peering from behind the board. The book prints a copy of it. -->
   <section class="mosaic-sheet" id="mosaic-sheet">
     <header class="play-head">
       <h1 data-part="title"></h1>
       <p class="ident" data-part="ident" hidden><span class="difficulty" data-part="difficulty"></span> · <span class="code" data-part="code"></span></p>
     </header>
     <p class="mosaic-sheet-rule">Shade squares to reveal a picture. Each number counts the shaded squares in its 3×3 block: the square itself and the eight around it.</p>
-    <div class="mosaic-paper" data-part="grid" aria-hidden="true"></div>
+    <div class="print-card mosaic-print-card">
+      <span class="print-figure" aria-hidden="true"></span>
+      <div class="mosaic-paper" data-part="grid" aria-hidden="true"></div>
+    </div>
   </section>
 </div>
 <script src="../components/site-bar.js"></script>

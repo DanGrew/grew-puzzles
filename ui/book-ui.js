@@ -17,7 +17,7 @@ import { drawSheet, sizePrintedWords, dressPrintout } from './wordsearch/play-ui
 import { drawMazeSheet, dressMazeSheet } from './maze/sheet-ui.js';
 import { drawMinesSheet, dressMinesSheet } from './minesweeper/sheet-ui.js';
 import { drawCrissSheet, dressCrissSheet } from './crisscross/sheet-ui.js';
-import { drawMosaicSheet } from './mosaic/sheet-ui.js';
+import { drawMosaicSheet, dressMosaicSheet } from './mosaic/sheet-ui.js';
 import { dressRandomScene, withCharacters, printImages } from './theme-ui.js';
 
 var BOOK_SHOWS = { true: printBook, false: showMissing };
@@ -25,14 +25,13 @@ var BOOK_SHOWS = { true: printBook, false: showMissing };
 var SCENE_WAIT = 1500;
 // Each kind's page: where its file is, its board, how many sheets it runs to, its page drawn, and
 // that page dressed in its character. A maze, a minesweeper board, a criss-cross and a mosaic are
-// always one sheet. A mosaic prints Plain in every style, as it isn't Themed yet (the product's
-// TASK-170), so its page wears nothing.
+// always one sheet.
 var BOOK_KINDS = {
   wordsearch: { url: puzzleUrl, board: playBoard, sheets: function (board) { return board; }, page: wordsearchPage, dress: dressWordsearchPage },
   maze: { url: mazeUrl, board: mazeBoard, sheets: function () { return { sheets: [] }; }, page: mazePage, dress: dressMazePage },
   minesweeper: { url: minesUrl, board: minesBoard, sheets: function () { return { sheets: [] }; }, page: minesPage, dress: dressMinesPage },
   crisscross: { url: crissUrl, board: crissBoard, sheets: function () { return { sheets: [] }; }, page: crissPage, dress: dressCrissPage },
-  mosaic: { url: mosaicUrl, board: mosaicBoard, sheets: function () { return { sheets: [] }; }, page: mosaicPage, dress: function () {} },
+  mosaic: { url: mosaicUrl, board: mosaicBoard, sheets: function () { return { sheets: [] }; }, page: mosaicPage, dress: dressMosaicPage },
 };
 
 function bookEl(id) {
@@ -134,6 +133,10 @@ function dressMinesPage(page, board, character) {
 
 function dressCrissPage(page, board, character) {
   dressCrissSheet(page.querySelector('.criss-sheet'), page, board, character, true, Math.random);
+}
+
+function dressMosaicPage(page, board, character) {
+  dressMosaicSheet(page.querySelector('.mosaic-sheet'), page, board, character, true, Math.random);
 }
 
 function sizeBookWords() {

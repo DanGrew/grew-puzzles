@@ -148,8 +148,8 @@ test('opening a puzzle, How to play or another page from the landing page still 
   await expect(page).toHaveURL(/\/app\/play\.html\?id=WSCH-0001$/);
   expect(await page.evaluate(() => window.stayed)).toBeUndefined();
   await landing(page);
-  await side(page).getByRole('link', { name: 'How to play' }).click();
-  await expect(page).toHaveURL(/\/app\/how-to-play\.html$/);
+  await side(page).getByRole('link', { name: 'How to play Mazes' }).click();
+  await expect(page).toHaveURL(/\/app\/how-to-play\.html\?kind=maze$/);
   expect(await page.evaluate(() => window.stayed)).toBeUndefined();
 });
 

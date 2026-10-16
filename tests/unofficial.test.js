@@ -14,7 +14,7 @@ for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.
   test(`on ${address}, the side bar holds Unofficial after About us, which opens the Unofficial page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const pages = page.locator('#site-side .page');
-    await expect(pages).toHaveText(['How to play', 'Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
+    await expect(pages).toHaveText(['Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
     await pages.filter({ hasText: 'Unofficial' }).click();
     await expect(page).toHaveURL(`${baseURL}/app/unofficial.html`);
     await expect(page.locator('h1')).toHaveText('Unofficial');

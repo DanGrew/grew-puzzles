@@ -2,17 +2,18 @@
 // answer from play-core's board, and wires the taps and the phone's Cycle | Fill switch, the right-click
 // fill, the keys, Check and Undo, the zoom and moving round a big board, the flip, and the finish —
 // the numbers and lines melting away to the picture, and the title to its name — and the print
-// menu, the printed sheet being ui/mosaic/sheet-ui.js's. Saving the player's squares is
-// ui/mosaic/progress-ui.js's: the board waits for what was saved before it draws. The board is drawn
-// into a canvas, only the squares on view, so a 200×200 plays as smoothly as a 10×10 (the
-// product's TASK-164 spec). Every rule lives in core/mosaic/play-core.js and
-// core/minesweeper/play-core.js, whose frame and zoom it shares; nothing here decides anything.
+// menu, the printed sheet being ui/mosaic/sheet-ui.js's, and dresses it Themed in its character.
+// Saving the player's squares is ui/mosaic/progress-ui.js's: the board waits for what was saved
+// before it draws. The board is drawn into a canvas, only the squares on view, so a 200×200 plays as
+// smoothly as a 10×10 (the product's TASK-164 spec). Every rule lives in core/mosaic/play-core.js,
+// core/minesweeper/play-core.js, whose frame and zoom it shares, and core/theme-core.js; nothing
+// here decides anything.
 import {
   mosaicUrl, mosaicBoard, tapMosaic, rightTool, mosaicFinished, mosaicMistakes, canUndoMosaic, mosaicCount,
   mosaicTitle, finishLine, squareSaid, answerPlay, cellAt, onBoard, keyAction, keyMove, cellShows, boardDrawing, squareAt,
   meltAt, meltLength, showing, ringWidth, numberSize, mosaicPrints, openedMelt
 } from '../../core/mosaic/play-core.js';
-import { joinedMines, joinedHistory } from '../../core/minesweeper/progress-core.js';
+import { joinedMosaic, joinedMosaicHistory } from '../../core/mosaic/progress-core.js';
 import { withSavedMosaic, wireMosaicProgress, mosaicTapped } from './progress-ui.js';
 import {
   checkLine, newMinesHistory, tappedHistory, undoneMines, minesFrame, minesOpenView, minesRefit, minesZoom, minesZoomState,
@@ -20,12 +21,12 @@ import {
 } from '../../core/minesweeper/play-core.js';
 import { zoomFactor, pinchFactor, wheelFactor, centreOn } from '../../core/maze/play-core.js';
 import { playJson, playReach, playMargins } from '../../core/wordsearch/play-core.js';
-import { isPhone } from '../../core/theme-core.js';
+import { characterFor, idNumber, isPhone, boxFrom, siteDress, mosaicPrintFrame } from '../../core/theme-core.js';
 import { wireFlip, celebrate, drawIdent } from '../card-ui.js';
 import { sizeScale } from '../../core/size-core.js';
 import { wireSizeMenu, sizeSquare } from '../size-ui.js';
-import { printIn } from '../theme-ui.js';
-import { drawMosaicSheet } from './sheet-ui.js';
+import { withCharacters, dressScene, dressFigure, dressName, placeFigure, screenEdges, labelSize, onLook, printIn, printImages } from '../theme-ui.js';
+import { drawMosaicSheet, dressMosaicSheet } from './sheet-ui.js';
 
 // Beside the grid card, the Squares card and the gap before it; on a phone it sits underneath.
 var MOSAIC_SIDE_ROOM = { true: 0, false: 330 };
@@ -34,6 +35,12 @@ var MOSAIC_WINDOW_MARGIN = 24;
 // Only a board up to 30 squares a side prints: its sheet is drawn and Print page shows; a bigger
 // one has neither.
 var MOSAIC_SHEETS = { true: showSheet, false: noop };
+// What the character on screen stands by: the board, its number, its character once known
+// (dressMosaic), and how much wider the size picked has grown the card than at Small, px.
+var mosaicFigure = { board: undefined, number: 1, character: undefined, grown: 0 };
+// What printing the sheet in a style needs loaded first: nothing, until its character is known
+// (dressMosaic).
+var mosaicPrintLoad = function () { return Promise.resolve(); };
 
 function mosaicEl(id) {
   return document.getElementById(id);
@@ -41,16 +48,10 @@ function mosaicEl(id) {
 
 function noop() {}
 
-// Plain paper loads nothing before the dialog opens: a mosaic isn't Themed yet (the product's
-// TASK-170).
-function nothingToLoad() {
-  return Promise.resolve();
-}
-
 export function openMosaicPage(search) {
   var id = new URLSearchParams(search).get('id');
   mosaicEl('print').querySelectorAll('button').forEach(function (b) {
-    b.addEventListener('click', function () { printIn(b.dataset.print, nothingToLoad); });
+    b.addEventListener('click', function () { printIn(b.dataset.print, mosaicPrintLoad); });
   });
   Promise.resolve(search)
     .then(mosaicUrl)
@@ -62,7 +63,52 @@ export function openMosaicPage(search) {
 // The board as the player left it — saved, signed in, under the hidden ID its address names — then
 // drawn.
 function openBoard(id, board) {
+  dressMosaic(id, board);
   withSavedMosaic(id, board, function (play) { showBoard(id, board, play); });
+}
+
+// Themed, the board is dressed as a minesweeper board is: its own character, its background behind
+// the page, peering from behind the grid card at the printout's spot its number picks — the same
+// every visit (placeMosaicFigure). Its squares stay black and white, shaded or solved: no square
+// ever wears the character or a colour (the owner, 2026-10-13). Plain shows none of it. Printed
+// Colour or Black and white, the sheet wears it too, its spot picked again each time it prints, and
+// its images in before the dialog opens.
+function dressMosaic(hiddenId, board) {
+  mosaicFigure.board = board;
+  mosaicFigure.number = idNumber(hiddenId);
+  withCharacters(function (characters) {
+    var character = characterFor(characters, hiddenId);
+    var printout = function () { dressMosaicSheet(mosaicEl('mosaic-sheet'), document.documentElement, board, character, false, Math.random); };
+    mosaicFigure.character = character;
+    dressScene(character);
+    dressFigure(mosaicEl('theme-figure'), character);
+    dressName(mosaicEl('name-tag'), character);
+    printout();
+    window.addEventListener('beforeprint', printout);
+    mosaicPrintLoad = function () { return printImages(character); };
+    placeMosaicFigure();
+    onLook(placeMosaicFigure);
+  });
+}
+
+// The character at the printout's spot the board's number picks among those that show, measured
+// from the grid card as it now stands on the page, the printout's picture at the card's size against
+// the board's printed card (core/theme-core.js mosaicPrintFrame, siteDress) — a spot the Squares
+// card would cover, or the window's edge cut, skipped. It stands behind the card, so however far a
+// big board is zoomed in it never covers a square, and as big as at Small whatever the size picked.
+// Placed again whenever the card is sized, and when the look changes.
+function placeMosaicFigure() {
+  var page = mosaicEl('play').getBoundingClientRect(), card = mosaicEl('stage').getBoundingClientRect();
+  var title = document.querySelector('.play-head').getBoundingClientRect();
+  var board = mosaicFigure.board, phone = isPhone(document.documentElement.clientWidth);
+  placeFigure(mosaicEl('theme-figure'), mosaicEl('name-tag'), siteDress({
+    card: boxFrom(card, page),
+    scale: (card.width - mosaicFigure.grown) / mosaicPrintFrame(board.cols, board.rows, false).cardWidth,
+    screen: screenEdges(page.left),
+    covers: [boxFrom(mosaicEl('mosaic-card').getBoundingClientRect(), page)], never: [],
+    title: boxFrom(title, page),
+    label: labelSize(phone), saga: false, phone: phone
+  }, mosaicFigure.character, mosaicFigure.number));
 }
 
 // The printout: always the blank board, whatever the player has shaded on screen.
@@ -152,8 +198,8 @@ function showBoard(id, board, saved) {
 
   // Signing in mid-board: the board saved elsewhere, joined to the one on screen.
   function joinSaved(saved) {
-    history = joinedHistory(play, history);
-    play = joinedMines(play, saved);
+    history = joinedMosaicHistory(play, history, board);
+    play = joinedMosaic(play, saved, board);
     checked = [];
     melt = openedMelt(play, board);
     render();
@@ -405,15 +451,18 @@ function showBoard(id, board, saved) {
     var column = playEl.parentElement.getBoundingClientRect();
     var reach = playReach(document.documentElement.clientWidth, column, mosaicEl('site-side').getBoundingClientRect().width);
     var chromeWidth = face.offsetWidth - face.clientWidth + 2 * mosaicEl('board').offsetLeft + MOSAIC_SIDE_ROOM[phone];
-    var next = minesFrame({
+    var room = {
       viewHeight: window.innerHeight,
       chromeHeight: face.offsetHeight - frameEl.offsetHeight + MOSAIC_WINDOW_MARGIN + mosaicEl('mosaic-switch').offsetHeight,
       width: column.width - reach.left - reach.right,
       chromeWidth: chromeWidth,
       scale: sizeScale('mosaic', puzzleSize), rows: board.rows, cols: board.cols
-    });
+    };
+    var next = minesFrame(room);
     var fitted = fitView(view, frame, next, board);
     var margins = playMargins(reach, column.width, next.width + chromeWidth);
+    // The character stands against the card as it is at Small, the board as it was: no size grows it.
+    mosaicFigure.grown = next.width - minesFrame(Object.assign({}, room, { scale: 1 })).width;
     frame = next;
     fitView = minesRefit;
     playEl.style.setProperty('--reach-left', margins.left + 'px');
@@ -426,5 +475,6 @@ function showBoard(id, board, saved) {
     });
     showView(fitted);
     draw();
+    placeMosaicFigure();
   }
 }

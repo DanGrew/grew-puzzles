@@ -50,11 +50,11 @@ async function tap(page, r, c) {
   await page.locator('#grid').click({ position: { x: (c - vx + 0.5) * cell, y: (r - vy + 0.5) * cell } });
 }
 
-test('a mosaic that prints has Print page in its side bar, Plain only until it is Themed', async ({ page }) => {
+test('a mosaic that prints has Print page in its side bar: Colour, Black and white, Plain', async ({ page }) => {
   await open(page);
   await expect(page.locator('#site-side #print')).toBeVisible();
   await expect(page.locator('#site-side #print .print-name')).toHaveText('Print page');
-  await expect(page.locator('#site-side #print button')).toHaveText(['Plain']);
+  await expect(page.locator('#site-side #print button')).toHaveText(['Colour', 'Black and white', 'Plain']);
 });
 
 for (const [name, id] of [['a 198×198', 'MOSA-0002'], ['a 30×38', 'MOSA-0004']]) {

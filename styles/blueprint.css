@@ -39,6 +39,8 @@
   /* The title as a title block: TITLE over the name, and GRADE · DRAWING NO. over the line under it. */
   :root[data-look="blueprint"] .play-head { width: fit-content; max-width: calc(100% - 24px); margin-inline: auto; display: grid;
     grid-template-columns: minmax(0, auto) auto; border: 1px solid var(--ink); color: var(--ink); text-align: left; }
+  /* Clear of the book icon at the column's right, the title block keeps its own padding. */
+  :root[data-look="blueprint"] .play-rules + .play-head { padding-inline: 0; max-width: calc(100% - 104px); }
   :root[data-look="blueprint"] .play-head h1 { padding: 8px 18px 10px; font-weight: 400; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; }
   :root[data-look="blueprint"] .play-head .ident:not([hidden]) { margin: 0; padding: 8px 18px 10px; border-left: 1px solid var(--frame); color: var(--ink);
     display: block; font-size: 14px; line-height: 1.6; }
@@ -132,17 +134,17 @@
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head .ident::before { content: 'Grade · Drawing no.'; }
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .play-head .difficulty { border-radius: 0; }
   /* A sheet of its own prints its own title block alone: the screen's stays hidden, as it is unruled. */
-  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-page, .mines-page, .criss-page) .site-main > :not(.maze-sheet, .mines-sheet, .criss-sheet) { display: none; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-page, .mines-page, .criss-page, .mosaic-page) .site-main > :not(.maze-sheet, .mines-sheet, .criss-sheet, .mosaic-sheet) { display: none; }
   /* A maze's block stacks, narrow enough to clear the note box at its right. */
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head { grid-template-columns: minmax(0, auto); max-width: 3.2in; }
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head h1 { overflow-wrap: anywhere; }
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) .maze-sheet .play-head .ident:not([hidden]) { border-left: 0; border-top: 1px solid var(--line); }
 
   /* The cards ruled in navy, each inside a second frame; their bands read as a drawing's labels. */
-  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.face, .words-box, .mines-paper) { outline: 1px solid var(--frame); outline-offset: 4px; }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.face, .words-box, .mines-paper, .mosaic-paper) { outline: 1px solid var(--frame); outline-offset: 4px; }
   :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.band, .list-head h2) { font-weight: 400; letter-spacing: .2em; text-transform: uppercase; }
-  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-sheet, .mines-sheet, .criss-sheet, .maze-note) { color: var(--fg); }
-  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.mines-paper, .mines-paper > span, .criss-paper > span, .maze-note, .note-box) { border-color: var(--line); }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.maze-sheet, .mines-sheet, .criss-sheet, .mosaic-sheet, .maze-note) { color: var(--fg); }
+  :root[data-look="blueprint"]:is([data-print="colour"], [data-print="mono"]) :is(.mines-paper, .mines-paper > span, .criss-paper > span, .mosaic-paper, .mosaic-paper > span, .maze-note, .note-box) { border-color: var(--line); }
 
   /* A grid card's dimension lines, as on screen: its columns along its foot, its rows down its left,
      in the ink, at 7 pt, KDP's floor. Drawn off the card, they never move the sheet. The rows' ticks

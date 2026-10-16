@@ -21,7 +21,7 @@ async function serve(page) {
   const fileRequests = [];
   await page.route('**/content/puzzles/wordsearch/index.json', r => r.fulfill({ json: { puzzles } }));
   await page.route('**/content/puzzles/maze/index.json', r => r.fulfill({ json: { puzzles: mazes } }));
-  await page.route(/\/content\/puzzles\/(minesweeper|crisscross)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
+  await page.route(/\/content\/puzzles\/(minesweeper|crisscross|mosaic)\/index\.json$/, r => r.fulfill({ json: { puzzles: [] } }));
   await page.route('**/content/collections/index.json', r => r.fulfill({ json: { collections: [issue, mixed] } }));
   await page.route(/\/puzzles\/.*(WSCH|MAZE)-\d+\.json$/, r => { fileRequests.push(r.request().url()); return r.fulfill({ json: {} }); });
   return fileRequests;

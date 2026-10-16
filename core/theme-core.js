@@ -85,6 +85,8 @@ const PRINT_REACH = 24;
 const MINES_SHEET_HEAD = 162.66;
 // A criss-cross sheet's, the same way.
 const CRISS_SHEET_HEAD = 129.98;
+// A mosaic sheet's, the same way.
+const MOSAIC_SHEET_HEAD = 162.66;
 
 // A printed sheet is one of three: a puzzle of one grid, its grid card over its words; a puzzle of
 // several grids' words sheet, its words card alone; or one of its grid sheets.
@@ -233,6 +235,14 @@ export function crissPrintFrame(cols, rows, numbered) {
     cardWidth: cols * Math.min(34.56, 662.4 / cols, 422.4 / rows) + 34,
     cardTop: 48 + 29 * Number(numbered) + CRISS_SHEET_HEAD
   };
+}
+
+// A mosaic's printed sheet (TASK-170), laid out as a minesweeper board's — the US Letter page, its
+// grid card the board's squares, its longer side 7.2 in, and the 5 px its border adds — its card's
+// top under the half-inch edge, the book's puzzle number, the title on its white tag and its own
+// rule, measured from the printout itself.
+export function mosaicPrintFrame(cols, rows, numbered) {
+  return { ...minesPrintFrame(cols, rows, numbered), cardTop: 48 + 29 * Number(numbered) + MOSAIC_SHEET_HEAD };
 }
 
 // ---- On screen, Themed (TASK-146) ----
