@@ -1,0 +1,65 @@
+{
+  "hiddenId": "WSCH-0055",
+  "type": "Kids",
+  "created": "2026-10-16",
+  "title": "Kids Home 2",
+  "wordGroups": [
+    "kids-home"
+  ],
+  "words": [
+    {
+      "word": "Oven",
+      "grid": 0,
+      "start": {
+        "row": 0,
+        "col": 2
+      },
+      "direction": "S",
+      "length": 4
+    },
+    {
+      "word": "Rug",
+      "grid": 0,
+      "start": {
+        "row": 3,
+        "col": 0
+      },
+      "direction": "S",
+      "length": 3
+    },
+    {
+      "word": "Soap",
+      "grid": 0,
+      "start": {
+        "row": 5,
+        "col": 2
+      },
+      "direction": "E",
+      "length": 4
+    },
+    {
+      "word": "Tap",
+      "grid": 0,
+      "start": {
+        "row": 2,
+        "col": 4
+      },
+      "direction": "S",
+      "length": 3
+    }
+  ],
+  "grids": [
+    {
+      "rows": [
+        "TROAAN",
+        "RUVUNS",
+        "EOESTU",
+        "RONOAG",
+        "UARNPN",
+        "GSSOAP"
+      ]
+    }
+  ],
+  "capitals": true,
+  "bigLetters": true
+}
