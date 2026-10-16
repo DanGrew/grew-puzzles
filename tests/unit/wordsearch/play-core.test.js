@@ -4,7 +4,7 @@ import {
   puzzleUrl, playJson,
   wordCells, playBoard, newPlay, restoredPlay, newFinds, finished, solvedPlay, turnPage, tap, sharedCells, playMarks, wordLines, lineMarks, printedPieces, printedColumnWidth, printedSpread, countLabel, sparkles,
   nextWordsLayout, savedWordsLayout, saveWordsLayout, wordsFit, boardScale,
-  playReach, playMargins
+  playReach, playMargins, savedLetterCase, saveLetterCase
 } from '../../../core/wordsearch/play-core.js';
 const require = createRequire(import.meta.url);
 const PUZZLE = require('../../fixtures/WSCH-0007.json');
@@ -693,6 +693,45 @@ describe('where the words sit', () => {
 
   it('carries on when the page cannot store the choice', () => {
     expect(saveWordsLayout(() => { throw new Error('blocked'); }, 'right')).toBe(false);
+  });
+});
+
+// TASK-227: a puzzle in capitals switches between capitals and lower case, kept per device.
+describe('capitals or lower case', () => {
+  it('offers the switch only on a puzzle whose file asks for capitals', () => {
+    expect(playBoard({ ...PUZZLE, capitals: true }).caseSwitch).toBe(true);
+    expect(BOARD.caseSwitch).toBe(false);
+    expect(playBoard({ ...PUZZLE, type: 'Kids', bigLetters: true }).caseSwitch).toBe(false);
+  });
+
+  it('uses the case last stored on this device, on a puzzle with the switch', () => {
+    ['upper', 'lower'].forEach(letterCase => {
+      expect(savedLetterCase(() => letterCase, true)).toBe(letterCase);
+    });
+  });
+
+  it('starts in capitals on a first visit, or when the stored case is unknown', () => {
+    [null, '', 'Lower', 'mixed'].forEach(saved => {
+      expect(savedLetterCase(() => saved, true)).toBe('upper');
+    });
+  });
+
+  it('keeps a puzzle without the switch as it is, whatever was stored', () => {
+    expect(savedLetterCase(() => 'lower', false)).toBe('upper');
+  });
+
+  it('falls back to capitals when the page cannot read the stored case', () => {
+    expect(savedLetterCase(() => { throw new Error('blocked'); }, true)).toBe('upper');
+  });
+
+  it('stores the case', () => {
+    const stored = [];
+    expect(saveLetterCase(c => stored.push(c), 'lower')).toBe(true);
+    expect(stored).toEqual(['lower']);
+  });
+
+  it('carries on when the page cannot store the case', () => {
+    expect(saveLetterCase(() => { throw new Error('blocked'); }, 'lower')).toBe(false);
   });
 });
 

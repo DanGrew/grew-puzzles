@@ -80,12 +80,14 @@ function pageNames(count, name) {
 // code, the hidden ID, so a player can name it. Every grid is the same size, so the first one
 // sizes them all. letters is how big the grid's letters and the words are against a Vanilla's:
 // 1.5× when the file asks for big letters (bigLetters), on screen at every text size and on paper.
+// caseSwitch: a puzzle in capitals (capitals) offers the ABC / abc switch (savedLetterCase).
 // A page shows what the file carries — never what its type is called.
 export function playBoard(puzzle) {
   var count = puzzle.grids.length;
   var capitals = Boolean(puzzle.capitals);
   return {
     letters: { true: 1.5, false: 1 }[Boolean(puzzle.bigLetters)],
+    caseSwitch: capitals,
     title: puzzle.title,
     difficulty: puzzleDifficulty(puzzle),
     code: puzzle.hiddenId,
@@ -358,6 +360,31 @@ function knownWordsLayout(saved) {
 // Whether the choice was stored; a page that can't store it keeps it until it closes.
 export function saveWordsLayout(write, layout) {
   return storeChoice(write, layout);
+}
+
+// ---- Capitals or lower case ----
+// A puzzle with the switch (playBoard's caseSwitch) shows its grid and its words in capitals
+// (upper) or lower case (lower), on screen and on paper — the player's choice, kept per device, so
+// the next such puzzle opens the same; capitals until they pick. Only how the letters are drawn
+// changes: the file's letters, the finds and saved progress never do. A puzzle without the switch
+// is always upper.
+
+// read() returns the stored choice; a page that can't read it, or reads anything else, gets upper.
+export function savedLetterCase(read, caseSwitch) {
+  try {
+    return { true: knownLetterCase(read()), false: 'upper' }[caseSwitch];
+  } catch (e) {
+    return 'upper';
+  }
+}
+
+function knownLetterCase(saved) {
+  return ['upper', 'lower'].includes(saved) ? saved : 'upper';
+}
+
+// Whether the choice was stored; a page that can't store it keeps it until it closes.
+export function saveLetterCase(write, letterCase) {
+  return storeChoice(write, letterCase);
 }
 
 function storeChoice(write, choice) {

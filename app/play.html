@@ -89,6 +89,11 @@
           <div class="list-head">
             <h2>Words</h2>
             <span class="count" id="count"></span>
+            <!-- A puzzle in capitals: its letters in capitals or lower case (ui/wordsearch/play-ui.js). -->
+            <div class="case-switch" id="case-switch" role="group" aria-label="Letters" hidden>
+              <button type="button" data-case="upper" aria-pressed="true" aria-label="Capitals">ABC</button>
+              <button type="button" data-case="lower" aria-pressed="false" aria-label="Lower case">abc</button>
+            </div>
           </div>
           <ul class="words" id="words"></ul>
         </div>
