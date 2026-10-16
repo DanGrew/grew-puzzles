@@ -206,8 +206,103 @@
       </section>
     </div>
 
-    <div class="part" data-kind="minesweeper" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden></div>
-    <div class="part" data-kind="minesweeper" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden></div>
+    <!-- Minesweeper's, as wordsearch's: its pictures the worksheet's made-up boards, played on the
+         minesweeper page itself by tooling's tools/grew-puzzles-rules — a clue number ringed, a
+         number's squares boxed — and an advanced move's last step what the move settles. -->
+    <div class="part" data-kind="minesweeper" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
+      <section class="rule" id="minesweeper-goal">
+        <img src="../content/how-to-play/minesweeper-goal.png" width="278" height="366" alt="A 5 by 5 board with its four mines marked, and Solved — every mine found under it.">
+        <p><strong>Find every mine.</strong> Mark them all and the board is solved: here, all four. Squares marked no mine don't count toward it.</p>
+      </section>
+      <section class="rule" id="minesweeper-count">
+        <img src="../content/how-to-play/minesweeper-count.png" width="270" height="270" alt="A board with a 3 in the middle, a dashed box round the eight squares around it, and three mines marked inside the box.">
+        <p><strong>A number counts the mines in the eight squares around it.</strong> This 3 has three mines in the eight squares around it, inside the box.</p>
+      </section>
+      <section class="rule" id="minesweeper-never">
+        <img src="../content/how-to-play/minesweeper-never.png" width="216" height="216" alt="A board with a 2 and a 1 side by side, and a dashed box round the 2's squares.">
+        <p><strong>A numbered square is never a mine.</strong> The 2's two mines are in the blank squares around it. The 1 beside it is a number, so it's never one of them, and it can't be marked.</p>
+      </section>
+      <section class="rule" id="minesweeper-edges">
+        <img src="../content/how-to-play/minesweeper-edges.png" width="270" height="216" alt="A board with a 1 in its top-left corner and a 1 on its right edge, each with a dashed box round its squares.">
+        <p><strong>Edges and corners have fewer squares around them.</strong> A number in a corner has only three squares around it, and one on an edge has five. Each 1 here has its one mine inside its box.</p>
+      </section>
+      <section class="rule" id="minesweeper-tap">
+        <img src="../content/how-to-play/minesweeper-tap.png" width="63" height="374" alt="One square tapped three times: blank, then grey for no mine, then marked as a mine, then blank again.">
+        <p><strong>Tap a square once to mark it no mine, again to mark it a mine, and again to clear it.</strong> A square marked no mine turns grey. The Mines card beside the board says the same.</p>
+      </section>
+      <section class="rule" id="minesweeper-fill">
+        <img src="../content/how-to-play/minesweeper-fill.png" width="278" height="490" alt="A board with a 2 ringed and both its mines marked, then the same board once the 2 is tapped, its other squares grey.">
+        <p><strong>Tap a number to fill in around it.</strong> This 2 has both its mines marked, so its other blank squares fill in as no mine. If a number's blank squares must all be mines, they fill in as mines. Otherwise nothing happens. It goes by your own marks, so a wrong mark carries in.</p>
+      </section>
+      <section class="rule" id="minesweeper-check">
+        <img src="../content/how-to-play/minesweeper-check.png" width="322" height="342" alt="A board with two marks ringed in red, Check and Undo under it, and 2 mistakes under them.">
+        <p><strong>Check shows your mistakes.</strong> It rings in red every mark that's wrong: here, a mine where there isn't one, and no mine on a mine. The line under it says how many, and the rings go at your next tap. Blank squares are never checked.</p>
+      </section>
+      <section class="rule" id="minesweeper-undo">
+        <img src="../content/how-to-play/minesweeper-undo.png" width="278" height="490" alt="A board just after its 2 was tapped, then the same board after Undo, the 2's fill taken back.">
+        <p><strong>Undo takes back a tap.</strong> Here it takes back the 2's fill, all in one go. Press it again to go further back. There's no Redo.</p>
+      </section>
+      <section class="rule" id="minesweeper-no-guess">
+        <img src="../content/how-to-play/minesweeper-no-guess.png" width="270" height="216" alt="A 5 by 4 board with six numbers and nothing marked.">
+        <p><strong>You never need to guess.</strong> Every board has exactly one answer, and its numbers alone lead to it. This one is solved from its six numbers.</p>
+      </section>
+    </div>
+    <div class="part" data-kind="minesweeper" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
+      <section class="move" id="minesweeper-met" aria-labelledby="minesweeper-met-title">
+        <h2 id="minesweeper-met-title">A number already met</h2>
+        <p>When a number already has all its mines marked.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-met-puzzle.png" width="270" height="270" alt="A 5 by 5 board, a 1 in the middle with a mine marked beside it."><figcaption><b>The board</b> A 1 with a mine already marked next to it.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-met-spot.png" width="270" height="270" alt="The same board with the 1 ringed."><figcaption><b>Spot it</b> The 1 already has its one mine. Its count is met.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-met-settled.png" width="270" height="270" alt="The same board with the 1's other seven squares grey."><figcaption><b>Settled</b> Every other square around it is no mine. Tapping the 1 fills them in.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="minesweeper-full" aria-labelledby="minesweeper-full-title">
+        <h2 id="minesweeper-full-title">A number whose blank squares must all be mines</h2>
+        <p>When a number is missing as many mines as it has blank squares.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-full-puzzle.png" width="270" height="216" alt="A 5 by 4 board, a 3 with one mine marked beside it and two blank squares above it."><figcaption><b>The board</b> A 3 with one mine marked and two blank squares left.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-full-spot.png" width="270" height="216" alt="The same board with the 3 ringed."><figcaption><b>Spot it</b> The 3 is missing two mines, and has just two blank squares left.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-full-settled.png" width="270" height="216" alt="The same board with both blank squares above the 3 marked as mines."><figcaption><b>Settled</b> Both are mines. Tapping the 3 fills them in.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="minesweeper-edge" aria-labelledby="minesweeper-edge-title">
+        <h2 id="minesweeper-edge-title">1-1 against an edge</h2>
+        <p>When two 1s sit side by side, the first against the board's edge.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-edge-puzzle.png" width="270" height="216" alt="A 5 by 4 board with two 1s side by side on its left edge, the row under them grey."><figcaption><b>The board</b> Two 1s side by side, the first against the board's edge.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-edge-spot.png" width="270" height="216" alt="The same board with both 1s ringed."><figcaption><b>Spot it</b> The 1 on the edge has just two blank squares, and the other 1 sees both. So the other 1's mine is one of those two.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-edge-settled.png" width="270" height="216" alt="The same board with the second 1's third blank square, above and to its right, grey."><figcaption><b>Settled</b> The other 1's third blank square is no mine.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="minesweeper-121" aria-labelledby="minesweeper-121-title">
+        <h2 id="minesweeper-121-title">1-2-1 along a row</h2>
+        <p>When a 1, a 2 and a 1 sit side by side, with a row of blank squares along them.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-121-puzzle.png" width="270" height="216" alt="A 5 by 4 board with a 1, a 2 and a 1 side by side, and a row of blank squares above them."><figcaption><b>The board</b> A 1, 2 and 1 side by side, with a row of blank squares along them.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-121-spot.png" width="270" height="216" alt="The same board with the 1, the 2 and the 1 ringed."><figcaption><b>Spot it</b> A mine over the 2 would fill both 1s and leave the 2 one short. So the square over the 2 is no mine.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-121-settled.png" width="270" height="216" alt="The same board with a mine marked over each 1, and the rest of the row grey."><figcaption><b>Settled</b> A mine over each 1, and no mine anywhere else in the row.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="minesweeper-1221" aria-labelledby="minesweeper-1221-title">
+        <h2 id="minesweeper-1221-title">1-2-2-1 along a row</h2>
+        <p>When a 1, two 2s and a 1 sit side by side, with a row of blank squares along them.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-1221-puzzle.png" width="324" height="216" alt="A 6 by 4 board with a 1, two 2s and a 1 side by side, and a row of blank squares above them."><figcaption><b>The board</b> A 1, 2, 2 and 1 side by side, with a row of blank squares along them.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-1221-spot.png" width="324" height="216" alt="The same board with the 1, both 2s and the 1 ringed."><figcaption><b>Spot it</b> Each 2 sees one square the 1 beside it doesn't, and needs one more mine than that 1. So that square is a mine.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-1221-settled.png" width="324" height="216" alt="The same board with a mine marked over each 2, and the rest of the row grey."><figcaption><b>Settled</b> A mine over each 2, and no mine anywhere else in the row.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="minesweeper-subtract" aria-labelledby="minesweeper-subtract-title">
+        <h2 id="minesweeper-subtract-title">Taking one number's mines away from its neighbour's</h2>
+        <p>When two numbers side by side share some of their squares.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/minesweeper-subtract-puzzle.png" width="270" height="216" alt="A 5 by 4 board with a 1 beside a 3."><figcaption><b>The board</b> A 1 beside a 3.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-subtract-spot.png" width="270" height="216" alt="The same board with the 1 and the 3 ringed."><figcaption><b>Spot it</b> The 1's one mine is in its two blank squares, and the 3 sees both. Take that mine away and the 3 still needs two more.</figcaption></figure>
+          <figure><img src="../content/how-to-play/minesweeper-subtract-settled.png" width="270" height="216" alt="The same board with the 3's other two blank squares, on its right, marked as mines."><figcaption><b>Settled</b> The 3 has just two other blank squares, so both are mines.</figcaption></figure>
+        </div>
+      </section>
+    </div>
     <div class="part" data-kind="minesweeper" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="minesweeper" aria-labelledby="minesweeper-title">
         <img src="../content/how-to-play/minesweeper.png" width="880" height="880" alt="A Minesweeper board, part solved: the squares around a 0 dotted, and a number's mines marked.">
