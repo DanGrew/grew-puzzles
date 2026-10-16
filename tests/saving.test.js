@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 // The Saving your progress page, in the owner's words (the product's docs/CONTENT.md, Saving your
-// progress), reached from the side bar on every page, after How to play. Its words name puzzles,
+// progress), reached from the side bar on every page, its first text page. Its words name puzzles,
 // never kinds (FEAT-48), so no kind needs a line of its own.
 const WORDS = [
   'Sign in with Google and we\'ll save your progress as you play! Close the page, come back tomorrow, and pick up right where you left off.',
@@ -17,10 +17,10 @@ test.beforeEach(async ({ context }) => {
 });
 
 for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html', '/app/unofficial.html']) {
-  test(`on ${address}, the side bar holds Saving your progress after How to play, which opens its page`, async ({ page, baseURL }) => {
+  test(`on ${address}, the side bar's text pages start with Saving your progress, which opens its page`, async ({ page, baseURL }) => {
     await page.goto(address);
     const pages = await page.locator('#site-side .page').allTextContents();
-    expect(pages.slice(-6)).toEqual(['How to play', 'Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
+    expect(pages.slice(-5)).toEqual(['Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
     await page.locator('#site-side .page', { hasText: 'Saving your progress' }).click();
     await expect(page).toHaveURL(`${baseURL}/app/saving.html`);
     await expect(page.locator('h1')).toHaveText('Saving your progress');

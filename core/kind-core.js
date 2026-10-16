@@ -116,10 +116,24 @@ export function dotTone(kind, type) {
   return kind === 'maze' ? shades.get(type) ?? 'Sky' : difficultyOf(kind, type);
 }
 
+// A kind's How to play page, which its book icon opens — in the side bar and on its play pages: the
+// kind its address names, `how-to-play.html?kind=maze`; one no kind has, or none, is the first's.
+export function rulesOf(kind) {
+  const k = kinds().find(each => each.kind === kind) ?? kinds()[0];
+  return { kind: k.kind, name: k.name, href: `how-to-play.html?kind=${k.kind}` };
+}
+
+// Whether a part of a How to play page — Basics, Advanced or Variants, its types' sections (the
+// owner, 2026-10-16) — shows: one kind's, under the pill picked; every other kind's, and every other
+// pill's, hide.
+export function partShows(part, kind, picked) {
+  return part.kind === kind && part.part === picked;
+}
+
 // The side bar's map of the site: each kind with its puzzle count — and its short name, for a
-// phone's switch — then its types, each with its dot's tone, opening that kind filtered to that
-// type alone; then Collections, with its count, shown only while a collection exists. Each entry's
-// mark is what it's current for.
+// phone's switch — then its types, each with its dot's tone, opening that
+// kind filtered to that type alone; then Collections, with its count, shown only while a collection
+// exists. Each entry's mark is what it's current for.
 export function sideBar(puzzles, collections) {
   return {
     kinds: kinds().map(k => ({

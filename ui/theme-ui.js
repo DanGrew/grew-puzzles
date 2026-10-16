@@ -131,9 +131,11 @@ export function dressTextPage(random) {
   });
 }
 
-// The page's number: its place among the side bar's text pages (components/site-bar.js), from 1.
+// The page's number: its place among the side bar's text pages (components/site-bar.js), from 1 —
+// How to play, once the first of them and now each kind's book icon, still counted first, so every
+// page keeps its spot.
 function textPageNumber() {
-  var marks = Array.from(document.querySelectorAll('#site-side a.page'), function (a) { return a.dataset.mark; });
+  var marks = ['how-to-play'].concat(Array.from(document.querySelectorAll('#site-side a.page'), function (a) { return a.dataset.mark; }));
   return marks.indexOf(document.querySelector('[data-site-bar]').dataset.current) + 1;
 }
 

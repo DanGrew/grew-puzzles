@@ -9,17 +9,23 @@
 /* Unofficial: the owner's words, then the fan subjects, a line each. */
 .page .fan-subjects { margin: 12px 0 0; padding-left: 24px; font-size: 16px; line-height: 1.6; }
 
-/* How to play: the types listed at the top, a group a kind, each type a link to its section; then
-   a section a type, its picture beside its words, the sides alternating down the page as in the
-   owner's book — on a phone, the picture above the words. */
-.how-to-play .type-group + .type-group { margin-top: 12px; }
-.how-to-play .group-name { display: block; margin-bottom: 4px; font: var(--dw) 15px var(--font-display); }
-.how-to-play .types ul { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 0; list-style: none; }
+/* How to play, a page a kind: Basics | Advanced | Variants pills at the top, the Scorecard's tabs'
+   look; then the part picked — under Variants a section a type, its picture beside its words, the
+   sides alternating down the page as in the owner's book — on a phone, the picture above the words. */
+.how-to-play .part-pills { display: flex; width: fit-content; margin: 0 0 20px; overflow: hidden; background: var(--surface);
+  border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
+.how-to-play .part-pills button { flex: 1; padding: 10px 20px; font: 700 15px var(--font-display); color: var(--fg); background: none; border: 0;
+  white-space: nowrap; cursor: pointer; }
+.how-to-play .part-pills button + button { border-left: var(--ow) solid var(--line); }
+.how-to-play .part-pills button[aria-selected="true"] { background: var(--band); color: var(--band-fg); }
+.how-to-play .part[hidden] { display: none; }
 .how-to-play .type { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; margin-top: 32px; scroll-margin-top: 16px; }
 .how-to-play .type img { width: 100%; height: auto; border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
 .how-to-play .type:nth-of-type(even) img { order: 2; }
 .how-to-play .type h2 { margin-top: 0; }
 @media (max-width: 559px) {
+  .how-to-play .part-pills { width: 100%; }
+  .how-to-play .part-pills button { padding: 10px 6px; font-size: 14px; }
   .how-to-play .type { grid-template-columns: 1fr; gap: 12px; }
   .how-to-play .type:nth-of-type(even) img { order: 0; }
 }

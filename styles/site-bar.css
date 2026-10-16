@@ -19,6 +19,19 @@
 .side .count { font: 400 13px var(--font-body); color: var(--muted); font-variant-numeric: tabular-nums; }
 .side .kind[aria-current="page"] { background: var(--band); color: var(--band-fg); }
 .side .kind[aria-current="page"] .count { color: var(--band-fg); opacity: .85; }
+/* Each kind's book icon at its row's right, opening its How to play page — a play page's own at its title's right,
+   taking no height, since each kind's board is fitted to the window under the title. */
+.side .kind-row { display: flex; align-items: stretch; }
+.side .kind-row .kind { flex: 1; min-width: 0; }
+.side .kind-row:has(.kind[aria-current="page"]) { background: var(--band); }
+.rules, .side .rules { display: grid; place-items: center; flex: none; width: 44px; color: var(--fg); }
+.side .kind-row .kind[aria-current="page"] + .rules { color: var(--band-fg); }
+.rules svg { width: 20px; height: 20px; }
+.play-rules { position: relative; height: 0; margin: 0; }
+.play-rules .rules { position: absolute; top: 0; right: 0; height: 44px; box-sizing: border-box;
+  border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); box-shadow: var(--shadow); }
+@media screen { .play-rules + .play-head { padding-inline: 52px; } }
+@media print { .play-rules { display: none; } }
 .side .types { list-style: none; margin: 2px 0 8px; padding: 0; }
 .side .type { padding: 5px 18px 5px 32px; font-size: 14px; }
 .side .type[aria-current="page"] { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }

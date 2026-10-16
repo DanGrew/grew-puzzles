@@ -1,8 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
-// The How to play page, in the owner's words (the product's docs/CONTENT.md, How to play): one
-// section per type, each beside its picture (tooling's tools/grew-puzzles-how-to-play) and at its
-// own address, reached from the side bar on every page.
+// How to play, a page a kind (the product's TASK-212): opened only by the book icon beside each kind
+// in the side bar, and on each play page; Basics | Advanced | Variants pills at the top, Basics
+// picked as it opens; Variants holds the kind's types, a section each in the owner's words (the
+// product's docs/CONTENT.md, How to play) beside its picture (tooling's tools/grew-puzzles-how-to-play).
 const WORDSEARCH_TYPES = [
   ['vanilla', 'Vanilla', 'Vanilla wordsearches', 'A nice calming wordsearch. No tricks, no challenges; just a normal puzzle: find the words in the list. Words can run in any direction, including diagonally. Of course, they can overlap, but rest assured that words within words (like \'grape\' within \'grapefruit\') appear as two separate words in the grid.', 'A Vanilla wordsearch, with the word BULLOCK found in the grid.'],
   ['missing-words', 'Missing words', 'Missing words wordsearches', 'This is the first type of challenge! The word list includes one or more words that aren\'t in the puzzle… You might have been looking so hard for a word that isn\'t actually in the puzzle! What fun!', 'A Missing words wordsearch with every word found; the leftover words in the list aren\'t in the grid.'],
@@ -29,141 +30,213 @@ const MINESWEEPER_TYPES = [
 const CRISS_TYPES = [
   ['criss-cross', 'Criss-cross', 'Criss-cross', 'A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn\'t fit the letters already there, it won\'t go in. Changed your mind? Tap a word you\'ve placed to take it back out. Every puzzle can be solved by logic alone, so you\'ll never have to guess. Fill every slot to finish!', 'A Criss-cross puzzle with its starting word in place, and ANNIVERSARY placed beside it.'],
 ];
-const TYPES = [...WORDSEARCH_TYPES, ...MAZE_TYPES, ...MINESWEEPER_TYPES, ...CRISS_TYPES];
+const KINDS = [
+  ['wordsearch', 'Wordsearches', WORDSEARCH_TYPES],
+  ['maze', 'Mazes', MAZE_TYPES],
+  ['minesweeper', 'Minesweeper', MINESWEEPER_TYPES],
+  ['crisscross', 'Criss-cross', CRISS_TYPES],
+  ['mosaic', 'Mosaic', []],
+];
+const PLAY_PAGES = [
+  ['/app/play.html?id=WSCH-0001', 'wordsearch', 'Wordsearches'],
+  ['/app/maze.html?id=MAZE-0001', 'maze', 'Mazes'],
+  ['/app/minesweeper.html?id=MINE-0001', 'minesweeper', 'Minesweeper'],
+  ['/app/crisscross.html?id=CRSS-0001', 'crisscross', 'Criss-cross'],
+  ['/app/mosaic.html?id=MOSA-0001', 'mosaic', 'Mosaic'],
+];
 
 test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => { window.print = () => {}; });
   await context.route('https://vxschtygvtilsadgixec.supabase.co/**', route => route.abort());
 });
 
-for (const address of ['/app/', '/app/play.html?id=WSCH-0001', '/app/collection.html?slug=issue-1-remake', '/app/book.html?slug=issue-1-remake', '/app/about.html', '/app/privacy.html', '/app/how-to-play.html', '/app/saving.html', '/app/feedback.html', '/app/unofficial.html']) {
-  test(`on ${address}, the side bar holds How to play, which opens the How to play page`, async ({ page, baseURL }) => {
+const side = page => page.locator('#site-side');
+const shown = page => page.locator('main .part:not([hidden])');
+const pill = (page, name) => page.getByRole('tab', { name });
+
+for (const address of ['/app/', '/app/about.html', '/app/how-to-play.html?kind=maze', '/app/collection.html?slug=issue-1-remake']) {
+  test(`on ${address}, each kind in the side bar has a book icon opening its How to play page; its name still browses it`, async ({ page, baseURL }) => {
     await page.goto(address);
-    const entry = page.locator('#site-side .page', { hasText: 'How to play' });
-    await expect(entry).toHaveCount(1);
-    await entry.click();
-    await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html`);
-    await expect(page.locator('h1')).toHaveText('How to play');
+    await expect(side(page).locator('.kind-row .rules')).toHaveCount(KINDS.length);
+    for (const [kind, name] of KINDS) {
+      const icon = side(page).getByRole('link', { name: `How to play ${name}` });
+      await expect(icon).toHaveAttribute('href', `how-to-play.html?kind=${kind}`);
+      await expect(icon.locator('svg')).toBeVisible();
+    }
+    await expect(side(page).locator('.kind').nth(1)).toHaveAttribute('href', 'index.html?kind=maze');
+    await side(page).getByRole('link', { name: 'How to play Minesweeper' }).click();
+    await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html?kind=minesweeper`);
+    await expect(page.locator('h1')).toHaveText('How to play Minesweeper');
   });
 }
 
-test('the How to play page shows every type in order, each worded exactly as the owner wrote it', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
-  await expect(page).toHaveTitle('How to play · Grew Puzzles');
-  await expect(page.locator('main section')).toHaveCount(TYPES.length);
-  expect(await page.locator('main section').evaluateAll(sections => sections.map(s => s.id))).toEqual(TYPES.map(([id]) => id));
-  await expect(page.locator('main section h2')).toHaveText(TYPES.map(([, , heading]) => heading));
-  await expect(page.locator('main section p')).toHaveText(TYPES.map(([, , , words]) => words));
-});
-
-test('each type\'s picture is its own, and its alt text names the type and what it shows', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
-  for (const [id, , , , alt] of TYPES) {
-    const picture = page.locator(`#${id} img`);
-    await expect(picture).toHaveAttribute('src', `../content/how-to-play/${id}.png`);
-    await expect(picture).toHaveAttribute('alt', alt);
-    expect(await picture.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+test('each book icon sits on its kind\'s row, at its right', async ({ page }) => {
+  await page.goto('/app/');
+  for (const [, name] of KINDS) {
+    const row = side(page).locator('.kind-row', { has: page.getByRole('link', { name: `How to play ${name}` }) });
+    const kind = await row.locator('.kind').boundingBox();
+    const icon = await row.locator('.rules').boundingBox();
+    expect(icon.x).toBeGreaterThanOrEqual(kind.x + kind.width - 1);
+    expect(Math.abs((icon.y + icon.height / 2) - (kind.y + kind.height / 2))).toBeLessThan(2);
   }
 });
 
-test('the top of the page lists every type, and picking one goes to its section', async ({ page, baseURL }) => {
-  await page.goto('/app/how-to-play.html');
-  const links = page.locator('main nav a');
-  await expect(links).toHaveText(TYPES.map(([, name]) => name));
-  await links.filter({ hasText: 'Saga' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#saga`);
-  await expect(page.locator('#saga h2')).toBeInViewport();
+test('the side bar no longer lists How to play among its pages', async ({ page }) => {
+  await page.goto('/app/');
+  await expect(side(page).locator('.page')).toHaveText(['Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
+  await expect(side(page).locator('.page', { hasText: 'How to play' })).toHaveCount(0);
 });
 
-test('the list at the top has four groups, Wordsearches, Mazes, Minesweeper then Criss-cross, each holding its own kind\'s types', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
-  await expect(page.locator('main nav .group-name')).toHaveText(['Wordsearches', 'Mazes', 'Minesweeper', 'Criss-cross']);
-  await expect(page.getByRole('list', { name: 'Wordsearches' }).locator('a')).toHaveText(WORDSEARCH_TYPES.map(([, name]) => name));
-  await expect(page.getByRole('list', { name: 'Mazes' }).locator('a')).toHaveText(MAZE_TYPES.map(([, name]) => name));
-  await expect(page.getByRole('list', { name: 'Minesweeper' }).locator('a')).toHaveText(MINESWEEPER_TYPES.map(([, name]) => name));
-  await expect(page.getByRole('list', { name: 'Criss-cross' }).locator('a')).toHaveText(CRISS_TYPES.map(([, name]) => name));
+test.describe('on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('the drawer\'s kinds each have their book icon, opening the kind\'s page', async ({ page, baseURL }) => {
+    await page.goto('/app/');
+    await page.locator('.site .burger').click();
+    await expect(side(page).locator('.kind-row .rules:visible')).toHaveCount(KINDS.length);
+    await side(page).getByRole('link', { name: 'How to play Mazes' }).click();
+    await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html?kind=maze`);
+    await expect(page.locator('h1')).toHaveText('How to play Mazes');
+  });
 });
 
-test('tapping Minesweeper in the list jumps to its section, after the mazes', async ({ page, baseURL }) => {
-  await page.goto('/app/how-to-play.html');
-  await page.getByRole('list', { name: 'Minesweeper' }).getByRole('link', { name: 'Minesweeper' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#minesweeper`);
-  await expect(page.locator('#minesweeper h2')).toBeInViewport();
-});
-
-test('tapping Criss-cross in the list jumps to its section, after Minesweeper', async ({ page, baseURL }) => {
-  await page.goto('/app/how-to-play.html');
-  await page.getByRole('list', { name: 'Criss-cross' }).getByRole('link', { name: 'Criss-cross' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#criss-cross`);
-  await expect(page.locator('#criss-cross h2')).toBeInViewport();
-});
-
-test('tapping a maze type in the list jumps to its section, not the wordsearch of the same name', async ({ page, baseURL }) => {
-  await page.goto('/app/how-to-play.html');
-  await page.getByRole('list', { name: 'Mazes' }).getByRole('link', { name: 'Vanilla' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#vanilla-maze`);
-  await expect(page.locator('#vanilla-maze h2')).toHaveText('Vanilla mazes');
-  await expect(page.locator('#vanilla-maze h2')).toBeInViewport();
-  await page.getByRole('list', { name: 'Wordsearches' }).getByRole('link', { name: 'Vanilla' }).click();
-  await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html#vanilla`);
-  await expect(page.locator('#vanilla h2')).toHaveText('Vanilla wordsearches');
-});
-
-for (const [id] of TYPES) {
-  test(`opening how-to-play.html#${id} lands on that type's section`, async ({ page }) => {
-    await page.goto(`/app/how-to-play.html#${id}`);
-    await expect(page.locator(`#${id} h2`)).toBeInViewport();
+for (const [kind, name, types] of KINDS) {
+  test(`${name}' page opens on Basics, then Advanced, then Variants holds its types in order, worded as the owner wrote them`, async ({ page }) => {
+    await page.goto(`/app/how-to-play.html?kind=${kind}`);
+    await expect(page).toHaveTitle(`How to play ${name} · Grew Puzzles`);
+    await expect(page.getByRole('tab')).toHaveText(['Basics', 'Advanced', 'Variants']);
+    await expect(pill(page, 'Basics')).toHaveAttribute('aria-selected', 'true');
+    await expect(shown(page)).toHaveCount(1);
+    await expect(shown(page)).toHaveAttribute('data-part', 'basics');
+    await expect(shown(page)).toHaveAttribute('data-kind', kind);
+    await pill(page, 'Advanced').click();
+    await expect(pill(page, 'Advanced')).toHaveAttribute('aria-selected', 'true');
+    await expect(pill(page, 'Basics')).toHaveAttribute('aria-selected', 'false');
+    await expect(shown(page)).toHaveAttribute('data-part', 'advanced');
+    await pill(page, 'Variants').click();
+    await expect(shown(page)).toHaveAttribute('data-part', 'variants');
+    await expect(shown(page)).toHaveAttribute('data-kind', kind);
+    await expect(page.locator('main section:visible')).toHaveCount(types.length);
+    expect(await page.locator('main section:visible').evaluateAll(s => s.map(e => e.id))).toEqual(types.map(([id]) => id));
+    await expect(page.locator('main section:visible h2')).toHaveText(types.map(([, , heading]) => heading));
+    await expect(page.locator('main section:visible p')).toHaveText(types.map(([, , , words]) => words));
   });
 }
 
-test('on a wide screen each picture sits beside its words, alternating sides down the page', async ({ page }) => {
+test('Variants\' pictures are each type\'s own, its alt text naming the type and what it shows', async ({ page }) => {
+  for (const [kind, , types] of KINDS) {
+    await page.goto(`/app/how-to-play.html?kind=${kind}`);
+    await pill(page, 'Variants').click();
+    for (const [id, , , , alt] of types) {
+      const picture = page.locator(`#${id} img`);
+      await expect(picture).toHaveAttribute('src', `../content/how-to-play/${id}.png`);
+      await expect(picture).toHaveAttribute('alt', alt);
+      expect(await picture.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
+  }
+});
+
+test('a part with nothing written yet is still a pill, and shows empty — no heading, no coming soon', async ({ page }) => {
+  await page.goto('/app/how-to-play.html?kind=mosaic');
+  for (const name of ['Basics', 'Advanced', 'Variants']) {
+    await pill(page, name).click();
+    await expect(shown(page)).toHaveCount(1);
+    await expect(shown(page)).toBeEmpty();
+  }
+  await expect(page.locator('main .page-card')).not.toContainText(/coming soon/i);
+});
+
+test('an address naming no kind the site has opens Wordsearches\' page', async ({ page }) => {
+  for (const address of ['/app/how-to-play.html', '/app/how-to-play.html?kind=nope']) {
+    await page.goto(address);
+    await expect(page.locator('h1')).toHaveText('How to play Wordsearches');
+    await expect(shown(page)).toHaveAttribute('data-kind', 'wordsearch');
+  }
+});
+
+test('on a kind\'s How to play page, that kind is the side bar\'s current entry', async ({ page }) => {
+  await page.goto('/app/how-to-play.html?kind=maze');
+  await expect(side(page).locator('.kind[aria-current="page"]')).toHaveCount(1);
+  await expect(side(page).locator('.kind[aria-current="page"]')).toContainText('Mazes');
+});
+
+for (const [address, kind, name] of PLAY_PAGES) {
+  test(`${address} wears its kind's book icon, opening its How to play page on Basics`, async ({ page, baseURL }) => {
+    await page.goto(address);
+    const icon = page.locator('.play-rules').getByRole('link', { name: `How to play ${name}` });
+    await expect(icon).toBeVisible();
+    await icon.click();
+    await expect(page).toHaveURL(`${baseURL}/app/how-to-play.html?kind=${kind}`);
+    await expect(pill(page, 'Basics')).toHaveAttribute('aria-selected', 'true');
+  });
+}
+
+for (const [width, height] of [[1440, 900], [320, 640]]) {
+  test(`at ${width}px wide a play page's book icon sits at its title's right, never over it`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    for (const [address] of PLAY_PAGES) {
+      await page.goto(address);
+      await expect(page.locator('.play-rules + .play-head h1')).not.toBeEmpty();
+      const icon = await page.locator('.play-rules .rules').boundingBox();
+      const title = await page.locator('.play-rules + .play-head h1').boundingBox();
+      expect(icon.x).toBeGreaterThanOrEqual(title.x + title.width);
+      expect(icon.y).toBeLessThan(title.y + title.height);
+    }
+  });
+}
+
+test('a play page\'s book icon never prints', async ({ page }) => {
+  await page.goto('/app/play.html?id=WSCH-0001');
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.play-rules')).toBeHidden();
+});
+
+test('on a wide screen each Variants picture sits beside its words, alternating sides down the page', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/app/how-to-play.html');
+  await page.goto('/app/how-to-play.html?kind=maze');
+  await pill(page, 'Variants').click();
   const sides = [];
-  for (const [id] of TYPES) {
+  for (const [id] of MAZE_TYPES) {
     const picture = await page.locator(`#${id} img`).boundingBox();
     const words = await page.locator(`#${id} .type-words`).boundingBox();
     expect(picture.y).toBeLessThan(words.y + words.height);
     expect(words.y).toBeLessThan(picture.y + picture.height);
     sides.push(picture.x < words.x ? 'left' : 'right');
   }
-  expect(sides).toEqual(TYPES.map((_, i) => (i % 2 ? 'right' : 'left')));
+  expect(sides).toEqual(MAZE_TYPES.map((_, i) => (i % 2 ? 'right' : 'left')));
 });
 
-test('on a phone each picture sits above its words', async ({ page }) => {
+test('on a phone each Variants picture sits above its words', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 700 });
-  await page.goto('/app/how-to-play.html');
-  for (const [id] of TYPES) {
+  await page.goto('/app/how-to-play.html?kind=wordsearch');
+  await pill(page, 'Variants').click();
+  for (const [id] of WORDSEARCH_TYPES) {
     const picture = await page.locator(`#${id} img`).boundingBox();
     const words = await page.locator(`#${id} .type-words`).boundingBox();
     expect(picture.y + picture.height).toBeLessThanOrEqual(words.y);
   }
 });
 
-test('on the How to play page, How to play is the side bar\'s current entry', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
-  await expect(page.locator('#site-side [aria-current="page"]')).toHaveText(['How to play']);
-});
-
 test('the How to play page wears the site bar, and its words sit on the card with a character, Themed', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
+  await page.goto('/app/how-to-play.html?kind=wordsearch');
   await expect(page.locator('.site .brand')).toHaveText('Grew Puzzles');
-  await expect(page.locator('.page-card section')).toHaveCount(TYPES.length);
+  await pill(page, 'Variants').click();
+  await expect(page.locator('.page-card section:visible')).toHaveCount(WORDSEARCH_TYPES.length);
   await expect(page.locator('#name-tag')).not.toBeEmpty();
   await expect(page.locator('#theme-figure')).toBeVisible();
 });
 
 test('Plain, the How to play page shows no character', async ({ page }) => {
-  await page.goto('/app/how-to-play.html');
+  await page.goto('/app/how-to-play.html?kind=wordsearch');
   await page.locator('#site-side .look select').selectOption('plain');
   await expect(page.locator('#theme-figure')).toBeHidden();
   await expect(page.locator('#name-tag')).toBeHidden();
-  await expect(page.locator('main section')).toHaveCount(TYPES.length);
 });
 
-test('on the narrowest phone the How to play page reads without scrolling sideways', async ({ page }) => {
+test('on the narrowest phone the How to play page and its pills read without scrolling sideways', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
-  await page.goto('/app/how-to-play.html');
+  await page.goto('/app/how-to-play.html?kind=crisscross');
   await expect(page.locator('h1')).toBeVisible();
+  await expect(pill(page, 'Variants')).toBeInViewport({ ratio: 1 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
 });
