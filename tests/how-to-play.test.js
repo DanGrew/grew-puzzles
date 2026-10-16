@@ -25,10 +25,10 @@ const MAZE_TYPES = [
 const MINESWEEPER_TYPES = [
   ['minesweeper', 'Minesweeper', 'Minesweeper', 'No luck needed, just a little thinking! Some squares show a number. Each number counts the mines in the eight squares around it, and a square with a number is never a mine. Tap a square once to mark it safe with a dot, again to mark a mine, and again to clear it. In a hurry? Tap a number. If all its mines are marked, its other squares get dots. If its empty squares must all be mines, they\'re marked for you. Every board can be solved by logic alone, so you\'ll never have to guess. Mark every mine to finish!', 'A Minesweeper board, part solved: the squares around a 0 dotted, and a number\'s mines marked.'],
 ];
-// Criss-cross, after Minesweeper: one section for the kind, its picture a shape with its starting
-// word in place and the only word of its length placed next.
+// Criss-cross, after Minesweeper: one section, Vanilla, its one type (the product's TASK-221), its
+// picture a shape with its starting word in place and the only word of its length placed next.
 const CRISS_TYPES = [
-  ['criss-cross', 'Criss-cross', 'Criss-cross', 'A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn\'t fit the letters already there, it won\'t go in. Changed your mind? Tap a word you\'ve placed to take it back out. Every puzzle can be solved by logic alone, so you\'ll never have to guess. Fill every slot to finish!', 'A Criss-cross puzzle with its starting word in place, and ANNIVERSARY placed beside it.'],
+  ['criss-cross', 'Vanilla', 'Vanilla criss-crosses', 'A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn\'t fit the letters already there, it won\'t go in. Changed your mind? Tap a word you\'ve placed to take it back out. Every puzzle can be solved by logic alone, so you\'ll never have to guess. Fill every slot to finish!', 'A Vanilla criss-cross with its starting word in place, and ANNIVERSARY placed beside it.'],
 ];
 const KINDS = [
   ['wordsearch', 'Wordsearches', WORDSEARCH_TYPES],
@@ -72,6 +72,43 @@ const WORDSEARCH_MOVES = [
     ['The puzzle', 'Find RAINBOW and OWL.', 'A 7 by 7 grid above a word list of RAINBOW and OWL.'],
     ['Spot it', 'RAINBOW fills a whole line of 7, edge to edge. Of the Rs on the edge, only one has a W on the far edge.', 'The same grid with an R and a W circled in opposite corners, and the other edge Rs circled in red.'],
     ['Found', 'RAINBOW is found first. Now look for OWL.', 'The same grid with RAINBOW found corner to corner, and crossed off the list.']]],
+];
+// Criss-crosses' Basics and Advanced (the product's TASK-221), likewise, from the worksheet's made-up
+// shapes. A basic shown in several steps — its picture a row of them — sits under its sentence, across
+// the card, rather than beside it; an advanced move's last step is what it settles.
+const CRISS_BASICS = [
+  ['goal', 'Fit every word into the shape. Every word in the list fills one slot, across or down. Once each is in its own slot, the shape says Solved.', 'A small criss-cross with all seven words in place, Solved under it, and the word count at 7/7.'],
+  ['cross', 'Words cross where they share a letter. Where two slots cross they share a square, so both words share its letter: Apple and Pear share this P.', 'Apple across the top and Pear down from its P, the shared P highlighted.'],
+  ['given', 'One word starts in place. The starting word is filled in for you, shaded and crossed off the list. It can\'t be moved or taken out.', 'An empty criss-cross with only Apple filled in and shaded, and crossed off the Words card.'],
+  ['pick', 'Tap a square to pick a slot. The first tap picks the slot across, and the line over the words says which. Where two slots cross, tap again for the slot down, and again to go back across.', 'The same shape four times: a square circled, then 4 across picked, then 2 down, then 4 across again.', 'wide'],
+  ['place', 'Then tap a word to put it in. While a slot is picked, words of other lengths dim. Tap a word that long and it goes in and is crossed off.', '2 down picked with the 4-letter words bright, then Pear in 2 down and crossed off.', 'wide'],
+  ['clash', 'A word that clashes won\'t go in. If a word disagrees with letters already in the slot, the clashing squares turn red and it stays out. Lime won\'t fit 2 down: its first square is Apple\'s P.', '2 down picked, then Lime tapped, the P turning red and the line saying Lime doesn\'t fit.', 'wide'],
+  ['out', 'Tap a placed word to take it out. Letters another word shares stay: Pear comes out, but Apple\'s P and Green\'s R stay.', 'Pear and Green in place, then Pear taken out, its P and R still there.', 'wide'],
+  ['move', 'Moving a word to another slot. With a slot picked, tapping a crossed-off word moves it there. Pear was in 6 across: pick 2 down, tap Pear, and it moves.', 'Pear in 6 across, then 2 down picked, then Pear moved into 2 down.', 'wide'],
+  ['noguess', 'No guessing needed. Every shape has exactly one answer, and the letters already in lead to it. A wrong word is never pointed out.', 'The empty criss-cross with only its starting word, Apple, in place.'],
+];
+const CRISS_MOVES = [
+  ['onlylen', 'The only word of its length', 'When one slot is the only one its length, and one word is the only word that long.', [
+    ['The puzzle', 'Only the starting word, Apple, is in.', 'The small criss-cross with only Apple in, above the one 3-letter word, Nut.'],
+    ['Spot it', '5 down is the only 3-letter slot, and Nut the only 3-letter word.', 'The same shape with 5 down highlighted, and Nut highlighted in the list.'],
+    ['Settled', 'Nut goes in 5 down, before any letter crosses it.', 'The same shape with Nut in 5 down, outlined, and crossed off the list.']]],
+  ['crossing', 'A crossing letter that leaves one word that fits', 'When a letter already in a slot rules out all but one word its length.', [
+    ['The puzzle', 'Lime is in, giving 4 across an E.', 'The small criss-cross with Apple and Lime in, above the 5-letter words Apple, Grape and Green.'],
+    ['Spot it', 'Of the 5-letter words left, Grape and Green, only Green has an E fourth.', 'The same shape with 4 across\'s E highlighted, and Green highlighted in the list.'],
+    ['Settled', 'Green goes in 4 across.', 'The same shape with Green in 4 across, outlined, and crossed off the list.']]],
+  ['nowhere', 'A word that fits nowhere else', 'When no slot has just one word that fits, turn it round: find the word with just one slot.', [
+    ['The puzzle', 'The starting word, Ewe, gives 2 across and 4 across each an E at the end.', 'A small criss-cross with Ewe down its right side, above the 5-letter words Horse, Moose and Tiger.'],
+    ['Spot it', 'Horse and Moose fit either slot, but Tiger ends in R, so it fits neither.', 'The same shape with both Es highlighted, and Tiger highlighted in the list.'],
+    ['Settled', 'Tiger fits nowhere else, so it goes in 1 down.', 'The same shape with Tiger in 1 down, outlined, and crossed off the list.']]],
+  ['outward', 'Working out from the starting word', 'When you\'re stuck at the start. The starting word\'s letters are the first clues.', [
+    ['The puzzle', 'Only the starting word, Apple, is in.', 'The small criss-cross with only Apple in, above the 4-letter words Date, Lime and Pear.'],
+    ['Spot it', 'Apple gives 2 down a P and 3 down an L. Only Pear starts with P, and only Lime with L.', 'The same shape with Apple\'s P and L highlighted.'],
+    ['Settled', 'Pear and Lime go in. Their letters now cross 4 across, so keep working out from them.', 'The same shape with Pear in 2 down and Lime in 3 down, both outlined, and crossed off the list.']]],
+];
+// Each kind with its rules written: its name, its basics, its moves and the file name of each step.
+const RULES = [
+  ['wordsearch', 'Wordsearches', WORDSEARCH_BASICS, WORDSEARCH_MOVES, STEPS],
+  ['crisscross', 'Criss-crosses', CRISS_BASICS, CRISS_MOVES, ['puzzle', 'spot', 'settled']],
 ];
 const PLAY_PAGES = [
   ['/app/play.html?id=WSCH-0001', 'wordsearch', 'Wordsearches'],
@@ -174,84 +211,92 @@ test('Variants\' pictures are each type\'s own, its alt text naming the type and
 
 const loaded = img => img.evaluate(i => i.complete && i.naturalWidth > 0);
 
-test('Wordsearches opens on Basics: each basic a sentence beside its picture, in the owner\'s words', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/app/how-to-play.html?kind=wordsearch');
-  await expect(shown(page)).toHaveAttribute('data-part', 'basics');
-  await expect(shown(page).locator('.rule')).toHaveCount(WORDSEARCH_BASICS.length);
-  await expect(shown(page).locator('.rule p')).toHaveText(WORDSEARCH_BASICS.map(([, words]) => words));
-  for (const [id, , alt] of WORDSEARCH_BASICS) {
-    const picture = page.locator(`#wordsearch-${id} img`);
-    await expect(picture).toHaveAttribute('src', `../content/how-to-play/wordsearch-${id}.png`);
-    await expect(picture).toHaveAttribute('alt', alt);
-    expect(await loaded(picture)).toBe(true);
-    const box = await picture.boundingBox(), words = await page.locator(`#wordsearch-${id} p`).boundingBox();
-    expect(box.x + box.width).toBeLessThan(words.x);
-    expect(words.y).toBeLessThan(box.y + box.height);
-  }
-});
-
-test('Wordsearches\' Advanced: each move named, when it happens, then the puzzle, how it\'s spotted and the word found in a row, each captioned', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/app/how-to-play.html?kind=wordsearch');
-  await pill(page, 'Advanced').click();
-  await expect(shown(page).locator('.move')).toHaveCount(WORDSEARCH_MOVES.length);
-  await expect(shown(page).locator('.move h2')).toHaveText(WORDSEARCH_MOVES.map(([, name]) => name));
-  await expect(shown(page).locator('.move > p')).toHaveText(WORDSEARCH_MOVES.map(([, , when]) => when));
-  for (const [id, , , steps] of WORDSEARCH_MOVES) {
-    const figures = page.locator(`#wordsearch-${id} figure`);
-    await expect(figures.locator('figcaption')).toHaveText(steps.map(([label, words]) => `${label} ${words}`));
-    await expect(figures.locator('figcaption b')).toHaveText(steps.map(([label]) => label));
-    const boxes = [];
-    for (const [i, [, , alt]] of steps.entries()) {
-      const picture = figures.nth(i).locator('img');
-      await expect(picture).toHaveAttribute('src', `../content/how-to-play/wordsearch-${id}-${STEPS[i]}.png`);
+for (const [kind, name, basics, moves, files] of RULES) {
+  test(`${name} opens on Basics: each basic a sentence beside its picture — under it, one in several steps — in the owner's words`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(`/app/how-to-play.html?kind=${kind}`);
+    await expect(shown(page)).toHaveAttribute('data-part', 'basics');
+    await expect(shown(page).locator('.rule')).toHaveCount(basics.length);
+    await expect(shown(page).locator('.rule p')).toHaveText(basics.map(([, words]) => words));
+    for (const [id, , alt, wide] of basics) {
+      const picture = page.locator(`#${kind}-${id} img`);
+      await expect(picture).toHaveAttribute('src', `../content/how-to-play/${kind}-${id}.png`);
       await expect(picture).toHaveAttribute('alt', alt);
       expect(await loaded(picture)).toBe(true);
-      boxes.push(await picture.boundingBox());
-    }
-    expect(boxes.map(b => Math.round(b.y))).toEqual(boxes.map(() => Math.round(boxes[0].y)));
-    expect(boxes[0].x + boxes[0].width).toBeLessThan(boxes[1].x);
-    expect(boxes[1].x + boxes[1].width).toBeLessThan(boxes[2].x);
-  }
-});
-
-test.describe('on a phone, Wordsearches\' rules', () => {
-  test.use({ viewport: { width: 375, height: 700 } });
-
-  test('a move\'s three pictures stack top to bottom in order, each with its caption under it', async ({ page }) => {
-    await page.goto('/app/how-to-play.html?kind=wordsearch');
-    await pill(page, 'Advanced').click();
-    for (const [id] of WORDSEARCH_MOVES) {
-      const figures = page.locator(`#wordsearch-${id} figure`);
-      let below = 0;
-      for (let i = 0; i < STEPS.length; i++) {
-        const picture = await figures.nth(i).locator('img').boundingBox();
-        const caption = await figures.nth(i).locator('figcaption').boundingBox();
-        expect(picture.y).toBeGreaterThanOrEqual(below);
-        expect(caption.y).toBeGreaterThanOrEqual(picture.y + picture.height);
-        below = caption.y + caption.height;
+      const box = await picture.boundingBox(), words = await page.locator(`#${kind}-${id} p`).boundingBox();
+      if (wide) {
+        expect(words.y + words.height).toBeLessThanOrEqual(box.y);
+        expect(box.width).toBeGreaterThan(words.width / 2);
+      } else {
+        expect(box.x + box.width).toBeLessThan(words.x);
+        expect(words.y).toBeLessThan(box.y + box.height);
       }
     }
   });
 
-  test('a basic\'s picture sits above its sentence', async ({ page }) => {
-    await page.goto('/app/how-to-play.html?kind=wordsearch');
-    for (const [id] of WORDSEARCH_BASICS) {
-      const picture = await page.locator(`#wordsearch-${id} img`).boundingBox();
-      const words = await page.locator(`#wordsearch-${id} p`).boundingBox();
-      expect(picture.y + picture.height).toBeLessThanOrEqual(words.y);
+  test(`${name}' Advanced: each move named, when it happens, then the puzzle, how it's spotted and what it settles in a row, each captioned`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(`/app/how-to-play.html?kind=${kind}`);
+    await pill(page, 'Advanced').click();
+    await expect(shown(page).locator('.move')).toHaveCount(moves.length);
+    await expect(shown(page).locator('.move h2')).toHaveText(moves.map(([, title]) => title));
+    await expect(shown(page).locator('.move > p')).toHaveText(moves.map(([, , when]) => when));
+    for (const [id, , , steps] of moves) {
+      const figures = page.locator(`#${kind}-${id} figure`);
+      await expect(figures.locator('figcaption')).toHaveText(steps.map(([label, words]) => `${label} ${words}`));
+      await expect(figures.locator('figcaption b')).toHaveText(steps.map(([label]) => label));
+      const boxes = [];
+      for (const [i, [, , alt]] of steps.entries()) {
+        const picture = figures.nth(i).locator('img');
+        await expect(picture).toHaveAttribute('src', `../content/how-to-play/${kind}-${id}-${files[i]}.png`);
+        await expect(picture).toHaveAttribute('alt', alt);
+        expect(await loaded(picture)).toBe(true);
+        boxes.push(await picture.boundingBox());
+      }
+      expect(boxes.map(b => Math.round(b.y))).toEqual(boxes.map(() => Math.round(boxes[0].y)));
+      expect(boxes[0].x + boxes[0].width).toBeLessThan(boxes[1].x);
+      expect(boxes[1].x + boxes[1].width).toBeLessThan(boxes[2].x);
     }
   });
 
-  test('Basics and Advanced read without scrolling sideways', async ({ page }) => {
-    await page.setViewportSize({ width: 320, height: 640 });
-    await page.goto('/app/how-to-play.html?kind=wordsearch');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-    await pill(page, 'Advanced').click();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  test.describe(`on a phone, ${name}' rules`, () => {
+    test.use({ viewport: { width: 375, height: 700 } });
+
+    test('a move\'s three pictures stack top to bottom in order, each with its caption under it', async ({ page }) => {
+      await page.goto(`/app/how-to-play.html?kind=${kind}`);
+      await pill(page, 'Advanced').click();
+      for (const [id] of moves) {
+        const figures = page.locator(`#${kind}-${id} figure`);
+        let below = 0;
+        for (let i = 0; i < files.length; i++) {
+          const picture = await figures.nth(i).locator('img').boundingBox();
+          const caption = await figures.nth(i).locator('figcaption').boundingBox();
+          expect(picture.y).toBeGreaterThanOrEqual(below);
+          expect(caption.y).toBeGreaterThanOrEqual(picture.y + picture.height);
+          below = caption.y + caption.height;
+        }
+      }
+    });
+
+    test('a basic\'s picture sits above its sentence — under it, one in several steps', async ({ page }) => {
+      await page.goto(`/app/how-to-play.html?kind=${kind}`);
+      for (const [id, , , wide] of basics) {
+        const picture = await page.locator(`#${kind}-${id} img`).boundingBox();
+        const words = await page.locator(`#${kind}-${id} p`).boundingBox();
+        if (wide) expect(words.y + words.height).toBeLessThanOrEqual(picture.y);
+        else expect(picture.y + picture.height).toBeLessThanOrEqual(words.y);
+      }
+    });
+
+    test('Basics and Advanced read without scrolling sideways', async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 640 });
+      await page.goto(`/app/how-to-play.html?kind=${kind}`);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+      await pill(page, 'Advanced').click();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+    });
   });
-});
+}
 
 test('a part with nothing written yet is still a pill, and shows empty — no heading, no coming soon', async ({ page }) => {
   await page.goto('/app/how-to-play.html?kind=mosaic');

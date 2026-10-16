@@ -34,6 +34,8 @@
 .how-to-play .rule img, .how-to-play .steps img { display: block; height: auto;
   border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
 .how-to-play .rule img { justify-self: center; max-width: 100%; }
+/* A basic in several steps: its sentence, then its wide picture across the card under it. */
+.how-to-play .rule.wide { grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .how-to-play .steps img { width: 100%; }
 .how-to-play .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 14px; }
 .how-to-play .steps figure { margin: 0; }
