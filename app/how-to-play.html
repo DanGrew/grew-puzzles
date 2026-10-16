@@ -36,8 +36,8 @@
     <!-- Basics and Advanced cover what the owner marked on the kind's worksheet (the product's
          docs/RULES.md), in their words (its docs/CONTENT.md, How to play): a basic is a sentence, beside
          its picture where it's marked with an example; an advanced move its name, when it happens, then
-         three pictures in a row — the puzzle, how it's spotted, the word found — each captioned, one
-         under the next on a phone. The pictures are made-up grids, drawn by tooling's
+         three pictures in a row — the puzzle, how it's spotted, what it settles — each captioned, one
+         under the next on a phone. The pictures are made-up grids and shapes, drawn by tooling's
          tools/grew-puzzles-rules (its docs/MEDIA.md), never by hand. -->
     <div class="part" data-kind="wordsearch" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
       <section class="rule" id="wordsearch-every">
@@ -362,13 +362,89 @@
       </section>
     </div>
 
-    <div class="part" data-kind="crisscross" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden></div>
-    <div class="part" data-kind="crisscross" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden></div>
+    <!-- A basic shown in several steps is a wide picture, its steps in a row: it sits under its sentence,
+         across the card, rather than beside it. -->
+    <div class="part" data-kind="crisscross" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
+      <section class="rule" id="crisscross-goal">
+        <img src="../content/how-to-play/crisscross-goal.png" width="298" height="658" alt="A small criss-cross with all seven words in place, Solved under it, and the word count at 7/7.">
+        <p><strong>Fit every word into the shape.</strong> Every word in the list fills one slot, across or down. Once each is in its own slot, the shape says Solved.</p>
+      </section>
+      <section class="rule" id="crisscross-cross">
+        <img src="../content/how-to-play/crisscross-cross.png" width="266" height="354" alt="Apple across the top and Pear down from its P, the shared P highlighted.">
+        <p><strong>Words cross where they share a letter.</strong> Where two slots cross they share a square, so both words share its letter: Apple and Pear share this P.</p>
+      </section>
+      <section class="rule" id="crisscross-given">
+        <img src="../content/how-to-play/crisscross-given.png" width="290" height="621" alt="An empty criss-cross with only Apple filled in and shaded, and crossed off the Words card.">
+        <p><strong>One word starts in place.</strong> The starting word is filled in for you, shaded and crossed off the list. It can't be moved or taken out.</p>
+      </section>
+      <section class="rule wide" id="crisscross-pick">
+        <p><strong>Tap a square to pick a slot.</strong> The first tap picks the slot across, and the line over the words says which. Where two slots cross, tap again for the slot down, and again to go back across.</p>
+        <img src="../content/how-to-play/crisscross-pick.png" width="1293" height="419" alt="The same shape four times: a square circled, then 4 across picked, then 2 down, then 4 across again.">
+      </section>
+      <section class="rule wide" id="crisscross-place">
+        <p><strong>Then tap a word to put it in.</strong> While a slot is picked, words of other lengths dim. Tap a word that long and it goes in and is crossed off.</p>
+        <img src="../content/how-to-play/crisscross-place.png" width="700" height="623" alt="2 down picked with the 4-letter words bright, then Pear in 2 down and crossed off.">
+      </section>
+      <section class="rule wide" id="crisscross-clash">
+        <p><strong>A word that clashes won't go in.</strong> If a word disagrees with letters already in the slot, the clashing squares turn red and it stays out. Lime won't fit 2 down: its first square is Apple's P.</p>
+        <img src="../content/how-to-play/crisscross-clash.png" width="703" height="640" alt="2 down picked, then Lime tapped, the P turning red and the line saying Lime doesn't fit.">
+      </section>
+      <section class="rule wide" id="crisscross-out">
+        <p><strong>Tap a placed word to take it out.</strong> Letters another word shares stay: Pear comes out, but Apple's P and Green's R stay.</p>
+        <img src="../content/how-to-play/crisscross-out.png" width="700" height="596" alt="Pear and Green in place, then Pear taken out, its P and R still there.">
+      </section>
+      <section class="rule wide" id="crisscross-move">
+        <p><strong>Moving a word to another slot.</strong> With a slot picked, tapping a crossed-off word moves it there. Pear was in 6 across: pick 2 down, tap Pear, and it moves.</p>
+        <img src="../content/how-to-play/crisscross-move.png" width="1032" height="419" alt="Pear in 6 across, then 2 down picked, then Pear moved into 2 down.">
+      </section>
+      <section class="rule" id="crisscross-noguess">
+        <img src="../content/how-to-play/crisscross-noguess.png" width="266" height="354" alt="The empty criss-cross with only its starting word, Apple, in place.">
+        <p><strong>No guessing needed.</strong> Every shape has exactly one answer, and the letters already in lead to it. A wrong word is never pointed out.</p>
+      </section>
+    </div>
+    <div class="part" data-kind="crisscross" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
+      <section class="move" id="crisscross-onlylen" aria-labelledby="crisscross-onlylen-title">
+        <h2 id="crisscross-onlylen-title">The only word of its length</h2>
+        <p>When one slot is the only one its length, and one word is the only word that long.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/crisscross-onlylen-puzzle.png" width="580" height="880" alt="The small criss-cross with only Apple in, above the one 3-letter word, Nut."><figcaption><b>The puzzle</b> Only the starting word, Apple, is in.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-onlylen-spot.png" width="580" height="880" alt="The same shape with 5 down highlighted, and Nut highlighted in the list."><figcaption><b>Spot it</b> 5 down is the only 3-letter slot, and Nut the only 3-letter word.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-onlylen-settled.png" width="580" height="880" alt="The same shape with Nut in 5 down, outlined, and crossed off the list."><figcaption><b>Settled</b> Nut goes in 5 down, before any letter crosses it.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="crisscross-crossing" aria-labelledby="crisscross-crossing-title">
+        <h2 id="crisscross-crossing-title">A crossing letter that leaves one word that fits</h2>
+        <p>When a letter already in a slot rules out all but one word its length.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/crisscross-crossing-puzzle.png" width="580" height="880" alt="The small criss-cross with Apple and Lime in, above the 5-letter words Apple, Grape and Green."><figcaption><b>The puzzle</b> Lime is in, giving 4 across an E.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-crossing-spot.png" width="580" height="880" alt="The same shape with 4 across's E highlighted, and Green highlighted in the list."><figcaption><b>Spot it</b> Of the 5-letter words left, Grape and Green, only Green has an E fourth.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-crossing-settled.png" width="580" height="880" alt="The same shape with Green in 4 across, outlined, and crossed off the list."><figcaption><b>Settled</b> Green goes in 4 across.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="crisscross-nowhere" aria-labelledby="crisscross-nowhere-title">
+        <h2 id="crisscross-nowhere-title">A word that fits nowhere else</h2>
+        <p>When no slot has just one word that fits, turn it round: find the word with just one slot.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/crisscross-nowhere-puzzle.png" width="580" height="792" alt="A small criss-cross with Ewe down its right side, above the 5-letter words Horse, Moose and Tiger."><figcaption><b>The puzzle</b> The starting word, Ewe, gives 2 across and 4 across each an E at the end.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-nowhere-spot.png" width="580" height="792" alt="The same shape with both Es highlighted, and Tiger highlighted in the list."><figcaption><b>Spot it</b> Horse and Moose fit either slot, but Tiger ends in R, so it fits neither.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-nowhere-settled.png" width="580" height="792" alt="The same shape with Tiger in 1 down, outlined, and crossed off the list."><figcaption><b>Settled</b> Tiger fits nowhere else, so it goes in 1 down.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="crisscross-outward" aria-labelledby="crisscross-outward-title">
+        <h2 id="crisscross-outward-title">Working out from the starting word</h2>
+        <p>When you're stuck at the start. The starting word's letters are the first clues.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/crisscross-outward-puzzle.png" width="580" height="880" alt="The small criss-cross with only Apple in, above the 4-letter words Date, Lime and Pear."><figcaption><b>The puzzle</b> Only the starting word, Apple, is in.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-outward-spot.png" width="580" height="880" alt="The same shape with Apple's P and L highlighted."><figcaption><b>Spot it</b> Apple gives 2 down a P and 3 down an L. Only Pear starts with P, and only Lime with L.</figcaption></figure>
+          <figure><img src="../content/how-to-play/crisscross-outward-settled.png" width="580" height="880" alt="The same shape with Pear in 2 down and Lime in 3 down, both outlined, and crossed off the list."><figcaption><b>Settled</b> Pear and Lime go in. Their letters now cross 4 across, so keep working out from them.</figcaption></figure>
+        </div>
+      </section>
+    </div>
     <div class="part" data-kind="crisscross" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="criss-cross" aria-labelledby="criss-cross-title">
-        <img src="../content/how-to-play/criss-cross.png" width="1244" height="1244" alt="A Criss-cross puzzle with its starting word in place, and ANNIVERSARY placed beside it.">
+        <img src="../content/how-to-play/criss-cross.png" width="1244" height="1244" alt="A Vanilla criss-cross with its starting word in place, and ANNIVERSARY placed beside it.">
         <div class="type-words">
-          <h2 id="criss-cross-title">Criss-cross</h2>
+          <h2 id="criss-cross-title">Vanilla criss-crosses</h2>
           <p>A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn't fit the letters already there, it won't go in. Changed your mind? Tap a word you've placed to take it back out. Every puzzle can be solved by logic alone, so you'll never have to guess. Fill every slot to finish!</p>
         </div>
       </section>
