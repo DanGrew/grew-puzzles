@@ -59,8 +59,10 @@
   var ownSlot = side.querySelector('.side-own');
   var look = side.querySelector('.look');
   var burger = bar.querySelector('.burger');
+  // A pick in a page's own entry shuts the drawer before the pick acts, so a print starting at once —
+  // Plain loads nothing to wait for — never catches it open.
   own.forEach(function (entry) {
-    entry.addEventListener('click', function () { setSide(false); });
+    entry.addEventListener('click', function () { setSide(false); }, true);
   });
   ownSlot.append.apply(ownSlot, own);
   ownSlot.hidden = own.length === 0;
