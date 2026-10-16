@@ -162,8 +162,57 @@
       </section>
     </div>
 
-    <div class="part" data-kind="maze" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden></div>
-    <div class="part" data-kind="maze" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden></div>
+    <div class="part" data-kind="maze" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
+      <section class="rule" id="maze-goal">
+        <img src="../content/how-to-play/maze-goal.png" width="252" height="253" alt="A small maze with a trail running all the way from the shaded start square to End.">
+        <p><strong>Get from the start to the end.</strong> Find the one way through, from the shaded start square to End.</p>
+      </section>
+      <section class="rule" id="maze-pad">
+        <img src="../content/how-to-play/maze-pad.png" width="448" height="253" alt="A small maze with a trail run down from the start to the first junction, beside the control pad with its down key pressed.">
+        <p><strong>Move with the control pad.</strong> One press of ↓ runs the trail down the corridor and round its bends, and stops at the first junction. The arrow keys work too. A run stops at every junction, dead end and thing on the checklist, so every choice is yours.</p>
+      </section>
+      <section class="rule" id="maze-walls">
+        <img src="../content/how-to-play/maze-walls.png" width="448" height="253" alt="A small maze with a circled square just past a wall from the trail's end, a dashed path the long way round to it, and the control pad with its right key greyed out.">
+        <p><strong>Walls can't be crossed.</strong> The circled square is right beside the trail, but a wall is in the way, so the pad greys out →. The trail has to go the long way round (dashed).</p>
+      </section>
+      <section class="rule" id="maze-back">
+        <img src="../content/how-to-play/maze-back.png" width="448" height="253" alt="A small maze with a faded trail into a dead end, the trail back at the junction it left, and the control pad with Back pressed.">
+        <p><strong>Go back over the trail.</strong> ↑ ran the trail into a dead end (faded). Back takes it back one run, to the junction it left. Pressing the way it came in does the same. Anything picked up stays ticked.</p>
+      </section>
+      <section class="rule" id="maze-guides">
+        <img src="../content/how-to-play/maze-guides.png" width="252" height="396" alt="A small maze with the trail stopped on a guide and another guide further on, above the checklist with one of two guide boxes ticked.">
+        <p><strong>Guides are on the right path.</strong> Guides sit only on the one route from the start to the end. A run stops on each one, and its box ticks on the checklist.</p>
+      </section>
+    </div>
+    <div class="part" data-kind="maze" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
+      <section class="move" id="maze-deadends" aria-labelledby="maze-deadends-title">
+        <h2 id="maze-deadends-title">Fill in dead ends</h2>
+        <p>When you can see the whole maze, or you've printed it.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/maze-deadends-puzzle.png" width="252" height="253" alt="A 7 by 7 maze, untouched."><figcaption><b>The maze</b> Get from the start to the end.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-deadends-spot.png" width="252" height="253" alt="The same maze with every dead end shaded grey."><figcaption><b>Spot it</b> Rule out every dead end, then any square that's become a dead end, until none are left (shaded here). On a printed maze, shade them in.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-deadends-found.png" width="252" height="253" alt="The same maze, its dead ends shaded, the trail running through the squares left to End."><figcaption><b>Settled</b> What's left is the route.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="maze-workback" aria-labelledby="maze-workback-title">
+        <h2 id="maze-workback-title">Work back from the end</h2>
+        <p>When the start has lots of choices, but the end looks quiet.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/maze-workback-puzzle.png" width="252" height="253" alt="A 7 by 7 maze, untouched."><figcaption><b>The maze</b> Get from the start to the end. From the start there are three junctions to choose at.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-workback-spot.png" width="252" height="253" alt="The same maze with a long corridor from End lit yellow, back to near the start."><figcaption><b>Spot it</b> From the end, there's no junction at all for 23 squares, all the way back to near the start.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-workback-found.png" width="252" height="253" alt="The same maze with the trail running from the start to End."><figcaption><b>Settled</b> All that's left is the start to that junction: 19 squares to solve, not 43.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="maze-waypoint" aria-labelledby="maze-waypoint-title">
+        <h2 id="maze-waypoint-title">Use a guide as a waypoint</h2>
+        <p>When there's a guide in the maze.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/maze-waypoint-puzzle.png" width="252" height="253" alt="A 7 by 7 maze with one guide in the middle."><figcaption><b>The maze</b> Get from the start to the end. There's a guide in the middle.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-waypoint-spot.png" width="252" height="253" alt="The same maze with the guide's square lit yellow and the trail run from the start to it."><figcaption><b>Spot it</b> The route must pass the guide. Find the start to the guide first: a smaller maze.</figcaption></figure>
+          <figure><img src="../content/how-to-play/maze-waypoint-found.png" width="252" height="253" alt="The same maze with the trail running on from the guide to End."><figcaption><b>Settled</b> Then the guide to the end. Two small mazes make one route.</figcaption></figure>
+        </div>
+      </section>
+    </div>
     <div class="part" data-kind="maze" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="vanilla-maze" aria-labelledby="vanilla-maze-title">
         <img src="../content/how-to-play/vanilla-maze.png" width="1024" height="1280" alt="A Vanilla maze with a trail started from the start, passing two guides.">

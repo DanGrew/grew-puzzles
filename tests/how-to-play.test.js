@@ -143,10 +143,35 @@ const CRISS_MOVES = [
     ['Spot it', 'Apple gives 2 down a P and 3 down an L. Only Pear starts with P, and only Lime with L.', 'The same shape with Apple\'s P and L highlighted.'],
     ['Settled', 'Pear and Lime go in. Their letters now cross 4 across, so keep working out from them.', 'The same shape with Pear in 2 down and Lime in 3 down, both outlined, and crossed off the list.']]],
 ];
+// Mazes' (the product's TASK-219), the same way: its pictures the worksheet's made-up mazes, played
+// on the maze page itself — a basic about the pad beside the pad, one about guides above the
+// checklist — and a move's last step the route it settles.
+const MAZE_BASICS = [
+  ['goal', 'Get from the start to the end. Find the one way through, from the shaded start square to End.', 'A small maze with a trail running all the way from the shaded start square to End.'],
+  ['pad', 'Move with the control pad. One press of ↓ runs the trail down the corridor and round its bends, and stops at the first junction. The arrow keys work too. A run stops at every junction, dead end and thing on the checklist, so every choice is yours.', 'A small maze with a trail run down from the start to the first junction, beside the control pad with its down key pressed.'],
+  ['walls', 'Walls can\'t be crossed. The circled square is right beside the trail, but a wall is in the way, so the pad greys out →. The trail has to go the long way round (dashed).', 'A small maze with a circled square just past a wall from the trail\'s end, a dashed path the long way round to it, and the control pad with its right key greyed out.'],
+  ['back', 'Go back over the trail. ↑ ran the trail into a dead end (faded). Back takes it back one run, to the junction it left. Pressing the way it came in does the same. Anything picked up stays ticked.', 'A small maze with a faded trail into a dead end, the trail back at the junction it left, and the control pad with Back pressed.'],
+  ['guides', 'Guides are on the right path. Guides sit only on the one route from the start to the end. A run stops on each one, and its box ticks on the checklist.', 'A small maze with the trail stopped on a guide and another guide further on, above the checklist with one of two guide boxes ticked.'],
+];
+const MAZE_MOVES = [
+  ['deadends', 'Fill in dead ends', 'When you can see the whole maze, or you\'ve printed it.', [
+    ['The maze', 'Get from the start to the end.', 'A 7 by 7 maze, untouched.'],
+    ['Spot it', 'Rule out every dead end, then any square that\'s become a dead end, until none are left (shaded here). On a printed maze, shade them in.', 'The same maze with every dead end shaded grey.'],
+    ['Settled', 'What\'s left is the route.', 'The same maze, its dead ends shaded, the trail running through the squares left to End.']]],
+  ['workback', 'Work back from the end', 'When the start has lots of choices, but the end looks quiet.', [
+    ['The maze', 'Get from the start to the end. From the start there are three junctions to choose at.', 'A 7 by 7 maze, untouched.'],
+    ['Spot it', 'From the end, there\'s no junction at all for 23 squares, all the way back to near the start.', 'The same maze with a long corridor from End lit yellow, back to near the start.'],
+    ['Settled', 'All that\'s left is the start to that junction: 19 squares to solve, not 43.', 'The same maze with the trail running from the start to End.']]],
+  ['waypoint', 'Use a guide as a waypoint', 'When there\'s a guide in the maze.', [
+    ['The maze', 'Get from the start to the end. There\'s a guide in the middle.', 'A 7 by 7 maze with one guide in the middle.'],
+    ['Spot it', 'The route must pass the guide. Find the start to the guide first: a smaller maze.', 'The same maze with the guide\'s square lit yellow and the trail run from the start to it.'],
+    ['Settled', 'Then the guide to the end. Two small mazes make one route.', 'The same maze with the trail running on from the guide to End.']]],
+];
 // Each kind with its Basics and Advanced written: its basics, its moves, and its three steps'
 // picture names.
 const RULES = [
   ['wordsearch', 'Wordsearches', WORDSEARCH_BASICS, WORDSEARCH_MOVES, ['puzzle', 'spot', 'found']],
+  ['maze', 'Mazes', MAZE_BASICS, MAZE_MOVES, ['puzzle', 'spot', 'found']],
   ['minesweeper', 'Minesweeper', MINESWEEPER_BASICS, MINESWEEPER_MOVES, ['puzzle', 'spot', 'settled']],
   ['crisscross', 'Criss-crosses', CRISS_BASICS, CRISS_MOVES, ['puzzle', 'spot', 'settled']],
 ];
