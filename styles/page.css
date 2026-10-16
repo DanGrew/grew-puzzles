@@ -12,7 +12,7 @@
 /* How to play, a page a kind: Basics | Advanced | Variants pills at the top, the Scorecard's tabs'
    look; then the part picked — under Variants a section a type, its picture beside its words, the
    sides alternating down the page as in the owner's book — on a phone, the picture above the words. */
-.how-to-play .part-pills { display: flex; width: fit-content; margin: 0 0 20px; overflow: hidden; background: var(--surface);
+.how-to-play .part-pills { display: flex; width: fit-content; margin: 0 auto 20px; overflow: hidden; background: var(--surface);
   border: var(--ow) solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); }
 .how-to-play .part-pills button { flex: 1; padding: 10px 20px; font: 700 15px var(--font-display); color: var(--fg); background: none; border: 0;
   white-space: nowrap; cursor: pointer; }

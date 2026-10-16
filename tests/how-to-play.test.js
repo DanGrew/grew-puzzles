@@ -396,6 +396,14 @@ test('Plain, the How to play page shows no character', async ({ page }) => {
   await expect(page.locator('#name-tag')).toBeHidden();
 });
 
+test('on a wide screen the pills sit centred under the title', async ({ page }) => {
+  await page.goto('/app/how-to-play.html?kind=minesweeper');
+  const title = await page.locator('h1').boundingBox();
+  const pills = await page.locator('.part-pills').boundingBox();
+  expect(pills.y).toBeGreaterThan(title.y + title.height);
+  expect(Math.abs((pills.x + pills.width / 2) - (title.x + title.width / 2))).toBeLessThan(2);
+});
+
 test('on the narrowest phone the How to play page and its pills read without scrolling sideways', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto('/app/how-to-play.html?kind=crisscross');
