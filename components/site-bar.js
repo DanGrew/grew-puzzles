@@ -4,8 +4,8 @@
 // the side bar entry this page belongs to — a kind (wordsearch, maze, minesweeper, crisscross, mosaic), collections, or a text
 // page. The kinds, each with its types, and Collections' count are filled from the indexes by
 // ui/side-bar-ui.js; Collections starts hidden until a collection is found. Scorecard, every puzzle
-// ticked off as it's finished, follows it, shown always and with no score. How to play, Saving
-// your progress, About us, Unofficial, Feedback and Privacy follow — every page sits in app/, beside them. After them,
+// ticked off as it's finished, follows it, shown always and with no score. Each kind's How to play
+// is its book icon, never an entry here (ui/side-bar-ui.js). Saving your progress, About us, Unofficial, Feedback and Privacy follow — every page sits in app/, beside them. After them,
 // the look: Themed, Plain or Blueprint, Themed until the player picks another, kept in this browser.
 // It sits on the page as <html data-look>, set here before any page script runs; picking one tells
 // the page with a grew-look event (styles/look.css, styles/blueprint.css, ui/theme-ui.js). A page that puts its own
@@ -41,7 +41,6 @@
     '<a class="kind side-collections" data-mark="collections" data-query="?kind=collections" hidden>Collections<small class="count"></small></a>' +
     '<a class="kind side-scorecard" data-mark="scorecard" href="scorecard.html">Scorecard</a>' +
     '<hr>' +
-    '<a class="page" data-mark="how-to-play" href="how-to-play.html">How to play</a>' +
     '<a class="page" data-mark="saving" href="saving.html">Saving your progress</a>' +
     '<a class="page" data-mark="about" href="about.html">About us</a>' +
     '<a class="page" data-mark="unofficial" href="unofficial.html">Unofficial</a>' +

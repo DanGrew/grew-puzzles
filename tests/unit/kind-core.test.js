@@ -1,5 +1,5 @@
 import {
-  COLLECTIONS, kinds, indexFiles, kindOf, places, placeName, difficultyOf, difficulties, dotTone, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf,
+  COLLECTIONS, kinds, indexFiles, kindOf, places, placeName, difficultyOf, difficulties, dotTone, puzzleDifficulty, levelsOf, typesOf, placeParams, sideBar, sideMarks, markOf, rulesOf, partShows,
 } from '../../core/kind-core.js';
 
 const puzzle = (hiddenId, type) => ({ hiddenId, type, created: '2026-10-08', title: hiddenId });
@@ -197,6 +197,24 @@ describe('kind-core.js', () => {
     expect(bar.kinds[3]).toEqual({ mark: 'crisscross', name: 'Criss-cross', short: 'Criss-cross', count: '0', query: '?kind=crisscross', types: [] });
     expect(bar.kinds[4]).toEqual({ mark: 'mosaic', name: 'Mosaic', short: 'Mosaic', count: '0', query: '?kind=mosaic', types: [] });
     expect(bar.collections).toEqual({ count: '0', query: '?kind=collections', hidden: true });
+  });
+
+  test('each kind\'s How to play page is its own address, named for the kind', () => {
+    expect(rulesOf('wordsearch')).toEqual({ kind: 'wordsearch', name: 'Wordsearches', href: 'how-to-play.html?kind=wordsearch' });
+    expect(rulesOf('maze')).toEqual({ kind: 'maze', name: 'Mazes', href: 'how-to-play.html?kind=maze' });
+    expect(rulesOf('mosaic')).toEqual({ kind: 'mosaic', name: 'Mosaic', href: 'how-to-play.html?kind=mosaic' });
+  });
+
+  test('an address naming no kind, or one no kind has, opens the first kind\'s How to play', () => {
+    expect(rulesOf(null)).toEqual({ kind: 'wordsearch', name: 'Wordsearches', href: 'how-to-play.html?kind=wordsearch' });
+    expect(rulesOf('collections')).toEqual({ kind: 'wordsearch', name: 'Wordsearches', href: 'how-to-play.html?kind=wordsearch' });
+  });
+
+  test('a part shows only for its own kind, under the pill picked', () => {
+    expect(partShows({ kind: 'maze', part: 'variants' }, 'maze', 'variants')).toBe(true);
+    expect(partShows({ kind: 'maze', part: 'basics' }, 'maze', 'variants')).toBe(false);
+    expect(partShows({ kind: 'wordsearch', part: 'variants' }, 'maze', 'variants')).toBe(false);
+    expect(partShows({ kind: 'wordsearch', part: 'basics' }, 'maze', 'variants')).toBe(false);
   });
 
   test('a page is current for its place, and — one type picked alone — that type too', () => {

@@ -55,7 +55,7 @@ test('the side bar lists each kind with its count and its types, then Collection
   await expect(side(page).locator('.kind')).toHaveText(['Wordsearches4', 'Mazes3', 'Minesweeper0', 'Criss-cross0', 'Mosaic0', 'Collections1', 'Scorecard']);
   await expect(side(page).locator('.types').first().locator('.type')).toHaveText(['Vanilla', 'Saga', 'Mirra?e']);
   await expect(side(page).locator('.types').nth(1).locator('.type')).toHaveText(['Vanilla', 'Keys', 'Keylecticodes']);
-  await expect(side(page).locator('.page')).toHaveText(['How to play', 'Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
+  await expect(side(page).locator('.page')).toHaveText(['Saving your progress', 'About us', 'Unofficial', 'Feedback', 'Privacy']);
   await expect(side(page).locator('> *:visible').last()).toHaveClass(/\blook\b/);
   await expect(side(page).locator('.kind').nth(1)).toHaveAttribute('href', 'index.html?kind=maze');
   await expect(side(page).locator('.kind').nth(2)).toHaveAttribute('href', 'index.html?kind=minesweeper');

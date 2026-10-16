@@ -39,6 +39,8 @@
   /* The title as a title block: TITLE over the name, and GRADE · DRAWING NO. over the line under it. */
   :root[data-look="blueprint"] .play-head { width: fit-content; max-width: calc(100% - 24px); margin-inline: auto; display: grid;
     grid-template-columns: minmax(0, auto) auto; border: 1px solid var(--ink); color: var(--ink); text-align: left; }
+  /* Clear of the book icon at the column's right, the title block keeps its own padding. */
+  :root[data-look="blueprint"] .play-rules + .play-head { padding-inline: 0; max-width: calc(100% - 104px); }
   :root[data-look="blueprint"] .play-head h1 { padding: 8px 18px 10px; font-weight: 400; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; }
   :root[data-look="blueprint"] .play-head .ident:not([hidden]) { margin: 0; padding: 8px 18px 10px; border-left: 1px solid var(--frame); color: var(--ink);
     display: block; font-size: 14px; line-height: 1.6; }
