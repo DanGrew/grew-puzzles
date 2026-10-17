@@ -8,7 +8,7 @@ The set mirrors `homeschooling-app`'s, minus its content-specific gates.
 
 | job | what it checks |
 |---|---|
-| `puzzles` | every file in `content/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside the primary checkout — any worktree finds it from there. A failing puzzle names its file and check, and a broken collection fails it the same way, naming the collection; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
+| `puzzles` | `content/` against the private `grew-puzzles-tooling` repo's checks, taken from its `origin/main` — `scripts/check-puzzles.sh`, which needs that clone beside the primary checkout — any worktree finds it from there. Only the puzzle files that differ from the site's `origin/main` — committed, staged, edited on disk or new — are solved, each named in the report; with none, it passes in seconds. The checks spanning the tree — hidden IDs across kinds, each kind's index, collections, word entries — always run over all of `content/`, so a deleted puzzle a collection still lists fails. Tooling re-checks the site's puzzles itself when its rules change. A failing puzzle names its file and check, and a broken collection fails it the same way, naming the collection; a check-10 warning prints and passes. The format and the ten checks are tooling's `docs/PUZZLE-FORMAT.md` |
 | `coverage` | the vitest unit suite with v8 coverage over `core/**/*-core.js`, floors in `vitest.config.js` |
 | `check-untested` | every `core/` file is referenced by a `tests/unit` test |
 | `e2e-test` | the Playwright suite under `tests/` (excluding `tests/unit`) |
