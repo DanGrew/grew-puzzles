@@ -174,6 +174,46 @@ const MAZE_MOVES = [
     ['Spot it', 'The route must pass the guide. Find the start to the guide first: a smaller maze.', 'The same maze with the guide\'s square lit yellow and the trail run from the start to it.'],
     ['Settled', 'Then the guide to the end. Two small mazes make one route.', 'The same maze with the trail running on from the guide to End.']]],
 ];
+// Mosaic's (the product's TASK-222), likewise, from the worksheet's made-up boards, played on the
+// mosaic page itself; a basic shown in several steps sits under its sentence, and a move's last step
+// is what it settles.
+const MOSAIC_BASICS = [
+  ['goal', 'Shade squares to reveal a picture. Every board hides one. Shade exactly its squares and the board is solved: the numbers and lines melt away, and the title becomes the picture\'s name.', 'A 7 by 7 board as it opens, then the same board solved: a heart, with Solved — it\'s Heart. under it.', 'wide'],
+  ['block', 'A number counts the shaded squares in its block of nine. Its block is its own square and the eight around it. This 6 has six shaded and three left blank.', 'A board with a 6 highlighted and its block of nine outlined: six squares shaded, three left blank.'],
+  ['numbered', 'A numbered square can be shaded too. It taps like any other square. Shaded, its number shows white.', 'One square with an 8 on it tapped twice: clear, then left blank, then shaded with the 8 in white.'],
+  ['given', 'A 0 and a 9 come filled in. Before your first tap, a 0\'s whole block is left blank and a 9\'s is shaded, the number\'s own square too. They tap like any other square, but Undo never takes them back.', 'The board as it opens, the 9\'s block outlined and all shaded, and the 0\'s outlined and all left blank.'],
+  ['tap', 'Tap a square once to leave it blank, again to shade it, and again to clear it. A square left blank turns pale grey. The Squares card beside the board counts the squares shaded.', 'One square tapped three times: clear, then pale grey for blank, then shaded, then clear again.'],
+  ['fill', 'Right-click a number to fill in its block. On a touch screen, pick Fill under the board and tap it. If its clear squares are just what it still needs, they\'re shaded. If its count is already met, they\'re left blank. Otherwise nothing happens. Here the 6 needs all six; then the 1 has its one, so the rest are left blank.', 'The board, then the 6 on the right edge right-clicked and its six squares shaded, then the 1 at the bottom right-clicked and its other five squares left blank.', 'wide'],
+  ['check', 'Check rings your mistakes. It rings in red every square shaded that isn\'t in the picture, and every square left blank that is. The line under it says how many. A clear square is never checked.', 'A board with two squares in its top-left corner ringed in red, Check and Undo under it, and 2 mistakes under them.'],
+  ['undo', 'Undo takes back a tap. A fill comes back as one: here the 1\'s five blank squares clear again together. Press it again to go further back.', 'A board just after the 1 was right-clicked, then the same board after Undo, the 1\'s five blank squares clear again.', 'wide'],
+  ['noguess', 'You never need to guess. Every board has exactly one picture, and its numbers lead to it one sure step at a time. This one is solved from the board as it opens.', 'A 7 by 7 board as it opens, its 0\'s and 9\'s blocks filled in.'],
+];
+const MOSAIC_MOVES = [
+  ['edges', 'Corners and edges, where a block holds four or six', 'When a number sits on the board\'s edge or in a corner.', [
+    ['The board', 'The board as it opens. The 6 sits on the left edge.', 'The 7 by 7 board as it opens, a 6 on its left edge.'],
+    ['Spot it', 'On an edge a block holds just six squares, and in a corner four. This 6 needs all six.', 'The same board with the 6 highlighted and its block of six outlined.'],
+    ['Settled', 'Its whole block is shaded.', 'The same board with the 6\'s six squares shaded, each outlined.']]],
+  ['fills', 'A number that fills its block', 'When a number needs every square its block has left.', [
+    ['The board', 'The 9 has shaded two of the 8\'s squares, and the 0 has left one blank.', 'The board as it opens, an 8 under the 9\'s shaded block.'],
+    ['Spot it', 'The 8 has one blank square, so every other square in its block is shaded.', 'The same board with the 8 highlighted and its block outlined.'],
+    ['Settled', 'Its six clear squares are all shaded.', 'The same board with the 8\'s six clear squares shaded, each outlined.']]],
+  ['met', 'A number already met', 'When a number already has all its shaded squares.', [
+    ['The board', 'The edge 6 and the 8 have filled in their blocks.', 'The board with the left 6\'s and the 8\'s blocks shaded.'],
+    ['Spot it', 'The 6 beside the 8 already has six shaded squares in its block.', 'The same board with the 6 beside the 8 highlighted and its block outlined.'],
+    ['Settled', 'Its last clear square is left blank.', 'The same board with the square left of the 6 left blank, outlined.']]],
+  ['differ', 'Two neighbours whose numbers differ', 'When two numbers side by side differ by as many squares as one has to itself.', [
+    ['The board', 'The board as it opens. The top is still clear.', 'A 7 by 7 board as it opens, a 3 and a 6 side by side near the top.'],
+    ['Spot it', 'The 3 and the 6 share six squares. Only three are the 6\'s alone, and it has three more than the 3.', 'The same board with the 3 and the 6 highlighted and both blocks outlined.'],
+    ['Settled', 'The 6\'s own three squares are all shaded, and the 3\'s own three are left blank.', 'The same board with the three squares right of the 6 shaded and the three left of the 3 left blank, each outlined.']]],
+  ['five', 'Diagonal neighbours five apart', 'When two numbers touch corner to corner and differ by five.', [
+    ['The board', 'The board as it opens. The top right is still clear.', 'A 7 by 7 board as it opens, an 8 and a 3 touching corner to corner near the top right.'],
+    ['Spot it', 'The 8 and the 3 share the 2×2 between them. Only five squares are the 8\'s alone, and it has five more than the 3.', 'The same board with the 8 and the 3 highlighted and both blocks outlined.'],
+    ['Settled', 'The 8\'s own five squares are all shaded, and the 3\'s own five are left blank.', 'The same board with the 8\'s own five squares shaded and the 3\'s own five left blank, each outlined.']]],
+  ['apart', 'Two numbers two apart in a row', 'When two numbers sit in a row with one square between them.', [
+    ['The board', 'The left 7\'s own six squares are shaded.', 'A 7 by 7 board with the left 7\'s own six squares shaded.'],
+    ['Spot it', 'The two 7s share the column between them. The left 7 has six of its own, so the column holds just one. The right 7 then needs six, all its own.', 'The same board with both 7s highlighted and both blocks outlined.'],
+    ['Settled', 'The right 7\'s own six squares are all shaded.', 'The same board with the right 7\'s own six squares shaded, each outlined.']]],
+];
 // Each kind with its Basics and Advanced written: its basics, its moves, and its three steps'
 // picture names.
 const RULES = [
@@ -181,6 +221,7 @@ const RULES = [
   ['maze', 'Mazes', MAZE_BASICS, MAZE_MOVES, ['puzzle', 'spot', 'found']],
   ['minesweeper', 'Minesweeper', MINESWEEPER_BASICS, MINESWEEPER_MOVES, ['puzzle', 'spot', 'settled']],
   ['crisscross', 'Criss-crosses', CRISS_BASICS, CRISS_MOVES, ['puzzle', 'spot', 'settled']],
+  ['mosaic', 'Mosaics', MOSAIC_BASICS, MOSAIC_MOVES, ['puzzle', 'spot', 'settled']],
 ];
 const PLAY_PAGES = [
   ['/app/play.html?id=WSCH-0001', 'wordsearch', 'Wordsearches'],
@@ -369,16 +410,6 @@ for (const [kind, name, basics, moves, stepNames] of RULES) {
     });
   });
 }
-
-test('a part with nothing written yet is still a pill, and shows empty — no heading, no coming soon', async ({ page }) => {
-  await page.goto('/app/how-to-play.html?kind=mosaic');
-  for (const name of ['Basics', 'Advanced']) {
-    await pill(page, name).click();
-    await expect(shown(page)).toHaveCount(1);
-    await expect(shown(page)).toBeEmpty();
-  }
-  await expect(page.locator('main .page-card')).not.toContainText(/coming soon/i);
-});
 
 test('an address naming no kind the site has opens Wordsearches\' page', async ({ page }) => {
   for (const address of ['/app/how-to-play.html', '/app/how-to-play.html?kind=nope']) {
