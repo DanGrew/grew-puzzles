@@ -301,7 +301,7 @@
       </section>
       <section class="rule" id="minesweeper-no-guess">
         <img src="../content/how-to-play/minesweeper-no-guess.png" width="270" height="216" alt="A 5 by 4 board with six numbers and nothing marked.">
-        <p><strong>You never need to guess.</strong> Every board has exactly one answer, and its numbers alone lead to it. This one is solved from its six numbers.</p>
+        <p><strong>You never need to guess, except on a Canaries board.</strong> Every board has exactly one answer, and on all but a Canaries board its numbers alone lead to it. This one is solved from its six numbers.</p>
       </section>
     </div>
     <div class="part" data-kind="minesweeper" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
@@ -362,10 +362,42 @@
     </div>
     <div class="part" data-kind="minesweeper" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="minesweeper" aria-labelledby="minesweeper-title">
-        <img src="../content/how-to-play/minesweeper.png" width="880" height="880" alt="A Vanilla minesweeper board, part solved: the squares around a 0 dotted, and a number's mines marked.">
+        <img src="../content/how-to-play/minesweeper.png" width="1080" height="1080" alt="A Vanilla minesweeper board, part solved: the squares around a 0 dotted, and a number's mines marked.">
         <div class="type-words">
           <h2 id="minesweeper-title">Vanilla minesweeper</h2>
           <p>No luck needed, just a little thinking! Some squares show a number. Each number counts the mines in the eight squares around it, and a square with a number is never a mine. Tap a square once to mark it safe with a dot, again to mark a mine, and again to clear it. In a hurry? Tap a number. If all its mines are marked, its other squares get dots. If its empty squares must all be mines, they're marked for you. Every board can be solved by logic alone, so you'll never have to guess. Mark every mine to finish!</p>
+        </div>
+      </section>
+
+      <section class="type" id="reveal-minesweeper" aria-labelledby="reveal-minesweeper-title">
+        <img src="../content/how-to-play/reveal-minesweeper.png" width="1080" height="1080" alt="A Reveal board part opened from its starting area, with one mine marked and the rest still covered.">
+        <div class="type-words">
+          <h2 id="reveal-minesweeper-title">Reveal minesweeper</h2>
+          <p>Every square starts covered, apart from a little area to get you going. Each number counts the mines in the eight squares around it. Pick Open or Mark mine under the board, then tap a square. A right-click or a long press always marks a mine. Open a mine and it's Kaboom! But you can always try again. Tap a number with all its mines marked, and its other squares open for you. Every board can be solved by logic alone, so you'll never have to guess. Open every safe square to finish!</p>
+        </div>
+      </section>
+
+      <section class="type" id="canaries-minesweeper" aria-labelledby="canaries-minesweeper-title">
+        <img class="controls" src="../content/how-to-play/canaries-minesweeper.png" width="375" height="100" alt="The controls under a Canaries board: its canary in a box above Open and Mark mine, and the Canary button beside them.">
+        <div class="type-words">
+          <h2 id="canaries-minesweeper-title">Canaries minesweeper</h2>
+          <p>Some boards can't be solved by logic alone, so you get canaries to help! Each tile says how many. Pick Canary and tap a square. If it's safe, it opens. If it's a mine, you lose the canary but not the game: the mine stays shown, and you carry on. You get exactly one canary for each guess the board needs. Open every safe square to finish!</p>
+        </div>
+      </section>
+
+      <section class="type" id="keys-minesweeper" aria-labelledby="keys-minesweeper-title">
+        <img src="../content/how-to-play/keys-minesweeper.png" width="1232" height="1230" alt="A Keys board with one key found and its zone open, and another zone still padlocked.">
+        <div class="type-words">
+          <h2 id="keys-minesweeper-title">Keys minesweeper</h2>
+          <p>Some zones of the board are padlocked in their own colour, and you can't open them yet. Each zone has a key hidden under one of the board's squares. Open that square and the key pops up, the zone's padlocks drop, and in you go. Every board can be solved by logic alone, so you'll never have to guess. Open every safe square to finish!</p>
+        </div>
+      </section>
+
+      <section class="type" id="limited-flags-minesweeper" aria-labelledby="limited-flags-minesweeper-title">
+        <img class="controls" src="../content/how-to-play/limited-flags-minesweeper.png" width="248" height="100" alt="The controls under a Limited Flags board: a row of five flags above Open and Mark mine.">
+        <div class="type-words">
+          <h2 id="limited-flags-minesweeper-title">Limited Flags minesweeper</h2>
+          <p>You only have so many flags! The row of flags under the board shows how many you've got left. Mark a mine with none left, and your oldest flag moves to the new square. Undo puts it back. Every board can be solved by logic alone, so you'll never have to guess. Open every safe square to finish!</p>
         </div>
       </section>
     </div>
