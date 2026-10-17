@@ -25,13 +25,13 @@ const MAZE_TYPES = [
 ];
 // Minesweeper, after the mazes: Vanilla, its picture a board part solved, then the types played by
 // Reveal's rule in browse order (the product's TASK-175) — Reveal's and Keys' pictures real boards part
-// opened, Canaries and Limited Flags with no picture of their own.
+// opened, Canaries' and Limited Flags' the controls under a real board, so a player knows what to look for.
 const MINESWEEPER_TYPES = [
   ['minesweeper', 'Vanilla', 'Vanilla minesweeper', 'No luck needed, just a little thinking! Some squares show a number. Each number counts the mines in the eight squares around it, and a square with a number is never a mine. Tap a square once to mark it safe with a dot, again to mark a mine, and again to clear it. In a hurry? Tap a number. If all its mines are marked, its other squares get dots. If its empty squares must all be mines, they\'re marked for you. Every board can be solved by logic alone, so you\'ll never have to guess. Mark every mine to finish!', 'A Vanilla minesweeper board, part solved: the squares around a 0 dotted, and a number\'s mines marked.'],
   ['reveal-minesweeper', 'Reveal', 'Reveal minesweeper', 'Every square starts covered, apart from a little area to get you going. Each number counts the mines in the eight squares around it. Pick Open or Mark mine under the board, then tap a square. A right-click or a long press always marks a mine. Open a mine and it\'s Kaboom! But you can always try again. Tap a number with all its mines marked, and its other squares open for you. Every board can be solved by logic alone, so you\'ll never have to guess. Open every safe square to finish!', 'A Reveal board part opened from its starting area, with one mine marked and the rest still covered.'],
-  ['canaries-minesweeper', 'Canaries', 'Canaries minesweeper', 'Some boards can\'t be solved by logic alone, so you get canaries to help! Each tile says how many. Pick Canary and tap a square. If it\'s safe, it opens. If it\'s a mine, you lose the canary but not the game: the mine stays shown, and you carry on. You get exactly one canary for each guess the board needs. Open every safe square to finish!'],
+  ['canaries-minesweeper', 'Canaries', 'Canaries minesweeper', 'Some boards can\'t be solved by logic alone, so you get canaries to help! Each tile says how many. Pick Canary and tap a square. If it\'s safe, it opens. If it\'s a mine, you lose the canary but not the game: the mine stays shown, and you carry on. You get exactly one canary for each guess the board needs. Open every safe square to finish!', 'The controls under a Canaries board: its canary in a box above Open and Mark mine, and the Canary button beside them.'],
   ['keys-minesweeper', 'Keys', 'Keys minesweeper', 'Some zones of the board are padlocked in their own colour, and you can\'t open them yet. Each zone has a key hidden under one of the board\'s squares. Open that square and the key pops up, the zone\'s padlocks drop, and in you go. Every board can be solved by logic alone, so you\'ll never have to guess. Open every safe square to finish!', 'A Keys board with one key found and its zone open, and another zone still padlocked.'],
-  ['limited-flags-minesweeper', 'Limited Flags', 'Limited Flags minesweeper', 'You only have so many flags! The row of flags under the board shows how many you\'ve got left. Mark a mine with none left, and your oldest flag moves to the new square. Undo puts it back. Every board can be solved by logic alone, so you\'ll never have to guess. Open every safe square to finish!'],
+  ['limited-flags-minesweeper', 'Limited Flags', 'Limited Flags minesweeper', 'You only have so many flags! The row of flags under the board shows how many you\'ve got left. Mark a mine with none left, and your oldest flag moves to the new square. Undo puts it back. Every board can be solved by logic alone, so you\'ll never have to guess. Open every safe square to finish!', 'The controls under a Limited Flags board: a row of five flags above Open and Mark mine.'],
 ];
 // Criss-cross, after Minesweeper: one section, Vanilla, its one type (the product's TASK-221), its
 // picture a shape with its starting word in place and the only word of its length placed next.
@@ -280,10 +280,6 @@ test('Variants\' pictures are each type\'s own, its alt text naming the type and
     await pill(page, 'Variants').click();
     for (const [id, , , , alt] of types) {
       const picture = page.locator(`#${id} img`);
-      if (alt === undefined) {
-        await expect(picture).toHaveCount(0);
-        continue;
-      }
       await expect(picture).toHaveAttribute('src', `../content/how-to-play/${id}.png`);
       await expect(picture).toHaveAttribute('alt', alt);
       expect(await picture.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -450,16 +446,15 @@ test('on a wide screen each Variants picture sits beside its words, alternating 
   expect(sides).toEqual(MAZE_TYPES.map((_, i) => (i % 2 ? 'right' : 'left')));
 });
 
-test('on a wide screen a type with no picture of its own has its words across the card', async ({ page }) => {
+test('a board\'s controls are pictured no taller than they were drawn, not stretched across their column', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/app/how-to-play.html?kind=minesweeper');
   await pill(page, 'Variants').click();
-  const card = await page.locator('#reveal-minesweeper').boundingBox();
   for (const id of ['canaries-minesweeper', 'limited-flags-minesweeper']) {
-    const words = await page.locator(`#${id} .type-words`).boundingBox();
-    expect(words.x).toBeCloseTo(card.x, 0);
-    expect(words.width).toBeCloseTo(card.width, 0);
+    const picture = await page.locator(`#${id} img`).boundingBox();
+    expect(picture.height).toBeLessThanOrEqual(104);
   }
+  expect((await page.locator('#limited-flags-minesweeper img').boundingBox()).width).toBeLessThan(260);
 });
 
 test('on a phone each Variants picture sits above its words', async ({ page }) => {
