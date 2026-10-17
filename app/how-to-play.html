@@ -458,8 +458,100 @@
       </section>
     </div>
 
-    <div class="part" data-kind="mosaic" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden></div>
-    <div class="part" data-kind="mosaic" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden></div>
+    <div class="part" data-kind="mosaic" data-part="basics" role="tabpanel" aria-labelledby="part-basics" hidden>
+      <section class="rule wide" id="mosaic-goal">
+        <p><strong>Shade squares to reveal a picture.</strong> Every board hides one. Shade exactly its squares and the board is solved: the numbers and lines melt away, and the title becomes the picture's name.</p>
+        <img src="../content/how-to-play/mosaic-goal.png" width="963" height="441" alt="A 7 by 7 board as it opens, then the same board solved: a heart, with Solved — it's Heart. under it.">
+      </section>
+      <section class="rule" id="mosaic-block">
+        <img src="../content/how-to-play/mosaic-block.png" width="378" height="378" alt="A board with a 6 highlighted and its block of nine outlined: six squares shaded, three left blank.">
+        <p><strong>A number counts the shaded squares in its block of nine.</strong> Its block is its own square and the eight around it. This 6 has six shaded and three left blank.</p>
+      </section>
+      <section class="rule" id="mosaic-numbered">
+        <img src="../content/how-to-play/mosaic-numbered.png" width="62" height="270" alt="One square with an 8 on it tapped twice: clear, then left blank, then shaded with the 8 in white.">
+        <p><strong>A numbered square can be shaded too.</strong> It taps like any other square. Shaded, its number shows white.</p>
+      </section>
+      <section class="rule" id="mosaic-given">
+        <img src="../content/how-to-play/mosaic-given.png" width="378" height="378" alt="The board as it opens, the 9's block outlined and all shaded, and the 0's outlined and all left blank.">
+        <p><strong>A 0 and a 9 come filled in.</strong> Before your first tap, a 0's whole block is left blank and a 9's is shaded, the number's own square too. They tap like any other square, but Undo never takes them back.</p>
+      </section>
+      <section class="rule" id="mosaic-tap">
+        <img src="../content/how-to-play/mosaic-tap.png" width="62" height="374" alt="One square tapped three times: clear, then pale grey for blank, then shaded, then clear again.">
+        <p><strong>Tap a square once to leave it blank, again to shade it, and again to clear it.</strong> A square left blank turns pale grey. The Squares card beside the board counts the squares shaded.</p>
+      </section>
+      <section class="rule wide" id="mosaic-fill">
+        <p><strong>Right-click a number to fill in its block.</strong> On a touch screen, pick Fill under the board and tap it. If its clear squares are just what it still needs, they're shaded. If its count is already met, they're left blank. Otherwise nothing happens. Here the 6 needs all six; then the 1 has its one, so the rest are left blank.</p>
+        <img src="../content/how-to-play/mosaic-fill.png" width="1284" height="386" alt="The board, then the 6 on the right edge right-clicked and its six squares shaded, then the 1 at the bottom right-clicked and its other five squares left blank.">
+      </section>
+      <section class="rule" id="mosaic-check">
+        <img src="../content/how-to-play/mosaic-check.png" width="430" height="504" alt="A board with two squares in its top-left corner ringed in red, Check and Undo under it, and 2 mistakes under them.">
+        <p><strong>Check rings your mistakes.</strong> It rings in red every square shaded that isn't in the picture, and every square left blank that is. The line under it says how many. A clear square is never checked.</p>
+      </section>
+      <section class="rule wide" id="mosaic-undo">
+        <p><strong>Undo takes back a tap.</strong> A fill comes back as one: here the 1's five blank squares clear again together. Press it again to go further back.</p>
+        <img src="../content/how-to-play/mosaic-undo.png" width="829" height="386" alt="A board just after the 1 was right-clicked, then the same board after Undo, the 1's five blank squares clear again.">
+      </section>
+      <section class="rule" id="mosaic-noguess">
+        <img src="../content/how-to-play/mosaic-noguess.png" width="378" height="378" alt="A 7 by 7 board as it opens, its 0's and 9's blocks filled in.">
+        <p><strong>You never need to guess.</strong> Every board has exactly one picture, and its numbers lead to it one sure step at a time. This one is solved from the board as it opens.</p>
+      </section>
+    </div>
+    <div class="part" data-kind="mosaic" data-part="advanced" role="tabpanel" aria-labelledby="part-advanced" hidden>
+      <section class="move" id="mosaic-edges" aria-labelledby="mosaic-edges-title">
+        <h2 id="mosaic-edges-title">Corners and edges, where a block holds four or six</h2>
+        <p>When a number sits on the board's edge or in a corner.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-edges-puzzle.png" width="378" height="378" alt="The 7 by 7 board as it opens, a 6 on its left edge."><figcaption><b>The board</b> The board as it opens. The 6 sits on the left edge.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-edges-spot.png" width="378" height="378" alt="The same board with the 6 highlighted and its block of six outlined."><figcaption><b>Spot it</b> On an edge a block holds just six squares, and in a corner four. This 6 needs all six.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-edges-settled.png" width="378" height="378" alt="The same board with the 6's six squares shaded, each outlined."><figcaption><b>Settled</b> Its whole block is shaded.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="mosaic-fills" aria-labelledby="mosaic-fills-title">
+        <h2 id="mosaic-fills-title">A number that fills its block</h2>
+        <p>When a number needs every square its block has left.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-fills-puzzle.png" width="378" height="378" alt="The board as it opens, an 8 under the 9's shaded block."><figcaption><b>The board</b> The 9 has shaded two of the 8's squares, and the 0 has left one blank.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-fills-spot.png" width="378" height="378" alt="The same board with the 8 highlighted and its block outlined."><figcaption><b>Spot it</b> The 8 has one blank square, so every other square in its block is shaded.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-fills-settled.png" width="378" height="378" alt="The same board with the 8's six clear squares shaded, each outlined."><figcaption><b>Settled</b> Its six clear squares are all shaded.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="mosaic-met" aria-labelledby="mosaic-met-title">
+        <h2 id="mosaic-met-title">A number already met</h2>
+        <p>When a number already has all its shaded squares.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-met-puzzle.png" width="378" height="378" alt="The board with the left 6's and the 8's blocks shaded."><figcaption><b>The board</b> The edge 6 and the 8 have filled in their blocks.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-met-spot.png" width="378" height="378" alt="The same board with the 6 beside the 8 highlighted and its block outlined."><figcaption><b>Spot it</b> The 6 beside the 8 already has six shaded squares in its block.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-met-settled.png" width="378" height="378" alt="The same board with the square left of the 6 left blank, outlined."><figcaption><b>Settled</b> Its last clear square is left blank.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="mosaic-differ" aria-labelledby="mosaic-differ-title">
+        <h2 id="mosaic-differ-title">Two neighbours whose numbers differ</h2>
+        <p>When two numbers side by side differ by as many squares as one has to itself.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-differ-puzzle.png" width="378" height="378" alt="A 7 by 7 board as it opens, a 3 and a 6 side by side near the top."><figcaption><b>The board</b> The board as it opens. The top is still clear.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-differ-spot.png" width="378" height="378" alt="The same board with the 3 and the 6 highlighted and both blocks outlined."><figcaption><b>Spot it</b> The 3 and the 6 share six squares. Only three are the 6's alone, and it has three more than the 3.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-differ-settled.png" width="378" height="378" alt="The same board with the three squares right of the 6 shaded and the three left of the 3 left blank, each outlined."><figcaption><b>Settled</b> The 6's own three squares are all shaded, and the 3's own three are left blank.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="mosaic-five" aria-labelledby="mosaic-five-title">
+        <h2 id="mosaic-five-title">Diagonal neighbours five apart</h2>
+        <p>When two numbers touch corner to corner and differ by five.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-five-puzzle.png" width="378" height="378" alt="A 7 by 7 board as it opens, an 8 and a 3 touching corner to corner near the top right."><figcaption><b>The board</b> The board as it opens. The top right is still clear.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-five-spot.png" width="378" height="378" alt="The same board with the 8 and the 3 highlighted and both blocks outlined."><figcaption><b>Spot it</b> The 8 and the 3 share the 2×2 between them. Only five squares are the 8's alone, and it has five more than the 3.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-five-settled.png" width="378" height="378" alt="The same board with the 8's own five squares shaded and the 3's own five left blank, each outlined."><figcaption><b>Settled</b> The 8's own five squares are all shaded, and the 3's own five are left blank.</figcaption></figure>
+        </div>
+      </section>
+      <section class="move" id="mosaic-apart" aria-labelledby="mosaic-apart-title">
+        <h2 id="mosaic-apart-title">Two numbers two apart in a row</h2>
+        <p>When two numbers sit in a row with one square between them.</p>
+        <div class="steps">
+          <figure><img src="../content/how-to-play/mosaic-apart-puzzle.png" width="378" height="378" alt="A 7 by 7 board with the left 7's own six squares shaded."><figcaption><b>The board</b> The left 7's own six squares are shaded.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-apart-spot.png" width="378" height="378" alt="The same board with both 7s highlighted and both blocks outlined."><figcaption><b>Spot it</b> The two 7s share the column between them. The left 7 has six of its own, so the column holds just one. The right 7 then needs six, all its own.</figcaption></figure>
+          <figure><img src="../content/how-to-play/mosaic-apart-settled.png" width="378" height="378" alt="The same board with the right 7's own six squares shaded, each outlined."><figcaption><b>Settled</b> The right 7's own six squares are all shaded.</figcaption></figure>
+        </div>
+      </section>
+    </div>
     <div class="part" data-kind="mosaic" data-part="variants" role="tabpanel" aria-labelledby="part-variants" hidden>
       <section class="type" id="mosaic" aria-labelledby="mosaic-title">
         <img src="../content/how-to-play/mosaic.png" width="1080" height="1080" alt="A Vanilla mosaic board, part solved: each 0's block left blank, and each 9's block shaded.">
