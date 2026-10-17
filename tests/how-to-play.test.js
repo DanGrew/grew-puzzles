@@ -11,6 +11,8 @@ const WORDSEARCH_TYPES = [
   ['wildcard', 'Wildcard', 'Wildcard wordsearches', 'Back to tricky stuff: wildcards are letters in the puzzle hidden behind a \'?\'. Each one stands for a single letter, which could be any letter, and each wildcard can be a different one. Basically, we\'ve just hidden letters to make it harder for you!', 'A Wildcard wordsearch with \'?\' letters in the grid, and BROOM found across one of them.'],
   ['saga', 'Saga', 'Saga wordsearches', 'No more rules, just lots of words! These puzzles have a huge list of words split across several grids. And you guessed it, you have no idea which words are in which grid!', 'A Saga wordsearch: one long word list split across several grids.'],
   ['mirrage', 'Mirra?e', 'Mirra?e wordsearches', 'The ultimate challenge: every trick at once! Two puzzle grids, a word list with words that aren\'t really there, \'?\' wildcards hiding letters, and one word hidden five times across both grids. Like any good mirage, not everything you see is real… Good luck!', 'A Mirra?e wordsearch with \'?\' letters, showing a second copy of TELESCOPE found.'],
+  // Kids, last (the product's TASK-115): its picture a Kids puzzle as its play page shows it, big letters.
+  ['kids', 'Kids', 'Kids wordsearches', 'Perfect for little puzzlers! A small grid with big letters, and every word in the list written in capitals, just like in the grid. Words only go forwards: left to right, top to bottom, or diagonally down to the right. No backwards words, no tricks, just lots of finding fun!', 'A Kids wordsearch with big letters, with SOFA found in the grid.'],
 ];
 // The mazes, after every wordsearch, each address ending -maze so a Vanilla maze is never a
 // Vanilla wordsearch.
