@@ -23,6 +23,8 @@
 .how-to-play .type img { width: 100%; height: auto; border: var(--ow) solid var(--line); border-radius: var(--r); background: var(--surface); }
 .how-to-play .type:nth-of-type(even) img { order: 2; }
 .how-to-play .type h2 { margin-top: 0; }
+/* A type with no picture of its own: its words across the card. */
+.how-to-play .type.wide { grid-template-columns: minmax(0, 1fr); }
 /* Basics: a sentence a basic, beside its picture at the size it was drawn (its width and height, half
    its pixels), the pictures centred in one column so every sentence starts level, each led in bold.
    Advanced: a move's name and when it happens, then its three pictures in a row, each captioned
