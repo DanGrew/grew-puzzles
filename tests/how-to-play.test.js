@@ -30,12 +30,17 @@ const MINESWEEPER_TYPES = [
 const CRISS_TYPES = [
   ['criss-cross', 'Vanilla', 'Vanilla criss-crosses', 'A list of words and an empty shape: can you fit them all in? One word is already in place to get you started. Words cross where they share a letter, so every word you place gives you letters for the next. Tap a slot, then tap a word to put it in. If it doesn\'t fit the letters already there, it won\'t go in. Changed your mind? Tap a word you\'ve placed to take it back out. Every puzzle can be solved by logic alone, so you\'ll never have to guess. Fill every slot to finish!', 'A Vanilla criss-cross with its starting word in place, and ANNIVERSARY placed beside it.'],
 ];
+// Mosaic, after Criss-cross: one section, Vanilla, its one type (the product's TASK-169), its picture
+// a board made for the page alone, as it opens — every 0's block blank and every 9's shaded.
+const MOSAIC_TYPES = [
+  ['mosaic', 'Vanilla', 'Vanilla mosaics', 'Shade the squares to reveal a hidden picture! Each number counts the shaded squares in its 3×3 block: the square itself and the eight around it. A square with a number can be shaded too. Tap a square once to mark it blank, again to shade it, and again to clear it. Every board can be solved by logic alone, so you\'ll never have to guess. Shade the whole picture to finish!', 'A Vanilla mosaic board, part solved: each 0\'s block left blank, and each 9\'s block shaded.'],
+];
 const KINDS = [
   ['wordsearch', 'Wordsearches', WORDSEARCH_TYPES],
   ['maze', 'Mazes', MAZE_TYPES],
   ['minesweeper', 'Minesweeper', MINESWEEPER_TYPES],
   ['crisscross', 'Criss-cross', CRISS_TYPES],
-  ['mosaic', 'Mosaic', []],
+  ['mosaic', 'Mosaic', MOSAIC_TYPES],
 ];
 // Wordsearches' Basics and Advanced (the product's TASK-218), as the owner marked them on the
 // worksheet (its docs/RULES.md) and worded them (its docs/CONTENT.md, How to play): every basic said
@@ -365,7 +370,7 @@ for (const [kind, name, basics, moves, stepNames] of RULES) {
 
 test('a part with nothing written yet is still a pill, and shows empty — no heading, no coming soon', async ({ page }) => {
   await page.goto('/app/how-to-play.html?kind=mosaic');
-  for (const name of ['Basics', 'Advanced', 'Variants']) {
+  for (const name of ['Basics', 'Advanced']) {
     await pill(page, name).click();
     await expect(shown(page)).toHaveCount(1);
     await expect(shown(page)).toBeEmpty();
